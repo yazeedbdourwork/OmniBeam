@@ -1,0 +1,55 @@
+<!--
+title: OmniBeam과 PairDrop 비교: 무엇을 쓸까
+description: PairDrop과 OmniBeam은 둘 다 브라우저에서 기기 간에 파일을 보냅니다. 페어링, 암호화, 링크, 이어받기, 앱, 자체 호스팅을 솔직하게 비교합니다.
+short: OmniBeam과 PairDrop 비교
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam과 PairDrop 비교</h1>
+<p class="lead">PairDrop은 Snapdrop에서 나온 좋은 오픈 소스 도구입니다. OmniBeam도 브라우저에서 같은 방식으로 작동하므로 선택은 몇 가지 기능에 달려 있습니다. 솔직하게 나란히 비교해 봅니다.</p>
+
+<div class="table-wrap compare-wrap"><table class="compare">
+<thead><tr><th></th><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>같은 Wi‑Fi, 설치 불필요</th><td>예</td><td>예</td></tr>
+<tr><th>코드나 QR로 기기 페어링</th><td>예</td><td>예</td></tr>
+<tr><th>공개 방</th><td>예, 비밀번호 선택 가능</td><td>예</td></tr>
+<tr><th>직접 연결이 실패하면</th><td>종단 간 암호화된 서버 중계, 끊긴 뒤 이어받기</td><td>TURN 서버</td></tr>
+<tr><th>나중에 볼 사람에게 보내기</th><td>암호화 링크, 만료 후 삭제</td><td>아니요</td></tr>
+<tr><th>클립보드 동기화와 앱이 닫혀 있을 때 알림</th><td>예, 페어링한 기기 사이에서</td><td>아니요</td></tr>
+<tr><th>오른쪽 클릭 보내기(Windows, Mac, Linux)와 브라우저 확장 프로그램</th><td>예</td><td>명령줄 도구와 안내서</td></tr>
+<tr><th>오픈 소스와 자체 호스팅</th><td>아니요</td><td>예(Docker 또는 Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>PairDrop을 고르세요, 만약</h2>
+<p>직접 서버를 운영하거나, 코드를 읽거나, OmniBeam에 아직 없는 언어가 필요하다면요. PairDrop은 자유 소프트웨어이며 쉽게 자체 호스팅할 수 있습니다.</p>
+
+<h2>OmniBeam을 고르세요, 만약</h2>
+<ul>
+  <li>나쁜 연결에서 큰 파일: 끊긴 전송이 실패하지 않고 멈춘 곳부터 이어집니다.</li>
+  <li>지금 온라인이 아닌 사람에게 내 기기에서 암호화된 링크로 보내고 싶을 때.</li>
+  <li>매일 같은 기기 사이에서 파일을 옮길 때: 페어링한 기기는 알림을 받고 클립보드를 공유할 수 있으며, Windows에는 Microsoft Store 앱이, Chrome과 Edge에는 확장 프로그램이 있습니다.</li>
+  <li>보내기 전에 사진과 동영상을 줄이거나, 두 기기 사이의 속도를 테스트하고 싶을 때.</li>
+</ul>
+
+<h2>둘 다 써 보세요</h2>
+<p>둘 다 계정이 필요 없으니, 가장 빨리 결정하는 방법은 두 기기에서 <a href="/ko/">omnibeam.site</a>를 열고 큰 동영상을 보내 보는 것입니다. <a href="/ko/how-to-use">사용 안내</a>에 모든 기능이 나와 있습니다.</p>
+<p>무엇을 쓸까요? 종단 간 암호화, 링크, 설치할 수 있는 앱을 원한다면 OmniBeam이 더 잘 맞습니다. 한 네트워크에서 빠르게 보내는 데는 PairDrop도 괜찮습니다.</p>
+<section class="qa">
+<h2>자주 묻는 질문</h2>
+<h3>OmniBeam과 PairDrop은 관련이 있나요?</h3>
+<p>둘 다 브라우저 기반이고, 두 기기에서 페이지를 열고 보내는 Snapdrop과 같은 아이디어에서 영감을 받았습니다. 기능과 서버가 다른 별개의 프로젝트입니다.</p>
+<h3>어느 쪽이 파일을 더 비공개로 지키나요?</h3>
+<p>둘 다 가능하면 기기 사이에서 직접 보냅니다. OmniBeam은 여기에 더해 데이터가 중계를 거쳐야 할 때를 포함해 모든 전송을 내 기기에서 종단 간 암호화하므로, 중계 서버는 읽을 수 없습니다.</p>
+<h3>둘 다 링크를 공유할 수 있나요?</h3>
+<p>OmniBeam은 자동으로 만료되는 암호화 링크로 파일을 공유할 수 있어, 상대가 같은 시간에 온라인이 아닐 때 유용합니다. 같은 기능이 필요하다면 PairDrop의 현재 기능을 확인하세요.</p>
+<h3>앱이 있는 것은?</h3>
+<p>OmniBeam은 Microsoft Store, Chrome 확장 프로그램, Android 앱으로도 제공되지만, 브라우저 버전은 이것들 없이도 어디서나 작동합니다.</p>
+<h3>다른 네트워크 사이에서 되는 것은?</h3>
+<p>둘 다 기기를 페어링해 다른 네트워크에서도 서로를 찾게 할 수 있습니다. OmniBeam은 6자리 코드나 QR 코드를 쓰며, 양쪽에서 OmniBeam을 열면 페어링한 기기가 자동으로 나타납니다.</p>
+<h3>그룹에 더 나은 것은?</h3>
+<p>둘 다 공개 방을 제공합니다. OmniBeam에는 "모두에게 보내기"도 있어 열려 있는 모든 기기에 같은 파일을 한 번에 보냅니다.</p>
+<h3>무엇을 골라야 하나요?</h3>
+<p>둘 다 써 보세요. 둘 다 계정이 필요 없으니 몇 분이면 내 기기에서 비교하고, 내 네트워크에서 가장 잘 연결되는 것을 쓰면 됩니다.</p>
+</section>

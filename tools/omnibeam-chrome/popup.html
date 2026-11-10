@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header><img src="icons/icon-32.png" alt="" width="22" height="22"><b>OmniBeam</b></header>
+  <p class="label" id="what" data-msg="popupPage"></p>
+  <div id="devices"></div>
+  <p class="muted" id="none" data-msg="popupNone" hidden></p>
+  <button type="button" class="ghost" id="open" data-msg="popupOpen"></button>
+  <p class="status" id="status" role="status"></p>
+  <details>
+    <summary data-msg="popupMore"></summary>
+    <label class="check"><input type="checkbox" id="images"> <span data-msg="popupImages"></span></label>
+  </details>
+  <script src="popup.js"></script>
+</body>
+</html>

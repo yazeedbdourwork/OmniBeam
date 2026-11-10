@@ -1,0 +1,48 @@
+<!--
+title: Un bloc « Envoyez-moi des fichiers » sur votre site, gratuit | OmniBeam
+description: Ajoutez à votre site ou blog un bloc gratuit pour que les visiteurs vous envoient des fichiers, chiffrés de bout en bout. Un seul code à copier, sans compte ni extension.
+short: Un bloc « Envoyez-moi des fichiers » pour votre site
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Un bloc « Envoyez-moi des fichiers » pour votre site ou blog</h1>
+<p class="lead">Laissez vos visiteurs, clients ou élèves vous envoyer des fichiers directement depuis votre page. Vous collez un petit code ; les fichiers sont chiffrés sur leur appareil et arrivent dans OmniBeam sur le vôtre.</p>
+
+<h2>Étapes</h2>
+<ol>
+  <li>Ouvrez <a href="/fr/">omnibeam.site</a> sur l'appareil qui doit recevoir les fichiers et touchez <b>Demander des fichiers</b> dans le menu ⋯.</li>
+  <li>Écrivez ce dont vous avez besoin (facultatif), choisissez <b>1 an (pour un site web)</b> sous « Lien valable » et touchez <b>Créer le lien de demande</b>.</li>
+  <li>Touchez <b>Mettre sur votre site web</b>, puis <b>Copier le code</b>.</li>
+  <li>Collez le code dans votre page : dans WordPress un bloc <b>HTML personnalisé</b>, dans Blogger un gadget <b>HTML/JavaScript</b>, dans Wix un élément <b>Intégrer du HTML</b>, dans Squarespace un bloc <b>Code</b>.</li>
+</ol>
+<p>Les visiteurs voient un petit bloc avec « Choisir des fichiers », un champ facultatif pour leur nom et un bouton Envoyer. Ils n'ont besoin ni d'application ni de compte. Les fichiers arrivent sur votre appareil dans Fichiers reçus ; si OmniBeam y est fermé, ils attendent sur le serveur et arrivent à l'ouverture, avec une notification si vous les avez activées.</p>
+
+<h2>WordPress : l’extension OmniBeam gratuite</h2>
+<p>Sur WordPress, c’est encore plus simple : <a href="/tools/omnibeam-wordpress.zip">téléchargez l’extension OmniBeam (omnibeam-wordpress.zip)</a>, puis dans WordPress allez dans <b>Extensions → Ajouter → Téléverser une extension</b>, choisissez le zip et touchez <b>Activer</b>. Collez votre code (ou seulement son lien) dans <b>Réglages → OmniBeam Box</b>, puis ajoutez le bloc <b>OmniBeam: Send me files</b> à une page, ou le shortcode <code>[omnibeam_box]</code>. Un bloc avec son propre lien et sa hauteur : <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. L’extension n’accepte que les blocs d’omnibeam.site, et les fichiers ne passent jamais par votre site WordPress.</p>
+
+<h2>À quoi ressemble le code</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=fr#…" title="Envoyez-moi des fichiers" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/fr/"&gt;Propulsé par OmniBeam&lt;/a&gt; · partage de fichiers gratuit et chiffré de bout en bout&lt;/p&gt;</pre>
+<p>Gardez la ligne « Propulsé par OmniBeam » : c'est ce qui permet au bloc de rester gratuit.</p>
+
+<h2>Est-ce privé et sûr ?</h2>
+<ul>
+  <li>Chaque envoi est chiffré dans le navigateur du visiteur. Sa clé est scellée avec la clé publique de votre appareil, et seul votre appareil possède la clé privée correspondante : ni OmniBeam ni quelqu'un qui lit le code de votre page ne peut ouvrir les fichiers.</li>
+  <li>Le code de votre page est public. Quiconque le voit peut vous envoyer des fichiers et lire le texte « de quoi avez-vous besoin » ainsi que le nom de votre appareil : n'y écrivez rien de privé.</li>
+  <li>Seul votre appareil peut télécharger les envois, et chacun est supprimé du serveur dès qu'il l'a reçu. Les fichiers non récupérés sont supprimés après 7 jours.</li>
+  <li>Les limites habituelles restent en place : une taille maximale par envoi, une limite par réseau et par heure, et au plus 100 envois par jour et par bloc.</li>
+  <li>Supprimez le lien de demande dans la même fenêtre à tout moment et le bloc cesse aussitôt de fonctionner.</li>
+</ul>
+
+<section class="qa">
+<h2>Questions et réponses</h2>
+<h3>Est-ce payant ?</h3>
+<p>Non. Le bloc est gratuit, sans compte, sans extension et sans publicité.</p>
+<h3>Puis-je l'utiliser sur plusieurs pages ?</h3>
+<p>Oui. Collez le même code sur toutes les pages voulues ; tous les envois arrivent sur le même appareil. Créez un lien de demande distinct si vous voulez les différencier.</p>
+<h3>Pourquoi le bloc cesse-t-il de fonctionner au bout d'un moment ?</h3>
+<p>Chaque lien de demande expire à la date choisie. Pour un site, choisissez 1 an, et créez un nouveau lien et un nouveau code avant l'échéance.</p>
+<h3>Quelqu'un peut-il utiliser mon bloc pour m'envoyer du spam ?</h3>
+<p>Tout visiteur de la page peut vous envoyer des fichiers, comme avec une adresse e-mail. Les fichiers ne s'ouvrent jamais tout seuls, les envois sont limités par réseau et par jour, et vous pouvez supprimer le lien pour désactiver le bloc.</p>
+</section>

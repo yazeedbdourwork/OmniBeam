@@ -1,0 +1,5 @@
+# ads.txt for omnibeam.site (https://iabtechlab.com/ads-txt/)
+# OmniBeam shows no ads, so no company is allowed to sell ad space on this site.
+# The line below is the IAB's standard way of saying so. If ads are added one day, replace it with the
+# lines the ad network gives you (for Google AdSense: google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0).
+placeholder.example.com, placeholder, DIRECT, placeholder

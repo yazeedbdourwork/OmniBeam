@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Files shared with you | OmniBeam</title>
+  <meta name="description" content="Download files shared with you through OmniBeam. End-to-end encrypted.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OmniBeam">
+  <meta property="og:title" content="Files shared with you on OmniBeam">
+  <meta property="og:description" content="Open the link to download them. End-to-end encrypted.">
+  <meta property="og:image" content="https://omnibeam.site/og.png">
+  <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/pages.css?v=11">
+</head>
+<body>
+  <header class="page-header">
+    <nav aria-label="Main">
+      <a class="brand" href="/"><img src="/icon.svg?v=4" alt="" width="32" height="32"><span>Omni<span>Beam</span></span></a>
+      <a class="open-app" href="/" data-t="Open OmniBeam">Open OmniBeam</a>
+    </nav>
+  </header>
+  <main>
+    <article class="drop">
+      <h1 data-t="Files shared with you">Files shared with you</h1>
+      <p class="lead" id="drop-status" data-t="Loading…">Loading…</p>
+      <form class="drop-pin" id="drop-pin" hidden>
+        <label for="drop-pin-input" data-t="This link needs a PIN. Ask the person who sent it.">This link needs a PIN. Ask the person who sent it.</label>
+        <input id="drop-pin-input" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="PIN" required>
+        <button type="submit" class="open-app" data-t="Open">Open</button>
+      </form>
+      <ul class="drop-files" id="drop-files"></ul>
+      <div class="drop-bar" id="drop-bar" hidden><span></span></div>
+      <p class="cta"><button type="button" class="open-app" id="drop-get" hidden data-t="Download">Download</button></p>
+      <p class="drop-note" data-t="End-to-end encrypted: the files are decrypted on this device. The OmniBeam server can't read them.">End-to-end encrypted: the files are decrypted on this device. The OmniBeam server can't read them.</p>
+    </article>
+    <p class="drop-own"><a href="/" data-t="Send your own files with OmniBeam: free, no app">Send your own files with OmniBeam: free, no app</a></p>
+  </main>
+  <script src="/report.js?v=3"></script>
+  <script src="/get.js?v=6"></script>
+</body>
+</html>

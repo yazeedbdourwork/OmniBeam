@@ -1,0 +1,46 @@
+<!--
+title: Gleiches WLAN, aber langsam? So behebst du es
+description: Warum Geräte im selben WLAN über einen Server statt direkt senden, und wie du es behebst: VPN, Netzwerkprofil, Router. Kostenlos, ohne Konto.
+short: Langsame Übertragungen im selben WLAN beheben
+kind: guide
+order: 5
+updated: 2026-10-27
+-->
+<h1>Gleiches WLAN, aber Übertragungen sind langsam oder laufen über den Server</h1>
+<p class="lead">Im selben WLAN sollte OmniBeam die beiden Geräte direkt verbinden, und unter dem Fortschrittsbalken sollte der Weg „gleiches Netzwerk“ stehen. Steht dort „Internet“, „über den Router“ oder „Sende über den Server“, liegt es meist an einem dieser Punkte.</p>
+
+<h2>1. Starte die Verbindungsprüfung</h2>
+<p>Tippe unten in OmniBeam auf die Netzwerk-ID neben deinem Gerätenamen. Die Prüfung zeigt, ob dieses Gerät seine lokale Adresse teilt, ob ein VPN im Weg ist und welchen Weg deine letzten Übertragungen genommen haben, mit Tipps zu dem, was sie findet.</p>
+
+<h2>2. Lokale Verbindungen erlauben (⚡)</h2>
+<p>Browser verbergen die lokale Netzwerkadresse eines Geräts vor Websites. Das andere Gerät muss es dann über eine lokale Namenssuche (mDNS) finden, die viele Netzwerke blockieren, und die Übertragung nimmt den Umweg über den Router. Tippe auf <b>⚡ Schnellere WLAN-Übertragungen</b> und erlaube das Mikrofon einmal auf einem oder beiden Geräten: Es wird nichts aufgenommen, aber der Browser teilt dann die lokale Adresse, und die Geräte können sich direkt verbinden.</p>
+
+<h2>3. VPNs und private Relays ausschalten</h2>
+<ul>
+  <li>Schalte VPN-Apps, auch die „sichere Verbindung“ von Virenscannern, auf beiden Geräten aus, während du sendest.</li>
+  <li>Schalte auf dem iPhone iCloud Privat-Relay aus und unter Einstellungen → WLAN → dein Netzwerk „IP-Adressen-Tracking beschränken“.</li>
+</ul>
+
+<h2>4. Windows: privates Netzwerk verwenden</h2>
+<p>In einem „öffentlichen“ Netzwerk blockiert Windows die lokalen Suchen, mit denen sich Geräte finden. Öffne Einstellungen → Netzwerk und Internet → WLAN (oder Ethernet) → dein Netzwerk und wähle <b>Privates Netzwerk</b>. Deine Firewall muss den Browser außerdem in privaten Netzwerken zulassen.</p>
+
+<h2>5. Den Router prüfen</h2>
+<ul>
+  <li>Gastnetze und „AP-Isolation“ oder „Client-Isolation“ verhindern, dass Geräte im selben WLAN einander erreichen. Nutze das Hauptnetz oder schalte die Isolation in den Router-Einstellungen aus.</li>
+  <li>Manche Router haben getrennte 2,4‑GHz- und 5‑GHz-Netze, die voneinander isoliert sind; verbinde beide Geräte mit demselben.</li>
+</ul>
+
+<h2>Immer noch nicht direkt?</h2>
+<p>Übertragungen funktionieren trotzdem: OmniBeam sendet über seinen Server, Ende-zu-Ende verschlüsselt, nur langsamer. Du kannst die Geräte auch mit einem Code koppeln; das macht den Weg nicht schneller, aber sie finden sich immer.</p>
+<p>Wenn Übertragungen langsam sind oder über den Server laufen: So behebst du es mit den Schritten oben.</p>
+<section class="qa">
+<h2>Fragen und Antworten</h2>
+<h3>Woran erkenne ich, dass eine Übertragung über den Server läuft?</h3>
+<p>OmniBeam zeigt die Verbindungsart bei der Übertragung an. Eine direkte Verbindung im selben WLAN schafft meist mehrere Megabyte pro Sekunde; eine weitergeleitete ist durch deine Upload-Geschwindigkeit begrenzt und oft viel langsamer.</p>
+<h3>Kann ein Gastnetz die Ursache sein?</h3>
+<p>Oft, ja. Gastnetze und manche Mesh-Router trennen Geräte aus Sicherheitsgründen voneinander, was die Übertragung über das Relay erzwingt. Verbinde beide Geräte mit dem Hauptnetz, damit eine direkte Verbindung möglich ist.</p>
+<h3>Hilft ein Neustart des Routers?</h3>
+<p>Manchmal. Sind die Router-Einstellungen in Ordnung, kann ein Neustart einen hängenden Zustand lösen, aber ein VPN auf einem Gerät oder ein öffentliches Netzwerkprofil unter Windows verursacht das Problem weiter, bis du es änderst.</p>
+<h3>Warum ist es trotz direkter Verbindung langsam?</h3>
+<p>Eine direkte Übertragung ist nur so schnell wie das langsamste Glied. Ein älteres Handy, schwaches WLAN in einem anderen Raum oder ein überlastetes 2,4‑GHz-Netz können bremsen. Geh näher an den Router oder nutze für große Dateien das 5‑GHz-Netz.</p>
+</section>

@@ -1,0 +1,52 @@
+<!--
+title: MacやLinuxから右クリックでファイルを送る
+description: MacとLinuxの右クリックメニューにOmniBeamを追加して、iPhoneやAndroidスマホにファイルやテキストを送りましょう。無料、登録不要。
+short: MacとLinuxの右クリックメニューから送る
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>MacやLinux PCから右クリックでスマホにファイルを送る</h1>
+<p class="lead">OmniBeamヘルパーは、MacのFinderとLinuxのファイルマネージャーの右クリックメニューに<em>OmniBeamで送る</em>を追加します。ファイルを選んでスマホを選べば、パソコンでブラウザを開かなくても送られます。</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Mac・Linux版をダウンロード(ZIP)</a></p>
+
+<h2>Macにインストール</h2>
+<ol>
+  <li>ヘルパーがファイルの送信に使う<a href="https://nodejs.org" rel="noopener">Node.js</a>をインストールします。</li>
+  <li>ダウンロードを展開して<em>install-mac.command</em>をダブルクリックします。macOSが開かない場合は、右クリックして<em>開く</em>を選び、もう一度<em>開く</em>を選びます。</li>
+  <li>求められたら、スマホのペアリングコードを入力します(下記参照)。</li>
+</ol>
+<p>あとはFinderでファイルを右クリックし、<em>クイックアクション</em>から<em>Send with OmniBeam</em>を選びます。どのアプリでも選択したテキストは、右クリックして<em>サービス</em>から<em>Send text with OmniBeam</em>を選びます。見当たらない場合は、システム設定のキーボード、キーボードショートカット、サービスでオンにしてください。</p>
+
+<h2>Linuxにインストール</h2>
+<ol>
+  <li>Node.js 18以降(例:<code>sudo apt install nodejs</code>)と、デバイス選択用の<code>zenity</code>(KDEでは<code>kdialog</code>)をインストールします。</li>
+  <li>ダウンロードを展開し、そのフォルダでターミナルを開いて<code>sh install-linux.sh</code>を実行します。</li>
+  <li>求められたら、スマホのペアリングコードを入力します。</li>
+</ol>
+<p>あとはファイルを右クリックし、Files、Nemo、Cajaでは<em>スクリプト</em>から<em>Send with OmniBeam</em>を、DolphinとThunarではメニューから直接<em>Send with OmniBeam</em>を選びます。</p>
+
+<h2>スマホを一度ペアリングする</h2>
+<ol>
+  <li>スマホで<a href="/ja/">omnibeam.site</a>を開き、リンクボタンをタップして<em>ペアリングコードを作成</em>を選びます。</li>
+  <li>そのコードをパソコンのインストーラーに入力します。</li>
+  <li>スマホでもう一度ペアリング画面を開き、パソコンの横の<em>信頼済み</em>にチェックを入れると、パソコンからのファイルが確認なしで届きます。</li>
+</ol>
+<p>受け取るには、スマホでomnibeam.siteを開いておく必要があります。ファイルはエンドツーエンド暗号化されてOmniBeamのサーバーを通るので、サーバーには読めません。メニュー項目を削除するには、<code>node omnibeam-send.js --uninstall</code>を実行します。</p>
+<p>ChromeやEdgeを使っていますか?<a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam拡張機能</a>なら、Mac、Linux、Windowsで、ページ、リンク、画像、選択したテキストを右クリックでスマホに送れます。</p>
+<section class="qa">
+<h2>よくある質問</h2>
+<h3>右クリックメニューはどのLinuxデスクトップでも使えますか?</h3>
+<p>Files(Nautilus)、Nemo、Caja、Dolphin、Thunarといった一般的なファイルマネージャーで使えます。ほかのデスクトップでも、ブラウザでomnibeam.siteを開いてファイルをドラッグできます。</p>
+<h3>あとでメニュー項目を削除できますか?</h3>
+<p>はい。ヘルパーのフォルダでnode omnibeam-send.js --uninstallを実行すれば、右クリックメニューから項目が消えます。</p>
+<h3>iPhoneとAndroidに送れますか?</h3>
+<p>はい。スマホでomnibeam.siteを開いていれば、iPhoneでもAndroidスマホでも、同じWi‑Fiでもモバイルデータでも、コードでペアリングしたスマホに送れます。</p>
+<h3>ヘルパーにNode.jsが必要なのはなぜ?</h3>
+<p>ヘルパーはNode.jsで動く小さなスクリプトです。スマホと一度ペアリングしたあとは、パソコンでブラウザを開かずに選んだファイルを送るので、右クリックの操作がすばやく済みます。</p>
+<h3>選択したテキストも送れますか?</h3>
+<p>Macなら送れます。どのアプリでもテキストを選択して右クリックし、サービスからSend text with OmniBeamを選ぶと、コピーできる状態でスマホに届きます。</p>
+<h3>ファイルは暗号化されますか?</h3>
+<p>はい。パソコンでエンドツーエンドに暗号化され、サーバーは読めないまま受け渡すだけです。</p>
+</section>

@@ -1,0 +1,51 @@
+<!--
+title: Privacy Policy: How OmniBeam Handles Your Files
+description: How OmniBeam handles your files: device to device, end-to-end encrypted, nothing stored except encrypted links you create.
+short: Privacy Policy
+updated: 2026-11-06
+-->
+<h1>Privacy policy: your files and messages</h1>
+<p class="updated">Last updated: 6 November 2026</p>
+<h2>Your files and messages</h2>
+<p>OmniBeam sends your files and messages directly between your devices whenever it can, encrypted end to end by WebRTC. In that case they never reach our server.</p>
+<p>When a direct connection is not possible (for example behind a strict firewall or a VPN), they pass through our server instead. They are still encrypted end to end: the two devices agree on a key that the server never sees, so it only forwards data it can't read, without saving it. Every transfer has to be accepted on the receiving device first.</p>
+<h2>Files shared by link</h2>
+<p>When you share files by link, your browser encrypts them (names included) before uploading. The key is only in the part of the link after “#”, which browsers never send to a server, so we store data we cannot read. Shared files are deleted automatically when the link expires (at most 3 days), after the first download if you chose that, or when you delete the link. Anyone you give the link to can download the files, so share it only with the people you mean.</p>
+<h2>Files sent to your request links</h2>
+<p>When someone sends files to a request link you made, their browser encrypts the files and their names before uploading, with a key that only your device and the link have (the part after “#”, which never reaches a server). We store data we cannot read until your device picks it up, then delete it right away. Files nobody picks up are deleted after at most 7 days, and deleting the link deletes anything still waiting. Only your device can download what was sent to your link.</p>
+<h2>The “Send me files” box on other websites</h2>
+<p>Someone can put a box from OmniBeam on their own website so that visitors can send them files (see <a href="/embed">how it works</a>). Files sent through the box are encrypted in your browser and sealed so that only the device of the person who made the box can open them; OmniBeam can't read them. The box sets no cookies and loads no analytics. Whatever is written in the box (what they ask for, the name of their device) is public, like the rest of their page.</p>
+<h2>Telegram bot</h2>
+<p>If you link a device to the OmniBeam bot in Telegram, the server keeps the number of your chat with the bot, your first name in Telegram, the name of the linked device and the request link it uses, until you unlink. Files and text you send to the bot pass through Telegram and the OmniBeam server, so they are not end-to-end encrypted. The server keeps them only until your device picks them up, sealed so that only your device can open them, and then deletes them (at the latest after 7 days). Files you send from OmniBeam to Telegram pass through the server without being stored. Telegram's own privacy policy applies to your chats there.</p>
+<h2>Status page</h2>
+<p>The <a href="/status">status page</a> shows only whether the parts of OmniBeam work, the uptime per day and when problems happened. It is made from automatic checks every 5 minutes, from outside (Cloudflare) and by the server itself, and contains nothing about visitors or their files.</p>
+<h2>Connection data</h2>
+<p>To let your devices find each other, the server sees your IP address, the random device name shown in the app, and the technical details needed to connect two browsers. These are kept in memory only while you are online and are not written to disk or shared.</p>
+<p>The server also keeps simple daily totals (for example the number of connections, transfers and how they were sent). These are numbers only, with no IP addresses, names or file details. Visits to the site are counted the same way: which page was opened, the country (worked out from the IP address, which is not kept), the device and browser type, the site that linked to it, and how long the page stayed open. No cookies are used for this and nothing is stored on your device. If you chose No thanks on the cookie banner, your visits are not counted.</p>
+<h2>What stays on your device</h2>
+<p>Your device name, theme, language, paired devices, links you created and the history of files you received (kept for 7 days) are stored in your own browser. You can clear the history in the app or by clearing the site's data. To open quickly and work without internet, OmniBeam also keeps a copy of its own app files (never your files) in the browser, replaced with every update.</p>
+<h2>Visitor statistics</h2>
+<p>If you allow it when the site asks, OmniBeam uses Google Analytics to count visits and see how the site is used (for example pages viewed, country, device and browser type). The Google Analytics script is only loaded after you press Allow, and then only once the page has finished loading. Until you choose, and if you choose No thanks, nothing at all is sent to Google. Google receives your IP address with these requests. The files and messages you send are never included. You can change your choice at any time: <a href="#" data-cookie-settings hidden>cookie settings</a>. See <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">how Google uses this data</a>.</p>
+<h2>Problem reports</h2>
+<p>When something goes wrong, for example a transfer fails or a direct connection doesn't work, the page sends us a short anonymous report so we can fix it: what failed, the connection route, and your browser and system type. Reports never include file names, file contents, messages, pairing codes or addresses, and only the latest few hundred are kept. If many problems are reported at once, a summary (how many, what kind and which browsers) is sent to the site owner by email or Telegram so it can be fixed quickly. A browser tab that crashed while OmniBeam was open, and a transfer that got stuck, are also reported to the site owner one by one by Telegram, with the same details and nothing more.</p>
+<h2>Notifications</h2>
+<p>Notifications are off unless you turn them on in Settings. When they're on, the server keeps the notification address your browser gives it (it points to your browser maker's push service, such as Apple, Google, Microsoft or Mozilla), your language, and scrambled codes of your pairings, so it knows which notifications are for you. A notification says which device wants to send you something and how many files, and goes to you through that push service. Never file contents or messages. All of this is deleted when you turn notifications off, or when your browser stops accepting them.</p>
+<h2>Browser extension</h2>
+<p>The OmniBeam extension for Chrome and Edge only talks to the OmniBeam tab in your browser. When you use it, it sends the page address, link, image or selected text you chose to that tab, which sends it to your device like any other transfer. It does not read or collect your browsing, keeps the list of your devices only while the browser is open, and has no access to other websites, except reading the text you selected when you click its button, and an image you right-click (or any image, if you allow that option).</p>
+<h2>OmniBeam app for Windows</h2>
+<p>The OmniBeam app from the Microsoft Store opens this website in its own window. It works the same way and this policy applies to it in full.</p>
+<h2>Camera, microphone and screen</h2>
+<p>OmniBeam uses your camera, microphone or screen only when you ask for it: to take a photo, record a voice note, share your screen, or for one moment when you turn on ⚡ Faster Wi‑Fi (it is switched off at once and nothing is recorded). Your browser asks you first. Photos and voice notes are sent like any other file, and a shared screen goes straight to the device you chose, encrypted end to end. None of it is stored on our server.</p>
+<h2>Secret notes</h2>
+<p>A secret note sent to a device is shown there once and is not kept in its history. A secret-note link works like a file link: the note is encrypted on your device, the server can't read it, and it is deleted from the server as soon as it is read once.</p>
+<h2>Scan to PDF, chat view and photo size</h2>
+<p>Scan to PDF finds the edges of your pages and makes the PDF on your own device: the pictures are not uploaded to make it, and the PDF is then sent like any other file. The chat view only shows the history already kept on your device; nothing extra is stored. Photos you send as “Smaller” are made smaller on your device before they are sent.</p>
+<h2>Supporter codes</h2>
+<p>If you get a supporter code after a donation, the server keeps a list of the codes it made, each with the day it was made and a short note the owner may write (such as a first name), so that a code can be taken back. Your browser keeps your code and shows it to the server when it connects, so that other devices can see the ♥ on your device's card; the server keeps that in memory only while you are online. Donations themselves are handled by the payment site you choose (such as PayPal), not by OmniBeam.</p>
+<h2>No ads</h2>
+<p>OmniBeam has no accounts, ads or advertising trackers. The page font is served by omnibeam.site itself, not by Google Fonts.</p>
+<h2>Hosting</h2>
+<p>The site runs on a web host that may keep standard server logs (such as IP address and time of request) for security.</p>
+<h2>Contact</h2>
+<p>Questions about privacy: <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer">send a message on Facebook</a>.</p>
+<p>This policy explains how OmniBeam handles your files and messages, and what it never keeps.</p>

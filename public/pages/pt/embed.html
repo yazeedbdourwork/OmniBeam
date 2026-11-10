@@ -1,0 +1,48 @@
+<!--
+title: Uma caixa "Envie-me arquivos" para o seu site, grátis | OmniBeam
+description: Adicione ao seu site ou blog uma caixa grátis para os visitantes enviarem arquivos para você, com criptografia de ponta a ponta. Copie um único código, sem conta e sem plugin.
+short: Uma caixa "Envie-me arquivos" para o seu site
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Uma caixa "Envie-me arquivos" para o seu site ou blog</h1>
+<p class="lead">Deixe visitantes, clientes ou alunos enviarem arquivos para você direto da sua página. Você cola um código curto; os arquivos são criptografados no aparelho deles e chegam ao OmniBeam no seu.</p>
+
+<h2>Passos</h2>
+<ol>
+  <li>Abra <a href="/pt/">omnibeam.site</a> no aparelho que vai receber os arquivos e toque em <b>Pedir arquivos</b> no menu ⋯.</li>
+  <li>Escreva o que você precisa (opcional), escolha <b>1 ano (para um site)</b> em "O link funciona por" e toque em <b>Criar link de pedido</b>.</li>
+  <li>Toque em <b>Coloque no seu site</b> e depois em <b>Copiar código</b>.</li>
+  <li>Cole o código na sua página: no WordPress, um bloco <b>HTML personalizado</b>; no Blogger, um gadget <b>HTML/JavaScript</b>; no Wix, um elemento <b>Incorporar HTML</b>; no Squarespace, um bloco <b>Código</b>.</li>
+</ol>
+<p>Os visitantes veem uma caixa pequena com "Escolher arquivos", um campo opcional para o nome e um botão Enviar. Não precisam de app nem de conta. Os arquivos chegam ao seu aparelho em Arquivos recebidos; se o OmniBeam estiver fechado lá, eles esperam no servidor e chegam quando você abrir, com uma notificação se você as ativou.</p>
+
+<h2>WordPress: o plugin gratuito do OmniBeam</h2>
+<p>No WordPress é ainda mais fácil: <a href="/tools/omnibeam-wordpress.zip">baixe o plugin do OmniBeam (omnibeam-wordpress.zip)</a> e, no WordPress, vá em <b>Plugins → Adicionar novo → Enviar plugin</b>, escolha o zip e toque em <b>Ativar</b>. Cole seu código (ou só o link dele) em <b>Configurações → OmniBeam Box</b> e adicione o bloco <b>OmniBeam: Send me files</b> a qualquer página, ou o shortcode <code>[omnibeam_box]</code>. Uma caixa com link e altura próprios: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. O plugin só aceita caixas do omnibeam.site, e os arquivos nunca passam pelo seu site WordPress.</p>
+
+<h2>Como é o código</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=pt#…" title="Envie-me arquivos" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/pt/"&gt;Com tecnologia OmniBeam&lt;/a&gt; · compartilhamento de arquivos grátis e com criptografia de ponta a ponta&lt;/p&gt;</pre>
+<p>Mantenha a linha "Com tecnologia OmniBeam": é ela que mantém a caixa grátis.</p>
+
+<h2>É privado e seguro?</h2>
+<ul>
+  <li>Cada envio é criptografado no navegador do visitante. A chave dele é selada com a chave pública do seu aparelho, e só o seu aparelho tem a chave privada correspondente, então nem o OmniBeam nem quem ler o código da sua página consegue abrir os arquivos.</li>
+  <li>O código na sua página é público. Quem o vê pode enviar arquivos para você e ler o texto "do que você precisa" e o nome do seu aparelho, então não escreva nada privado ali.</li>
+  <li>Só o seu aparelho pode baixar os envios, e cada um é apagado do servidor assim que ele o recebe. Arquivos não recebidos são apagados após 7 dias.</li>
+  <li>Os limites de sempre continuam: um tamanho máximo por envio, um limite por rede e por hora e no máximo 100 envios por dia por caixa.</li>
+  <li>Apague o link de pedido na mesma janela quando quiser, e a caixa para de funcionar na hora.</li>
+</ul>
+
+<section class="qa">
+<h2>Perguntas e respostas</h2>
+<h3>Custa alguma coisa?</h3>
+<p>Não. A caixa é grátis, sem conta, sem plugin e sem anúncios.</p>
+<h3>Posso usar em várias páginas?</h3>
+<p>Sim. Cole o mesmo código em quantas páginas quiser; todos os envios chegam ao mesmo aparelho. Crie outro link de pedido se quiser diferenciá-los.</p>
+<h3>Por que a caixa para de funcionar depois de um tempo?</h3>
+<p>Cada link de pedido termina na data que você escolheu. Para um site, escolha 1 ano e crie um link e um código novos antes do fim.</p>
+<h3>Alguém pode usar minha caixa para me mandar spam?</h3>
+<p>Qualquer visitante da página pode enviar arquivos para você, como acontece com um endereço de e-mail. Os arquivos nunca abrem sozinhos, os envios são limitados por rede e por dia, e você pode apagar o link para desligar a caixa.</p>
+</section>

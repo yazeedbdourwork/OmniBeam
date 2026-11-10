@@ -1,0 +1,41 @@
+{
+  "extName": {
+    "message": "OmniBeam : envoyez vers vos appareils"
+  },
+  "extDesc": {
+    "message": "Envoyez la page ouverte, un lien, une image ou du texte sélectionné vers votre téléphone ou ordinateur avec OmniBeam."
+  },
+  "menuRoot": {
+    "message": "Envoyer avec OmniBeam"
+  },
+  "menuChoose": {
+    "message": "Choisir un appareil…"
+  },
+  "menuOpen": {
+    "message": "Ouvrir OmniBeam et choisir un appareil"
+  },
+  "popupPage": {
+    "message": "Envoyer cette page à"
+  },
+  "popupSelection": {
+    "message": "Envoyer le texte sélectionné à"
+  },
+  "popupNone": {
+    "message": "Aucun appareil pour l'instant. Ouvrez aussi OmniBeam sur votre autre appareil, puis revenez ici."
+  },
+  "popupOpen": {
+    "message": "Ouvrir OmniBeam"
+  },
+  "popupSent": {
+    "message": "Envoyé. L'autre appareil appuie sur Accepter."
+  },
+  "popupChoose": {
+    "message": "Choisissez l'appareil dans OmniBeam."
+  },
+  "popupMore": {
+    "message": "Plus"
+  },
+  "popupImages": {
+    "message": "Envoyer les images de n'importe quel site (Chrome demande l'autorisation)"
+  }
+}

@@ -1,0 +1,46 @@
+<!--
+title: Wi-Fi Sama tapi Lambat? Cara Mengatasinya
+description: Mengapa dua perangkat di Wi-Fi yang sama mengirim lewat server, bukan langsung, dan cara mengatasinya. Gratis, tanpa akun.
+short: Atasi transfer lambat di Wi‑Fi yang sama
+kind: guide
+order: 5
+updated: 2026-10-27
+-->
+<h1>Wi‑Fi sama, tapi transfer lambat atau lewat server</h1>
+<p class="lead">Di Wi‑Fi yang sama, OmniBeam seharusnya menghubungkan kedua perangkat secara langsung dan rute di bawah bilah progres seharusnya bertuliskan “jaringan sama”. Jika tertulis “internet”, “lewat router”, atau “Mengirim lewat server”, biasanya penyebabnya salah satu dari berikut.</p>
+
+<h2>1. Jalankan pemeriksaan koneksi</h2>
+<p>Ketuk ID jaringan di samping nama perangkat Anda di bagian bawah OmniBeam. Pemeriksaan ini menunjukkan apakah perangkat ini membagikan alamat lokalnya, apakah ada VPN yang menghalangi, dan rute apa yang dipakai transfer terakhir Anda, beserta tips untuk temuannya.</p>
+
+<h2>2. Izinkan koneksi lokal (⚡)</h2>
+<p>Browser menyembunyikan alamat jaringan lokal perangkat dari situs web. Perangkat lain lalu harus menemukannya dengan pencarian nama lokal (mDNS), yang diblokir banyak jaringan, sehingga transfer mengambil jalan memutar lewat router. Ketuk <b>⚡ Transfer Wi‑Fi lebih cepat</b> dan izinkan mikrofon sekali di salah satu atau kedua perangkat: tidak ada yang direkam, tetapi browser lalu membagikan alamat lokal dan perangkat bisa terhubung langsung.</p>
+
+<h2>3. Matikan VPN dan relay privat</h2>
+<ul>
+  <li>Matikan aplikasi VPN, termasuk fitur “koneksi aman” antivirus, di kedua perangkat selama mengirim.</li>
+  <li>Di iPhone, matikan iCloud Private Relay, dan di Pengaturan → Wi‑Fi → jaringan Anda, matikan “Batasi Pelacakan Alamat IP”.</li>
+</ul>
+
+<h2>4. Windows: gunakan jaringan Privat</h2>
+<p>Di jaringan “Publik”, Windows memblokir pencarian lokal yang dipakai perangkat untuk saling menemukan. Buka Pengaturan → Jaringan &amp; internet → Wi‑Fi (atau Ethernet) → jaringan Anda, lalu pilih <b>Jaringan privat</b>. Firewall Anda juga harus mengizinkan browser di jaringan privat.</p>
+
+<h2>5. Periksa router</h2>
+<ul>
+  <li>Jaringan tamu dan “AP isolation” atau “client isolation” membuat perangkat di Wi‑Fi yang sama tidak bisa saling menjangkau. Gunakan jaringan utama, atau matikan isolasi di pengaturan router.</li>
+  <li>Beberapa router punya jaringan 2,4 GHz dan 5 GHz terpisah yang saling terisolasi; hubungkan kedua perangkat ke jaringan yang sama.</li>
+</ul>
+
+<h2>Masih belum langsung?</h2>
+<p>Transfer tetap berjalan: OmniBeam mengirim lewat servernya, terenkripsi end-to-end, hanya lebih lambat. Anda juga bisa memasangkan perangkat dengan kode; itu tidak membuat rute lebih cepat, tetapi perangkat selalu saling menemukan.</p>
+<p>Wi‑Fi sama tapi transfer lambat atau lewat server? Langkah di atas adalah cara mengatasinya.</p>
+<section class="qa">
+<h2>Tanya jawab</h2>
+<h3>Bagaimana saya tahu transfer lewat server?</h3>
+<p>OmniBeam menampilkan jenis koneksi pada transfer. Koneksi langsung di Wi‑Fi yang sama biasanya beberapa megabyte per detik; koneksi lewat relay dibatasi oleh kecepatan unggah internet Anda dan sering jauh lebih lambat.</p>
+<h3>Apakah jaringan tamu bisa menjadi penyebabnya?</h3>
+<p>Sering kali ya. Jaringan tamu dan beberapa router mesh memisahkan perangkat demi keamanan, sehingga transfer terpaksa lewat relay. Sambungkan kedua perangkat ke jaringan utama agar koneksi langsung bisa terjadi.</p>
+<h3>Apakah memulai ulang router membantu?</h3>
+<p>Kadang-kadang. Jika pengaturan router sudah benar, memulai ulang bisa menghapus keadaan yang macet, tetapi VPN di salah satu perangkat atau profil jaringan publik di Windows akan terus menimbulkan masalah sampai Anda mengubahnya.</p>
+<h3>Mengapa transfer tetap lambat pada koneksi langsung?</h3>
+<p>Transfer langsung hanya bisa secepat bagian paling lambat dari jalurnya. Ponsel lama, sinyal Wi‑Fi yang lemah di ruangan lain, atau jaringan 2,4 GHz yang padat bisa membatasi kecepatan. Mendekatlah ke router atau gunakan jaringan 5 GHz untuk file besar.</p>
+</section>

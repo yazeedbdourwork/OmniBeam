@@ -1,0 +1,54 @@
+<!--
+title: Cómo compartir archivos de forma privada
+description: ¿Quién puede ver un archivo que envías por internet? Guía sencilla sobre cifrado de extremo a extremo y enlaces privados.
+short: Cómo compartir archivos de forma privada
+kind: post
+order: 2
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>Cómo compartir archivos de forma privada</h1>
+<p class="lead">Fotos, copias del DNI, contratos: mucho de lo que enviamos es personal. Esto es lo que de verdad lo protege por el camino, explicado sin jerga.</p>
+
+<h2>Tres sitios donde se puede ver un archivo</h2>
+<ol>
+  <li><em>En la red</em>: cualquiera en la misma Wi‑Fi pública. Cualquier web con https protege de esto.</li>
+  <li><em>En los servidores del servicio</em>: la empresa que transporta o guarda el archivo. Solo el cifrado de extremo a extremo protege de esto.</li>
+  <li><em>En los dispositivos</em>: el tuyo y el de la otra persona. Esa parte depende de ti.</li>
+</ol>
+
+<h2>Qué significa cifrado de extremo a extremo</h2>
+<p>El archivo se cierra con llave en tu dispositivo y solo se abre en el otro. El servicio de en medio pasa datos revueltos y nunca tiene la llave. Si hackearan sus servidores, o alguien pidiera tus archivos a la empresa, no habría nada legible que entregar.</p>
+
+<h2>Cómo lo hace OmniBeam</h2>
+<ul>
+  <li>Las transferencias directas entre dispositivos usan WebRTC, que siempre va cifrado de extremo a extremo.</li>
+  <li>Cuando no es posible una conexión directa y el archivo pasa por nuestro servidor, los dos dispositivos acuerdan antes una llave, así que el servidor solo reenvía datos revueltos y no guarda nada.</li>
+  <li>Los enlaces compartidos se cifran en tu navegador antes de subirlos. La llave es la parte del enlace después de #, que los navegadores nunca envían al servidor. Los enlaces caducan solos.</li>
+  <li>Sin cuentas. Los dispositivos vinculados se recuerdan en tu propio navegador.</li>
+</ul>
+
+<h2>Cinco hábitos que ayudan</h2>
+<ul>
+  <li>Para todo lo personal, prefiere transferencias directas o servicios con cifrado de extremo a extremo.</li>
+  <li>Si un enlace o una sala tiene contraseña, envía la contraseña por una app distinta a la del enlace.</li>
+  <li>Elige enlaces que caduquen y bórralos cuando la otra persona ya tenga el archivo.</li>
+  <li>Revisa lo que compartes: las fotos pueden incluir el lugar donde se tomaron.</li>
+  <li>Acepta archivos solo de dispositivos que reconozcas. En OmniBeam, marca como De confianza solo tus propios dispositivos.</li>
+</ul>
+<p>Tienes más detalles en nuestra <a href="/es/privacy">política de privacidad</a>.</p>
+<p>Una prueba rápida para cualquier servicio para compartir archivos: pregúntate si podría leer tus archivos si quisiera. Si los archivos se cifran en tu dispositivo antes de salir, el servicio solo ve datos revueltos. Así cifra OmniBeam cada transferencia.</p>
+<p>Para compartir archivos de forma privada, usa un envío cifrado de extremo a extremo como OmniBeam.</p>
+<section class="qa">
+<h2>Preguntas y respuestas</h2>
+<h3>¿Es privado un enlace de la nube?</h3>
+<p>Un enlace de nube normal se guarda en los servidores del proveedor, que normalmente puede leer el archivo. Con cifrado de extremo a extremo, solo los dispositivos de cada lado tienen la clave, y nadie en medio puede abrir el archivo.</p>
+<h3>¿Cómo sé si un servicio usa cifrado de extremo a extremo?</h3>
+<p>Busca una declaración clara de que los archivos se cifran en tu dispositivo antes de salir de él y de que la clave nunca se envía al servidor. OmniBeam lo explica exactamente en su política de privacidad.</p>
+<h3>¿Qué más puedo hacer para mantener mis archivos privados?</h3>
+<p>Envía enlaces solo a quien los necesite, elige una caducidad corta y borra el enlace cuando ya se haya usado.</p>
+<h3>¿Es privado enviar por correo?</h3>
+<p>El correo es cómodo pero no privado por defecto: los mensajes y adjuntos suelen guardarse en los servidores de correo de ambos lados. Para archivos privados, las transferencias o enlaces cifrados de extremo a extremo son más seguros.</p>
+<h3>¿Tengo que confiar en OmniBeam?</h3>
+<p>Mucho menos que en un servicio de nube normal. Los archivos se cifran en tu dispositivo y las claves nunca llegan a los servidores de OmniBeam, así que ni OmniBeam puede abrirlos.</p>
+</section>

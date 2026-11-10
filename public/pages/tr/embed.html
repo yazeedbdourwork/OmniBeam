@@ -1,0 +1,48 @@
+<!--
+title: Web Sitenize Ücretsiz "Bana Dosya Gönder" Kutusu | OmniBeam
+description: Ziyaretçilerin size uçtan uca şifreli dosya gönderebilmesi için web sitenize veya blogunuza ücretsiz bir kutu ekleyin. Tek bir kodu kopyalayın; hesap ve eklenti gerekmez.
+short: Web siteniz için "Bana dosya gönder" kutusu
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Web siteniz veya blogunuz için "Bana dosya gönder" kutusu</h1>
+<p class="lead">Ziyaretçileriniz, müşterileriniz veya öğrencileriniz size doğrudan sayfanızdan dosya göndersin. Kısa bir kod yapıştırırsınız; dosyalar onların cihazında şifrelenir ve sizin cihazınızda OmniBeam'e gelir.</p>
+
+<h2>Adımlar</h2>
+<ol>
+  <li>Dosyaları alacak cihazda <a href="/tr/">omnibeam.site</a> adresini açın ve ⋯ menüsünde <b>Dosya iste</b>'ye dokunun.</li>
+  <li>Neye ihtiyacınız olduğunu yazın (isteğe bağlı), "Bağlantı süresi" altında <b>1 yıl (web sitesi için)</b> seçin ve <b>İstek bağlantısı oluştur</b>'a dokunun.</li>
+  <li><b>Web sitenize koyun</b>'a, ardından <b>Kodu kopyala</b>'ya dokunun.</li>
+  <li>Kodu sayfanıza yapıştırın: WordPress'te bir <b>Özel HTML</b> bloğuna, Blogger'da bir <b>HTML/JavaScript</b> aracına, Wix'te bir <b>HTML Yerleştir</b> öğesine, Squarespace'te bir <b>Kod</b> bloğuna.</li>
+</ol>
+<p>Ziyaretçiler "Dosya seç" düğmesi, isteğe bağlı bir ad alanı ve Gönder düğmesi olan küçük bir kutu görür. Uygulama veya hesap gerekmez. Dosyalar cihazınızda Alınan dosyalar bölümüne gelir; OmniBeam orada kapalıysa sunucuda bekler ve açtığınızda gelir, bildirimleri açtıysanız bir bildirimle birlikte.</p>
+
+<h2>WordPress: ücretsiz OmniBeam eklentisi</h2>
+<p>WordPress’te daha da kolay: <a href="/tools/omnibeam-wordpress.zip">OmniBeam eklentisini indirin (omnibeam-wordpress.zip)</a>, ardından WordPress’te <b>Eklentiler → Yeni ekle → Eklenti yükle</b>’ye gidin, zip dosyasını seçin ve <b>Etkinleştir</b>’e dokunun. Kodunuzu (veya yalnızca bağlantısını) <b>Ayarlar → OmniBeam Box</b>’a yapıştırın, sonra herhangi bir sayfaya <b>OmniBeam: Send me files</b> bloğunu veya <code>[omnibeam_box]</code> kısa kodunu ekleyin. Kendi bağlantısı ve yüksekliği olan bir kutu: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Eklenti yalnızca omnibeam.site kutularını kabul eder ve dosyalar asla WordPress sitenizden geçmez.</p>
+
+<h2>Kod nasıl görünür</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=tr#…" title="Bana dosya gönder" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/tr/"&gt;OmniBeam ile çalışır&lt;/a&gt; · ücretsiz, uçtan uca şifreli dosya paylaşımı&lt;/p&gt;</pre>
+<p>"OmniBeam ile çalışır" satırını silmeyin: kutunun ücretsiz kalmasını sağlayan budur.</p>
+
+<h2>Gizli ve güvenli mi?</h2>
+<ul>
+  <li>Her yükleme ziyaretçinin tarayıcısında şifrelenir. Anahtarı cihazınızın açık anahtarıyla mühürlenir ve eşleşen özel anahtar yalnızca cihazınızda bulunur; bu yüzden ne OmniBeam ne de sayfanızın kodunu okuyan biri dosyaları açabilir.</li>
+  <li>Sayfanızdaki kod herkese açıktır. Onu gören herkes size dosya gönderebilir, "neye ihtiyacınız var" metnini ve cihazınızın adını okuyabilir; oraya gizli bir şey yazmayın.</li>
+  <li>Yüklemeleri yalnızca cihazınız indirebilir ve her biri cihazınız aldığı anda sunucudan silinir. Alınmayan dosyalar 7 gün sonra silinir.</li>
+  <li>Her zamanki sınırlar geçerlidir: yükleme başına boyut sınırı, ağ başına saatlik sınır ve kutu başına günde en fazla 100 yükleme.</li>
+  <li>İstek bağlantısını aynı pencereden istediğiniz zaman silin; kutu hemen çalışmayı bırakır.</li>
+</ul>
+
+<section class="qa">
+<h2>Sorular ve cevaplar</h2>
+<h3>Ücretli mi?</h3>
+<p>Hayır. Kutu ücretsizdir; hesap, eklenti ve reklam yoktur.</p>
+<h3>Birden fazla sayfada kullanabilir miyim?</h3>
+<p>Evet. Aynı kodu istediğiniz sayfalara yapıştırın; tüm yüklemeler aynı cihaza gelir. Ayırt etmek isterseniz ayrı bir istek bağlantısı oluşturun.</p>
+<h3>Kutu neden bir süre sonra çalışmayı bırakıyor?</h3>
+<p>Her istek bağlantısı seçtiğiniz zamanda sona erer. Bir web sitesi için 1 yıl seçin ve süre dolmadan yeni bir bağlantı ve kod oluşturun.</p>
+<h3>Biri kutumu bana spam göndermek için kullanabilir mi?</h3>
+<p>Sayfayı ziyaret eden herkes, bir e-posta adresinde olduğu gibi size dosya gönderebilir. Dosyalar asla kendiliğinden açılmaz, yüklemeler ağ ve gün başına sınırlıdır ve kutuyu kapatmak için bağlantıyı silebilirsiniz.</p>
+</section>

@@ -1,0 +1,46 @@
+<!--
+title: Same Wi-Fi but Slow Transfers? How to Fix It
+description: Why two devices on the same Wi-Fi send through a server instead of directly, and how to fix it: VPN, network profile, router.
+short: Fix slow transfers on the same Wi‑Fi
+kind: guide
+order: 5
+updated: 2026-10-26
+-->
+<h1>Same Wi‑Fi, but transfers are slow or go through the server</h1>
+<p class="lead">On the same Wi‑Fi, OmniBeam should connect the two devices directly and the route under the progress bar should say “same network”. If it says “internet”, “via router” or “Sending via server”, one of these is usually the reason.</p>
+
+<h2>1. Run the connection check</h2>
+<p>Tap the network ID next to your device name at the bottom of OmniBeam. The check shows whether this device shares its local address, whether a VPN is in the way and what route your last transfers took, with tips for what it finds.</p>
+
+<h2>2. Allow local connections (⚡)</h2>
+<p>Browsers hide a device's local network address from websites. The other device then has to find it with a local name lookup (mDNS), which many networks block, and the transfer takes the long way through the router. Tap <b>⚡ Faster Wi‑Fi transfers</b> and allow the microphone once on one or both devices: nothing is recorded, but the browser then shares the local address and the devices can connect directly.</p>
+
+<h2>3. Turn off VPNs and private relays</h2>
+<ul>
+  <li>Turn off VPN apps, including antivirus “secure connection” features, on both devices while you send.</li>
+  <li>On iPhone, turn off iCloud Private Relay, and in Settings → Wi‑Fi → your network, turn off “Limit IP Address Tracking”.</li>
+</ul>
+
+<h2>4. Windows: use a Private network</h2>
+<p>On a “Public” network, Windows blocks the local lookups that devices use to find each other. Open Settings → Network &amp; internet → Wi‑Fi (or Ethernet) → your network, and choose <b>Private network</b>. Your firewall must also allow your browser on private networks.</p>
+
+<h2>5. Check the router</h2>
+<ul>
+  <li>Guest networks and “AP isolation” or “client isolation” stop devices on the same Wi‑Fi from reaching each other. Use the main network, or turn isolation off in the router settings.</li>
+  <li>Some routers have separate 2.4 GHz and 5 GHz networks that are isolated; connect both devices to the same one.</li>
+</ul>
+
+<h2>Still not direct?</h2>
+<p>Transfers still work: OmniBeam sends through its server, encrypted end to end, just more slowly. You can also pair the devices with a code; that doesn't make the route faster, but they always find each other.</p>
+<p>When transfers on the same Wi‑Fi are slow or go through the server, the steps above usually fix it in a few minutes.</p>
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>How do I know if a transfer is going through the server?</h3>
+<p>OmniBeam shows the connection type on the transfer. A direct connection on the same Wi‑Fi is usually many megabytes per second; a relayed one is limited by your internet upload speed and is often much slower.</p>
+<h3>Does a guest network cause this?</h3>
+<p>Often, yes. Guest networks and some mesh routers keep devices apart for safety, which forces the transfer through the relay. Put both devices on the main network to allow a direct connection.</p>
+<h3>Will restarting the router help?</h3>
+<p>Sometimes. If the router’s settings are fine, a restart can clear a stuck state, but a VPN on one device or a public network profile on Windows will keep causing the problem until you change it.</p>
+<h3>Why is my transfer still slow on a direct connection?</h3>
+<p>A direct transfer can only go as fast as the slowest part of the path. An older phone, a weak Wi‑Fi signal in another room or a busy 2.4 GHz network can all limit the speed. Move closer to the router or use the 5 GHz network for big files.</p>
+</section>

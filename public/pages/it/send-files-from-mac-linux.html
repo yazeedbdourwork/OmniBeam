@@ -1,0 +1,52 @@
+<!--
+title: Inviare file da Mac o Linux con il clic destro
+description: Aggiungi OmniBeam al menu del clic destro su Mac e Linux, e invia file e testo al tuo iPhone o telefono Android. Gratis, senza registrazione.
+short: Inviare dal menu del clic destro su Mac e Linux
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Inviare file da un Mac o un PC Linux al telefono con il clic destro</h1>
+<p class="lead">L'aiutante OmniBeam aggiunge <em>Invia con OmniBeam</em> al menu del clic destro del Finder su Mac e del file manager su Linux. Scegli i file, scegli il telefono e partono, senza aprire il browser sul computer.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Scarica per Mac e Linux (ZIP)</a></p>
+
+<h2>Installare su Mac</h2>
+<ol>
+  <li>Installa <a href="https://nodejs.org" rel="noopener">Node.js</a>, che l'aiutante usa per inviare i file.</li>
+  <li>Estrai il download e fai doppio clic su <em>install-mac.command</em>. Se macOS non lo apre, fai clic destro, scegli <em>Apri</em> e poi di nuovo <em>Apri</em>.</li>
+  <li>Scrivi il codice di associazione del telefono quando richiesto (vedi sotto).</li>
+</ol>
+<p>Poi fai clic destro sui file nel Finder e scegli <em>Azioni rapide</em> e <em>Send with OmniBeam</em>. Per il testo selezionato in qualsiasi app, fai clic destro e scegli <em>Servizi</em> e <em>Send text with OmniBeam</em>. Se mancano, attivali in Impostazioni di Sistema, Tastiera, Abbreviazioni da tastiera, Servizi.</p>
+
+<h2>Installare su Linux</h2>
+<ol>
+  <li>Installa Node.js 18 o più recente, per esempio <code>sudo apt install nodejs</code>, e <code>zenity</code> (o <code>kdialog</code> su KDE) per la scelta del dispositivo.</li>
+  <li>Estrai il download, apri un terminale in quella cartella ed esegui <code>sh install-linux.sh</code>.</li>
+  <li>Scrivi il codice di associazione del telefono quando richiesto.</li>
+</ol>
+<p>Poi fai clic destro sui file e scegli <em>Script</em> e <em>Send with OmniBeam</em> in File, Nemo o Caja, oppure <em>Send with OmniBeam</em> direttamente nel menu in Dolphin e Thunar.</p>
+
+<h2>Associa il telefono una volta</h2>
+<ol>
+  <li>Sul telefono, apri <a href="/it/">omnibeam.site</a>, tocca il pulsante del link e <em>Crea un codice di associazione</em>.</li>
+  <li>Scrivi quel codice nel programma di installazione sul computer.</li>
+  <li>Sul telefono, riapri la schermata di associazione e spunta <em>Attendibile</em> accanto al computer, così i suoi file arrivano senza chiedere.</li>
+</ol>
+<p>Per ricevere, il telefono deve avere omnibeam.site aperto. I file passano dal server di OmniBeam, crittografati end-to-end, quindi il server non può leggerli. Per rimuovere di nuovo le voci del menu, esegui <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Usi Chrome o Edge? L'<a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">estensione OmniBeam</a> invia al telefono con un clic destro la pagina, un link, un'immagine o il testo selezionato, su Mac, Linux e Windows.</p>
+<section class="qa">
+<h2>Domande e risposte</h2>
+<h3>Il menu del clic destro funziona su ogni desktop Linux?</h3>
+<p>Funziona nei file manager più comuni: File (Nautilus), Nemo, Caja, Dolphin e Thunar. Su altri desktop puoi comunque aprire omnibeam.site nel browser e trascinarci i file.</p>
+<h3>Posso rimuovere le voci del menu in seguito?</h3>
+<p>Sì. Esegui node omnibeam-send.js --uninstall nella cartella dell'aiutante, e le voci spariscono dal menu del clic destro.</p>
+<h3>Invia a iPhone e Android?</h3>
+<p>Sì. Invia al telefono che hai associato con il codice, che sia un iPhone o un telefono Android, sullo stesso Wi‑Fi o sui dati mobili, purché omnibeam.site sia aperto sul telefono.</p>
+<h3>Perché l'aiutante ha bisogno di Node.js?</h3>
+<p>L'aiutante è un piccolo script che funziona con Node.js. Si associa al telefono una volta e poi invia i file che scegli senza aprire un browser sul computer, il che mantiene rapida l'azione del clic destro.</p>
+<h3>Posso inviare anche il testo selezionato?</h3>
+<p>Su Mac sì: seleziona il testo in qualsiasi app, fai clic destro e scegli Servizi, poi Send text with OmniBeam. Arriva sul telefono pronto da copiare.</p>
+<h3>I file sono crittografati?</h3>
+<p>Sì. Sono crittografati end-to-end sul computer, e il server li inoltra soltanto senza poterli leggere.</p>
+</section>

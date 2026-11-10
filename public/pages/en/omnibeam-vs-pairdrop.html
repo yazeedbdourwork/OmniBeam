@@ -1,0 +1,55 @@
+<!--
+title: OmniBeam vs PairDrop: Which One to Use
+description: PairDrop and OmniBeam both send files between devices in the browser. An honest comparison of pairing, encryption, links, resume, apps and self-hosting.
+short: OmniBeam vs PairDrop
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam vs PairDrop</h1>
+<p class="lead">PairDrop grew out of Snapdrop and is a good, open-source tool. OmniBeam works the same way in the browser, so the choice comes down to a few features. Here is an honest side-by-side.</p>
+
+<div class="table-wrap compare-wrap"><table class="compare">
+<thead><tr><th></th><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>Same Wi‑Fi, nothing to install</th><td>Yes</td><td>Yes</td></tr>
+<tr><th>Pair devices with a code or QR</th><td>Yes</td><td>Yes</td></tr>
+<tr><th>Public rooms</th><td>Yes, optionally with a password</td><td>Yes</td></tr>
+<tr><th>When the direct connection fails</th><td>Server relay, end‑to‑end encrypted, with resume after a dropped connection</td><td>TURN server</td></tr>
+<tr><th>Send to someone later</th><td>Encrypted link, deleted after it expires</td><td>No</td></tr>
+<tr><th>Clipboard sync, and notifications while the app is closed</th><td>Yes, between paired devices</td><td>No</td></tr>
+<tr><th>Right-click Send to (Windows, Mac, Linux) and browser extension</th><td>Yes</td><td>Command-line tool and how-to guides</td></tr>
+<tr><th>Open source and self-hosting</th><td>No</td><td>Yes (Docker or Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>Choose PairDrop if</h2>
+<p>You want to run your own server, read the code, or need a language OmniBeam doesn't have yet. PairDrop is free software and easy to self-host.</p>
+
+<h2>Choose OmniBeam if</h2>
+<ul>
+  <li>Big files over bad connections: a transfer that drops continues where it stopped instead of failing.</li>
+  <li>You want to send to someone who isn't online now, with a link that is encrypted on your device.</li>
+  <li>You move files between the same devices every day: paired devices get notifications and can share the clipboard, Windows has an app in the Microsoft Store, and Chrome and Edge have an extension.</li>
+  <li>You want photos and videos made smaller before sending, or a speed test between two devices.</li>
+</ul>
+
+<h2>Try both</h2>
+<p>Neither needs an account, so the quickest way to decide is to open <a href="/">omnibeam.site</a> on two devices and send a large video. The <a href="/how-to-use">how-to guide</a> lists every feature.</p>
+<p>Which one to use? If you want end-to-end encryption, links and an installable app, OmniBeam is the better fit; PairDrop is fine for quick sends on one network.</p>
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>Are OmniBeam and PairDrop related?</h3>
+<p>Both are browser-based and were inspired by the same idea as Snapdrop: open a page on two devices and send. They are separate projects with different features and different servers.</p>
+<h3>Which one keeps files more private?</h3>
+<p>Both send directly between devices when they can. OmniBeam additionally encrypts every transfer end to end on your device, including when the data has to pass through a relay, so the relay cannot read it.</p>
+<h3>Can I share a link with either one?</h3>
+<p>OmniBeam can share files by an encrypted link that expires automatically, which is useful when the other person is not online at the same time. Check PairDrop’s current features if you need the same.</p>
+<h3>Which one has apps?</h3>
+<p>OmniBeam is also available in the Microsoft Store, as a Chrome extension and as an Android app, but the browser version works everywhere without them.</p>
+<h3>Which one works across different networks?</h3>
+<p>Both can pair devices so they find each other on different networks. OmniBeam uses a 6‑digit code or a QR code, and paired devices appear automatically whenever OmniBeam is open on both.</p>
+<h3>Which one is better for a group?</h3>
+<p>Both offer public rooms. OmniBeam also has “Send to everyone”, which sends the same files to every device that is open in one step.</p>
+<h3>Which one should I pick?</h3>
+<p>Try both: neither needs an account, so you can compare them on your own devices in a few minutes and keep the one that connects best on your network.</p>
+</section>

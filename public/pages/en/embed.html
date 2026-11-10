@@ -1,0 +1,48 @@
+<!--
+title: Put a "Send Me Files" Box on Your Website, Free | OmniBeam
+description: Add a free drop box to your website or blog so visitors can send you files, end-to-end encrypted. Copy one code snippet, no account and no plugin.
+short: A "Send me files" box for your website
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>A “Send me files” box for your website or blog</h1>
+<p class="lead">Let visitors, clients or students send you files straight from your own page. You paste one short code; the files are encrypted on their device and arrive in OmniBeam on yours.</p>
+
+<h2>Steps</h2>
+<ol>
+  <li>Open <a href="/">omnibeam.site</a> on the device that should receive the files, and tap <b>Request files</b> in the ⋯ menu.</li>
+  <li>Write what you need (optional), choose <b>1 year (for a website)</b> under “Link works for”, and tap <b>Make request link</b>.</li>
+  <li>Tap <b>Put this on your website</b>, then <b>Copy code</b>.</li>
+  <li>Paste the code into your page: in WordPress a <b>Custom HTML</b> block, in Blogger an <b>HTML/JavaScript</b> gadget, in Wix an <b>Embed HTML</b> element, in Squarespace a <b>Code</b> block.</li>
+</ol>
+<p>Visitors see a small box with “Choose files”, an optional name field and a Send button. They need no app and no account. The files arrive on your device in Received files; if OmniBeam is closed there, they wait on the server and arrive when you open it, with a notification if you turned notifications on.</p>
+
+<h2>WordPress: the free OmniBeam plugin</h2>
+<p>On WordPress there is an easier way: <a href="/tools/omnibeam-wordpress.zip">download the OmniBeam plugin (omnibeam-wordpress.zip)</a>, then in WordPress go to <b>Plugins → Add New → Upload Plugin</b>, choose the zip and tap <b>Activate</b>. Paste your code (or just its link) in <b>Settings → OmniBeam Box</b>, then add the block <b>OmniBeam: Send me files</b> to any page, or the shortcode <code>[omnibeam_box]</code>. A box with its own link and height: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. The plugin only accepts boxes from omnibeam.site, and the files never pass through your WordPress site.</p>
+
+<h2>What the code looks like</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…#…" title="Send me files" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/"&gt;Powered by OmniBeam&lt;/a&gt; · free, end-to-end encrypted file sharing&lt;/p&gt;</pre>
+<p>Keep the “Powered by OmniBeam” line: it is how the box stays free.</p>
+
+<h2>Is it private and safe?</h2>
+<ul>
+  <li>Every upload is encrypted in the visitor's browser. Its key is sealed with your device's public key, and only your device has the matching private key, so neither OmniBeam nor anyone who reads your page's code can open the files.</li>
+  <li>The code on your page is public. Anyone who sees it can send you files and can read the “what do you need” text and the name of your device, so don't write anything private there.</li>
+  <li>Only your device can download the uploads, and each one is deleted from the server as soon as it has it. Unclaimed files are deleted after 7 days.</li>
+  <li>The usual limits stay on: a size limit per upload, a limit per network per hour, and at most 100 uploads a day per box.</li>
+  <li>Delete the request link in the same window at any time and the box stops working at once.</li>
+</ul>
+
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>Does it cost anything?</h3>
+<p>No. The box is free, with no account and no ads. The WordPress plugin is free too.</p>
+<h3>Can I use it on several pages?</h3>
+<p>Yes. Paste the same code on every page you like; all uploads arrive on the same device. Make a separate request link if you want to tell them apart.</p>
+<h3>Why does the box stop working after a while?</h3>
+<p>Every request link ends at the time you chose. For a website choose 1 year, and make a new link and code before it ends.</p>
+<h3>Can someone use my box to send me spam?</h3>
+<p>Anyone who visits the page can send you files, as with an email address. Files never open by themselves, uploads are limited per network and per day, and you can delete the link to turn the box off.</p>
+</section>

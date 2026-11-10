@@ -1,0 +1,48 @@
+<!--
+title: Kotak "Kirimi Saya File" Gratis untuk Situs Web Anda | OmniBeam
+description: Tambahkan kotak gratis ke situs web atau blog Anda agar pengunjung bisa mengirimi Anda file, terenkripsi end-to-end. Salin satu kode, tanpa akun dan tanpa plugin.
+short: Kotak "Kirimi saya file" untuk situs web Anda
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Kotak "Kirimi saya file" untuk situs web atau blog Anda</h1>
+<p class="lead">Biarkan pengunjung, klien, atau siswa mengirimi Anda file langsung dari halaman Anda sendiri. Anda menempelkan satu kode pendek; file dienkripsi di perangkat mereka dan tiba di OmniBeam di perangkat Anda.</p>
+
+<h2>Langkah-langkah</h2>
+<ol>
+  <li>Buka <a href="/id/">omnibeam.site</a> di perangkat yang akan menerima file, lalu ketuk <b>Minta file</b> di menu ⋯.</li>
+  <li>Tulis apa yang Anda butuhkan (opsional), pilih <b>1 tahun (untuk situs web)</b> di "Tautan berlaku selama", lalu ketuk <b>Buat tautan permintaan</b>.</li>
+  <li>Ketuk <b>Pasang di situs web Anda</b>, lalu <b>Salin kode</b>.</li>
+  <li>Tempel kode di halaman Anda: di WordPress dalam blok <b>HTML Khusus</b>, di Blogger dalam gadget <b>HTML/JavaScript</b>, di Wix dalam elemen <b>Embed HTML</b>, di Squarespace dalam blok <b>Code</b>.</li>
+</ol>
+<p>Pengunjung melihat kotak kecil berisi "Pilih file", kolom nama opsional, dan tombol Kirim. Mereka tidak perlu aplikasi atau akun. File tiba di perangkat Anda di File diterima; jika OmniBeam tertutup di sana, file menunggu di server dan tiba saat Anda membukanya, dengan notifikasi jika Anda menyalakannya.</p>
+
+<h2>WordPress: plugin OmniBeam yang gratis</h2>
+<p>Di WordPress lebih mudah lagi: <a href="/tools/omnibeam-wordpress.zip">unduh plugin OmniBeam (omnibeam-wordpress.zip)</a>, lalu di WordPress buka <b>Plugin → Tambah Baru → Unggah Plugin</b>, pilih file zip, dan ketuk <b>Aktifkan</b>. Tempel kode Anda (atau hanya tautannya) di <b>Pengaturan → OmniBeam Box</b>, lalu tambahkan blok <b>OmniBeam: Send me files</b> ke halaman mana pun, atau shortcode <code>[omnibeam_box]</code>. Kotak dengan tautan dan tinggi sendiri: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Plugin hanya menerima kotak dari omnibeam.site, dan file tidak pernah melewati situs WordPress Anda.</p>
+
+<h2>Seperti apa kodenya</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=id#…" title="Kirimi saya file" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/id/"&gt;Didukung oleh OmniBeam&lt;/a&gt; · berbagi file gratis dan terenkripsi end-to-end&lt;/p&gt;</pre>
+<p>Biarkan baris "Didukung oleh OmniBeam": itulah yang membuat kotak ini tetap gratis.</p>
+
+<h2>Apakah privat dan aman?</h2>
+<ul>
+  <li>Setiap unggahan dienkripsi di browser pengunjung. Kuncinya disegel dengan kunci publik perangkat Anda, dan hanya perangkat Anda yang memiliki kunci privat pasangannya, jadi baik OmniBeam maupun orang yang membaca kode halaman Anda tidak bisa membuka file.</li>
+  <li>Kode di halaman Anda bersifat publik. Siapa pun yang melihatnya bisa mengirimi Anda file dan membaca teks "apa yang Anda butuhkan" serta nama perangkat Anda, jadi jangan tulis hal pribadi di sana.</li>
+  <li>Hanya perangkat Anda yang bisa mengunduh unggahan, dan setiap unggahan dihapus dari server begitu perangkat Anda menerimanya. File yang tidak diambil dihapus setelah 7 hari.</li>
+  <li>Batas yang biasa tetap berlaku: batas ukuran per unggahan, batas per jaringan per jam, dan paling banyak 100 unggahan per hari per kotak.</li>
+  <li>Hapus tautan permintaan di jendela yang sama kapan saja, dan kotak langsung berhenti berfungsi.</li>
+</ul>
+
+<section class="qa">
+<h2>Tanya jawab</h2>
+<h3>Apakah berbayar?</h3>
+<p>Tidak. Kotak ini gratis, tanpa akun, tanpa plugin, dan tanpa iklan.</p>
+<h3>Bisakah saya memakainya di beberapa halaman?</h3>
+<p>Bisa. Tempel kode yang sama di halaman mana saja; semua unggahan tiba di perangkat yang sama. Buat tautan permintaan terpisah jika ingin membedakannya.</p>
+<h3>Mengapa kotak berhenti berfungsi setelah beberapa waktu?</h3>
+<p>Setiap tautan permintaan berakhir pada waktu yang Anda pilih. Untuk situs web, pilih 1 tahun, lalu buat tautan dan kode baru sebelum berakhir.</p>
+<h3>Bisakah orang memakai kotak saya untuk mengirim spam?</h3>
+<p>Siapa pun yang mengunjungi halaman bisa mengirimi Anda file, sama seperti alamat email. File tidak pernah terbuka sendiri, unggahan dibatasi per jaringan dan per hari, dan Anda bisa menghapus tautan untuk mematikan kotak.</p>
+</section>

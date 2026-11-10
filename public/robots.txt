@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /poll/
+Disallow: /config.json
+Disallow: /api/
+Disallow: /d/
+Disallow: /r/
+Disallow: /stats
+Disallow: /info-dialogs
+Disallow: /parts/
+
+Sitemap: https://omnibeam.site/sitemap.xml

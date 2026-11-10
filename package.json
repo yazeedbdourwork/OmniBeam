@@ -1,0 +1,17 @@
+{
+  "name": "omnibeam",
+  "version": "1.0.0",
+  "description": "Local network file sharing in the browser (PairDrop-style) using WebRTC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "playwright test -c tests",
+    "test:setup": "playwright install chromium",
+    "deploy": "node tools/deploy.js",
+    "deploy:check": "node tools/deploy.js --check"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

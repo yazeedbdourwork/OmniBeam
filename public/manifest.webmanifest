@@ -1,0 +1,40 @@
+{
+  "id": "/",
+  "name": "OmniBeam",
+  "short_name": "OmniBeam",
+  "description": "Send files and text between iPhone, Android, Windows and Mac, right in the browser. No account, no app on the other device, encrypted end to end.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#e6e9f0",
+  "theme_color": "#e6e9f0",
+  "categories": ["utilities", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg?v=4", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "/store/screen-wide-1.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Your other devices show up by themselves: click one to send files" },
+    { "src": "/store/screen-wide-2.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Every transfer is accepted on the other device first" },
+    { "src": "/store/screen-narrow-1.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Works on iPhone and Android too, right in the browser" },
+    { "src": "/store/screen-narrow-2.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Accept or decline what's sent to you" }
+  ],
+  "edge_side_panel": { "preferred_width": 420 },
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [{ "name": "files", "accept": ["*/*"] }]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+<!--
+title: Envoyer depuis Mac ou Linux en un clic droit
+description: Ajoutez OmniBeam au clic droit sur Mac et Linux pour envoyer fichiers et texte vers votre iPhone ou Android. Gratuit, sans compte.
+short: Envoyer depuis le clic droit sur Mac et Linux
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Envoyer des fichiers d'un Mac ou d'un PC Linux vers votre téléphone en un clic droit</h1>
+<p class="lead">L'outil OmniBeam ajoute <em>Send with OmniBeam</em> au menu clic droit du Finder sur Mac et du gestionnaire de fichiers sous Linux. Choisissez des fichiers, puis votre téléphone, et ils partent, sans ouvrir le navigateur sur l'ordinateur.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Télécharger pour Mac et Linux (ZIP)</a></p>
+
+<h2>Installer sur Mac</h2>
+<ol>
+  <li>Installez <a href="https://nodejs.org" rel="noopener">Node.js</a>, que l'outil utilise pour envoyer les fichiers.</li>
+  <li>Décompressez le téléchargement et double-cliquez sur <em>install-mac.command</em>. Si macOS refuse de l'ouvrir, faites un clic droit dessus, choisissez <em>Ouvrir</em> puis encore <em>Ouvrir</em>.</li>
+  <li>Saisissez le code d'association de votre téléphone quand il est demandé (voir plus bas).</li>
+</ol>
+<p>Ensuite, faites un clic droit sur des fichiers dans le Finder et choisissez <em>Actions rapides</em> puis <em>Send with OmniBeam</em>. Pour du texte sélectionné dans n'importe quelle app, clic droit, <em>Services</em> puis <em>Send text with OmniBeam</em>. S'ils n'apparaissent pas, activez-les dans Réglages Système, Clavier, Raccourcis clavier, Services.</p>
+
+<h2>Installer sous Linux</h2>
+<ol>
+  <li>Installez Node.js 18 ou plus récent, par exemple <code>sudo apt install nodejs</code>, ainsi que <code>zenity</code> (ou <code>kdialog</code> sous KDE) pour choisir l'appareil.</li>
+  <li>Décompressez le téléchargement, ouvrez un terminal dans ce dossier et lancez <code>sh install-linux.sh</code>.</li>
+  <li>Saisissez le code d'association de votre téléphone quand il est demandé.</li>
+</ol>
+<p>Ensuite, clic droit sur des fichiers, <em>Scripts</em> puis <em>Send with OmniBeam</em> dans Fichiers, Nemo ou Caja, ou directement <em>Send with OmniBeam</em> dans Dolphin et Thunar.</p>
+
+<h2>Associer votre téléphone une fois</h2>
+<ol>
+  <li>Sur le téléphone, ouvrez <a href="/fr/">omnibeam.site</a>, touchez le bouton lien puis <em>Créer un code d'association</em>.</li>
+  <li>Saisissez ce code dans l'installateur sur l'ordinateur.</li>
+  <li>Sur le téléphone, rouvrez l'écran d'association et cochez <em>De confiance</em> à côté de l'ordinateur, pour que ses fichiers arrivent sans demande.</li>
+</ol>
+<p>Le téléphone doit avoir omnibeam.site ouvert pour recevoir. Les fichiers passent par le serveur OmniBeam, chiffrés de bout en bout : le serveur ne peut pas les lire. Pour retirer les entrées du menu, lancez <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Vous utilisez Chrome ou Edge ? L'<a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">extension OmniBeam</a> envoie la page, un lien, une image ou le texte sélectionné vers votre téléphone d'un clic droit, sur Mac, Linux et Windows.</p>
+<p>Vous pouvez aussi envoyer depuis Mac ou Linux sans clic droit, en ouvrant simplement omnibeam.site.</p>
+<section class="qa">
+<h2>Questions et réponses</h2>
+<h3>Le menu du clic droit marche-t-il sur tous les bureaux Linux ?</h3>
+<p>Il marche dans les gestionnaires de fichiers courants : Fichiers (Nautilus), Nemo, Caja, Dolphin et Thunar. Sur les autres bureaux, vous pouvez toujours ouvrir omnibeam.site dans le navigateur et y glisser les fichiers.</p>
+<h3>Puis-je retirer les entrées du menu plus tard ?</h3>
+<p>Oui. Lancez node omnibeam-send.js --uninstall dans le dossier de l’outil, et les entrées disparaissent du menu du clic droit.</p>
+<h3>Est-ce que ça envoie vers iPhone et Android ?</h3>
+<p>Oui. L’outil envoie vers le téléphone appairé avec le code, iPhone ou Android, sur le même Wi‑Fi ou en données mobiles, tant qu’omnibeam.site est ouvert sur le téléphone.</p>
+<h3>Pourquoi l’outil a-t-il besoin de Node.js ?</h3>
+<p>C’est un petit script qui tourne avec Node.js. Il s’appaire une fois avec votre téléphone puis envoie les fichiers choisis sans ouvrir de navigateur sur l’ordinateur, ce qui garde le clic droit rapide.</p>
+<h3>Puis-je aussi envoyer du texte sélectionné ?</h3>
+<p>Sur Mac, oui : sélectionnez du texte dans n’importe quelle app, faites un clic droit et choisissez Services, puis Send text with OmniBeam. Il arrive sur le téléphone, prêt à être copié.</p>
+<h3>Les fichiers sont-ils chiffrés ?</h3>
+<p>Oui. Ils sont chiffrés de bout en bout sur l’ordinateur, et le serveur ne fait que les transmettre sans pouvoir les lire.</p>
+</section>

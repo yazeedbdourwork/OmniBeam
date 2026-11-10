@@ -1,0 +1,54 @@
+<!--
+title: How to Share Files Privately with Encryption
+description: Who can see a file you send online? A plain guide to end-to-end encryption, direct transfers and private links. Free, no sign-up.
+short: How to share files privately
+kind: post
+order: 2
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>How to share files privately</h1>
+<p class="lead">Photos, ID scans, contracts: a lot of what we send is personal. Here is what actually protects it on the way, explained without jargon.</p>
+
+<h2>Three places a file can be seen</h2>
+<ol>
+  <li><em>On the network</em>: anyone on the same public Wi‑Fi. Any site with https protects against this.</li>
+  <li><em>On the service's servers</em>: the company that carries or stores the file. Only end-to-end encryption protects against this.</li>
+  <li><em>On the devices</em>: yours and the other person's. That part is up to you.</li>
+</ol>
+
+<h2>What end-to-end encryption means</h2>
+<p>The file is locked on your device and only unlocked on the other one. The service in the middle passes along scrambled data and never has the key. If its servers were hacked, or someone asked the company for your files, there would be nothing readable to hand over.</p>
+
+<h2>How OmniBeam handles it</h2>
+<ul>
+  <li>Direct transfers between devices use WebRTC, which is always encrypted end to end.</li>
+  <li>When a direct connection isn't possible and the file goes through our server, the two devices agree on a key first, so the server only forwards scrambled data and saves nothing.</li>
+  <li>Shared links are encrypted in your browser before uploading. The key is the part of the link after #, which browsers never send to the server. Links expire on their own.</li>
+  <li>No accounts. Paired devices are remembered in your own browser.</li>
+</ul>
+
+<h2>Five habits that help</h2>
+<ul>
+  <li>Prefer direct transfers or end-to-end encrypted services for anything personal.</li>
+  <li>When a link or room has a password, send the password through a different app than the link.</li>
+  <li>Choose links that expire, and delete them when the other person has the file.</li>
+  <li>Check what you share: photos can contain the location where they were taken.</li>
+  <li>Only accept files from devices you recognise. In OmniBeam, mark only your own devices as Trusted.</li>
+</ul>
+<p>More details are in our <a href="/privacy">privacy policy</a>.</p>
+<p>A quick test for any file-sharing service: ask whether it could read your files if it wanted to. If the files are encrypted on your device before they leave it, the service only ever sees scrambled data. OmniBeam encrypts every transfer this way.</p>
+<p>OmniBeam lets you share files privately, encrypted end to end, without an account.</p>
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>Is a cloud link private?</h3>
+<p>A normal cloud link is stored on the provider’s servers, and the provider can usually read the file. With end-to-end encryption, only the devices at each end hold the key, so nobody in between can open the file.</p>
+<h3>How can I tell if a service uses end-to-end encryption?</h3>
+<p>Look for a clear statement that files are encrypted on your device before they leave it, and that the key is never sent to the server. OmniBeam explains exactly this on its privacy page.</p>
+<h3>What else should I do to keep files private?</h3>
+<p>Send links only to the people who need them, choose a short expiry time, and delete a link once it has been used.</p>
+<h3>Is sending through email private?</h3>
+<p>Email is convenient but not private by default: messages and attachments are usually stored on the mail servers of both sides. For private files, end-to-end encrypted transfers or links are safer.</p>
+<h3>Do I need to trust OmniBeam?</h3>
+<p>Much less than a normal cloud service. Files are encrypted on your device, and the keys never reach OmniBeam’s servers, so even OmniBeam cannot open them.</p>
+</section>

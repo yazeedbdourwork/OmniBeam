@@ -1,0 +1,48 @@
+<!--
+title: Un cuadro «Envíame archivos» para tu web, gratis | OmniBeam
+description: Añade a tu web o blog un cuadro gratuito para que los visitantes te envíen archivos, con cifrado de extremo a extremo. Copia un solo código, sin cuenta ni plugin.
+short: Un cuadro «Envíame archivos» para tu web
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Un cuadro «Envíame archivos» para tu web o blog</h1>
+<p class="lead">Deja que visitantes, clientes o alumnos te envíen archivos desde tu propia página. Pegas un código corto; los archivos se cifran en su dispositivo y llegan a OmniBeam en el tuyo.</p>
+
+<h2>Pasos</h2>
+<ol>
+  <li>Abre <a href="/es/">omnibeam.site</a> en el dispositivo que debe recibir los archivos y toca <b>Pedir archivos</b> en el menú ⋯.</li>
+  <li>Escribe lo que necesitas (opcional), elige <b>1 año (para un sitio web)</b> en «El enlace funciona» y toca <b>Crear enlace de solicitud</b>.</li>
+  <li>Toca <b>Ponlo en tu sitio web</b> y luego <b>Copiar código</b>.</li>
+  <li>Pega el código en tu página: en WordPress, un bloque <b>HTML personalizado</b>; en Blogger, un gadget <b>HTML/JavaScript</b>; en Wix, un elemento <b>Insertar HTML</b>; en Squarespace, un bloque <b>Código</b>.</li>
+</ol>
+<p>Los visitantes ven un cuadro pequeño con «Elegir archivos», un campo opcional para su nombre y un botón Enviar. No necesitan app ni cuenta. Los archivos llegan a tu dispositivo, en Archivos recibidos; si OmniBeam está cerrado allí, esperan en el servidor y llegan cuando lo abres, con una notificación si las activaste.</p>
+
+<h2>WordPress: el plugin gratuito de OmniBeam</h2>
+<p>En WordPress es aún más fácil: <a href="/tools/omnibeam-wordpress.zip">descarga el plugin de OmniBeam (omnibeam-wordpress.zip)</a> y en WordPress ve a <b>Plugins → Añadir nuevo → Subir plugin</b>, elige el zip y toca <b>Activar</b>. Pega tu código (o solo su enlace) en <b>Ajustes → OmniBeam Box</b> y añade el bloque <b>OmniBeam: Send me files</b> a cualquier página, o el shortcode <code>[omnibeam_box]</code>. Un cuadro con su propio enlace y altura: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. El plugin solo acepta cuadros de omnibeam.site y los archivos nunca pasan por tu web de WordPress.</p>
+
+<h2>Cómo es el código</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=es#…" title="Envíame archivos" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/es/"&gt;Con la tecnología de OmniBeam&lt;/a&gt; · compartir archivos gratis y con cifrado de extremo a extremo&lt;/p&gt;</pre>
+<p>Mantén la línea «Con la tecnología de OmniBeam»: así el cuadro sigue siendo gratis.</p>
+
+<h2>¿Es privado y seguro?</h2>
+<ul>
+  <li>Cada subida se cifra en el navegador del visitante. Su clave se sella con la clave pública de tu dispositivo, y solo tu dispositivo tiene la clave privada correspondiente, así que ni OmniBeam ni quien lea el código de tu página pueden abrir los archivos.</li>
+  <li>El código de tu página es público. Quien lo vea puede enviarte archivos y leer el texto «qué necesitas» y el nombre de tu dispositivo, así que no escribas nada privado ahí.</li>
+  <li>Solo tu dispositivo puede descargar las subidas, y cada una se borra del servidor en cuanto la recibe. Los archivos no recogidos se borran a los 7 días.</li>
+  <li>Siguen los límites habituales: un tamaño máximo por subida, un límite por red y por hora, y como mucho 100 subidas al día por cuadro.</li>
+  <li>Borra el enlace de solicitud en la misma ventana cuando quieras y el cuadro deja de funcionar al instante.</li>
+</ul>
+
+<section class="qa">
+<h2>Preguntas y respuestas</h2>
+<h3>¿Cuesta algo?</h3>
+<p>No. El cuadro es gratis, sin cuenta, sin plugin y sin anuncios.</p>
+<h3>¿Puedo usarlo en varias páginas?</h3>
+<p>Sí. Pega el mismo código en todas las páginas que quieras; todas las subidas llegan al mismo dispositivo. Crea otro enlace de solicitud si quieres distinguirlas.</p>
+<h3>¿Por qué deja de funcionar el cuadro al cabo de un tiempo?</h3>
+<p>Cada enlace de solicitud caduca en la fecha que elegiste. Para una web, elige 1 año y crea un enlace y un código nuevos antes de que caduque.</p>
+<h3>¿Alguien puede usar mi cuadro para enviarme spam?</h3>
+<p>Cualquier visitante de la página puede enviarte archivos, igual que con una dirección de correo. Los archivos nunca se abren solos, las subidas están limitadas por red y por día, y puedes borrar el enlace para desactivar el cuadro.</p>
+</section>

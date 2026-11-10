@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The "Send me files" box for other websites (an <iframe> of /embed/r/<id>#<key>, see /embed): the upload page of a
+       request link (put.js), smaller, without the site's header, and with a "Powered by OmniBeam" link -->
+  <title>Send files | OmniBeam</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/pages.css?v=11">
+</head>
+<body class="embed">
+  <main>
+    <article class="drop req">
+      <h1 id="req-title" data-t="Send files">Send files</h1>
+      <blockquote class="req-ask" id="req-ask" hidden></blockquote>
+      <p class="lead" id="drop-status" role="status" data-t="Loading…">Loading…</p>
+      <form class="drop-pin" id="drop-pin" hidden>
+        <label for="drop-pin-input" data-t="This link needs a PIN. Ask the person who sent it.">This link needs a PIN. Ask the person who sent it.</label>
+        <input id="drop-pin-input" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="PIN" required>
+        <button type="submit" class="open-app" data-t="Open">Open</button>
+      </form>
+      <div id="req-form" hidden>
+        <label class="req-field"><span data-t="Your name (optional)">Your name (optional)</span>
+          <input type="text" id="req-from" maxlength="40" autocomplete="name">
+        </label>
+        <label class="req-zone" id="req-zone">
+          <input type="file" id="req-input" multiple>
+          <span class="req-zone-big" data-t="Choose files">Choose files</span>
+          <span class="req-zone-small" data-t="or drop them here">or drop them here</span>
+        </label>
+        <ul class="drop-files" id="drop-files"></ul>
+        <p class="cta"><button type="button" class="open-app" id="req-send" hidden data-t="Send">Send</button></p>
+      </div>
+      <div class="drop-bar" id="drop-bar" hidden><span></span></div>
+      <p class="cta"><button type="button" class="open-app" id="req-more" hidden data-t="Send more files">Send more files</button></p>
+      <p class="drop-note" data-t="End-to-end encrypted: the files are encrypted on this device and only the person who asked can open them. The OmniBeam server can't read them.">End-to-end encrypted: the files are encrypted on this device and only the person who asked can open them. The OmniBeam server can't read them.</p>
+      <p class="embed-powered"><a href="https://omnibeam.site/" target="_blank" rel="noopener" data-t="Powered by OmniBeam">Powered by OmniBeam</a></p>
+    </article>
+  </main>
+  <script src="/report.js?v=3"></script>
+  <script src="/put.js?v=3"></script>
+</body>
+</html>

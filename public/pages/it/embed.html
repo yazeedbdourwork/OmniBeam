@@ -1,0 +1,48 @@
+<!--
+title: Metti un riquadro "Mandami dei file" sul tuo sito, gratis | OmniBeam
+description: Aggiungi un riquadro gratuito al tuo sito o blog così i visitatori possono inviarti file, crittografati end-to-end. Copia un solo frammento di codice, senza account e senza plugin.
+short: Un riquadro "Mandami dei file" per il tuo sito
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Un riquadro "Mandami dei file" per il tuo sito o blog</h1>
+<p class="lead">Lascia che visitatori, clienti o studenti ti inviino file direttamente dalla tua pagina. Incolli un codice breve; i file vengono crittografati sul loro dispositivo e arrivano in OmniBeam sul tuo.</p>
+
+<h2>Passaggi</h2>
+<ol>
+  <li>Apri <a href="/it/">omnibeam.site</a> sul dispositivo che deve ricevere i file, e tocca <b>Richiedi file</b> nel menu ⋯.</li>
+  <li>Scrivi cosa ti serve (facoltativo), scegli <b>1 anno (per un sito)</b> in "Il link funziona per", e tocca <b>Crea link di richiesta</b>.</li>
+  <li>Tocca <b>Mettilo sul tuo sito</b>, poi <b>Copia codice</b>.</li>
+  <li>Incolla il codice nella tua pagina: in WordPress in un blocco <b>HTML personalizzato</b>, in Blogger in un gadget <b>HTML/JavaScript</b>, in Wix in un elemento <b>Embed HTML</b>, in Squarespace in un blocco <b>Code</b>.</li>
+</ol>
+<p>I visitatori vedono un piccolo riquadro con "Scegli i file", un campo facoltativo per il nome e un pulsante Invia. Non serve nessuna app e nessun account. I file arrivano sul tuo dispositivo in File ricevuti; se lì OmniBeam è chiuso, aspettano sul server e arrivano quando lo apri, con una notifica se hai attivato le notifiche.</p>
+
+<h2>WordPress: il plugin OmniBeam gratuito</h2>
+<p>Su WordPress c'è un modo più semplice: <a href="/tools/omnibeam-wordpress.zip">scarica il plugin OmniBeam (omnibeam-wordpress.zip)</a>, poi in WordPress vai su <b>Plugin → Aggiungi nuovo → Carica plugin</b>, scegli lo zip e tocca <b>Attiva</b>. Incolla il tuo codice (o solo il suo link) in <b>Impostazioni → OmniBeam Box</b>, poi aggiungi a qualsiasi pagina il blocco <b>OmniBeam: Send me files</b>, o lo shortcode <code>[omnibeam_box]</code>. Un riquadro con un suo link e una sua altezza: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Il plugin accetta solo riquadri di omnibeam.site, e i file non passano mai dal tuo sito WordPress.</p>
+
+<h2>Com'è fatto il codice</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=it#…" title="Mandami dei file" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/it/"&gt;Funziona con OmniBeam&lt;/a&gt; · condivisione di file gratuita e crittografata end-to-end&lt;/p&gt;</pre>
+<p>Lascia la riga "Funziona con OmniBeam": è così che il riquadro resta gratuito.</p>
+
+<h2>È privato e sicuro?</h2>
+<ul>
+  <li>Ogni caricamento è crittografato nel browser del visitatore. La sua chiave è sigillata con la chiave pubblica del tuo dispositivo, e solo il tuo dispositivo ha la chiave privata corrispondente, quindi né OmniBeam né chi legge il codice della tua pagina può aprire i file.</li>
+  <li>Il codice sulla tua pagina è pubblico. Chiunque lo veda può inviarti file e può leggere il testo "cosa ti serve" e il nome del tuo dispositivo, quindi non scriverci niente di privato.</li>
+  <li>Solo il tuo dispositivo può scaricare i caricamenti, e ognuno viene eliminato dal server appena il dispositivo lo ha ricevuto. I file non ritirati vengono eliminati dopo 7 giorni.</li>
+  <li>Restano i soliti limiti: un limite di dimensione per caricamento, un limite per rete all'ora, e al massimo 100 caricamenti al giorno per riquadro.</li>
+  <li>Elimina il link di richiesta nella stessa finestra in qualsiasi momento e il riquadro smette subito di funzionare.</li>
+</ul>
+
+<section class="qa">
+<h2>Domande e risposte</h2>
+<h3>Costa qualcosa?</h3>
+<p>No. Il riquadro è gratuito, senza account e senza pubblicità. Anche il plugin per WordPress è gratuito.</p>
+<h3>Posso usarlo su più pagine?</h3>
+<p>Sì. Incolla lo stesso codice su tutte le pagine che vuoi; tutti i caricamenti arrivano sullo stesso dispositivo. Crea un link di richiesta separato se vuoi distinguerli.</p>
+<h3>Perché il riquadro smette di funzionare dopo un po'?</h3>
+<p>Ogni link di richiesta finisce alla scadenza che hai scelto. Per un sito scegli 1 anno, e crea un nuovo link e un nuovo codice prima che scada.</p>
+<h3>Qualcuno può usare il mio riquadro per mandarmi spam?</h3>
+<p>Chiunque visiti la pagina può inviarti file, come con un indirizzo email. I file non si aprono mai da soli, i caricamenti sono limitati per rete e per giorno, e puoi eliminare il link per spegnere il riquadro.</p>
+</section>

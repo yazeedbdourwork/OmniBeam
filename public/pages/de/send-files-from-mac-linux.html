@@ -1,0 +1,52 @@
+<!--
+title: Per Rechtsklick vom Mac oder Linux senden
+description: Füge OmniBeam zum Rechtsklick-Menü auf Mac und Linux hinzu und sende Dateien und Text an iPhone oder Android. Kostenlos, ohne Konto.
+short: Per Rechtsklick vom Mac und Linux senden
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Dateien per Rechtsklick vom Mac oder Linux-PC aufs Handy senden</h1>
+<p class="lead">Der OmniBeam-Helfer fügt <em>Send with OmniBeam</em> zum Rechtsklick-Menü des Finders auf dem Mac und des Dateimanagers unter Linux hinzu. Wähle Dateien und dein Handy, und sie gehen hinüber, ohne den Browser am Computer zu öffnen.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Für Mac und Linux herunterladen (ZIP)</a></p>
+
+<h2>Auf dem Mac installieren</h2>
+<ol>
+  <li>Installiere <a href="https://nodejs.org" rel="noopener">Node.js</a>, mit dem der Helfer Dateien sendet.</li>
+  <li>Entpacke den Download und doppelklicke auf <em>install-mac.command</em>. Öffnet macOS es nicht, klicke mit rechts darauf, wähle <em>Öffnen</em> und dann noch einmal <em>Öffnen</em>.</li>
+  <li>Tippe den Kopplungscode von deinem Handy ein, wenn danach gefragt wird (siehe unten).</li>
+</ol>
+<p>Klicke dann im Finder mit rechts auf Dateien und wähle <em>Schnellaktionen</em> und <em>Send with OmniBeam</em>. Für markierten Text in jeder App klicke mit rechts und wähle <em>Dienste</em> und <em>Send text with OmniBeam</em>. Fehlen sie, schalte sie in Systemeinstellungen, Tastatur, Tastaturkurzbefehle, Dienste ein.</p>
+
+<h2>Unter Linux installieren</h2>
+<ol>
+  <li>Installiere Node.js 18 oder neuer, zum Beispiel <code>sudo apt install nodejs</code>, und <code>zenity</code> (oder <code>kdialog</code> unter KDE) für die Geräteauswahl.</li>
+  <li>Entpacke den Download, öffne in diesem Ordner ein Terminal und führe <code>sh install-linux.sh</code> aus.</li>
+  <li>Tippe den Kopplungscode von deinem Handy ein, wenn danach gefragt wird.</li>
+</ol>
+<p>Klicke dann mit rechts auf Dateien und wähle <em>Skripte</em> und <em>Send with OmniBeam</em> in Dateien, Nemo oder Caja, oder direkt <em>Send with OmniBeam</em> im Menü von Dolphin und Thunar.</p>
+
+<h2>Dein Handy einmal koppeln</h2>
+<ol>
+  <li>Öffne auf dem Handy <a href="/de/">omnibeam.site</a>, tippe auf die Link-Taste und auf <em>Kopplungscode erstellen</em>.</li>
+  <li>Tippe diesen Code in das Installationsprogramm am Computer ein.</li>
+  <li>Öffne auf dem Handy das Kopplungsfenster erneut und hake <em>Vertraut</em> beim Computer an, damit seine Dateien ohne Nachfrage ankommen.</li>
+</ol>
+<p>Das Handy braucht omnibeam.site geöffnet, um zu empfangen. Dateien laufen über den OmniBeam-Server, Ende-zu-Ende verschlüsselt, sodass der Server sie nicht lesen kann. Um die Menüeinträge wieder zu entfernen, führe <code>node omnibeam-send.js --uninstall</code> aus.</p>
+<p>Du nutzt Chrome oder Edge? Die <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam-Erweiterung</a> sendet die Seite, einen Link, ein Bild oder markierten Text per Rechtsklick an dein Handy, auf Mac, Linux und Windows.</p>
+<section class="qa">
+<h2>Fragen und Antworten</h2>
+<h3>Funktioniert das Rechtsklick-Menü auf jedem Linux-Desktop?</h3>
+<p>Es funktioniert in den gängigen Dateimanagern: Dateien (Nautilus), Nemo, Caja, Dolphin und Thunar. Auf anderen Desktops kannst du omnibeam.site im Browser öffnen und die Dateien hineinziehen.</p>
+<h3>Kann ich die Menüeinträge später entfernen?</h3>
+<p>Ja. Führe node omnibeam-send.js --uninstall im Ordner des Helfers aus, dann verschwinden die Einträge aus dem Rechtsklick-Menü.</p>
+<h3>Sendet es an iPhone und Android?</h3>
+<p>Ja. Es sendet an das Handy, das du mit dem Code gekoppelt hast, ob iPhone oder Android, im selben WLAN oder mit mobilen Daten, solange omnibeam.site auf dem Handy offen ist.</p>
+<h3>Warum braucht der Helfer Node.js?</h3>
+<p>Der Helfer ist ein kleines Skript, das mit Node.js läuft. Er koppelt sich einmal mit deinem Handy und sendet dann die gewählten Dateien vom Mac oder Linux-PC, ohne einen Browser auf dem Computer zu öffnen, damit der Rechtsklick schnell bleibt.</p>
+<h3>Kann ich auch markierten Text senden?</h3>
+<p>Auf dem Mac ja: Markiere Text in einer beliebigen App, klicke mit rechts und wähle Dienste und dann Send text with OmniBeam. Er kommt aufs Handy und lässt sich kopieren.</p>
+<h3>Sind die Dateien verschlüsselt?</h3>
+<p>Ja. Sie werden auf dem Computer Ende-zu-Ende verschlüsselt, und der Server leitet sie nur weiter, ohne sie lesen zu können.</p>
+</section>

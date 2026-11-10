@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Send Files to Any Device: iPhone, Android, PC | OmniBeam</title>
+  <meta name="description" content="Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.">
+  <!-- The server rewrites the language-specific tags below for /ar/, /fr/, /es/, /tr/ and the other languages (see renderHome in server.js) -->
+  <link rel="canonical" href="https://omnibeam.site/">
+  <link rel="alternate" hreflang="en" href="https://omnibeam.site/">
+  <link rel="alternate" hreflang="ar" href="https://omnibeam.site/ar/">
+  <link rel="alternate" hreflang="fr" href="https://omnibeam.site/fr/">
+  <link rel="alternate" hreflang="es" href="https://omnibeam.site/es/">
+  <link rel="alternate" hreflang="tr" href="https://omnibeam.site/tr/">
+  <link rel="alternate" hreflang="de" href="https://omnibeam.site/de/">
+  <link rel="alternate" hreflang="pt" href="https://omnibeam.site/pt/">
+  <link rel="alternate" hreflang="hi" href="https://omnibeam.site/hi/">
+  <link rel="alternate" hreflang="id" href="https://omnibeam.site/id/">
+  <link rel="alternate" hreflang="ru" href="https://omnibeam.site/ru/">
+  <link rel="alternate" hreflang="ja" href="https://omnibeam.site/ja/">
+  <link rel="alternate" hreflang="zh" href="https://omnibeam.site/zh/">
+  <link rel="alternate" hreflang="ko" href="https://omnibeam.site/ko/">
+  <link rel="alternate" hreflang="it" href="https://omnibeam.site/it/">
+  <link rel="alternate" hreflang="ur" href="https://omnibeam.site/ur/">
+  <link rel="alternate" hreflang="x-default" href="https://omnibeam.site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OmniBeam">
+  <meta property="og:url" content="https://omnibeam.site/">
+  <meta property="og:title" content="OmniBeam: send files between any devices, free, no app">
+  <meta property="og:description" content="Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.">
+  <meta property="og:image" content="https://omnibeam.site/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="OmniBeam logo with a lightning bolt, and the text: send files between iPhone, Android and PC">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ar_AR">
+  <meta property="og:locale:alternate" content="fr_FR">
+  <meta property="og:locale:alternate" content="es_ES">
+  <meta property="og:locale:alternate" content="tr_TR">
+  <meta property="og:locale:alternate" content="de_DE">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <meta property="og:locale:alternate" content="hi_IN">
+  <meta property="og:locale:alternate" content="id_ID">
+  <meta property="og:locale:alternate" content="ru_RU">
+  <meta property="og:locale:alternate" content="ja_JP">
+  <meta property="og:locale:alternate" content="zh_CN">
+  <meta property="og:locale:alternate" content="ko_KR">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta property="og:locale:alternate" content="ur_PK">
+  <meta name="twitter:card" content="summary_large_image">
+  <!--structured-data-->
+  <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="OmniBeam">
+  <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/app.js?v=74" as="script">
+  <script src="/look.js?v=1"></script>
+  <link rel="stylesheet" href="/style.css?v=66">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/" aria-label="OmniBeam home">
+      <!-- The logo inline (same drawing as icon.svg) so its dark parts can turn light in dark mode -->
+      <svg class="logo" viewBox="0 0 512 512" width="34" height="34" aria-hidden="true">
+        <g transform="translate(256, 256) skewX(-10) translate(-256, -256)">
+          <g stroke-linecap="round">
+            <line x1="36" y1="168" x2="108" y2="168" stroke="#736EFE" stroke-width="10"/>
+            <line class="logo-o" x1="56" y1="198" x2="88" y2="198" stroke-width="6" opacity="0.6"/>
+            <line x1="20" y1="228" x2="78" y2="228" stroke="#736EFE" stroke-width="12"/>
+            <line class="logo-o" x1="48" y1="258" x2="76" y2="258" stroke-width="8" opacity="0.8"/>
+            <line x1="28" y1="288" x2="80" y2="288" stroke="#736EFE" stroke-width="10"/>
+            <line class="logo-o" x1="60" y1="318" x2="94" y2="318" stroke-width="6" opacity="0.6"/>
+            <line x1="40" y1="348" x2="112" y2="348" stroke="#736EFE" stroke-width="10"/>
+          </g>
+          <rect class="logo-o" x="104" y="148" width="144" height="216" rx="72" fill="none" stroke-width="36"/>
+          <path d="M 296 148 H 376 A 54 54 0 0 1 376 256 H 296 Z" fill="none" stroke="#736EFE" stroke-width="36" stroke-linejoin="round"/>
+          <path d="M 296 256 H 388 A 54 54 0 0 1 388 364 H 296 Z" fill="none" stroke="#736EFE" stroke-width="36" stroke-linejoin="round"/>
+          <line x1="296" y1="148" x2="296" y2="364" stroke="#736EFE" stroke-width="36" stroke-linecap="round"/>
+          <polygon class="logo-gap" points="326,76 196,268 264,268 210,436 346,244 276,244" fill="#736EFE" stroke-width="10" stroke-linejoin="round"/>
+          <polygon points="326,76 196,268 264,268 210,436 346,244 276,244" fill="#5B54FA"/>
+        </g>
+      </svg>
+      <span class="wordmark">Omni<span>Beam</span></span>
+    </a>
+    <div class="actions">
+      <a id="btn-support" class="icon-btn support-btn support-link" href="/about" target="_blank" rel="noopener" title="Support OmniBeam" aria-label="Support OmniBeam" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+      </a>
+      <button id="btn-pair" class="icon-btn" title="Pair with a device using a code" aria-label="Pair devices">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg>
+      </button>
+      <button id="btn-history" class="icon-btn" title="Received files" aria-label="Received files">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      </button>
+      <!-- Light/Dark, TV mode and Settings right in the bar (app.js: Bar). On small screens the ones that don't fit
+           are in the ⋯ menu instead (style.css: .bar-extra / .bar-twin) -->
+      <button id="bar-theme" class="icon-btn bar-extra" type="button" title="Dark mode" aria-label="Dark mode">
+        <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a id="bar-tv" class="icon-btn bar-extra bar-wide" href="/tv" title="TV mode" aria-label="TV mode">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </a>
+      <button id="bar-settings" class="icon-btn bar-extra" type="button" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <!-- Less used actions live in this menu, so the top bar stays simple (app.js: setMenu) -->
+      <div class="menu-wrap">
+        <button id="btn-menu" class="icon-btn" title="More" aria-label="More" aria-haspopup="menu" aria-expanded="false" aria-controls="menu">
+          <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+        </button>
+        <div id="menu" class="menu" role="menu" aria-label="More" hidden>
+          <button type="button" class="menu-item" role="menuitem" id="btn-link" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 0 1-.5-9.97A6 6 0 0 1 18 7a4.5 4.5 0 0 1-.5 11"/><path d="M12 12v9"/><path d="M8.5 15.5 12 12l3.5 3.5"/></svg><span>Share files by link</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="btn-request" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 0 1-.5-9.97A6 6 0 0 1 18 7a4.5 4.5 0 0 1-.5 11"/><path d="M12 21v-9"/><path d="M8.5 17.5 12 21l3.5-3.5"/></svg><span>Request files</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="btn-tg" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.5 3.5-19 7.3 6.2 2.2 2.3 6.5 3.4-4.4 4.9 3.6z"/><path d="m8.7 13 12.8-9.5"/></svg><span>Send to Telegram</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="btn-sendto" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Send to email or phone</span></button>
+          <a class="menu-item bar-twin bar-twin-wide" role="menuitem" id="menu-tv" href="/tv"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>TV mode</span></a>
+          <button type="button" class="menu-item" role="menuitem" id="menu-speed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14l4-4M3.5 18a9 9 0 1 1 17 0"/></svg><span>Test speed</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="menu-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg><span>Connection check</span></button>
+          <button type="button" class="menu-item bar-twin" role="menuitem" id="btn-settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
+          <button type="button" class="menu-item bar-twin" role="menuitem" id="btn-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark mode</span></button>
+          <hr>
+          <button type="button" class="menu-item" role="menuitem" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the intro video</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="menu-invite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span>Invite a friend</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="menu-tour"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg><span>Show the quick tour</span></button>
+          <a class="menu-item" role="menuitem" id="menu-support" href="/about" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Support OmniBeam</span></a>
+          <a class="menu-item" role="menuitem" href="/how-to-use" data-open="dlg-how"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>How to Use</span></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="share-banner" class="share-banner" hidden>
+      <span></span>
+      <button type="button" class="btn ghost small">Cancel</button>
+    </div>
+    <!-- TV mode (omnibeam.site/tv, app.js: Tv): shown only there -->
+    <section id="tv" class="tv-screen" hidden aria-labelledby="tv-title">
+      <div class="tv-qr" id="tv-qr" aria-label="QR code to pair your phone with this TV"></div>
+      <div class="tv-text">
+        <p class="tv-heading" id="tv-title">Send photos to this TV</p>
+        <ol class="tv-steps">
+          <li>Scan the code with your phone's camera.</li>
+          <li>In OmniBeam on your phone, tap this TV and choose photos or videos.</li>
+          <li>They play here as a slideshow.</li>
+        </ol>
+        <p class="tv-alt" id="tv-alt">On the same Wi‑Fi? Just open <b id="tv-host">omnibeam.site</b> on your phone: this TV shows up there.</p>
+        <p class="tv-alt" id="tv-pin-note" hidden>🔒 This TV has a PIN: after scanning, type it on your phone.</p>
+        <p class="tv-peers" id="tv-peers" role="status"></p>
+        <p class="tv-status" id="tv-status" role="status" hidden></p>
+        <div class="tv-buttons">
+          <button type="button" class="btn" id="tv-photos" hidden><span>Show photos</span></button>
+          <button type="button" class="btn ghost" id="tv-full">Full screen</button>
+          <button type="button" class="btn ghost" id="tv-name">This TV: <b>TV</b></button>
+          <button type="button" class="btn ghost" id="tv-pin">Set a PIN</button>
+        </div>
+        <p class="tv-keys">Remote: ◀ ▶ browse · OK pause · Back to this screen</p>
+      </div>
+    </section>
+    <div id="tv-show" class="tv-show" hidden>
+      <div class="tv-stage" id="tv-stage"></div>
+      <p class="tv-caption" id="tv-caption"></p>
+      <p class="tv-caption tv-show-status" id="tv-show-status" hidden></p>
+      <button type="button" class="tv-shut" id="tv-shut" aria-label="Back to the QR code">✕</button>
+    </div>
+    <div class="stage">
+    <div id="peers" class="peers"></div>
+    <div id="empty" class="empty">
+      <div class="empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+      </div>
+      <p class="empty-title">Ready to beam</p>
+      <p class="lead">Open <b id="site-host">omnibeam.site</b> on another device and it will show up here.</p>
+      <div class="hints">
+        <div class="hint">
+          <span class="hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></span>
+          <div><b>Same Wi‑Fi</b><span>Appears automatically</span></div>
+        </div>
+        <div class="hint">
+          <span class="hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/></svg></span>
+          <div><b>Different network</b><span>Pair with a 6‑digit code</span></div>
+        </div>
+      </div>
+      <button class="btn" id="btn-pair-empty">Pair a device</button>
+      <button type="button" class="intro-link" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the 1-minute intro</span></button>
+    </div>
+    <button type="button" class="btn ghost small send-all" id="btn-send-all" hidden>Send to everyone</button>
+    </div>
+
+    <section class="learn" id="learn" aria-labelledby="learn-title">
+      <h1 id="learn-title">Send files between iPhone, Android and PC, free and without an app</h1>
+      <p class="learn-lead">OmniBeam is a free AirDrop alternative that works in any browser. Open omnibeam.site on two devices and send photos, videos, documents and text straight from one to the other. No account, no install.</p>
+
+      <h2>How it works</h2>
+      <ol class="learn-steps">
+        <li><span class="lt">Open OmniBeam on both devices.</span> <span>On the same Wi‑Fi they find each other automatically.</span></li>
+        <li><span class="lt">On different networks, pair once.</span> <span>Create a 6‑digit code or scan the QR code. Paired devices find each other from then on.</span></li>
+        <li><span class="lt">Tap a device and choose files.</span> <span>The other device accepts, and the files go straight across.</span></li>
+      </ol>
+
+      <!-- The intro video: only a small poster image (loaded when scrolled near) until it is pressed, then the video
+           plays here (app.js: Intro video). The server puts in this page's language and the video's length. -->
+      <h2 id="intro-title">OmniBeam in 1 minute</h2>
+      <figure class="intro-poster">
+        <a class="intro-play" href="/media/intro-en.mp4?v=4" aria-label="Play the intro video">
+          <img src="/media/intro-en.webp?v=4" width="1280" height="720" loading="lazy" decoding="async" alt="OmniBeam intro video: send files between any devices">
+          <span class="intro-play-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
+          <span class="intro-time" aria-hidden="true">1:00</span>
+        </a>
+        <figcaption>See how to send photos and files between a phone and a computer, in your language.</figcaption>
+      </figure>
+
+      <h2>Why OmniBeam</h2>
+      <ul class="learn-features">
+        <li><span class="lt">Works on every device</span> <span>iPhone, iPad, Android, Windows, Mac, Linux and Chromebook, in Safari, Chrome, Edge or Firefox.</span></li>
+        <li><span class="lt">Private</span> <span>Files go directly between your devices whenever possible, and are always encrypted end to end. Nothing is stored on a server.</span></li>
+        <li><span class="lt">Any network</span> <span>Same Wi‑Fi, mobile data, or a public room that any number of devices can join.</span></li>
+        <li><span class="lt">Text and links too</span> <span>Send a message, a link or copied text to your other device in a second.</span></li>
+        <li><span class="lt">Photos as JPG</span> <span>iPhone HEIC photos can be saved as JPG on Windows and Android.</span></li>
+        <li><span class="lt">15 languages</span> <span>Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian or Urdu.</span></li>
+      </ul>
+
+      <h2>Send files from any device to any device</h2>
+      <p>Most ways of moving a file between your own devices are slow or awkward: a cable that doesn't fit, an email to yourself with a size limit, or a cloud folder that has to upload everything first. OmniBeam sends files straight from one device to the other, so a photo from your iPhone lands on your Windows PC in seconds and a document from your laptop arrives on your Android phone without a detour.</p>
+      <p>Because OmniBeam runs in the browser, the same page works on every device you own. There is nothing to install and no account to create, so you can also use it on a friend's computer, a work laptop or a school Chromebook where you can't install apps.</p>
+      <p class="learn-routes"><a href="/send-files-iphone-to-pc">iPhone to PC</a> <span class="dot-sep">•</span> <a href="/send-files-pc-to-iphone">PC to iPhone</a> <span class="dot-sep">•</span> <a href="/send-files-android-to-iphone">Android to iPhone</a> <span class="dot-sep">•</span> <a href="/send-files-android-to-pc">Android to PC</a></p>
+
+      <h2>Encrypted end to end, never stored</h2>
+      <p>Every file you send is encrypted end to end on your device before it leaves, and only the receiving device can decrypt it. When the two devices can reach each other, the file travels directly between them. When they can't, for example on a strict office network, the encrypted data passes through our server, which forwards it straight away and cannot read it. Nothing is saved on a server, and each transfer has to be accepted on the receiving device first.</p>
+
+      <h2>Send files to a paired device on any network</h2>
+      <p>Devices on the same Wi‑Fi find each other automatically. For devices on different networks, such as your phone on mobile data and your computer at home, pair them once with a 6‑digit code or by scanning a QR code. A paired device then appears whenever OmniBeam is open on both, wherever they are, so you can send files to your own computer from anywhere. You can rename each device and mark your own devices as trusted so their files are accepted automatically.</p>
+
+      <h2>What you can send</h2>
+      <p>Photos and videos in full quality, including iPhone HEIC photos and 4K videos. PDFs, Word and Excel documents, ZIP archives and whole folders. Text, links and anything you copied. OmniBeam sets no file size limit, and you can send many files at once or add more while a transfer is running. If the other device is not online right now, share a file by link instead and open it later.</p>
+
+      <h2>Frequently asked questions</h2>
+      <div class="faq-list">
+        <details class="faq"><summary>Is OmniBeam free?</summary><p>Yes. OmniBeam is free to use, with no account, no ads and no app to install.</p></details>
+        <details class="faq"><summary>How do I send files from iPhone to a Windows PC?</summary><p>Open omnibeam.site in Safari on the iPhone and in any browser on the PC. On the same Wi‑Fi the PC appears on the iPhone; tap it and choose the files. If it does not appear, tap the link button on one device, create a code, and enter it or scan the QR code on the other.</p></details>
+        <details class="faq"><summary>Does it work between Android and iPhone?</summary><p>Yes. OmniBeam runs in the browser, so it works between any two devices: Android and iPhone, iPhone and Mac, Windows and Android, and so on.</p></details>
+        <details class="faq"><summary>Is it safe? Can anyone else see my files?</summary><p>Every transfer has to be accepted on the receiving device. Files normally travel directly between the two devices, encrypted end to end. If a direct connection is not possible, they pass through our server still encrypted end to end, so the server can't read them, and are forwarded straight away, never saved.</p></details>
+        <details class="faq"><summary>Why don't my devices see each other?</summary><p>Devices appear automatically only when they are on the same network. A VPN, iCloud Private Relay or mobile data puts them on different networks. Use Pair devices with a 6‑digit code instead; it works on any network.</p></details>
+        <details class="faq"><summary>Is there a file size limit?</summary><p>OmniBeam sets no limit. Very large files need enough free space on the receiving device. In Chrome, Edge and Firefox they are written straight to disk.</p></details>
+        <details class="faq"><summary>Do I need to install anything?</summary><p>No. OmniBeam works in the browser. On Android you can add it to the home screen so it appears in the Share menu, and on Windows you can add it to the right-click Send to menu.</p></details>
+      </div>
+
+      <div class="share" id="share">
+        <h2>Share OmniBeam</h2>
+        <p class="share-lead">Know someone who emails files to themselves? Send them OmniBeam.</p>
+        <div class="share-buttons">
+          <button type="button" class="share-btn" data-share="native" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg><span>Share</span></button>
+          <a class="share-btn" data-share="whatsapp" href="https://api.whatsapp.com/send?text=OmniBeam%3A%20send%20files%20between%20any%20devices%2C%20free%2C%20no%20app%20https%3A//omnibeam.site/" target="_blank" rel="noopener noreferrer" title="Share on WhatsApp"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg><span>WhatsApp</span></a>
+          <button type="button" class="share-btn" data-share="instagram" title="Share on Instagram"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.3"/><circle cx="17.6" cy="6.4" r=".6"/></svg><span>Instagram</span></button>
+          <a class="share-btn" data-share="snapchat" href="https://www.snapchat.com/scan?attachmentUrl=https%3A//omnibeam.site/" target="_blank" rel="noopener noreferrer" title="Share on Snapchat"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.3 0-5.6 2.5-5.6 5.8v2.3l-1.6-.5c-.6-.2-1 .6-.5 1l1.9 1.1c-.6 1.8-2 3.1-3.7 3.7-.4.1-.4.7 0 .9l1.6.6.4 1.4 1.8-.2c.9 0 1.8.5 2.6 1.1.9.6 1.9.9 3.1.9s2.2-.3 3.1-.9c.8-.6 1.7-1.1 2.6-1.1l1.8.2.4-1.4 1.6-.6c.4-.2.4-.8 0-.9-1.7-.6-3.1-1.9-3.7-3.7l1.9-1.1c.5-.4.1-1.2-.5-1l-1.6.5V8.3c0-3.3-2.3-5.8-5.6-5.8z"/></svg><span>Snapchat</span></a>
+          <a class="share-btn" data-share="x" href="https://x.com/intent/post?text=OmniBeam%3A%20send%20files%20between%20any%20devices%2C%20free%2C%20no%20app&amp;url=https%3A//omnibeam.site/" target="_blank" rel="noopener noreferrer" title="Share on X"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg><span>X</span></a>
+          <a class="share-btn" data-share="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//omnibeam.site/" target="_blank" rel="noopener noreferrer" title="Share on Facebook"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg><span>Facebook</span></a>
+          <a class="share-btn" data-share="telegram" href="https://t.me/share/url?url=https%3A//omnibeam.site/&amp;text=OmniBeam%3A%20send%20files%20between%20any%20devices%2C%20free%2C%20no%20app" target="_blank" rel="noopener noreferrer" title="Share on Telegram"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg><span>Telegram</span></a>
+          <a class="share-btn" data-share="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A//omnibeam.site/" target="_blank" rel="noopener noreferrer" title="Share on LinkedIn"><svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg><span>LinkedIn</span></a>
+          <a class="share-btn" data-share="email" href="mailto:?subject=OmniBeam%3A%20send%20files%20between%20any%20devices%2C%20free%2C%20no%20app&amp;body=https%3A//omnibeam.site/" title="Share by email"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Email</span></a>
+          <button type="button" class="share-btn" data-share="card" id="share-card"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 7h4v4H7zM13 13h4v4h-4zM13 7h4M7 17h4"/></svg><span>Invite card</span></button>
+          <button type="button" class="share-btn" data-share="copy"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy link</span></button>
+        </div>
+      </div>
+
+      <p class="learn-links"><a href="/how-to-use">Read the step-by-step guide</a> <span class="dot-sep">•</span> <a href="/guides">Guides for iPhone, Android and PC</a> <span class="dot-sep">•</span> <a href="/blog">Blog and tips</a> <span class="dot-sep">•</span> <a href="/compare">Compare with AirDrop and LocalSend</a> <span class="dot-sep">•</span> <span class="lang-links"><a href="/ar/" hreflang="ar" lang="ar">العربية</a> <a href="/fr/" hreflang="fr" lang="fr">Français</a> <a href="/es/" hreflang="es" lang="es">Español</a> <a href="/tr/" hreflang="tr" lang="tr">Türkçe</a> <a href="/de/" hreflang="de" lang="de">Deutsch</a> <a href="/pt/" hreflang="pt" lang="pt">Português</a> <a href="/hi/" hreflang="hi" lang="hi">हिन्दी</a> <a href="/id/" hreflang="id" lang="id">Bahasa Indonesia</a> <a href="/ru/" hreflang="ru" lang="ru">Русский</a> <a href="/ja/" hreflang="ja" lang="ja">日本語</a> <a href="/zh/" hreflang="zh" lang="zh">简体中文</a> <a href="/ko/" hreflang="ko" lang="ko">한국어</a> <a href="/it/" hreflang="it" lang="it">Italiano</a> <a href="/ur/" hreflang="ur" lang="ur">اردو</a></span></p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="me-card">
+        <div class="me-wrap">
+          <span class="radar" aria-hidden="true"></span><span class="radar r2" aria-hidden="true"></span>
+          <div class="me-avatar" id="me-avatar"></div>
+        </div>
+        <div class="me-text">
+          <span class="me-label">This device</span>
+          <button class="me-name" id="me-rename" title="Change this device's name and picture">
+            <b id="me-name">…</b>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+          <span class="me-status"><span id="me-scope">Connecting…</span><button type="button" class="net-chip" id="me-network" title="Devices only see each other automatically when this ID matches. Tap to check the connection."></button></span>
+          <button type="button" class="fast-chip" id="btn-fast" hidden title="Lets this iPhone connect directly to devices on the same Wi-Fi. Safari asks for the microphone once; nothing is recorded.">⚡ Faster Wi-Fi transfers</button>
+        </div>
+      </div>
+
+      <div class="footer-meta">
+        <nav class="footer-nav" aria-label="Footer links">
+          <a class="footer-link-btn" href="/how-to-use" data-open="dlg-how">How to Use</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="/terms" data-open="dlg-terms">Terms</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="/privacy" data-open="dlg-privacy">Privacy</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="/about" data-open="dlg-about">About</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="/status">Status</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="https://apps.microsoft.com/detail/9PLR2PMX3SQZ" target="_blank" rel="noopener">Windows app</a>
+          <span class="dot-sep">•</span>
+          <a class="footer-link-btn" href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" target="_blank" rel="noopener">Chrome extension</a>
+          <span class="dot-sep support-link" hidden>•</span>
+          <a class="footer-link-btn support-link" id="footer-support" href="/about" target="_blank" rel="noopener" hidden>♥ Support</a>
+          <span class="dot-sep">•</span>
+          <select class="footer-link-btn lang-select" id="btn-lang" aria-label="Language"><option value="en" lang="en" selected>English</option><option value="ar" lang="ar">العربية</option><option value="fr" lang="fr">Français</option><option value="es" lang="es">Español</option><option value="tr" lang="tr">Türkçe</option><option value="de" lang="de">Deutsch</option><option value="pt" lang="pt">Português</option><option value="hi" lang="hi">हिन्दी</option><option value="id" lang="id">Bahasa Indonesia</option><option value="ru" lang="ru">Русский</option><option value="ja" lang="ja">日本語</option><option value="zh" lang="zh">简体中文</option><option value="ko" lang="ko">한국어</option><option value="it" lang="it">Italiano</option><option value="ur" lang="ur">اردو</option></select>
+        </nav>
+        <!--social-links-->
+        <p class="copyright">
+          © 2026 OmniBeam.Site • Created by <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer" class="author-link"><span class="author-name">Yazeed Bdour</span></a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <input type="file" id="file-input" multiple hidden>
+
+  <!-- Incoming request -->
+  <dialog id="dlg-request">
+    <h3><span class="who"></span> wants to send you</h3>
+    <ul class="file-list"></ul>
+    <div class="row">
+      <button class="btn ghost" data-act="decline">Decline</button>
+      <button class="btn" data-act="accept">Accept</button>
+    </div>
+  </dialog>
+
+  <!-- Received files -->
+  <dialog id="dlg-received">
+    <h3>Files from <span class="who"></span></h3>
+    <div class="received"></div>
+    <!-- Shown now and then after files arrive (see showLoop in app.js) -->
+    <div class="loop" hidden>
+      <p><b>Worked well?</b> <span>OmniBeam is free, with no account and no ads. Tell a friend, or keep it one tap away.</span></p>
+      <div class="loop-btns">
+        <button type="button" class="btn ghost small" data-act="tell">Tell a friend</button>
+        <a class="btn ghost small btn-a" data-app="windows" href="https://apps.microsoft.com/detail/9PLR2PMX3SQZ" target="_blank" rel="noopener" hidden>Get the Windows app</a>
+        <a class="btn ghost small btn-a" data-app="chrome" href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" target="_blank" rel="noopener" hidden>Add to Chrome</a>
+        <button type="button" class="btn ghost small" data-act="install" hidden>Install OmniBeam</button>
+        <a class="btn ghost small btn-a" data-app="rate" href="#" target="_blank" rel="noopener" hidden>Rate OmniBeam</a>
+        <button type="button" class="link-btn" data-act="loop-no">Not now</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" data-act="close">Close</button>
+      <button class="btn ghost" data-act="gallery" hidden>Gallery</button>
+      <button class="btn" data-act="save-all">Save all</button>
+    </div>
+  </dialog>
+
+  <!-- Text that isn't a message between devices: clipboard text that couldn't be copied by itself (iPhone: one tap
+       on Copy), and text sent to the Telegram bot (request.js). Messages between devices are read in the chat view. -->
+  <dialog id="dlg-text">
+    <h3>Message from <span class="who"></span></h3>
+    <div class="text-body"></div>
+    <div class="row">
+      <button class="btn ghost" data-act="close">Close</button>
+      <button class="btn" data-act="copy">Copy</button>
+    </div>
+  </dialog>
+
+  <!-- Pairing -->
+  <dialog id="dlg-pair">
+    <h3>Pair devices</h3>
+    <p class="muted">Use this when devices don't see each other automatically (different Wi‑Fi, mobile data, VPN).</p>
+
+    <!-- One part at a time (app.js: PairTabs): Scan, Code, Rooms, and Devices when some are remembered -->
+    <div class="tabs pair-tabs" role="tablist" aria-label="How to pair">
+      <button type="button" class="tab" role="tab" id="pair-tab-scan" data-pair-tab="scan" aria-controls="pair-pane-scan">Scan</button>
+      <button type="button" class="tab" role="tab" id="pair-tab-code" data-pair-tab="code" aria-controls="pair-pane-code">Code</button>
+      <button type="button" class="tab" role="tab" id="pair-tab-rooms" data-pair-tab="rooms" aria-controls="pair-pane-rooms">Rooms</button>
+      <button type="button" class="tab" role="tab" id="pair-tab-devices" data-pair-tab="devices" aria-controls="pair-pane-devices" hidden>Devices</button>
+    </div>
+
+    <div class="pair-pane" id="pair-pane-scan" role="tabpanel" aria-labelledby="pair-tab-scan">
+    <div id="pair-qr-section">
+      <div class="pair-qr pair-qr-big" id="pair-qr" role="img" aria-label="QR code that pairs this device"></div>
+      <p class="center qr-title"><b>Scan with your phone's camera</b></p>
+      <p class="muted center small">It pairs straight away, with no code to type, and works on any network.</p>
+    </div>
+    </div>
+
+    <div class="pair-pane" id="pair-pane-code" role="tabpanel" aria-labelledby="pair-tab-code" hidden>
+
+    <div id="pair-active" hidden>
+      <p class="muted">Your pairing code:</p>
+      <div class="code-show" id="pair-show"></div>
+      <p class="muted">Open OmniBeam on the other device, tap the link button, and enter this code, or send it this link:</p>
+      <div class="link-row">
+        <code id="pair-link"></code>
+        <button class="btn small" data-act="copy-link">Share link</button>
+      </div>
+    </div>
+
+    <div id="pair-idle">
+      <p class="step"><b>On this device:</b></p>
+      <button class="btn wide" data-act="create">Create a pairing code</button>
+      <p class="step"><b>Or enter the code from the other device:</b></p>
+      <div class="code-box">
+        <input id="pair-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off">
+        <button class="btn" data-act="join">Join</button>
+      </div>
+    </div>
+
+    </div>
+
+    <div class="pair-pane" id="pair-pane-rooms" role="tabpanel" aria-labelledby="pair-tab-rooms" hidden>
+    <div id="public-section">
+      <p class="step"><b>Public room</b> <span class="muted">– any number of devices, on any network</span></p>
+      <div id="public-idle">
+        <div class="code-box">
+          <input id="public-code" maxlength="5" placeholder="abcde" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Public room code">
+          <button class="btn" data-act="public-join">Join</button>
+        </div>
+        <input id="public-pass" class="pass-input" type="password" maxlength="100" placeholder="Password (optional)" autocomplete="off" aria-label="Room password (optional)">
+        <button class="btn ghost wide" data-act="public-create">Create a public room</button>
+      </div>
+      <div id="public-active" hidden>
+        <div class="code-show public-show" id="public-show"></div>
+        <p class="muted public-lock" id="public-lock" hidden>🔒 Password protected</p>
+        <div class="row">
+          <button class="btn ghost small" data-act="public-leave">Leave room</button>
+          <button class="btn small" data-act="public-share">Share link</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="team-section">
+      <p class="step"><b>Team rooms</b> <span class="muted">– a fixed link for your family or office</span></p>
+      <p class="muted small">Every device that opens the link once stays in the room, on any network, every time OmniBeam opens. No codes, no pairing again.</p>
+      <div id="team-list"></div>
+      <div class="code-box team-new">
+        <input id="team-name" maxlength="30" placeholder="Family, Office…" autocomplete="off" aria-label="Team room name">
+        <button class="btn" data-act="team-create">Create</button>
+      </div>
+    </div>
+
+    </div>
+
+    <div class="pair-pane" id="pair-pane-devices" role="tabpanel" aria-labelledby="pair-tab-devices" hidden>
+    <div id="paired-section" hidden>
+      <p class="step"><b>Remembered devices</b> <span class="muted">– they find you automatically, on any network</span></p>
+      <div id="paired-list"></div>
+      <p class="muted small">Mark your own phone and computers as Trusted: they always show here (greyed out while offline) and their files arrive without asking.</p>
+    </div>
+    </div>
+
+    <div class="row">
+      <button class="btn ghost" data-act="leave" id="pair-leave" hidden>Stop pairing</button>
+      <button class="btn ghost" data-act="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="dlg-settings" class="settings-dialog">
+    <h3>Settings</h3>
+    <!-- One group at a time (app.js: SetTabs): Device, Transfers, Clipboard, Apps. The last one used opens next time. -->
+    <div class="tabs set-tabs" role="tablist" aria-label="Settings sections">
+      <button type="button" class="tab" role="tab" id="set-tab-device" data-set-tab="device" aria-controls="set-pane-device"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg><span>Device</span></button>
+      <button type="button" class="tab" role="tab" id="set-tab-transfers" data-set-tab="transfers" aria-controls="set-pane-transfers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></svg><span>Transfers</span></button>
+      <button type="button" class="tab" role="tab" id="set-tab-clipboard" data-set-tab="clipboard" aria-controls="set-pane-clipboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zM9 12h6M9 16h4"/></svg><span>Clipboard</span></button>
+      <button type="button" class="tab" role="tab" id="set-tab-apps" data-set-tab="apps" aria-controls="set-pane-apps"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Apps</span></button>
+    </div>
+
+    <div class="set-body">
+    <div class="set-pane" id="set-pane-device" role="tabpanel" aria-labelledby="set-tab-device">
+      <section class="set-sec">
+        <p class="step"><b>This device</b></p>
+        <div class="me-row">
+          <div class="me-avatar small" id="set-avatar" aria-hidden="true"></div>
+          <span id="set-name"></span><span id="me-supporter" class="me-supporter" title="Supporter" hidden>♥</span>
+          <button class="btn small ghost" id="set-me">Change name and picture</button>
+        </div>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Theme</b></p>
+        <div class="choice choice-row" id="theme-choice">
+          <label><input type="radio" name="theme" value=""> <span>Automatic</span></label>
+          <label><input type="radio" name="theme" value="light"> <span>Light</span></label>
+          <label><input type="radio" name="theme" value="dark"> <span>Dark</span></label>
+        </div>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Style</b></p>
+        <div class="choice choice-row choice-two" id="look-choice">
+          <label><input type="radio" name="look" value=""> <span>Classic</span></label>
+          <label><input type="radio" name="look" value="glass"> <span>Liquid Glass</span></label>
+        </div>
+      </section>
+      <!-- Supporter perks (app.js: Supporter), shown when the server has supporter codes (SUPPORTER_KEY) -->
+      <section class="set-sec" id="supporter-section" hidden>
+        <p class="step"><b>Supporter</b></p>
+        <div id="supporter-off">
+          <p class="muted small">Got a supporter code? It adds a ♥ to this device's card, 4 colour themes and extra pictures.</p>
+          <div class="me-row">
+            <input id="supporter-code" class="pass-input" type="text" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="OB-XXXX-XXXX-XXXX-XXXX" aria-label="Supporter code">
+            <button class="btn small" id="supporter-unlock">Unlock</button>
+          </div>
+          <p class="small" id="supporter-msg" role="status"></p>
+        </div>
+        <div id="supporter-on" hidden>
+          <p class="muted small">♥ Thank you for supporting OmniBeam! The supporter perks are on for this device.</p>
+          <div class="theme-colors" id="supporter-colors" role="group" aria-label="Colour theme">
+            <button type="button" data-color=""><i class="c-purple"></i>Purple</button>
+            <button type="button" data-color="ocean"><i class="c-ocean"></i>Ocean</button>
+            <button type="button" data-color="forest"><i class="c-forest"></i>Forest</button>
+            <button type="button" data-color="sunset"><i class="c-sunset"></i>Sunset</button>
+            <button type="button" data-color="rose"><i class="c-rose"></i>Rose</button>
+          </div>
+          <p class="muted small">The extra pictures are in Change name and picture.</p>
+          <div class="row"><button class="btn ghost small" id="supporter-remove">Remove the code from this device</button></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="set-pane" id="set-pane-transfers" role="tabpanel" aria-labelledby="set-tab-transfers" hidden>
+      <section class="set-sec">
+        <p class="step"><b>Photo size when sending</b></p>
+        <p class="muted small">Smaller photos send faster on slow connections. The originals on this device are not changed.</p>
+        <div class="choice" id="shrink-choice">
+          <label><input type="radio" name="shrink" value="off"> <span>Original: send photos as they are</span></label>
+          <label><input type="radio" name="shrink" value="photos"> <span>Smaller photos (up to 2048 px, JPG)</span></label>
+          <label><input type="radio" name="shrink" value="all"> <span>Smaller photos and videos (videos at 720p)</span></label>
+        </div>
+        <div id="shrink-notes">
+          <p class="muted small">GIFs, pictures with transparent parts and photos that are already small are always sent as they are.</p>
+          <p class="muted small" id="shrink-video-note">Shrinking a video takes about as long as the video plays. Keep this page open while it runs.</p>
+          <p class="muted small" id="shrink-video-none" hidden>This browser can't shrink videos, so they are sent as they are. Chrome, Edge and Safari can.</p>
+        </div>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Message sound</b></p>
+        <div class="choice">
+          <label><input type="checkbox" id="msg-sound" checked> <span>Play a sound (and vibrate on phones) when a message or file arrives</span></label>
+        </div>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Links</b></p>
+        <p class="muted small">A link sent from another device shows Open link: one tap opens it.</p>
+        <div class="choice">
+          <label><input type="checkbox" id="open-links"> <span>Open links from my paired devices right away (the browser may ask to allow pop-ups)</span></label>
+        </div>
+      </section>
+      <section class="set-sec" id="push-section" hidden>
+        <p class="step"><b>Notifications</b></p>
+        <p class="muted small">Get notified when a paired device wants to send you files, even when OmniBeam is closed.</p>
+        <p class="small" id="push-state"></p>
+        <p class="muted small" id="push-note"></p>
+        <div class="row">
+          <button class="btn small" id="push-on">Turn on notifications</button>
+          <button class="btn small ghost" id="push-off" hidden>Turn off</button>
+        </div>
+      </section>
+      <section class="set-sec" id="bg-audio-section" hidden>
+        <p class="step"><b>Screen off (iPhone)</b></p>
+        <p class="muted small">Plays a near-silent sound during transfers, which may keep Safari going while the screen is off. It pauses any music that is playing, and it may not work on every iPhone.</p>
+        <div class="choice">
+          <label><input type="checkbox" id="bg-audio"> <span>Keep transfers going with the screen off (iPhone, experimental)</span></label>
+        </div>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Speed test</b></p>
+        <p class="muted small">See how fast this device and another one can really transfer, and which way the files go.</p>
+        <div class="row"><button class="btn small" id="speed-open">Test speed</button></div>
+      </section>
+    </div>
+
+    <div class="set-pane" id="set-pane-clipboard" role="tabpanel" aria-labelledby="set-tab-clipboard" hidden>
+      <section class="set-sec">
+        <p class="step"><b>Clipboard sync</b></p>
+        <p class="muted small">Copy on one device, paste on the other. Turn it on on both devices and keep OmniBeam open.</p>
+        <div class="choice">
+          <label><input type="checkbox" id="clip-sync"> <span>Sync the clipboard with my paired devices</span></label>
+          <label><input type="checkbox" id="clip-history" checked> <span>Keep the last 20 in History</span></label>
+        </div>
+        <p class="muted small" id="clip-note"></p>
+        <p class="small" id="clip-status"></p>
+        <div class="row">
+          <button class="btn small" id="clip-now" hidden>Send my clipboard now</button>
+          <button class="btn small ghost" id="clip-history-open">Clipboard history</button>
+        </div>
+      </section>
+      <section class="set-sec" id="autosend-section">
+        <p class="step"><b>Auto-send a folder</b></p>
+        <p class="muted small">New files you put in a folder on this computer go to your phone by themselves while OmniBeam is open.</p>
+        <p class="muted small" id="autosend-none" hidden>This needs Chrome or Edge on a computer, or the OmniBeam app for Windows.</p>
+        <div id="autosend-ui">
+          <div class="me-row autosend-row">
+            <span id="autosend-folder">No folder chosen</span>
+            <button class="btn small" id="autosend-pick">Choose folder</button>
+          </div>
+          <label class="field"><span>Send to</span>
+            <select id="autosend-to"></select>
+          </label>
+          <div class="choice">
+            <label><input type="checkbox" id="autosend-on"> <span>Send new files automatically</span></label>
+          </div>
+          <p class="small" id="autosend-status" role="status"></p>
+          <div class="row"><button class="btn small" id="autosend-resume" hidden>Allow again</button></div>
+          <p class="muted small">Tip: on the phone, open the Link window and turn on Auto-accept for this computer, so the files arrive without a tap.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="set-pane" id="set-pane-apps" role="tabpanel" aria-labelledby="set-tab-apps" hidden>
+      <section class="set-sec">
+        <p class="step"><b>Browser extension</b></p>
+        <p class="muted small">Send the page you're on, a link, an image or selected text with one click.</p>
+        <div class="row">
+          <a class="btn small btn-a" href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" target="_blank" rel="noopener">Add to Chrome</a>
+          <a class="btn small btn-a" href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" target="_blank" rel="noopener">Add to Firefox</a>
+        </div>
+        <p class="muted small"><a href="/tools/omnibeam-chrome.zip" download>Install by hand (zip)</a></p>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Windows app</b></p>
+        <div class="row"><a class="btn small ghost btn-a" href="https://apps.microsoft.com/detail/9PLR2PMX3SQZ" target="_blank" rel="noopener">Get the Windows app</a></div>
+      </section>
+      <!-- Telegram bot (request.js: Telegram part), shown when the server has one (TG_BOT_TOKEN) -->
+      <section class="set-sec" id="tg-section" hidden>
+        <p class="step"><b>Telegram</b></p>
+        <p class="muted small">Link this device to the OmniBeam bot to send files, photos and text both ways.</p>
+        <p class="small" id="tg-state"></p>
+        <div class="row" id="tg-off">
+          <button class="btn small" id="tg-link">Link Telegram</button>
+        </div>
+        <div id="tg-wait" hidden>
+          <p class="muted small">In Telegram, tap Start in the chat with the bot. This link works for 15 minutes.</p>
+          <div class="row">
+            <a class="btn small btn-a" id="tg-open" href="#" target="_blank" rel="noopener">Open Telegram</a>
+            <button class="btn small ghost" id="tg-cancel">Cancel</button>
+          </div>
+        </div>
+        <div class="row" id="tg-on" hidden>
+          <button class="btn small" id="tg-send-open">Send to Telegram</button>
+          <button class="btn small ghost" id="tg-unlink">Unlink</button>
+        </div>
+        <p class="muted small">Telegram lets bots receive files up to 20 MB and send files up to 50 MB. Files that go through Telegram are not end-to-end encrypted: Telegram can see them.</p>
+      </section>
+    </div>
+    </div>
+
+    <div class="row set-foot">
+      <button class="btn ghost" id="tour-open">Show the quick tour</button>
+      <button class="btn" data-close>Close</button>
+    </div>
+  </dialog>
+
+  <!-- First-visit walkthrough (app.js: maybeShowTour) -->
+  <dialog id="dlg-tour" class="tour" aria-labelledby="tour-title">
+    <section class="tour-step">
+      <div class="tour-art" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="13" height="10" rx="2"/><path d="M5 18h7"/><rect x="17" y="8" width="5" height="12" rx="1.5"/><path d="M19.5 17.5h0"/></svg></div>
+      <p class="tour-num">1 / 3</p>
+      <h3 id="tour-title">Open OmniBeam on your other device</h3>
+      <p class="muted">Open this site on your phone or computer too. On the same Wi‑Fi, it shows up here by itself.</p>
+    </section>
+    <section class="tour-step" hidden>
+      <div class="tour-art" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></div>
+      <p class="tour-num">2 / 3</p>
+      <h3>Not showing up? Pair once</h3>
+      <p class="muted">Tap the link button at the top and scan the QR code with your phone's camera. Paired devices find each other on any network from then on.</p>
+      <p class="center"><button type="button" class="btn ghost small" data-tour="pair">Pair now</button></p>
+    </section>
+    <section class="tour-step" hidden>
+      <div class="tour-art" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></div>
+      <p class="tour-num">3 / 3</p>
+      <h3>Tap a device to send</h3>
+      <p class="muted">Choose photos, videos or any files. To send text, right-click the device or press and hold it. The other device taps Accept, and the files go straight across.</p>
+    </section>
+    <div class="tour-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+    <div class="row">
+      <button type="button" class="btn ghost" data-tour="skip">Skip</button>
+      <button type="button" class="btn ghost" data-tour="back" hidden>Back</button>
+      <button type="button" class="btn" data-tour="next" autofocus>Next</button>
+    </div>
+  </dialog>
+
+
+  <!-- Received files history -->
+  <dialog id="dlg-history">
+    <h3>History</h3>
+    <!-- Received files and messages, the photos and videos among them as a gallery, and what this device sent
+         (app.js: openHistory, Gallery, Sent) -->
+    <div class="tabs" role="tablist" aria-label="History">
+      <button type="button" role="tab" class="tab" data-tab="received" aria-selected="true">Received</button>
+      <button type="button" role="tab" class="tab" data-tab="gallery" aria-selected="false">Gallery</button>
+      <button type="button" role="tab" class="tab" data-tab="sent" aria-selected="false">Sent</button>
+      <button type="button" role="tab" class="tab" data-tab="clips" aria-selected="false">Clipboard</button>
+    </div>
+    <div class="tab-pane" data-pane="received" role="tabpanel">
+      <p class="muted empty-history">Files and messages you receive show up here for 7 days, so you can save them again.</p>
+      <div class="received"></div>
+      <h4 class="messages-title" hidden>Messages</h4>
+      <div class="received messages"></div>
+    </div>
+    <div class="tab-pane" data-pane="gallery" role="tabpanel" hidden>
+      <p class="muted empty-gallery">Photos and videos you receive show up here.</p>
+      <div class="gallery"></div>
+    </div>
+    <div class="tab-pane" data-pane="sent" role="tabpanel" hidden>
+      <p class="muted empty-sent">Files you send show up here for 7 days, so you can send them again.</p>
+      <div class="received sent-list"></div>
+    </div>
+    <div class="tab-pane" data-pane="clips" role="tabpanel" hidden>
+      <p class="muted empty-clips">Text sent or received with Clipboard sync shows up here (the last 20), so you can copy it or send it again.</p>
+      <div class="received clip-list"></div>
+    </div>
+    <p class="muted history-note"></p>
+    <div class="row history-row">
+      <button class="btn ghost" data-act="export" title="Download the list of transfers as a spreadsheet (CSV)">Export</button>
+      <button class="btn ghost" data-act="clear">Clear all</button>
+      <button class="btn" data-act="gallery-save" hidden>Save all</button>
+      <button class="btn" data-act="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- One photo or video from the gallery, full size (app.js: Gallery) -->
+  <dialog id="dlg-viewer" class="viewer" aria-label="Photo viewer">
+    <div class="viewer-stage"></div>
+    <div class="viewer-bar">
+      <button type="button" class="icon-btn" data-act="prev" title="Previous" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+      <span class="viewer-name"></span>
+      <button type="button" class="icon-btn" data-act="next" title="Next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+    <div class="row">
+      <button class="btn ghost" data-act="close">Close</button>
+      <button class="btn" data-act="save">Save</button>
+    </div>
+  </dialog>
+
+  <!-- This device's name and picture, as other devices see them (app.js: Device name and picture) -->
+  <dialog id="dlg-me">
+    <h3>Your device</h3>
+    <p class="muted">Other devices see this name and picture.</p>
+    <input id="me-name-input" class="pass-input" type="text" maxlength="40" autocomplete="off" spellcheck="false" aria-label="Device name" placeholder="Device name">
+    <p class="center"><button type="button" class="link-btn" data-act="random">Random name</button></p>
+    <p class="step"><b>Picture</b></p>
+    <div class="avatar-pick" id="avatar-pick" role="radiogroup" aria-label="Picture"></div>
+    <div class="row">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" data-act="save">Save</button>
+    </div>
+  </dialog>
+
+  <!-- Pick a device (Send again, when the device it went to isn't here) -->
+  <dialog id="dlg-choose">
+    <h3>Send to which device?</h3>
+    <div class="choose-list"></div>
+    <p class="muted empty-choose">No other device is here right now. Open OmniBeam on it first.</p>
+    <div class="row">
+      <button class="btn ghost" data-close>Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- Intro video (public/media/), started with sound when opened (app.js: Intro video) -->
+  <dialog id="dlg-intro" class="intro-dialog" aria-label="OmniBeam in 1 minute">
+    <video id="intro-video" controls playsinline preload="none"></video>
+    <div class="row">
+      <button class="btn ghost" data-close>Close</button>
+    </div>
+  </dialog>
+
+
+
+
+
+  <!-- Share by link -->
+  <dialog id="dlg-link">
+    <h3>Share files by link</h3>
+    <div id="link-new">
+      <p class="muted">Anyone with the link can download the files, on any device, until it expires. Files are encrypted on this device first; the server can't read them.</p>
+      <label class="field"><span>Send to (optional)</span>
+        <input type="text" id="link-to" inputmode="email" autocomplete="email" maxlength="80" placeholder="Email or phone number">
+      </label>
+      <p class="muted small" id="link-to-note" hidden>OmniBeam emails the link for you from no-reply@omnibeam.site. The link passes through the server once and is not kept.</p>
+      <div class="link-opts">
+        <label class="field"><span>Link works for</span>
+          <select id="link-hours">
+            <option value="1">1 hour</option>
+            <option value="24" selected>1 day</option>
+            <option value="72">3 days</option>
+            <option value="168">7 days</option>
+            <option value="720">30 days</option>
+          </select>
+        </label>
+        <label class="field"><span>Downloads allowed</span>
+          <select id="link-max">
+            <option value="0" selected>No limit</option>
+            <option value="1">1 download</option>
+            <option value="3">3 downloads</option>
+            <option value="5">5 downloads</option>
+            <option value="10">10 downloads</option>
+          </select>
+        </label>
+      </div>
+      <label class="field"><span>PIN (optional)</span>
+        <input type="text" id="link-pin" inputmode="numeric" autocomplete="off" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="4 to 8 digits">
+      </label>
+      <p class="muted small" id="link-pin-note" hidden>The person also needs this PIN to open the link. Tell it to them another way, not in the same message.</p>
+      <button class="btn wide" data-act="pick">Choose files</button>
+      <p class="muted small" id="link-limit"></p>
+      <button class="btn ghost wide" data-act="note-open" aria-expanded="false" aria-controls="link-note">🔒 Secret note instead (opens once)</button>
+      <div id="link-note" hidden>
+        <label class="field"><span>Secret note</span>
+          <textarea id="link-note-text" rows="4" maxlength="20000" autocomplete="off" spellcheck="false" placeholder="A Wi-Fi password, a code, an API key…"></textarea>
+        </label>
+        <p class="muted small">The link opens once: as soon as the note is read, it is deleted from the server. It is encrypted on this device, so the server can't read it.</p>
+        <button class="btn wide" data-act="note-make">Make secret link</button>
+      </div>
+    </div>
+    <div id="link-progress" hidden>
+      <p class="muted" id="link-status">Encrypting and uploading…</p>
+      <div class="xfer-bar link-bar"><span></span></div>
+      <button class="btn ghost small" data-act="cancel">Cancel</button>
+    </div>
+    <div id="link-done" hidden>
+      <p class="muted" id="link-summary"></p>
+      <p class="small link-email-status" id="link-email-status" role="status" hidden></p>
+      <a class="btn wide btn-a" id="link-send-to" href="#" hidden>Send</a>
+      <div class="pair-qr" id="link-qr" aria-label="QR code with the download link"></div>
+      <div class="link-row">
+        <code id="link-url"></code>
+      </div>
+      <div class="row">
+        <button class="btn ghost small" data-act="copy">Copy link</button>
+        <a class="btn ghost small btn-a" id="link-email" href="#">Email</a>
+        <a class="btn ghost small btn-a" id="link-sms" href="#">Text message</a>
+        <button class="btn small" data-act="share">Share link</button>
+      </div>
+    </div>
+    <div id="link-mine" hidden>
+      <h4>Your links</h4>
+      <div class="received" id="link-list"></div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" data-act="close">Close</button>
+    </div>
+  </dialog>
+  <input type="file" id="link-input" multiple hidden>
+
+  <!-- Request files by link (request.js) -->
+  <dialog id="dlg-asklink">
+    <h3>Request files</h3>
+    <div id="req-new">
+      <p class="muted">Get a link to send to anyone. They open it on any device, with no app or pairing, pick files, and the files arrive here on this device. End-to-end encrypted: the server can't read them.</p>
+      <label class="field ask"><span>What do you need? (optional)</span>
+        <textarea id="req-ask" rows="2" maxlength="300" placeholder="For example: the photos from Saturday"></textarea>
+      </label>
+      <div class="link-opts">
+        <label class="field"><span>Link works for</span>
+          <select id="req-hours">
+            <option value="1">1 hour</option>
+            <option value="24" selected>1 day</option>
+            <option value="72">3 days</option>
+            <option value="168">7 days</option>
+            <option value="720">30 days</option>
+            <option value="8760">1 year (for a website)</option>
+          </select>
+        </label>
+        <label class="field"><span>Uploads allowed</span>
+          <select id="req-max">
+            <option value="0" selected>No limit</option>
+            <option value="1">1 upload</option>
+            <option value="5">5 uploads</option>
+            <option value="10">10 uploads</option>
+          </select>
+        </label>
+      </div>
+      <label class="field"><span>PIN (optional)</span>
+        <input type="text" id="req-pin" inputmode="numeric" autocomplete="off" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="4 to 8 digits">
+      </label>
+      <p class="muted small" id="req-pin-note" hidden>The person also needs this PIN to open the link. Tell it to them another way, not in the same message.</p>
+      <button class="btn wide" data-act="make">Make request link</button>
+      <p class="muted small" id="req-limit"></p>
+    </div>
+    <div id="req-done" hidden>
+      <p class="muted" id="req-summary"></p>
+      <div class="pair-qr" id="req-qr" aria-label="QR code with the request link"></div>
+      <div class="link-row">
+        <code id="req-url"></code>
+      </div>
+      <div class="row">
+        <button class="btn ghost small" data-act="copy">Copy link</button>
+        <a class="btn ghost small btn-a" id="req-email" href="#">Email</a>
+        <a class="btn ghost small btn-a" id="req-sms" href="#">Text message</a>
+        <button class="btn small" data-act="share">Share link</button>
+      </div>
+      <button type="button" class="btn ghost small wide-btn" data-act="embed">Put this on your website</button>
+      <!-- The "Send me files" box for a website or blog (request.js: embedCode; explained on /embed) -->
+      <div id="req-embed" hidden>
+        <p class="muted small">Paste this code into your website or blog, in an "HTML" or "Embed" block. Visitors can send you files right there, end-to-end encrypted, and they arrive here like any upload to this link.</p>
+        <textarea id="req-embed-code" rows="5" readonly spellcheck="false" aria-label="Code for your website"></textarea>
+        <p class="muted small" id="req-embed-short" hidden>This link ends soon. For a website, make a new link that works for 1 year.</p>
+        <p class="muted small" id="req-embed-old" hidden>This link was made with an older version. Make a new link to put it on a website.</p>
+        <div class="row">
+          <button class="btn small" id="req-embed-copy" data-act="copy-embed">Copy code</button>
+          <a class="btn ghost small btn-a" href="/embed" target="_blank" rel="noopener">How it works</a>
+        </div>
+      </div>
+      <p class="muted small">Files sent to this link arrive on this device, in Received files. If OmniBeam is closed here, they wait on the server and arrive when you open it.</p>
+    </div>
+    <div id="req-mine" hidden>
+      <h4>Your request links</h4>
+      <div class="received" id="req-list"></div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" data-act="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Send files or a message to the linked Telegram chat (request.js: Telegram part) -->
+  <dialog id="dlg-tg" aria-labelledby="tg-title">
+    <h3 id="tg-title">Send to Telegram</h3>
+    <p class="muted">Files and text go to your chat with the OmniBeam bot. Up to 50 MB per file. Not end-to-end encrypted: Telegram can see them.</p>
+    <textarea id="tg-text" rows="3" placeholder="Type a message (optional)"></textarea>
+    <ul class="file-list" id="tg-files"></ul>
+    <p class="small" id="tg-progress" role="status"></p>
+    <div class="row">
+      <button class="btn ghost" data-close>Close</button>
+      <button class="btn ghost" id="tg-pick">Choose files</button>
+      <button class="btn" id="tg-send">Send</button>
+    </div>
+    <input type="file" id="tg-input" multiple hidden>
+  </dialog>
+
+  <!-- Connection check -->
+  <dialog id="dlg-fast" class="fast-dialog" aria-labelledby="fast-title">
+    <h3 id="fast-title">⚡ Faster Wi-Fi transfers</h3>
+    <p class="muted">Your browser only lets two devices on the same Wi-Fi connect directly after this page is allowed to use the microphone. That's how Safari keeps your local network address private.</p>
+    <ul class="fast-points">
+      <li><span aria-hidden="true">🎙️</span>Your browser asks once for the microphone.</li>
+      <li><span aria-hidden="true">⏹️</span>OmniBeam turns it off the same moment. Nothing is recorded or sent.</li>
+      <li><span aria-hidden="true">⚡</span>Files then go straight over your Wi-Fi, much faster.</li>
+    </ul>
+    <div class="row">
+      <button type="button" class="btn ghost" data-act="no">Not now</button>
+      <button type="button" class="btn" data-act="go">Continue</button>
+    </div>
+  </dialog>
+  <dialog id="dlg-actions" class="actions-dialog" aria-labelledby="actions-title">
+    <h3 id="actions-title">Send to <span class="who"></span></h3>
+    <div class="action-grid">
+      <button type="button" data-act="files"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span>Files</span></button>
+      <button type="button" data-act="folder" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Folder</span></button>
+      <button type="button" data-act="message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Message</span></button>
+      <button type="button" data-act="photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg><span>Take a photo</span></button>
+      <button type="button" data-act="voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg><span>Voice note</span></button>
+      <button type="button" data-act="screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20v14H2zM8 21h8M12 17v4"/></svg><span>Share my screen</span></button>
+      <button type="button" data-act="secret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v10H5zM7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Secret note</span></button>
+      <button type="button" data-act="speed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14l4-4M3.5 18a9 9 0 1 1 17 0"/></svg><span>Test speed</span></button>
+      <button type="button" data-act="scan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V3h4M17 3h4v4M21 17v4h-4M7 21H3v-4M7 8h10M7 12h10M7 16h6"/></svg><span>Scan to PDF</span></button>
+      <button type="button" data-act="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Chat</span></button>
+      <button type="button" data-act="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Ring this device</span></button>
+    </div>
+    <div class="shrink-toggle" role="group" aria-labelledby="shrink-toggle-label">
+      <span id="shrink-toggle-label">Photos</span>
+      <button type="button" data-shrink="off" aria-pressed="true">Original</button>
+      <button type="button" data-shrink="photos" aria-pressed="false">Smaller</button>
+    </div>
+    <div class="row">
+      <button type="button" class="btn ghost" data-close>Close</button>
+    </div>
+  </dialog>
+  <!-- Send to all my devices (app.js: openSendAll) -->
+  <dialog id="dlg-send-all" class="info-dialog send-all-dialog" aria-labelledby="send-all-title">
+    <h3 id="send-all-title">Send to all my devices</h3>
+    <p class="muted small">Devices that are offline get it as soon as they open OmniBeam (keep this page open).</p>
+    <div class="send-all-list"></div>
+    <textarea rows="3" maxlength="20000" placeholder="Message" aria-label="Message"></textarea>
+    <div class="row">
+      <button type="button" class="btn ghost" data-act="close">Close</button>
+      <button type="button" class="btn ghost" data-act="message">Send message</button>
+      <button type="button" class="btn" data-act="files">Send files</button>
+    </div>
+  </dialog>
+  <dialog id="dlg-check" class="info-dialog">
+    <h3>Connection check</h3>
+    <ul class="check-list"></ul>
+    <div class="check-tips"></div>
+    <div class="row">
+      <button class="btn ghost" data-act="again">Check again</button>
+      <button class="btn" data-act="fast" hidden>⚡ Allow local connections</button>
+      <button class="btn ghost" data-act="close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Install as an app (phones and Chrome/Edge); shown by install.js -->
+  <div id="install-bar" class="install-bar" hidden>
+    <img src="/icon-80.webp?v=2" alt="OmniBeam app icon" width="40" height="40">
+    <div class="install-text"><span class="install-title">Install OmniBeam</span><span id="install-hint">Open it like an app, straight from your home screen.</span></div>
+    <button type="button" class="btn small" id="install-yes">Install</button>
+    <button type="button" class="icon-btn small-x" id="install-no" title="Not now" aria-label="Not now"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+
+  <!-- A question with buttons at the bottom (see Nudge in app.js) -->
+  <div id="nudge" class="nudge" role="dialog" aria-live="polite" aria-labelledby="nudge-text" hidden>
+    <p id="nudge-text"></p>
+    <div class="nudge-btns"></div>
+    <button type="button" class="nudge-x" aria-label="Close">×</button>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="/report.js?v=3" defer></script>
+  <script src="/i18n.js?v=9" defer></script>
+  <script src="/app.js?v=74" defer></script>
+  <script src="/drop.js?v=8" defer></script>
+  <script src="/request.js?v=2" defer></script>
+  <script src="/install.js?v=2" defer></script>
+  <script src="/share.js?v=3" defer></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!--
+title: Envie arquivos do Mac ou Linux com clique direito
+description: Adicione o OmniBeam ao clique direito no Mac e no Linux e envie arquivos e textos para seu iPhone ou Android. Grátis, sem conta.
+short: Enviar pelo clique direito no Mac e no Linux
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Envie arquivos de um Mac ou PC Linux para o celular com o clique direito</h1>
+<p class="lead">O assistente do OmniBeam adiciona <em>Send with OmniBeam</em> ao menu do clique direito do Finder no Mac e do gerenciador de arquivos no Linux. Escolha os arquivos e o celular, e eles são enviados sem abrir o navegador no computador.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Baixar para Mac e Linux (ZIP)</a></p>
+
+<h2>Instalação no Mac</h2>
+<ol>
+  <li>Instale o <a href="https://nodejs.org" rel="noopener">Node.js</a>, que o assistente usa para enviar arquivos.</li>
+  <li>Descompacte o download e clique duas vezes em <em>install-mac.command</em>. Se o macOS não abrir, clique com o botão direito, escolha <em>Abrir</em> e depois <em>Abrir</em> de novo.</li>
+  <li>Digite o código de pareamento do seu celular quando for pedido (veja abaixo).</li>
+</ol>
+<p>Depois clique com o botão direito nos arquivos no Finder e escolha <em>Ações Rápidas</em> e <em>Send with OmniBeam</em>. Para um texto selecionado em qualquer app, clique com o botão direito e escolha <em>Serviços</em> e <em>Send text with OmniBeam</em>. Se não aparecerem, ative-os em Ajustes do Sistema, Teclado, Atalhos de Teclado, Serviços.</p>
+
+<h2>Instalação no Linux</h2>
+<ol>
+  <li>Instale o Node.js 18 ou mais recente, por exemplo <code>sudo apt install nodejs</code>, e o <code>zenity</code> (ou <code>kdialog</code> no KDE) para escolher o dispositivo.</li>
+  <li>Descompacte o download, abra um terminal nessa pasta e rode <code>sh install-linux.sh</code>.</li>
+  <li>Digite o código de pareamento do seu celular quando for pedido.</li>
+</ol>
+<p>Depois clique com o botão direito nos arquivos e escolha <em>Scripts</em> e <em>Send with OmniBeam</em> no Files, Nemo ou Caja, ou <em>Send with OmniBeam</em> direto no menu do Dolphin e do Thunar.</p>
+
+<h2>Pareie o celular uma vez</h2>
+<ol>
+  <li>No celular, abra <a href="/pt/">omnibeam.site</a>, toque no botão de link e em <em>Criar um código de pareamento</em>.</li>
+  <li>Digite esse código no instalador do computador.</li>
+  <li>No celular, abra a tela de pareamento de novo e marque <em>Confiável</em> ao lado do computador, para que os arquivos dele cheguem sem perguntar.</li>
+</ol>
+<p>O celular precisa estar com omnibeam.site aberto para receber. Os arquivos passam pelo servidor do OmniBeam, criptografados de ponta a ponta, então o servidor não consegue lê-los. Para remover os itens do menu, rode <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Usa Chrome ou Edge? A <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">extensão do OmniBeam</a> envia para o celular a página, um link, uma imagem ou o texto selecionado com o botão direito, no Mac, Linux e Windows.</p>
+<p>Envie arquivos também sem o clique direito, abrindo omnibeam.site no Mac ou no Linux.</p>
+<section class="qa">
+<h2>Perguntas e respostas</h2>
+<h3>O menu do botão direito funciona em todos os desktops Linux?</h3>
+<p>Funciona nos gerenciadores de arquivos mais comuns: Arquivos (Nautilus), Nemo, Caja, Dolphin e Thunar. Em outros desktops, você ainda pode abrir omnibeam.site no navegador e arrastar os arquivos.</p>
+<h3>Posso remover os itens do menu depois?</h3>
+<p>Sim. Rode node omnibeam-send.js --uninstall na pasta da ferramenta, e os itens somem do menu do botão direito.</p>
+<h3>Envia para iPhone e Android?</h3>
+<p>Sim. Envia para o celular que você pareou com o código, seja iPhone ou Android, no mesmo Wi‑Fi ou nos dados móveis, desde que omnibeam.site esteja aberto no celular.</p>
+<h3>Por que a ferramenta precisa do Node.js?</h3>
+<p>Ela é um pequeno script que roda com Node.js. Ela se pareia uma vez com o seu celular e depois envia os arquivos escolhidos sem abrir navegador no computador, o que deixa o botão direito rápido.</p>
+<h3>Posso enviar texto selecionado também?</h3>
+<p>No Mac, sim: selecione um texto em qualquer app, clique com o botão direito e escolha Serviços e depois Send text with OmniBeam. Ele chega ao celular pronto para copiar.</p>
+<h3>Os arquivos são criptografados?</h3>
+<p>Sim. Eles são criptografados de ponta a ponta no computador, e o servidor só os repassa sem conseguir lê-los.</p>
+</section>

@@ -1,0 +1,46 @@
+<!--
+title: Mesmo Wi-Fi, mas lento? Como resolver
+description: Por que dois aparelhos no mesmo Wi-Fi enviam por um servidor e não direto, e como resolver: VPN, perfil, roteador. Grátis, sem conta.
+short: Resolver transferências lentas no mesmo Wi‑Fi
+kind: guide
+order: 5
+updated: 2026-10-27
+-->
+<h1>Mesmo Wi‑Fi, mas as transferências são lentas ou passam pelo servidor</h1>
+<p class="lead">No mesmo Wi‑Fi, o OmniBeam deve conectar os dois dispositivos diretamente, e o caminho abaixo da barra de progresso deve dizer “mesma rede”. Se disser “internet”, “via roteador” ou “Enviando pelo servidor”, geralmente o motivo é um destes.</p>
+
+<h2>1. Faça a verificação de conexão</h2>
+<p>Toque no ID de rede ao lado do nome do seu dispositivo, na parte de baixo do OmniBeam. A verificação mostra se este dispositivo compartilha seu endereço local, se há uma VPN no caminho e qual rota suas últimas transferências seguiram, com dicas para o que encontrar.</p>
+
+<h2>2. Permita conexões locais (⚡)</h2>
+<p>Os navegadores escondem dos sites o endereço de rede local do dispositivo. O outro dispositivo então precisa encontrá-lo com uma busca de nome local (mDNS), que muitas redes bloqueiam, e a transferência faz o caminho longo pelo roteador. Toque em <b>⚡ Transferências Wi‑Fi mais rápidas</b> e permita o microfone uma vez em um ou nos dois dispositivos: nada é gravado, mas o navegador passa a compartilhar o endereço local e os dispositivos podem se conectar diretamente.</p>
+
+<h2>3. Desligue VPNs e retransmissões privadas</h2>
+<ul>
+  <li>Desligue apps de VPN, incluindo recursos de “conexão segura” de antivírus, nos dois dispositivos enquanto envia.</li>
+  <li>No iPhone, desligue a Retransmissão Privada do iCloud e, em Ajustes → Wi‑Fi → sua rede, desligue “Limitar Rastreio do Endereço IP”.</li>
+</ul>
+
+<h2>4. Windows: use uma rede privada</h2>
+<p>Em uma rede “Pública”, o Windows bloqueia as buscas locais que os dispositivos usam para se encontrar. Abra Configurações → Rede e Internet → Wi‑Fi (ou Ethernet) → sua rede e escolha <b>Rede privada</b>. Seu firewall também precisa permitir o navegador em redes privadas.</p>
+
+<h2>5. Verifique o roteador</h2>
+<ul>
+  <li>Redes de convidados e o “isolamento de AP” ou “isolamento de clientes” impedem que dispositivos no mesmo Wi‑Fi se alcancem. Use a rede principal ou desligue o isolamento nas configurações do roteador.</li>
+  <li>Alguns roteadores têm redes de 2,4 GHz e 5 GHz separadas e isoladas; conecte os dois dispositivos à mesma.</li>
+</ul>
+
+<h2>Ainda não está direto?</h2>
+<p>As transferências continuam funcionando: o OmniBeam envia pelo servidor, criptografado de ponta a ponta, só que mais devagar. Você também pode parear os dispositivos com um código; isso não deixa a rota mais rápida, mas eles sempre se encontram.</p>
+<p>Se as transferências são lentas ou passam pelo servidor, veja como resolver o envio lento com os passos acima.</p>
+<section class="qa">
+<h2>Perguntas e respostas</h2>
+<h3>Como sei se uma transferência está passando pelo servidor?</h3>
+<p>O OmniBeam mostra o tipo de conexão durante a transferência. Uma conexão direta no mesmo Wi‑Fi costuma chegar a vários megabytes por segundo; uma retransmitida fica limitada pela sua velocidade de upload e costuma ser bem mais lenta.</p>
+<h3>Uma rede de convidados pode causar isso?</h3>
+<p>Muitas vezes, sim. Redes de convidados e alguns roteadores mesh isolam os aparelhos por segurança, o que força o uso do relé. Coloque os dois aparelhos na rede principal para permitir a conexão direta.</p>
+<h3>Reiniciar o roteador ajuda?</h3>
+<p>Às vezes. Se as configurações do roteador estiverem certas, reiniciar pode destravar, mas uma VPN em um aparelho ou um perfil de rede pública no Windows vão continuar causando o problema até você mudar isso.</p>
+<h3>Por que continua lento com conexão direta?</h3>
+<p>Uma transferência direta só é tão rápida quanto a parte mais lenta do caminho. Um celular antigo, um sinal de Wi‑Fi fraco em outro cômodo ou uma rede de 2,4 GHz congestionada podem limitar a velocidade. Chegue mais perto do roteador ou use a rede de 5 GHz para arquivos grandes.</p>
+</section>

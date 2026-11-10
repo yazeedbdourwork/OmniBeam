@@ -1,0 +1,50 @@
+<!--
+title: Kirim File dari Mac atau Linux dengan Klik Kanan
+description: Tambahkan OmniBeam ke menu klik kanan di Mac dan Linux untuk mengirim file dan teks ke iPhone atau Android. Gratis, tanpa akun.
+short: Kirim dari menu klik kanan Mac dan Linux
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Kirim file dari Mac atau PC Linux ke ponsel dengan klik kanan</h1>
+<p class="lead">Pembantu OmniBeam menambahkan <em>Send with OmniBeam</em> ke menu klik kanan Finder di Mac dan pengelola file di Linux. Pilih file, pilih ponsel Anda, dan file terkirim tanpa membuka browser di komputer.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Unduh untuk Mac dan Linux (ZIP)</a></p>
+
+<h2>Pasang di Mac</h2>
+<ol>
+  <li>Pasang <a href="https://nodejs.org" rel="noopener">Node.js</a>, yang dipakai pembantu ini untuk mengirim file.</li>
+  <li>Ekstrak unduhan lalu klik dua kali <em>install-mac.command</em>. Jika macOS tidak mau membukanya, klik kanan, pilih <em>Open</em>, lalu <em>Open</em> lagi.</li>
+  <li>Ketik kode pasangan dari ponsel Anda saat diminta (lihat di bawah).</li>
+</ol>
+<p>Lalu klik kanan file di Finder dan pilih <em>Quick Actions</em> dan <em>Send with OmniBeam</em>. Untuk teks yang dipilih di aplikasi apa pun, klik kanan lalu pilih <em>Services</em> dan <em>Send text with OmniBeam</em>. Jika tidak ada, nyalakan di System Settings, Keyboard, Keyboard Shortcuts, Services.</p>
+
+<h2>Pasang di Linux</h2>
+<ol>
+  <li>Pasang Node.js 18 atau lebih baru, misalnya <code>sudo apt install nodejs</code>, dan <code>zenity</code> (atau <code>kdialog</code> di KDE) untuk memilih perangkat.</li>
+  <li>Ekstrak unduhan, buka terminal di folder itu, lalu jalankan <code>sh install-linux.sh</code>.</li>
+  <li>Ketik kode pasangan dari ponsel Anda saat diminta.</li>
+</ol>
+<p>Lalu klik kanan file dan pilih <em>Scripts</em> dan <em>Send with OmniBeam</em> di Files, Nemo, atau Caja, atau langsung <em>Send with OmniBeam</em> di menu Dolphin dan Thunar.</p>
+
+<h2>Pasangkan ponsel sekali</h2>
+<ol>
+  <li>Di ponsel, buka <a href="/id/">omnibeam.site</a>, ketuk tombol tautan lalu <em>Buat kode pasangan</em>.</li>
+  <li>Ketik kode itu di pemasang di komputer.</li>
+  <li>Di ponsel, buka lagi layar Pasangan dan centang <em>Tepercaya</em> di samping komputer, agar filenya masuk tanpa ditanya.</li>
+</ol>
+<p>Ponsel perlu membuka omnibeam.site untuk menerima. File melewati server OmniBeam, terenkripsi end-to-end, sehingga server tidak bisa membacanya. Untuk menghapus entri menu lagi, jalankan <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Memakai Chrome atau Edge? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">Ekstensi OmniBeam</a> mengirim halaman, tautan, gambar, atau teks yang dipilih ke ponsel Anda dengan klik kanan, di Mac, Linux, dan Windows.</p>
+<section class="qa">
+<h2>Tanya jawab</h2>
+<h3>Apakah menu klik kanan bekerja di setiap desktop Linux?</h3>
+<p>Menu itu bekerja di pengelola file yang umum: Files (Nautilus), Nemo, Caja, Dolphin, dan Thunar. Di desktop lain Anda tetap bisa membuka omnibeam.site di browser dan menyeret file ke sana.</p>
+<h3>Bisakah saya menghapus item menu nanti?</h3>
+<p>Bisa. Jalankan node omnibeam-send.js --uninstall di folder helper, maka entri itu hilang dari menu klik kanan.</p>
+<h3>Apakah bisa mengirim ke iPhone dan Android?</h3>
+<p>Bisa. Helper mengirim ke ponsel yang Anda pasangkan dengan kode, baik iPhone maupun Android, di Wi‑Fi yang sama atau dengan data seluler, selama omnibeam.site terbuka di ponsel.</p>
+<h3>Mengapa helper butuh Node.js?</h3>
+<p>Helper adalah skrip kecil yang berjalan dengan Node.js. Ia dipasangkan dengan ponsel Anda sekali, lalu mengirim file yang Anda pilih tanpa membuka browser di komputer, sehingga aksi klik kanan tetap cepat.</p>
+<h3>Bisakah saya mengirim teks yang dipilih juga?</h3>
+<p>Di Mac bisa: pilih teks di aplikasi apa pun, klik kanan, pilih Layanan, lalu Send text with OmniBeam. Teks tiba di ponsel, siap disalin.</p>
+</section>

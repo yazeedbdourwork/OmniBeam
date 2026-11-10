@@ -1,0 +1,41 @@
+{
+  "extName": {
+    "message": "OmniBeam: أرسل إلى أجهزتك"
+  },
+  "extDesc": {
+    "message": "أرسل الصفحة التي تتصفحها أو رابطًا أو صورة أو نصًا محددًا إلى هاتفك أو حاسوبك عبر OmniBeam."
+  },
+  "menuRoot": {
+    "message": "أرسل عبر OmniBeam"
+  },
+  "menuChoose": {
+    "message": "اختر جهازًا…"
+  },
+  "menuOpen": {
+    "message": "افتح OmniBeam واختر جهازًا"
+  },
+  "popupPage": {
+    "message": "أرسل هذه الصفحة إلى"
+  },
+  "popupSelection": {
+    "message": "أرسل النص المحدد إلى"
+  },
+  "popupNone": {
+    "message": "لا توجد أجهزة بعد. افتح OmniBeam على جهازك الآخر أيضًا، ثم عد إلى هنا."
+  },
+  "popupOpen": {
+    "message": "افتح OmniBeam"
+  },
+  "popupSent": {
+    "message": "تم الإرسال. يضغط الجهاز الآخر «قبول»."
+  },
+  "popupChoose": {
+    "message": "اختر الجهاز في OmniBeam."
+  },
+  "popupMore": {
+    "message": "المزيد"
+  },
+  "popupImages": {
+    "message": "أرسل الصور من أي موقع (سيطلب Chrome الإذن)"
+  }
+}

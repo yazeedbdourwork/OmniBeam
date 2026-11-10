@@ -1,0 +1,48 @@
+<!--
+title: 在你的网站上放一个“给我发送文件”框，免费 | OmniBeam
+description: 在你的网站或博客上添加一个免费的收件框，让访客以端到端加密的方式给你发送文件。复制一段代码即可，无需账号，无需插件。
+short: 网站用的“给我发送文件”框
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>适用于网站或博客的“给我发送文件”框</h1>
+<p class="lead">让访客、客户或学生直接从你的页面给你发送文件。你只需粘贴一段短代码；文件在他们的设备上加密，然后到达你设备上的 OmniBeam。</p>
+
+<h2>步骤</h2>
+<ol>
+  <li>在要接收文件的设备上打开 <a href="/zh/">omnibeam.site</a>，点按 ⋯ 菜单中的<b>请求文件</b>。</li>
+  <li>写下你需要什么(可选)，在“链接有效期”中选择 <b>1 年(用于网站)</b>，然后点按<b>创建请求链接</b>。</li>
+  <li>点按<b>放到你的网站上</b>，再点按<b>复制代码</b>。</li>
+  <li>把代码粘贴到你的页面中：WordPress 中用<b>自定义 HTML</b> 区块，Blogger 中用 <b>HTML/JavaScript</b> 小工具，Wix 中用 <b>Embed HTML</b> 元素，Squarespace 中用 <b>Code</b> 区块。</li>
+</ol>
+<p>访客会看到一个小框，里面有“选择文件”、一个可选的姓名栏和一个发送按钮。他们不需要应用，也不需要账号。文件会到达你设备上的“收到的文件”；如果那边的 OmniBeam 是关着的，文件会在服务器上等待，等你打开时到达，如果你开启了通知，还会收到通知。</p>
+
+<h2>WordPress：免费的 OmniBeam 插件</h2>
+<p>在 WordPress 上有更简单的方法：<a href="/tools/omnibeam-wordpress.zip">下载 OmniBeam 插件(omnibeam-wordpress.zip)</a>，然后在 WordPress 中进入<b>插件 → 安装插件 → 上传插件</b>，选择 zip 文件并点按<b>启用</b>。把你的代码(或只是它的链接)粘贴到<b>设置 → OmniBeam Box</b> 中，然后在任意页面添加区块 <b>OmniBeam: Send me files</b>，或短代码 <code>[omnibeam_box]</code>。使用自己的链接和高度的框：<code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>。插件只接受来自 omnibeam.site 的框，文件也从不经过你的 WordPress 网站。</p>
+
+<h2>代码的样子</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=zh#…" title="给我发送文件" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/zh/"&gt;由 OmniBeam 提供支持&lt;/a&gt; · 免费、端到端加密的文件分享&lt;/p&gt;</pre>
+<p>请保留“由 OmniBeam 提供支持”这一行：这个框正是靠它保持免费的。</p>
+
+<h2>它私密、安全吗？</h2>
+<ul>
+  <li>每次上传都在访客的浏览器中加密。它的密钥用你设备的公钥封存，只有你的设备持有对应的私钥，所以无论是 OmniBeam 还是任何读到你页面代码的人，都打不开这些文件。</li>
+  <li>你页面上的代码是公开的。任何看到它的人都能给你发送文件，也能读到“你需要什么”的文字和你设备的名称，所以不要在那里写任何私人内容。</li>
+  <li>只有你的设备能下载这些上传，每个上传在你的设备拿到后会立即从服务器删除。无人领取的文件会在 7 天后删除。</li>
+  <li>常规限制仍然有效：每次上传有大小限制，每个网络每小时有次数限制，每个框每天最多 100 次上传。</li>
+  <li>随时在同一个窗口中删除请求链接，这个框就会立即停止工作。</li>
+</ul>
+
+<section class="qa">
+<h2>问题与解答</h2>
+<h3>要花钱吗？</h3>
+<p>不要。这个框是免费的，无需账号，没有广告。WordPress 插件也是免费的。</p>
+<h3>可以在好几个页面上用吗？</h3>
+<p>可以。在你喜欢的每个页面上粘贴同样的代码；所有上传都会到达同一台设备。如果你想区分它们，就另建一个请求链接。</p>
+<h3>为什么这个框过一段时间就不能用了？</h3>
+<p>每个请求链接都会在你选择的时间结束。网站请选择 1 年，并在到期前创建新的链接和代码。</p>
+<h3>有人能用我的框给我发垃圾内容吗？</h3>
+<p>和电子邮件地址一样，任何访问页面的人都能给你发送文件。文件从不会自己打开，上传按网络和按天受到限制，你也可以删除链接来关闭这个框。</p>
+</section>

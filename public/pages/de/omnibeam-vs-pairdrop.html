@@ -1,0 +1,57 @@
+<!--
+title: OmniBeam vs. PairDrop: Welches Tool?
+description: PairDrop und OmniBeam senden Dateien im Browser. Ein ehrlicher Vergleich: Kopplung, Verschlüsselung, Links und Apps. Kostenlos, ohne Konto.
+short: OmniBeam vs. PairDrop
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam vs. PairDrop</h1>
+<p class="lead">PairDrop ist aus Snapdrop entstanden und ein gutes Open-Source-Tool. OmniBeam funktioniert im Browser genauso, also entscheiden ein paar Funktionen. Hier ein ehrlicher Vergleich.</p>
+
+<div class="table-wrap compare-wrap"><table class="compare">
+<thead><tr><th></th><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>Gleiches WLAN, nichts installieren</th><td>Ja</td><td>Ja</td></tr>
+<tr><th>Geräte per Code oder QR koppeln</th><td>Ja</td><td>Ja</td></tr>
+<tr><th>Öffentliche Räume</th><td>Ja, optional mit Passwort</td><td>Ja</td></tr>
+<tr><th>Wenn die direkte Verbindung scheitert</th><td>Server-Relay, Ende-zu-Ende verschlüsselt, mit Fortsetzen nach einem Abbruch</td><td>TURN-Server</td></tr>
+<tr><th>Später an jemanden senden</th><td>Verschlüsselter Link, nach Ablauf gelöscht</td><td>Nein</td></tr>
+<tr><th>Zwischenablage-Sync und Benachrichtigungen bei geschlossener App</th><td>Ja, zwischen gekoppelten Geräten</td><td>Nein</td></tr>
+<tr><th>Rechtsklick Senden an (Windows, Mac, Linux) und Browser-Erweiterung</th><td>Ja</td><td>Kommandozeilen-Tool und Anleitungen</td></tr>
+<tr><th>Open Source und Selbsthosting</th><td>Nein</td><td>Ja (Docker oder Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>Nimm PairDrop, wenn</h2>
+<p>du einen eigenen Server betreiben, den Code lesen willst oder eine Sprache brauchst, die OmniBeam noch nicht hat. PairDrop ist freie Software und leicht selbst zu hosten.</p>
+
+<h2>Nimm OmniBeam, wenn</h2>
+<ul>
+  <li>Große Dateien über schlechte Verbindungen: Eine abgebrochene Übertragung geht dort weiter, wo sie stoppte, statt zu scheitern.</li>
+  <li>Du an jemanden senden willst, der gerade nicht online ist, mit einem Link, der auf deinem Gerät verschlüsselt wird.</li>
+  <li>Du täglich Dateien zwischen denselben Geräten bewegst: Gekoppelte Geräte bekommen Benachrichtigungen und können die Zwischenablage teilen, für Windows gibt es eine App im Microsoft Store und für Chrome und Edge eine Erweiterung.</li>
+  <li>Du Fotos und Videos vor dem Senden verkleinern oder die Geschwindigkeit zwischen zwei Geräten testen willst.</li>
+</ul>
+
+<h2>Probier beide aus</h2>
+<p>Keins braucht ein Konto, also entscheidest du am schnellsten, indem du <a href="/de/">omnibeam.site</a> auf zwei Geräten öffnest und ein großes Video sendest. Die <a href="/de/how-to-use">Anleitung</a> listet jede Funktion.</p>
+<p>Welches Tool passt? OmniBeam für Ende-zu-Ende-Verschlüsselung, Links und App; PairDrop für schnelles Senden in einem Netz.</p>
+<section class="qa">
+<h2>Fragen und Antworten</h2>
+<h3>Hängen OmniBeam und PairDrop zusammen?</h3>
+<p>Beide laufen im Browser und beruhen auf derselben Idee wie Snapdrop: auf zwei Geräten eine Seite öffnen und senden. Es sind getrennte Projekte mit unterschiedlichen Funktionen und Servern.</p>
+<h3>Welches schützt Dateien besser?</h3>
+<p>Beide senden direkt, wenn es geht. OmniBeam verschlüsselt zusätzlich jede Übertragung Ende-zu-Ende auf deinem Gerät, auch wenn die Daten über ein Relay laufen, das sie deshalb nicht lesen kann.</p>
+<h3>Kann ich mit einem davon einen Link teilen?</h3>
+<p>OmniBeam teilt Dateien per verschlüsseltem Link, der automatisch abläuft, praktisch, wenn die andere Person nicht gleichzeitig online ist. Prüfe die aktuellen Funktionen von PairDrop, wenn du das brauchst.</p>
+<h3>Welches hat Apps?</h3>
+<p>OmniBeam gibt es auch im Microsoft Store, als Chrome-Erweiterung und als Android-App, aber die Browser-Version funktioniert überall ohne sie.</p>
+<h3>Welches funktioniert zwischen verschiedenen Netzen?</h3>
+<p>Beide können Geräte koppeln, damit sie sich in verschiedenen Netzen finden. OmniBeam nutzt einen 6‑stelligen Code oder QR-Code, und gekoppelte Geräte erscheinen, sobald OmniBeam auf beiden offen ist.</p>
+<h3>Welches ist besser für eine Gruppe?</h3>
+<p>Beide bieten öffentliche Räume. OmniBeam hat zusätzlich „An alle senden“, das dieselben Dateien in einem Schritt an alle geöffneten Geräte schickt.</p>
+<h3>Welches soll ich nehmen?</h3>
+<p>Probier beide aus: Keines braucht ein Konto, du kannst sie also in wenigen Minuten auf deinen Geräten vergleichen und das behalten, das sich in deinem Netz am besten verbindet.</p>
+<h3>Sind meine Dateien verschlüsselt?</h3>
+<p>Ja. Jede Übertragung wird auf deinem Gerät Ende-zu-Ende verschlüsselt, und nur das empfangende Gerät kann sie entschlüsseln. Auch wenn die Daten über ein Relay laufen, weil eine direkte Verbindung blockiert ist, sieht das Relay nur verschlüsselte Daten.</p>
+</section>

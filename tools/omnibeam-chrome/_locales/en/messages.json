@@ -1,0 +1,41 @@
+{
+  "extName": {
+    "message": "OmniBeam: send to your devices"
+  },
+  "extDesc": {
+    "message": "Send the page you're on, a link, an image or selected text to your phone or computer with OmniBeam."
+  },
+  "menuRoot": {
+    "message": "Send to OmniBeam"
+  },
+  "menuChoose": {
+    "message": "Choose a device…"
+  },
+  "menuOpen": {
+    "message": "Open OmniBeam and choose a device"
+  },
+  "popupPage": {
+    "message": "Send this page to"
+  },
+  "popupSelection": {
+    "message": "Send the selected text to"
+  },
+  "popupNone": {
+    "message": "No devices yet. Open OmniBeam on your other device too, then come back here."
+  },
+  "popupOpen": {
+    "message": "Open OmniBeam"
+  },
+  "popupSent": {
+    "message": "Sent. The other device taps Accept."
+  },
+  "popupChoose": {
+    "message": "Choose the device in OmniBeam."
+  },
+  "popupMore": {
+    "message": "More"
+  },
+  "popupImages": {
+    "message": "Send images from any website (Chrome asks for permission)"
+  }
+}

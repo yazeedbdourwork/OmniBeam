@@ -1,0 +1,168 @@
+# OmniBeam: test, build and put the site live on cPanel, every time main changes (or by hand: Actions -> Deploy ->
+# Run workflow). Setup steps for the owner: deploy/AUTO-DEPLOY-SETUP.txt on the PC.
+#
+#   1. test    npm test (the same tests as run-tests.cmd), on a fresh Ubuntu machine
+#   2. deploy  node tools/build-upload.js ci  -> deploy/omnibeam-ci-upload.zip (server.js + public/, minified),
+#              uploaded to the app folder on cPanel and unpacked over it, then the Node app restarted
+#              (tmp/restart.txt), then: is the live site on this build? (tools/deploy.js --check) and the quick live
+#              check (tests/live.check.js)
+#
+# Two ways to reach cPanel; the first one whose secrets are set is used:
+#   A. cPanel API token (recommended): CPANEL_HOST, CPANEL_USER, CPANEL_TOKEN, CPANEL_APP_DIR
+#   B. FTP: FTP_HOST, FTP_USER, FTP_PASSWORD, FTP_APP_DIR (FTPS on port 21)
+# Optional: CLOUDFLARE_ZONE + CLOUDFLARE_TOKEN (a token allowed "Cache Purge") to purge Cloudflare afterwards.
+# Nothing in data/ (stats, links, pairings…) is touched: the zip only holds server.js and public/.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits for the one running
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Tests
+        run: npm test -- --reporter=line
+      - name: Keep the test report when something failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: tests/.results
+          retention-days: 7
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+      CPANEL_USER: ${{ secrets.CPANEL_USER }}
+      CPANEL_TOKEN: ${{ secrets.CPANEL_TOKEN }}
+      CPANEL_APP_DIR: ${{ secrets.CPANEL_APP_DIR }}
+      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_USER: ${{ secrets.FTP_USER }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      FTP_APP_DIR: ${{ secrets.FTP_APP_DIR }}
+      CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Build the upload zip
+        run: |
+          node tools/build-upload.js ci | tee build.txt
+          echo "BUILD=$(grep -o 'reports build [0-9a-f]*' build.txt | awk '{print $3}')" >> "$GITHUB_ENV"
+
+      # ---------- A. cPanel API token ----------
+      - name: Upload and unpack (cPanel API)
+        if: env.CPANEL_TOKEN != ''
+        run: |
+          set -euo pipefail
+          API="https://${CPANEL_HOST}:2083"
+          AUTH="Authorization: cpanel ${CPANEL_USER}:${CPANEL_TOKEN}"
+          ZIP=deploy/omnibeam-ci-upload.zip
+          # The app folder as cPanel's file manager sees it, e.g. /home/<user>/omnibeam
+          DIR="${CPANEL_APP_DIR%/}"
+          echo "Uploading $(du -h "$ZIP" | cut -f1) to ${DIR}"
+          curl -fsS -H "$AUTH" "$API/execute/Fileman/upload_files" \
+            -F "dir=${DIR}" -F "overwrite=1" -F "file-1=@${ZIP};filename=omnibeam-ci-upload.zip" | tee upload.json
+          grep -q '"status":1' upload.json
+          # Unpack over the app folder (the Extract of File Manager), then delete the zip
+          curl -fsS -H "$AUTH" --get "$API/json-api/cpanel" \
+            --data-urlencode "cpanel_jsonapi_user=${CPANEL_USER}" --data-urlencode "cpanel_jsonapi_apiversion=2" \
+            --data-urlencode "cpanel_jsonapi_module=Fileman" --data-urlencode "cpanel_jsonapi_func=fileop" \
+            --data-urlencode "op=extract" --data-urlencode "sourcefiles=${DIR}/omnibeam-ci-upload.zip" \
+            --data-urlencode "destfiles=${DIR}" --data-urlencode "doubledecode=0" | tee extract.json
+          grep -q '"result":1' extract.json
+          curl -fsS -H "$AUTH" --get "$API/json-api/cpanel" \
+            --data-urlencode "cpanel_jsonapi_user=${CPANEL_USER}" --data-urlencode "cpanel_jsonapi_apiversion=2" \
+            --data-urlencode "cpanel_jsonapi_module=Fileman" --data-urlencode "cpanel_jsonapi_func=fileop" \
+            --data-urlencode "op=unlink" --data-urlencode "sourcefiles=${DIR}/omnibeam-ci-upload.zip" > /dev/null || true
+          # Restart the Node app: Passenger restarts it when tmp/restart.txt changes
+          curl -fsS -H "$AUTH" "$API/execute/Fileman/save_file_content" \
+            --data-urlencode "dir=${DIR}/tmp" --data-urlencode "file=restart.txt" \
+            --data-urlencode "content=deploy $(date -u +%FT%TZ) ${GITHUB_SHA}" --data-urlencode "fallback=1" | tee restart.json
+          grep -q '"status":1' restart.json
+
+      # ---------- B. FTP ----------
+      - name: Unpack the zip for FTP
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != ''
+        run: |
+          mkdir -p ftp-out
+          cd ftp-out && unzip -q ../deploy/omnibeam-ci-upload.zip
+          # Changing tmp/restart.txt makes Passenger restart the app once the upload is done
+          mkdir -p tmp && echo "deploy $(date -u +%FT%TZ) ${GITHUB_SHA}" > tmp/restart.txt
+      - name: Upload (FTP)
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./ftp-out/
+          server-dir: ${{ secrets.FTP_APP_DIR }}/
+          # Only upload, never delete: data/, node_modules/ and the host's own files stay as they are
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+
+      - name: No way to reach cPanel
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD == ''
+        run: |
+          echo "::error::Set the CPANEL_* secrets (or FTP_*) in GitHub -> Settings -> Secrets and variables -> Actions. See deploy/AUTO-DEPLOY-SETUP.txt."
+          exit 1
+
+      - name: Purge Cloudflare
+        if: env.CLOUDFLARE_TOKEN != ''
+        run: |
+          curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/purge_cache" \
+            -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}" -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | grep -q '"success":true'
+
+      - name: Is the live site on this build?
+        run: |
+          echo "Waiting for omnibeam.site to report build ${BUILD}"
+          for i in $(seq 1 20); do
+            if node tools/deploy.js --check; then exit 0; fi
+            sleep 15
+          done
+          echo "::error::The live site did not report build ${BUILD} after 5 minutes. Check cPanel -> Setup Node.js App (Restart) and the app's log."
+          exit 1
+
+      - run: npx playwright install --with-deps chromium
+      - name: Quick live check
+        run: npx playwright test -c tests/live.config.js --reporter=line
+      - name: Keep the live check report when something failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-check
+          path: tests/.results-live
+          retention-days: 7

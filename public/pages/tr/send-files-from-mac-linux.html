@@ -1,0 +1,55 @@
+<!--
+title: Mac veya Linux'tan Sağ Tıkla Dosya Gönderin
+description: OmniBeam'i Mac ve Linux'ta sağ tık menüsüne ekleyin, iPhone veya Android telefonunuza dosya ve metin gönderin. Ücretsiz, hesap gerekmez.
+short: Mac ve Linux sağ tık menüsünden gönderin
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Mac veya Linux bilgisayardan telefona sağ tıkla dosya gönderin</h1>
+<p class="lead">OmniBeam aracı, Mac'te Finder'ın ve Linux'ta dosya yöneticisinin sağ tık menüsüne <em>Send with OmniBeam</em> ekler. Dosyaları ve telefonunuzu seçin, bilgisayarda tarayıcıyı açmadan gönderilsin.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Mac ve Linux için indirin (ZIP)</a></p>
+
+<h2>Mac'e kurun</h2>
+<ol>
+  <li>Aracın dosya göndermek için kullandığı <a href="https://nodejs.org" rel="noopener">Node.js</a>'i kurun.</li>
+  <li>İndirdiğiniz dosyayı açın ve <em>install-mac.command</em> dosyasına çift tıklayın. macOS açmazsa sağ tıklayın, <em>Aç</em>'ı ve yeniden <em>Aç</em>'ı seçin.</li>
+  <li>İstendiğinde telefonunuzdaki eşleştirme kodunu yazın (aşağıya bakın).</li>
+</ol>
+<p>Sonra Finder'da dosyalara sağ tıklayıp <em>Hızlı Eylemler</em> ve <em>Send with OmniBeam</em>'i seçin. Herhangi bir uygulamada seçili metin için sağ tıklayın, <em>Servisler</em> ve <em>Send text with OmniBeam</em>'i seçin. Görünmüyorlarsa Sistem Ayarları, Klavye, Klavye Kestirmeleri, Servisler'den açın.</p>
+
+<h2>Linux'a kurun</h2>
+<ol>
+  <li>Node.js 18 veya daha yenisini kurun, örneğin <code>sudo apt install nodejs</code>, cihaz seçimi için de <code>zenity</code> (KDE'de <code>kdialog</code>).</li>
+  <li>İndirdiğiniz dosyayı açın, o klasörde bir terminal açın ve <code>sh install-linux.sh</code> çalıştırın.</li>
+  <li>İstendiğinde telefonunuzdaki eşleştirme kodunu yazın.</li>
+</ol>
+<p>Sonra dosyalara sağ tıklayıp Dosyalar, Nemo veya Caja'da <em>Betikler</em> ve <em>Send with OmniBeam</em>'i, Dolphin ve Thunar'da doğrudan <em>Send with OmniBeam</em>'i seçin.</p>
+
+<h2>Telefonunuzu bir kez eşleştirin</h2>
+<ol>
+  <li>Telefonda <a href="/tr/">omnibeam.site</a>'ı açın, bağlantı düğmesine ve <em>Eşleştirme kodu oluştur</em>'a dokunun.</li>
+  <li>Bu kodu bilgisayardaki kurulum penceresine yazın.</li>
+  <li>Telefonda eşleştirme ekranını yeniden açın ve bilgisayarın yanındaki <em>Güvenilir</em> kutusunu işaretleyin, böylece dosyaları sormadan gelir.</li>
+</ol>
+<p>Telefonun almak için omnibeam.site'ı açık tutması gerekir. Dosyalar OmniBeam sunucusundan uçtan uca şifreli geçer, sunucu onları okuyamaz. Menü girdilerini kaldırmak için <code>node omnibeam-send.js --uninstall</code> çalıştırın.</p>
+<p>Chrome veya Edge mi kullanıyorsunuz? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam uzantısı</a> sayfayı, bir bağlantıyı, bir resmi ya da seçili metni Mac, Linux ve Windows'ta sağ tıkla telefonunuza gönderir.</p>
+<p>Mac veya Linux'tan sağ tık menüsü olmadan da telefona dosya gönderin: omnibeam.site'ı açmanız yeterli.</p>
+<section class="qa">
+<h2>Sorular ve cevaplar</h2>
+<h3>Sağ tık menüsü her Linux masaüstünde çalışır mı?</h3>
+<p>Yaygın dosya yöneticilerinde çalışır: Dosyalar (Nautilus), Nemo, Caja, Dolphin ve Thunar. Diğer masaüstlerinde de tarayıcıda omnibeam.site adresini açıp dosyaları sürükleyebilirsiniz.</p>
+<h3>Menü öğelerini sonra kaldırabilir miyim?</h3>
+<p>Evet. Yardımcının klasöründe node omnibeam-send.js --uninstall komutunu çalıştırın; girdiler sağ tık menüsünden kaybolur.</p>
+<h3>iPhone’a ve Android’e gönderir mi?</h3>
+<p>Evet. Kodla eşleştirdiğiniz telefona gönderir; iPhone da olsa Android de olsa, aynı Wi‑Fi’de de olsa mobil veride de olsa, yeter ki telefonda omnibeam.site açık olsun.</p>
+<h3>Yardımcı neden Node.js istiyor?</h3>
+<p>Yardımcı, Node.js ile çalışan küçük bir betiktir. Telefonunuzla bir kez eşleşir ve sonra seçtiğiniz dosyaları bilgisayarda tarayıcı açmadan gönderir; bu da sağ tık işlemini hızlı tutar.</p>
+<h3>Seçili metni de gönderebilir miyim?</h3>
+<p>Mac’te evet: herhangi bir uygulamada metni seçin, sağ tıklayıp Hizmetler’i, ardından Send text with OmniBeam’i seçin. Metin telefonda kopyalanmaya hazır olarak gelir.</p>
+<h3>Aynı anda birden fazla cihaza gönderebilir miyim?</h3>
+<p>Evet. “Herkese gönder” ile aynı dosyaları OmniBeam’in açık olduğu her cihaza tek adımda gönderin. Bir grup için herkese açık bir oda da oluşturabilirsiniz; herkes aynı kısa kodla katılır ve birbirine dosya gönderebilir.</p>
+<h3>Ağımın hızını nasıl ölçebilirim?</h3>
+<p>OmniBeam’de iki cihazınız arasında bir hız testi vardır. Büyük bir dosya göndermeden önce doğrudan aktarımın ağınızda ne kadar hızlı olduğunu görmek için çalıştırın; hız düşükse cihazları modeme yaklaştırın veya VPN’i kapatın.</p>
+</section>

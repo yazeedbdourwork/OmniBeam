@@ -1,0 +1,52 @@
+<!--
+title: Mac یا Linux سے رائٹ کلک کے ذریعے فائلیں بھیجیں
+description: Mac اور Linux پر رائٹ کلک مینو میں OmniBeam شامل کریں، اور اپنے iPhone یا Android فون پر فائلیں اور متن بھیجیں۔ مفت، بغیر سائن اپ۔
+short: Mac اور Linux کے رائٹ کلک مینو سے بھیجیں
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Mac یا Linux PC سے رائٹ کلک کے ذریعے اپنے فون پر فائلیں بھیجیں</h1>
+<p class="lead">OmniBeam مددگار Mac پر Finder اور Linux پر فائل مینیجر کے رائٹ کلک مینو میں <em>OmniBeam سے بھیجیں</em> شامل کرتا ہے۔ فائلیں چنیں، اپنا فون چنیں اور وہ چلی جاتی ہیں، کمپیوٹر پر براؤزر کھولے بغیر۔</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Mac اور Linux کے لیے ڈاؤن لوڈ کریں (ZIP)</a></p>
+
+<h2>Mac پر انسٹال کریں</h2>
+<ol>
+  <li><a href="https://nodejs.org" rel="noopener">Node.js</a> انسٹال کریں، جسے مددگار فائلیں بھیجنے کے لیے استعمال کرتا ہے۔</li>
+  <li>ڈاؤن لوڈ ان زپ کریں اور <em>install-mac.command</em> پر ڈبل کلک کریں۔ اگر macOS اسے نہ کھولے تو رائٹ کلک کریں، <em>Open</em> چنیں اور پھر دوبارہ <em>Open</em>۔</li>
+  <li>پوچھا جائے تو اپنے فون سے جوڑنے کا کوڈ لکھیں (نیچے دیکھیں)۔</li>
+</ol>
+<p>پھر Finder میں فائلوں پر رائٹ کلک کریں اور <em>Quick Actions</em> اور <em>Send with OmniBeam</em> چنیں۔ کسی بھی ایپ میں منتخب متن کے لیے رائٹ کلک کریں اور <em>Services</em> اور <em>Send text with OmniBeam</em> چنیں۔ اگر یہ نظر نہ آئیں تو انہیں System Settings، Keyboard، Keyboard Shortcuts، Services میں آن کریں۔</p>
+
+<h2>Linux پر انسٹال کریں</h2>
+<ol>
+  <li>Node.js 18 یا نیا انسٹال کریں، مثلاً <code>sudo apt install nodejs</code>، اور ڈیوائس چننے کے لیے <code>zenity</code> (یا KDE پر <code>kdialog</code>)۔</li>
+  <li>ڈاؤن لوڈ ان زپ کریں، اس فولڈر میں ٹرمینل کھولیں اور <code>sh install-linux.sh</code> چلائیں۔</li>
+  <li>پوچھا جائے تو اپنے فون سے جوڑنے کا کوڈ لکھیں۔</li>
+</ol>
+<p>پھر فائلوں پر رائٹ کلک کریں اور Files، Nemo یا Caja میں <em>Scripts</em> اور <em>Send with OmniBeam</em> چنیں، یا Dolphin اور Thunar میں سیدھا مینو میں <em>Send with OmniBeam</em>۔</p>
+
+<h2>اپنا فون ایک بار جوڑیں</h2>
+<ol>
+  <li>فون پر <a href="/ur/">omnibeam.site</a> کھولیں، لنک بٹن ٹیپ کریں اور <em>جوڑنے کا کوڈ بنائیں</em>۔</li>
+  <li>وہ کوڈ کمپیوٹر پر انسٹالر میں لکھیں۔</li>
+  <li>فون پر جوڑنے کی اسکرین دوبارہ کھولیں اور کمپیوٹر کے ساتھ <em>قابل اعتماد</em> پر نشان لگائیں، تاکہ اس کی فائلیں بغیر پوچھے آئیں۔</li>
+</ol>
+<p>وصول کرنے کے لیے فون پر omnibeam.site کھلا ہونا چاہیے۔ فائلیں OmniBeam سرور سے جاتی ہیں، اینڈ ٹو اینڈ انکرپٹڈ، اس لیے سرور انہیں نہیں پڑھ سکتا۔ مینو کے اندراجات دوبارہ ہٹانے کے لیے <code>node omnibeam-send.js --uninstall</code> چلائیں۔</p>
+<p>Chrome یا Edge استعمال کرتے ہیں؟ <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam ایکسٹینشن</a> Mac، Linux اور Windows پر رائٹ کلک سے صفحہ، لنک، تصویر یا منتخب متن آپ کے فون پر بھیجتی ہے۔</p>
+<section class="qa">
+<h2>سوالات و جوابات</h2>
+<h3>کیا رائٹ کلک مینو ہر Linux ڈیسک ٹاپ پر چلتا ہے؟</h3>
+<p>یہ عام فائل مینیجرز میں چلتا ہے: Files (Nautilus)، Nemo، Caja، Dolphin اور Thunar۔ دوسرے ڈیسک ٹاپس پر آپ پھر بھی براؤزر میں omnibeam.site کھول کر فائلیں اس میں گھسیٹ سکتے ہیں۔</p>
+<h3>کیا میں بعد میں مینو آئٹمز ہٹا سکتا ہوں؟</h3>
+<p>جی ہاں۔ مددگار کے فولڈر میں node omnibeam-send.js --uninstall چلائیں، اور اندراجات رائٹ کلک مینو سے غائب ہو جاتے ہیں۔</p>
+<h3>کیا یہ iPhone اور Android پر بھیجتا ہے؟</h3>
+<p>جی ہاں۔ یہ اس فون پر بھیجتا ہے جسے آپ نے کوڈ سے جوڑا، چاہے وہ iPhone ہو یا Android فون، ایک ہی Wi‑Fi پر ہو یا موبائل ڈیٹا پر، جب تک فون پر omnibeam.site کھلا ہو۔</p>
+<h3>مددگار کو Node.js کیوں چاہیے؟</h3>
+<p>مددگار ایک چھوٹا اسکرپٹ ہے جو Node.js سے چلتا ہے۔ یہ ایک بار آپ کے فون سے جڑتا ہے اور پھر کمپیوٹر پر براؤزر کھولے بغیر آپ کی چنی ہوئی فائلیں بھیجتا ہے، جس سے رائٹ کلک کا عمل تیز رہتا ہے۔</p>
+<h3>کیا میں منتخب متن بھی بھیج سکتا ہوں؟</h3>
+<p>Mac پر ہاں: کسی بھی ایپ میں متن منتخب کریں، رائٹ کلک کریں اور Services، پھر Send text with OmniBeam چنیں۔ یہ فون پر کاپی کے لیے تیار پہنچتا ہے۔</p>
+<h3>کیا فائلیں انکرپٹڈ ہیں؟</h3>
+<p>جی ہاں۔ یہ کمپیوٹر پر اینڈ ٹو اینڈ انکرپٹ ہوتی ہیں، اور سرور انہیں پڑھے بغیر صرف آگے بڑھاتا ہے۔</p>
+</section>

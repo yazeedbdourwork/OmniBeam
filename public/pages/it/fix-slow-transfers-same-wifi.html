@@ -1,0 +1,46 @@
+<!--
+title: Stesso Wi-Fi ma trasferimenti lenti? Come risolvere
+description: Perché due dispositivi sullo stesso Wi-Fi inviano tramite un server invece che direttamente, e come risolvere: VPN, profilo di rete, router.
+short: Trasferimenti lenti sullo stesso Wi‑Fi
+kind: guide
+order: 5
+updated: 2026-10-26
+-->
+<h1>Stesso Wi‑Fi, ma i trasferimenti sono lenti o passano dal server</h1>
+<p class="lead">Sullo stesso Wi‑Fi, OmniBeam dovrebbe collegare i due dispositivi direttamente e il percorso sotto la barra di avanzamento dovrebbe dire "stessa rete". Se dice "internet", "tramite router" o "Invio tramite server", di solito il motivo è uno di questi.</p>
+
+<h2>1. Esegui il controllo della connessione</h2>
+<p>Tocca l'ID di rete accanto al nome del dispositivo in fondo a OmniBeam. Il controllo mostra se questo dispositivo condivide il suo indirizzo locale, se una VPN è d'intralcio e che percorso hanno fatto gli ultimi trasferimenti, con consigli per ciò che trova.</p>
+
+<h2>2. Consenti le connessioni locali (⚡)</h2>
+<p>I browser nascondono ai siti l'indirizzo di rete locale di un dispositivo. L'altro dispositivo deve allora trovarlo con una ricerca di nome locale (mDNS), che molte reti bloccano, e il trasferimento fa la strada lunga attraverso il router. Tocca <b>⚡ Trasferimenti Wi‑Fi più veloci</b> e consenti il microfono una volta su uno o entrambi i dispositivi: non viene registrato nulla, ma il browser condivide l'indirizzo locale e i dispositivi possono collegarsi direttamente.</p>
+
+<h2>3. Disattiva VPN e relay privati</h2>
+<ul>
+  <li>Disattiva le app VPN su entrambi i dispositivi mentre invii, comprese le funzioni di "connessione sicura" degli antivirus.</li>
+  <li>Sull'iPhone, disattiva Relay privato iCloud, e in Impostazioni → Wi‑Fi → la tua rete, disattiva "Limita tracciamento indirizzo IP".</li>
+</ul>
+
+<h2>4. Windows: usa una rete privata</h2>
+<p>Su una rete "pubblica", Windows blocca le ricerche locali che i dispositivi usano per trovarsi. Apri Impostazioni → Rete e Internet → Wi‑Fi (o Ethernet) → la tua rete, e scegli <b>Rete privata</b>. Anche il firewall deve consentire il browser sulle reti private.</p>
+
+<h2>5. Controlla il router</h2>
+<ul>
+  <li>Le reti ospiti e l'"isolamento AP" o "isolamento client" impediscono ai dispositivi sullo stesso Wi‑Fi di raggiungersi. Usa la rete principale, o disattiva l'isolamento nelle impostazioni del router.</li>
+  <li>Alcuni router hanno reti 2,4 GHz e 5 GHz separate e isolate tra loro; collega entrambi i dispositivi alla stessa.</li>
+</ul>
+
+<h2>Ancora non diretto?</h2>
+<p>I trasferimenti funzionano comunque: OmniBeam invia tramite il suo server, crittografato end-to-end, solo più lentamente. Puoi anche associare i dispositivi con un codice; il percorso non diventa più veloce, ma si trovano sempre.</p>
+<p>Quando i trasferimenti sullo stesso Wi‑Fi sono lenti o passano dal server, i passaggi qui sopra di solito risolvono in pochi minuti.</p>
+<section class="qa">
+<h2>Domande e risposte</h2>
+<h3>Come capisco se un trasferimento passa dal server?</h3>
+<p>OmniBeam mostra il tipo di connessione sul trasferimento. Una connessione diretta sullo stesso Wi‑Fi di solito fa molti megabyte al secondo; una inoltrata è limitata dalla velocità di upload di internet ed è spesso molto più lenta.</p>
+<h3>Può essere colpa di una rete ospiti?</h3>
+<p>Spesso sì. Le reti ospiti e alcuni router mesh tengono separati i dispositivi per sicurezza, il che costringe il trasferimento a passare dal relay. Metti entrambi i dispositivi sulla rete principale per consentire una connessione diretta.</p>
+<h3>Riavviare il router aiuta?</h3>
+<p>A volte. Se le impostazioni del router vanno bene, un riavvio può sbloccare uno stato bloccato, ma una VPN su un dispositivo o un profilo di rete pubblica su Windows continueranno a causare il problema finché non li cambi.</p>
+<h3>Perché il trasferimento è lento anche con una connessione diretta?</h3>
+<p>Un trasferimento diretto non può essere più veloce del tratto più lento del percorso. Un telefono vecchio, un segnale Wi‑Fi debole in un'altra stanza o una rete 2,4 GHz affollata possono limitare la velocità. Per i file grandi avvicinati al router o usa la rete a 5 GHz.</p>
+</section>

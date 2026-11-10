@@ -1,0 +1,53 @@
+# OmniBeam: what never goes to GitHub
+
+# The live data (stats, links, pairings, push keys, supporter codes…) and test data
+data/
+tests/.data/
+tests/.results/
+tests/.results-live/
+
+# Backups and upload zips made on this PC
+backup-*/
+backup-*.zip
+deploy/
+/*.zip
+public/index.zip
+
+# Installed packages
+node_modules/
+
+# Secrets and signing keys: never commit them
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+**/KEEP-SAFE/
+store/android/signing-key-info.txt
+store/microsoft/partner-center-identity.txt
+push-keys.json
+*secret*
+*.secret
+
+# Big build outputs of the store packages (rebuilt with PWABuilder, kept on this PC)
+store/android/*.zip
+store/android/*.apk
+store/microsoft/pwabuilder-package/
+store/microsoft/*.zip
+
+# Promo videos at the top level (the site's own videos are in public/media and are kept)
+/omnibeam-intro*.mp4
+/omnibeam-intro*.jpg
+
+# Editor and system files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+*.bak
+*.bak-*
+.vscode/
+.idea/

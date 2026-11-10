@@ -1,0 +1,52 @@
+<!--
+title: Mac이나 Linux에서 오른쪽 클릭으로 파일 보내기
+description: Mac과 Linux의 오른쪽 클릭 메뉴에 OmniBeam을 추가하고, iPhone이나 Android 휴대폰으로 파일과 텍스트를 보내세요. 무료, 가입 불필요.
+short: Mac과 Linux 오른쪽 클릭 메뉴에서 보내기
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Mac이나 Linux PC에서 오른쪽 클릭으로 휴대폰에 파일 보내기</h1>
+<p class="lead">OmniBeam 도우미는 Mac의 Finder와 Linux 파일 관리자의 오른쪽 클릭 메뉴에 <em>OmniBeam으로 보내기</em>를 추가합니다. 파일을 고르고 휴대폰을 선택하면, 컴퓨터에서 브라우저를 열지 않아도 보내집니다.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Mac과 Linux용 내려받기(ZIP)</a></p>
+
+<h2>Mac에 설치</h2>
+<ol>
+  <li>도우미가 파일을 보내는 데 쓰는 <a href="https://nodejs.org" rel="noopener">Node.js</a>를 설치하세요.</li>
+  <li>내려받은 파일의 압축을 풀고 <em>install-mac.command</em>를 두 번 클릭하세요. macOS가 열지 않으면 오른쪽 클릭해 <em>열기</em>를 고르고 다시 <em>열기</em>를 고르세요.</li>
+  <li>요청이 나오면 휴대폰의 페어링 코드를 입력하세요(아래 참고).</li>
+</ol>
+<p>그다음 Finder에서 파일을 오른쪽 클릭하고 <em>빠른 동작</em>, <em>Send with OmniBeam</em>을 고르세요. 아무 앱에서나 선택한 텍스트는 오른쪽 클릭하고 <em>서비스</em>, <em>Send text with OmniBeam</em>을 고르세요. 보이지 않으면 시스템 설정, 키보드, 키보드 단축키, 서비스에서 켜세요.</p>
+
+<h2>Linux에 설치</h2>
+<ol>
+  <li>Node.js 18 이상(예: <code>sudo apt install nodejs</code>)과 기기 선택용 <code>zenity</code>(KDE에서는 <code>kdialog</code>)를 설치하세요.</li>
+  <li>내려받은 파일의 압축을 풀고, 그 폴더에서 터미널을 열어 <code>sh install-linux.sh</code>를 실행하세요.</li>
+  <li>요청이 나오면 휴대폰의 페어링 코드를 입력하세요.</li>
+</ol>
+<p>그다음 파일을 오른쪽 클릭하고 Files, Nemo, Caja에서는 <em>스크립트</em>, <em>Send with OmniBeam</em>을, Dolphin과 Thunar에서는 메뉴에서 바로 <em>Send with OmniBeam</em>을 고르세요.</p>
+
+<h2>휴대폰을 한 번 페어링하기</h2>
+<ol>
+  <li>휴대폰에서 <a href="/ko/">omnibeam.site</a>를 열고 링크 버튼을 탭한 뒤 <em>페어링 코드 만들기</em>를 고르세요.</li>
+  <li>그 코드를 컴퓨터의 설치 프로그램에 입력하세요.</li>
+  <li>휴대폰에서 페어링 화면을 다시 열고 컴퓨터 옆의 <em>신뢰함</em>을 체크하면, 컴퓨터의 파일이 묻지 않고 도착합니다.</li>
+</ol>
+<p>받으려면 휴대폰에서 omnibeam.site가 열려 있어야 합니다. 파일은 종단 간 암호화된 채 OmniBeam 서버를 거치므로 서버는 읽을 수 없습니다. 메뉴 항목을 다시 없애려면 <code>node omnibeam-send.js --uninstall</code>을 실행하세요.</p>
+<p>Chrome이나 Edge를 쓰시나요? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam 확장 프로그램</a>은 Mac, Linux, Windows에서 페이지, 링크, 이미지, 선택한 텍스트를 오른쪽 클릭으로 휴대폰에 보냅니다.</p>
+<section class="qa">
+<h2>자주 묻는 질문</h2>
+<h3>오른쪽 클릭 메뉴는 모든 Linux 데스크톱에서 되나요?</h3>
+<p>Files(Nautilus), Nemo, Caja, Dolphin, Thunar 같은 일반적인 파일 관리자에서 작동합니다. 다른 데스크톱에서도 브라우저에서 omnibeam.site를 열고 파일을 끌어다 놓을 수 있습니다.</p>
+<h3>나중에 메뉴 항목을 없앨 수 있나요?</h3>
+<p>네. 도우미 폴더에서 node omnibeam-send.js --uninstall을 실행하면 오른쪽 클릭 메뉴에서 항목이 사라집니다.</p>
+<h3>iPhone과 Android로 보내지나요?</h3>
+<p>네. 휴대폰에서 omnibeam.site가 열려 있다면, iPhone이든 Android 휴대폰이든, 같은 Wi‑Fi든 모바일 데이터든 코드로 페어링한 휴대폰으로 보냅니다.</p>
+<h3>도우미에 Node.js가 필요한 이유는?</h3>
+<p>도우미는 Node.js로 실행되는 작은 스크립트입니다. 휴대폰과 한 번 페어링한 뒤에는 컴퓨터에서 브라우저를 열지 않고 고른 파일을 보내므로 오른쪽 클릭 동작이 빠릅니다.</p>
+<h3>선택한 텍스트도 보낼 수 있나요?</h3>
+<p>Mac에서는 됩니다. 아무 앱에서나 텍스트를 선택하고 오른쪽 클릭한 뒤 서비스, Send text with OmniBeam을 고르세요. 휴대폰에 복사할 수 있는 상태로 도착합니다.</p>
+<h3>파일은 암호화되나요?</h3>
+<p>네. 컴퓨터에서 종단 간 암호화되고, 서버는 읽지 못한 채 전달만 합니다.</p>
+</section>

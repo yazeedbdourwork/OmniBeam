@@ -1,0 +1,48 @@
+<!--
+title: Eine „Schick mir Dateien“-Box für deine Website, kostenlos | OmniBeam
+description: Füge deiner Website oder deinem Blog eine kostenlose Box hinzu, über die Besucher dir Dateien senden, Ende-zu-Ende-verschlüsselt. Ein Code zum Kopieren, ohne Konto und ohne Plugin.
+short: Eine „Schick mir Dateien“-Box für deine Website
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Eine „Schick mir Dateien“-Box für deine Website oder deinen Blog</h1>
+<p class="lead">Lass Besucher, Kunden oder Schüler dir Dateien direkt über deine eigene Seite senden. Du fügst einen kurzen Code ein; die Dateien werden auf ihrem Gerät verschlüsselt und kommen in OmniBeam auf deinem an.</p>
+
+<h2>Schritte</h2>
+<ol>
+  <li>Öffne <a href="/de/">omnibeam.site</a> auf dem Gerät, das die Dateien bekommen soll, und tippe im ⋯-Menü auf <b>Dateien anfragen</b>.</li>
+  <li>Schreib, was du brauchst (optional), wähle unter „Link gültig für“ <b>1 Jahr (für eine Website)</b> und tippe auf <b>Anfrage-Link erstellen</b>.</li>
+  <li>Tippe auf <b>Auf deine Website setzen</b> und dann auf <b>Code kopieren</b>.</li>
+  <li>Füge den Code in deine Seite ein: in WordPress in einen Block <b>Individuelles HTML</b>, in Blogger in ein Gadget <b>HTML/JavaScript</b>, in Wix in ein Element <b>HTML einbetten</b>, in Squarespace in einen <b>Code</b>-Block.</li>
+</ol>
+<p>Besucher sehen eine kleine Box mit „Dateien auswählen“, einem optionalen Namensfeld und einem Senden-Knopf. Sie brauchen keine App und kein Konto. Die Dateien kommen auf deinem Gerät in Empfangene Dateien an; ist OmniBeam dort geschlossen, warten sie auf dem Server und kommen beim Öffnen an, mit einer Benachrichtigung, wenn du sie eingeschaltet hast.</p>
+
+<h2>WordPress: das kostenlose OmniBeam-Plugin</h2>
+<p>Auf WordPress geht es noch einfacher: <a href="/tools/omnibeam-wordpress.zip">Lade das OmniBeam-Plugin herunter (omnibeam-wordpress.zip)</a>, gehe in WordPress auf <b>Plugins → Neues Plugin hinzufügen → Plugin hochladen</b>, wähle das Zip aus und tippe auf <b>Aktivieren</b>. Füge deinen Code (oder nur seinen Link) unter <b>Einstellungen → OmniBeam Box</b> ein und setze dann den Block <b>OmniBeam: Send me files</b> auf eine beliebige Seite, oder den Shortcode <code>[omnibeam_box]</code>. Eine Box mit eigenem Link und eigener Höhe: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Das Plugin akzeptiert nur Boxen von omnibeam.site, und die Dateien gehen nie über deine WordPress-Seite.</p>
+
+<h2>So sieht der Code aus</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=de#…" title="Schick mir Dateien" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/de/"&gt;Bereitgestellt von OmniBeam&lt;/a&gt; · kostenloses, Ende-zu-Ende-verschlüsseltes Teilen von Dateien&lt;/p&gt;</pre>
+<p>Lass die Zeile „Bereitgestellt von OmniBeam“ stehen: Sie hält die Box kostenlos.</p>
+
+<h2>Ist das privat und sicher?</h2>
+<ul>
+  <li>Jeder Upload wird im Browser des Besuchers verschlüsselt. Sein Schlüssel wird mit dem öffentlichen Schlüssel deines Geräts versiegelt, und nur dein Gerät hat den passenden privaten Schlüssel. Weder OmniBeam noch jemand, der den Code deiner Seite liest, kann die Dateien öffnen.</li>
+  <li>Der Code auf deiner Seite ist öffentlich. Wer ihn sieht, kann dir Dateien senden und den Text „Was brauchst du?“ und den Namen deines Geräts lesen. Schreib dort also nichts Privates hinein.</li>
+  <li>Nur dein Gerät kann die Uploads herunterladen, und jeder wird vom Server gelöscht, sobald es ihn hat. Nicht abgeholte Dateien werden nach 7 Tagen gelöscht.</li>
+  <li>Die üblichen Grenzen bleiben: eine Größengrenze pro Upload, eine Grenze pro Netzwerk und Stunde und höchstens 100 Uploads pro Tag und Box.</li>
+  <li>Lösche den Anfrage-Link jederzeit im selben Fenster, dann funktioniert die Box sofort nicht mehr.</li>
+</ul>
+
+<section class="qa">
+<h2>Fragen und Antworten</h2>
+<h3>Kostet das etwas?</h3>
+<p>Nein. Die Box ist kostenlos, ohne Konto, ohne Plugin und ohne Werbung.</p>
+<h3>Kann ich sie auf mehreren Seiten verwenden?</h3>
+<p>Ja. Füge denselben Code auf beliebig vielen Seiten ein; alle Uploads kommen auf demselben Gerät an. Erstelle einen eigenen Anfrage-Link, wenn du sie unterscheiden möchtest.</p>
+<h3>Warum funktioniert die Box nach einer Weile nicht mehr?</h3>
+<p>Jeder Anfrage-Link endet zu der Zeit, die du gewählt hast. Wähle für eine Website 1 Jahr und erstelle vor dem Ablauf einen neuen Link und Code.</p>
+<h3>Kann jemand meine Box nutzen, um mir Spam zu senden?</h3>
+<p>Jeder Besucher der Seite kann dir Dateien senden, wie bei einer E-Mail-Adresse. Dateien öffnen sich nie von selbst, Uploads sind pro Netzwerk und Tag begrenzt, und du kannst den Link löschen, um die Box abzuschalten.</p>
+</section>

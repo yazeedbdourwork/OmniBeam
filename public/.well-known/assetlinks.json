@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "site.omnibeam.app",
+        "sha256_cert_fingerprints": ["40:73:55:CF:98:BD:97:A1:29:F5:33:B6:47:92:E3:49:59:6B:BB:A8:93:C0:F1:CC:5D:8E:46:24:2B:16:1F:70"]
+      }
+    }]

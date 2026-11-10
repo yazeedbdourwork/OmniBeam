@@ -1,0 +1,41 @@
+{
+  "extName": {
+    "message": "OmniBeam: cihazlarınıza gönderin"
+  },
+  "extDesc": {
+    "message": "Açık olan sayfayı, bir bağlantıyı, bir resmi veya seçili metni OmniBeam ile telefonunuza ya da bilgisayarınıza gönderin."
+  },
+  "menuRoot": {
+    "message": "OmniBeam ile gönder"
+  },
+  "menuChoose": {
+    "message": "Bir cihaz seçin…"
+  },
+  "menuOpen": {
+    "message": "OmniBeam'i açın ve bir cihaz seçin"
+  },
+  "popupPage": {
+    "message": "Bu sayfayı gönder:"
+  },
+  "popupSelection": {
+    "message": "Seçili metni gönder:"
+  },
+  "popupNone": {
+    "message": "Henüz cihaz yok. Diğer cihazınızda da OmniBeam'i açın, sonra buraya dönün."
+  },
+  "popupOpen": {
+    "message": "OmniBeam'i aç"
+  },
+  "popupSent": {
+    "message": "Gönderildi. Diğer cihaz Kabul et’e dokunur."
+  },
+  "popupChoose": {
+    "message": "Cihazı OmniBeam'de seçin."
+  },
+  "popupMore": {
+    "message": "Daha fazla"
+  },
+  "popupImages": {
+    "message": "Herhangi bir siteden resim gönder (Chrome izin ister)"
+  }
+}

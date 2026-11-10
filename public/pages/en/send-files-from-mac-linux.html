@@ -1,0 +1,52 @@
+<!--
+title: Send Files from Mac or Linux with a Right-Click
+description: Add OmniBeam to the right-click menu on Mac and Linux, and send files and text to your iPhone or Android phone. Free, no sign-up.
+short: Send from the Mac and Linux right-click menu
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Send files from a Mac or Linux PC to your phone with a right-click</h1>
+<p class="lead">The OmniBeam helper adds <em>Send with OmniBeam</em> to the right-click menu of Finder on a Mac and of the file manager on Linux. Pick files, choose your phone and they go across, without opening the browser on the computer.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Download for Mac and Linux (ZIP)</a></p>
+
+<h2>Install on a Mac</h2>
+<ol>
+  <li>Install <a href="https://nodejs.org" rel="noopener">Node.js</a>, which the helper uses to send files.</li>
+  <li>Unzip the download and double-click <em>install-mac.command</em>. If macOS won't open it, right-click it, choose <em>Open</em> and then <em>Open</em> again.</li>
+  <li>Type the pairing code from your phone when asked (see below).</li>
+</ol>
+<p>Then right-click files in Finder and choose <em>Quick Actions</em> and <em>Send with OmniBeam</em>. For selected text in any app, right-click and choose <em>Services</em> and <em>Send text with OmniBeam</em>. If they are missing, turn them on in System Settings, Keyboard, Keyboard Shortcuts, Services.</p>
+
+<h2>Install on Linux</h2>
+<ol>
+  <li>Install Node.js 18 or newer, for example <code>sudo apt install nodejs</code>, and <code>zenity</code> (or <code>kdialog</code> on KDE) for the device chooser.</li>
+  <li>Unzip the download, open a terminal in that folder and run <code>sh install-linux.sh</code>.</li>
+  <li>Type the pairing code from your phone when asked.</li>
+</ol>
+<p>Then right-click files and choose <em>Scripts</em> and <em>Send with OmniBeam</em> in Files, Nemo or Caja, or <em>Send with OmniBeam</em> straight in the menu in Dolphin and Thunar.</p>
+
+<h2>Pair your phone once</h2>
+<ol>
+  <li>On the phone, open <a href="/">omnibeam.site</a>, tap the link button and <em>Create a pairing code</em>.</li>
+  <li>Type that code into the installer on the computer.</li>
+  <li>On the phone, open the Pair screen again and tick <em>Trusted</em> next to the computer, so its files arrive without asking.</li>
+</ol>
+<p>The phone needs omnibeam.site open to receive. Files go through the OmniBeam server, end-to-end encrypted, so the server can't read them. To remove the menu entries again, run <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Using Chrome or Edge? The <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam extension</a> sends the page, a link, an image or selected text to your phone with a right-click, on Mac, Linux and Windows.</p>
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>Does the right-click menu work on every Linux desktop?</h3>
+<p>It works in the common file managers: Files (Nautilus), Nemo, Caja, Dolphin and Thunar. On other desktops you can still open omnibeam.site in the browser and drag the files in.</p>
+<h3>Can I remove the menu items later?</h3>
+<p>Yes. Run node omnibeam-send.js --uninstall in the helper’s folder, and the entries disappear from the right-click menu.</p>
+<h3>Does it send to iPhone and Android?</h3>
+<p>Yes. It sends to the phone you paired with the code, whether it is an iPhone or an Android phone, on the same Wi‑Fi or on mobile data, as long as omnibeam.site is open on the phone.</p>
+<h3>Why does the helper need Node.js?</h3>
+<p>The helper is a small script that runs with Node.js. It pairs with your phone once and then sends the files you pick without opening a browser on the computer, which keeps the right-click action quick.</p>
+<h3>Can I send selected text too?</h3>
+<p>On a Mac, yes: select text in any app, right-click and choose Services, then Send text with OmniBeam. It arrives on the phone ready to copy.</p>
+<h3>Are the files encrypted?</h3>
+<p>Yes. They are encrypted end to end on the computer, and the server only passes them along without being able to read them.</p>
+</section>

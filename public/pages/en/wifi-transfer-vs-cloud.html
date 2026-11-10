@@ -1,0 +1,47 @@
+<!--
+title: Wi-Fi Transfer vs Cloud Upload: Which Is Faster?
+description: Why sending a video directly over Wi-Fi is often several times faster than uploading it to the cloud, and what slows a transfer down. With simple numbers.
+short: Wi-Fi transfer vs cloud upload
+kind: post
+order: 3
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>Wi‑Fi transfer vs cloud upload: which is faster?</h1>
+<p class="lead">To move a 2 GB video from your phone to your laptop, you can upload it to the cloud and download it again, or send it straight across your Wi‑Fi. The second is usually much faster. Here's why.</p>
+
+<h2>The cloud route goes through your slowest link twice</h2>
+<p>Home internet connections upload far slower than they download, often 10 to 50 Mbit/s up. At 20 Mbit/s, uploading 2 GB takes about 14 minutes, and the laptop still has to download it afterwards.</p>
+
+<h2>The direct route stays at home</h2>
+<p>When two devices on the same Wi‑Fi connect directly, the data never leaves your home, so your internet speed doesn't matter. A modern router often manages 100 to 400 Mbit/s between two devices: the same 2 GB in roughly one to three minutes.</p>
+
+<h2>What slows a direct transfer down</h2>
+<ul>
+  <li>A VPN or "private relay" on one device, which sends the data out to the internet and back.</li>
+  <li>A guest network or "AP isolation" that stops devices from seeing each other.</li>
+  <li>Windows set to a Public network, which blocks incoming connections.</li>
+  <li>Distance and walls: 5 GHz Wi‑Fi is fast near the router and drops off quickly further away.</li>
+</ul>
+<p>OmniBeam shows the route under the progress bar ("same network", "internet" or "server"), and its connection check explains what to change. See <a href="/fix-slow-transfers-same-wifi">fixing slow transfers on the same Wi‑Fi</a>.</p>
+
+<h2>When the cloud is the better choice</h2>
+<p>When the other person isn't online at the same time, or you want a copy kept somewhere. For that, OmniBeam has <a href="/send-large-files-by-link">encrypted links that expire</a>.</p>
+<p>Wi‑Fi transfer vs cloud upload: for large files on the same network, a direct transfer is usually faster.</p>
+<section class="qa">
+<h2>Questions and answers</h2>
+<h3>Why is a cloud upload slow at home?</h3>
+<p>Most home internet connections upload much more slowly than they download. A cloud transfer has to go up through that slow upload before the other device can download it, while a direct Wi‑Fi transfer never leaves your home network.</p>
+<h3>When is the cloud the better choice?</h3>
+<p>When the other device is not online at the same time, or when you want a backup that stays available. For moving a file between two devices that are both on now, a direct transfer is faster.</p>
+<h3>Does direct transfer use my mobile data?</h3>
+<p>Not on the same Wi‑Fi. If one device is on mobile data, the transfer uses data on that device, just like a cloud upload would.</p>
+<h3>How can I get the best speed?</h3>
+<p>Keep both devices close to the router, use the 5 GHz network if you have one, and turn off VPNs during the transfer.</p>
+<h3>Is a direct transfer private?</h3>
+<p>Yes. With OmniBeam the file is encrypted end to end and goes straight to the other device, so it is never stored on a server. A cloud upload keeps a copy on the provider’s servers until you delete it.</p>
+<h3>Can I test my speed?</h3>
+<p>Yes. OmniBeam has a speed test between two of your devices, so you can see how fast a direct transfer is on your network before sending something large.</p>
+<h3>Can I send to several devices at once?</h3>
+<p>Yes. With “Send to everyone”, the same files go to every device that has OmniBeam open in one step. For a group you can also create a public room: everyone joins with the same short code and can send files to each other.</p>
+</section>

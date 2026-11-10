@@ -1,0 +1,51 @@
+<!--
+title: Gizlilik Politikası: OmniBeam dosyalarınızı nasıl işler
+description: OmniBeam dosyalarınızı nasıl işler: cihazdan cihaza, uçtan uca şifreli; şifreli bağlantılarınız dışında hiçbir şey saklanmaz.
+short: Gizlilik Politikası
+updated: 2026-11-06
+-->
+<h1>Gizlilik Politikası: dosyalarınız ve mesajlarınız</h1>
+<p class="updated">Son güncelleme: 3 Kasım 2026</p>
+<h2>Dosyalarınız ve mesajlarınız</h2>
+<p>OmniBeam dosyalarınızı ve mesajlarınızı mümkün olduğunda doğrudan cihazlarınız arasında, WebRTC ile uçtan uca şifreli olarak gönderir. Bu durumda sunucumuza hiç ulaşmazlar.</p>
+<p>Doğrudan bağlantı mümkün olmadığında (örneğin sıkı bir güvenlik duvarı ya da VPN arkasında) bunun yerine sunucumuzdan geçerler. Yine de uçtan uca şifrelidirler: iki cihaz, sunucunun asla görmediği bir anahtar üzerinde anlaşır; sunucu yalnızca okuyamadığı verileri iletir ve kaydetmez. Her aktarımın önce alan cihazda kabul edilmesi gerekir.</p>
+<h2>Bağlantıyla paylaşılan dosyalar</h2>
+<p>Dosyaları bağlantıyla paylaştığınızda tarayıcınız onları (adları dahil) yüklemeden önce şifreler. Anahtar yalnızca bağlantının “#” işaretinden sonraki kısmındadır ve tarayıcılar bu kısmı hiçbir sunucuya göndermez; bu yüzden okuyamadığımız verileri saklarız. Dosyalar, bağlantının süresi dolduğunda (en fazla 3 gün), bunu seçtiyseniz ilk indirmeden sonra ya da bağlantıyı sildiğinizde otomatik olarak silinir. Bağlantıyı verdiğiniz herkes dosyaları indirebilir; bu yüzden yalnızca istediğiniz kişilerle paylaşın.</p>
+<h2>İstek bağlantılarınıza gönderilen dosyalar</h2>
+<p>Biri oluşturduğunuz bir istek bağlantısına dosya gönderdiğinde, tarayıcısı dosyaları ve adlarını yüklemeden önce yalnızca sizin cihazınızda ve bağlantıda bulunan bir anahtarla şifreler (“#” işaretinden sonraki kısım, hiçbir sunucuya ulaşmaz). Okuyamadığımız verileri cihazınız alana kadar saklar, sonra hemen sileriz. Kimsenin almadığı dosyalar en geç 7 gün sonra silinir; bağlantıyı silmek, hâlâ bekleyen her şeyi de siler. Bağlantınıza gönderilenleri yalnızca sizin cihazınız indirebilir.</p>
+<h2>Başka sitelerdeki "Bana dosya gönder" kutusu</h2>
+<p>Herkes kendi web sitesine, ziyaretçilerin kendisine dosya gönderebilmesi için bir OmniBeam kutusu koyabilir (bkz. <a href="/tr/embed">nasıl çalışır</a>). Kutu üzerinden gönderilen dosyalar tarayıcınızda şifrelenir ve yalnızca kutuyu oluşturan kişinin cihazı açabilecek şekilde mühürlenir; OmniBeam onları okuyamaz. Kutu çerez oluşturmaz ve istatistik aracı yüklemez. Kutuda yazanlar (kişinin ne istediği, cihazının adı) sayfasının geri kalanı gibi herkese açıktır.</p>
+<h2>Telegram botu</h2>
+<p>Bir cihazı Telegram'daki OmniBeam botuna bağlarsanız sunucu, bağlantıyı kaldırana kadar botla olan sohbetinizin numarasını, Telegram'daki adınızı, bağlı cihazın adını ve kullandığı istek bağlantısını saklar. Bota gönderdiğiniz dosyalar ve metinler Telegram'dan ve OmniBeam sunucusundan geçer; bu yüzden uçtan uca şifreli değildir. Sunucu onları yalnızca cihazınız alana kadar, yalnızca cihazınızın açabileceği şekilde mühürlü olarak saklar ve sonra siler (en geç 7 gün sonra). OmniBeam'den Telegram'a gönderdiğiniz dosyalar sunucudan saklanmadan geçer. Oradaki sohbetleriniz için Telegram'ın kendi gizlilik politikası geçerlidir.</p>
+<h2>Durum sayfası</h2>
+<p><a href="/tr/status">Durum sayfası</a> yalnızca OmniBeam'in bölümlerinin çalışıp çalışmadığını, günlük çalışma oranını ve sorunların ne zaman olduğunu gösterir. Her 5 dakikada bir dışarıdan (Cloudflare) ve sunucunun kendisi tarafından yapılan otomatik kontrollere dayanır; ziyaretçiler veya dosyaları hakkında hiçbir şey içermez.</p>
+<h2>Bağlantı verileri</h2>
+<p>Cihazlarınızın birbirini bulabilmesi için sunucu IP adresinizi, uygulamada görünen rastgele cihaz adını ve iki tarayıcıyı bağlamak için gereken teknik ayrıntıları görür. Bunlar yalnızca çevrimiçiyken bellekte tutulur; diske yazılmaz ve paylaşılmaz.</p>
+<p>Sunucu ayrıca basit günlük toplamlar tutar (örneğin bağlantı ve aktarım sayıları ve nasıl gönderildikleri). Bunlar yalnızca sayılardır; IP adresi, ad ya da dosya ayrıntısı içermez. Siteye yapılan ziyaretler de aynı şekilde sayılır: hangi sayfanın açıldığı, ülke (saklanmayan IP adresinden belirlenir), cihaz ve tarayıcı türü, buraya bağlantı veren site ve sayfanın ne kadar süre açık kaldığı. Bunun için çerez kullanılmaz ve cihazınıza hiçbir şey kaydedilmez. Çerez bildiriminde “Hayır, teşekkürler”i seçtiyseniz ziyaretleriniz sayılmaz.</p>
+<h2>Cihazınızda kalanlar</h2>
+<p>Cihaz adınız, tema, dil, eşleştirilmiş cihazlar, oluşturduğunuz bağlantılar ve aldığınız dosyaların geçmişi (7 gün tutulur) kendi tarayıcınızda saklanır. Geçmişi uygulamadan ya da site verilerini temizleyerek silebilirsiniz. Hızlı açılması ve internet olmadan çalışabilmesi için OmniBeam tarayıcıda kendi uygulama dosyalarının (asla sizin dosyalarınızın değil) bir kopyasını da tutar; bu kopya her güncellemede yenilenir.</p>
+<h2>Ziyaretçi istatistikleri</h2>
+<p>Site sorduğunda izin verirseniz OmniBeam, ziyaretleri saymak ve sitenin nasıl kullanıldığını görmek için Google Analytics kullanır (örneğin görüntülenen sayfalar, ülke, cihaz ve tarayıcı türü). Google Analytics betiği yalnızca siz İzin ver'e bastıktan sonra ve o zaman da sayfa tamamen yüklendikten sonra yüklenir. Siz seçim yapana kadar ve Hayır, teşekkürler'i seçerseniz Google'a hiçbir şey gönderilmez. Google bu isteklerle IP adresinizi alır. Gönderdiğiniz dosyalar ve mesajlar asla dahil edilmez. Seçiminizi istediğiniz zaman değiştirebilirsiniz: <a href="#" data-cookie-settings hidden>çerez ayarları</a>. <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google'ın bu verileri nasıl kullandığına</a> bakın.</p>
+<h2>Sorun raporları</h2>
+<p>Bir şey ters gittiğinde, örneğin bir aktarım başarısız olduğunda veya doğrudan bağlantı kurulamadığında, sayfa sorunu düzeltebilmemiz için bize kısa ve anonim bir rapor gönderir: neyin başarısız olduğu, bağlantı yolu, tarayıcı ve sistem türü. Raporlar asla dosya adı, dosya içeriği, mesaj, eşleştirme kodu veya adres içermez ve yalnızca en son birkaç yüz rapor saklanır. Aynı anda çok sayıda sorun bildirilirse, hızla düzeltilebilmesi için bir özet (kaç tane, ne tür ve hangi tarayıcılarda) site sahibine e-posta veya Telegram ile gönderilir. OmniBeam açıkken çöken bir tarayıcı sekmesi ve takılan bir aktarım da site sahibine Telegram ile tek tek bildirilir; aynı bilgilerle, fazlası olmadan.</p>
+<h2>Bildirimler</h2>
+<p>Bildirimler, Ayarlar'dan açmadığınız sürece kapalıdır. Açık olduklarında sunucu, tarayıcınızın verdiği bildirim adresini (tarayıcınızı yapan şirketin Apple, Google, Microsoft veya Mozilla gibi bildirim hizmetini gösterir), dilinizi ve eşleştirmelerinizin karıştırılmış kodlarını saklar; böylece hangi bildirimlerin size ait olduğunu bilir. Bildirim, hangi cihazın size bir şey göndermek istediğini ve kaç dosya olduğunu söyler ve size o hizmet üzerinden ulaşır. Dosya içerikleri veya mesajlar asla yer almaz. Bildirimleri kapattığınızda ya da tarayıcınız bunları kabul etmeyi bıraktığında bunların hepsi silinir.</p>
+<h2>Tarayıcı uzantısı</h2>
+<p>Chrome ve Edge için OmniBeam uzantısı yalnızca tarayıcınızdaki OmniBeam sekmesiyle konuşur. Kullandığınızda, seçtiğiniz sayfa adresini, bağlantıyı, görseli veya seçili metni o sekmeye iletir; sekme de bunu diğer aktarımlar gibi cihazınıza gönderir. Gezinmenizi okumaz veya toplamaz, cihaz listenizi yalnızca tarayıcı açıkken tutar ve düğmesine tıkladığınızda seçtiğiniz metni ve sağ tıkladığınız bir görseli (ya da bu seçeneğe izin verirseniz her görseli) okumak dışında diğer sitelere erişmez.</p>
+<h2>Windows için OmniBeam uygulaması</h2>
+<p>Microsoft Store'daki OmniBeam uygulaması bu siteyi kendi penceresinde açar. Aynı şekilde çalışır ve bu politika ona da tamamen uygulanır.</p>
+<h2>Kamera, mikrofon ve ekran</h2>
+<p>OmniBeam kameranızı, mikrofonunuzu veya ekranınızı yalnızca siz istediğinizde kullanır: fotoğraf çekmek, sesli not kaydetmek, ekranınızı paylaşmak için ya da ⚡ Daha hızlı Wi‑Fi'ı açtığınızda bir anlığına (hemen kapatılır ve hiçbir şey kaydedilmez). Tarayıcınız önce size sorar. Fotoğraflar ve sesli notlar diğer dosyalar gibi gönderilir; paylaşılan ekran ise uçtan uca şifreli olarak doğrudan seçtiğiniz cihaza gider. Bunların hiçbiri sunucumuzda saklanmaz.</p>
+<h2>Gizli notlar</h2>
+<p>Bir cihaza gönderilen gizli not orada bir kez gösterilir ve geçmişinde tutulmaz. Gizli not bağlantısı dosya bağlantısı gibi çalışır: not cihazınızda şifrelenir, sunucu onu okuyamaz ve bir kez okunur okunmaz sunucudan silinir.</p>
+<h2>PDF’e tara, sohbet ve fotoğraf boyutu</h2>
+<p>PDF’e tara, sayfalarınızın kenarlarını bulur ve PDF’i kendi cihazınızda oluşturur: bunun için fotoğraflar yüklenmez, ardından PDF diğer dosyalar gibi gönderilir. Sohbet görünümü yalnızca cihazınızda zaten bulunan geçmişi gösterir; fazladan hiçbir şey saklanmaz. “Daha küçük” olarak gönderdiğiniz fotoğraflar gönderilmeden önce cihazınızda küçültülür.</p>
+<h2>Destekçi kodları</h2>
+<p>Bir bağıştan sonra destekçi kodu alırsanız sunucu, bir kodu geri alabilmek için oluşturduğu kodların listesini, her birinin oluşturulduğu gün ve sahibinin yazabileceği kısa bir notla (ör. bir ad) birlikte tutar. Tarayıcınız kodunuzu saklar ve bağlanırken sunucuya gösterir; böylece diğer cihazlar cihazınızın kartındaki ♥’i görür. Sunucu bunu yalnızca siz çevrimiçiyken bellekte tutar. Bağışların kendisi seçtiğiniz ödeme sitesi (ör. PayPal) tarafından işlenir, OmniBeam tarafından değil.</p>
+<h2>Reklam yok</h2>
+<p>OmniBeam'de hesap, reklam ya da reklam takipçisi yoktur. Sayfanın yazı tipi Google Fonts'tan değil, doğrudan omnibeam.site'tan yüklenir.</p>
+<h2>Barındırma</h2>
+<p>Site, güvenlik amacıyla standart sunucu kayıtları (IP adresi ve istek zamanı gibi) tutabilen bir barındırma sağlayıcısında çalışır.</p>
+<h2>İletişim</h2>
+<p>Gizlilikle ilgili sorular: <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer">Facebook'tan mesaj gönderin</a>.</p>
+<p>Bu gizlilik politikası özetle şunu söyler: OmniBeam dosyalarınızı şöyle işler, doğrudan gönderir, uçtan uca şifreler ve saklamaz.</p>

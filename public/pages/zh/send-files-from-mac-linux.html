@@ -1,0 +1,52 @@
+<!--
+title: 在 Mac 或 Linux 上右键发送文件
+description: 把 OmniBeam 加入 Mac 和 Linux 的右键菜单，把文件和文字发到你的 iPhone 或 Android 手机。免费，无需注册。
+short: 从 Mac 和 Linux 右键菜单发送
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>在 Mac 或 Linux 电脑上右键把文件发到手机</h1>
+<p class="lead">OmniBeam 助手会在 Mac 的访达和 Linux 的文件管理器的右键菜单中加入<em>用 OmniBeam 发送</em>。选中文件，选择你的手机，文件就会发过去，无需在电脑上打开浏览器。</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>下载 Mac 和 Linux 版(ZIP)</a></p>
+
+<h2>在 Mac 上安装</h2>
+<ol>
+  <li>安装 <a href="https://nodejs.org" rel="noopener">Node.js</a>，助手用它来发送文件。</li>
+  <li>解压下载的文件，双击 <em>install-mac.command</em>。如果 macOS 打不开它，右键单击，选择<em>打开</em>，然后再选一次<em>打开</em>。</li>
+  <li>按提示输入手机上的配对代码(见下文)。</li>
+</ol>
+<p>之后在访达中右键单击文件，选择<em>快速操作</em>和 <em>Send with OmniBeam</em>。对于任何应用中选中的文字，右键单击并选择<em>服务</em>和 <em>Send text with OmniBeam</em>。如果找不到它们，请在“系统设置”的“键盘”、“键盘快捷键”、“服务”中开启。</p>
+
+<h2>在 Linux 上安装</h2>
+<ol>
+  <li>安装 Node.js 18 或更新版本，例如 <code>sudo apt install nodejs</code>，以及用于选择设备的 <code>zenity</code>(KDE 上用 <code>kdialog</code>)。</li>
+  <li>解压下载的文件，在该文件夹中打开终端，运行 <code>sh install-linux.sh</code>。</li>
+  <li>按提示输入手机上的配对代码。</li>
+</ol>
+<p>之后右键单击文件，在 Files、Nemo 或 Caja 中选择<em>脚本</em>和 <em>Send with OmniBeam</em>，在 Dolphin 和 Thunar 中直接在菜单里选择 <em>Send with OmniBeam</em>。</p>
+
+<h2>把手机配对一次</h2>
+<ol>
+  <li>在手机上打开 <a href="/zh/">omnibeam.site</a>，点按链接按钮，选择<em>创建配对代码</em>。</li>
+  <li>在电脑上的安装程序中输入这个代码。</li>
+  <li>在手机上再次打开配对界面，勾选电脑旁边的<em>受信任</em>，这样它发来的文件无需询问就会到达。</li>
+</ol>
+<p>手机需要打开 omnibeam.site 才能接收。文件经过 OmniBeam 服务器，端到端加密，所以服务器无法读取。要再次移除菜单项，运行 <code>node omnibeam-send.js --uninstall</code>。</p>
+<p>在用 Chrome 或 Edge？<a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam 扩展程序</a>可以在 Mac、Linux 和 Windows 上通过右键把页面、链接、图片或选中的文字发到手机。</p>
+<section class="qa">
+<h2>问题与解答</h2>
+<h3>右键菜单在所有 Linux 桌面上都能用吗？</h3>
+<p>它可以在常见的文件管理器中使用：Files(Nautilus)、Nemo、Caja、Dolphin 和 Thunar。在其他桌面上，你仍然可以在浏览器中打开 omnibeam.site 并把文件拖进去。</p>
+<h3>以后能移除菜单项吗？</h3>
+<p>能。在助手的文件夹中运行 node omnibeam-send.js --uninstall，菜单项就会从右键菜单中消失。</p>
+<h3>能发到 iPhone 和 Android 吗？</h3>
+<p>能。只要手机上打开了 omnibeam.site，它就会发到你用代码配对的手机，无论是 iPhone 还是 Android 手机，无论在同一 Wi‑Fi 还是用移动数据。</p>
+<h3>为什么助手需要 Node.js？</h3>
+<p>助手是一个用 Node.js 运行的小脚本。它和手机配对一次，之后不用在电脑上打开浏览器就能发送你选的文件，所以右键操作很快。</p>
+<h3>也能发送选中的文字吗？</h3>
+<p>在 Mac 上可以：在任何应用中选中文字，右键单击并选择“服务”，然后选 Send text with OmniBeam。文字会到达手机，可以直接复制。</p>
+<h3>文件加密吗？</h3>
+<p>加密。文件在电脑上端到端加密，服务器只负责转交，无法读取。</p>
+</section>

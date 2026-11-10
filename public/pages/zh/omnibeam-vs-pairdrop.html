@@ -1,0 +1,55 @@
+<!--
+title: OmniBeam 与 PairDrop 对比：该用哪个
+description: PairDrop 和 OmniBeam 都在浏览器中于设备之间发送文件。对配对、加密、链接、续传、应用和自托管的客观比较。
+short: OmniBeam 与 PairDrop 对比
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam 与 PairDrop 对比</h1>
+<p class="lead">PairDrop 源自 Snapdrop，是一个很好的开源工具。OmniBeam 在浏览器中以同样的方式工作，所以选择取决于几个功能。下面是一份客观的对比。</p>
+
+<div class="table-wrap compare-wrap"><table class="compare">
+<thead><tr><th></th><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>同一 Wi‑Fi，无需安装</th><td>是</td><td>是</td></tr>
+<tr><th>用代码或二维码配对设备</th><td>是</td><td>是</td></tr>
+<tr><th>公开房间</th><td>是，可选设置密码</td><td>是</td></tr>
+<tr><th>直接连接失败时</th><td>服务器中转，端到端加密，断线后可续传</td><td>TURN 服务器</td></tr>
+<tr><th>发给稍后才查看的人</th><td>加密链接，过期后删除</td><td>否</td></tr>
+<tr><th>剪贴板同步，以及应用关闭时的通知</th><td>是，在已配对设备之间</td><td>否</td></tr>
+<tr><th>右键“发送到”(Windows、Mac、Linux)和浏览器扩展程序</th><td>是</td><td>命令行工具和操作指南</td></tr>
+<tr><th>开源和自托管</th><td>否</td><td>是(Docker 或 Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>选择 PairDrop，如果</h2>
+<p>你想运行自己的服务器、阅读代码，或需要 OmniBeam 还没有的语言。PairDrop 是自由软件，很容易自托管。</p>
+
+<h2>选择 OmniBeam，如果</h2>
+<ul>
+  <li>网络不好时传大文件：中断的传输会从停止处继续，而不是失败。</li>
+  <li>你想用在你设备上加密的链接，发给现在不在线的人。</li>
+  <li>你每天都在同样的设备之间传文件：已配对的设备会收到通知，可以共享剪贴板，Windows 有 Microsoft Store 应用，Chrome 和 Edge 有扩展程序。</li>
+  <li>你想在发送前缩小照片和视频，或在两台设备之间测速。</li>
+</ul>
+
+<h2>两个都试试</h2>
+<p>两者都不需要账号，所以最快的决定方法是在两台设备上打开 <a href="/zh/">omnibeam.site</a>，发一个大视频试试。<a href="/zh/how-to-use">使用指南</a>列出了所有功能。</p>
+<p>该用哪个？如果你想要端到端加密、链接和可安装的应用，OmniBeam 更合适；在同一网络中快速发送，PairDrop 也不错。</p>
+<section class="qa">
+<h2>问题与解答</h2>
+<h3>OmniBeam 和 PairDrop 有关系吗？</h3>
+<p>两者都基于浏览器，灵感都来自 Snapdrop 的同一个理念：在两台设备上打开页面就能发送。它们是功能不同、服务器不同的独立项目。</p>
+<h3>哪个更能保护文件隐私？</h3>
+<p>两者在可以时都会在设备之间直接发送。OmniBeam 还会在你的设备上对每次传输进行端到端加密，包括数据必须经过中转的时候，所以中转服务器无法读取。</p>
+<h3>两个都能分享链接吗？</h3>
+<p>OmniBeam 可以通过会自动过期的加密链接分享文件，这在对方不能同时在线时很有用。如果你需要同样的功能，请查看 PairDrop 当前的功能。</p>
+<h3>哪个有应用？</h3>
+<p>OmniBeam 还提供 Microsoft Store 应用、Chrome 扩展程序和 Android 应用，不过浏览器版本不需要它们也能在任何地方使用。</p>
+<h3>哪个能跨不同网络使用？</h3>
+<p>两者都能配对设备，让它们在不同网络中找到彼此。OmniBeam 使用 6 位数代码或二维码，只要两边都打开 OmniBeam，已配对的设备就会自动出现。</p>
+<h3>哪个更适合一群人？</h3>
+<p>两者都提供公开房间。OmniBeam 还有“发送给所有人”，一步就能把同样的文件发到所有打开的设备。</p>
+<h3>我该选哪个？</h3>
+<p>两个都试试：都不需要账号，所以几分钟就能在你自己的设备上比较，留下在你的网络上连接最好的那个。</p>
+</section>

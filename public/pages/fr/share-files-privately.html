@@ -1,0 +1,54 @@
+<!--
+title: Partager des fichiers en toute confidentialité
+description: Qui peut voir un fichier envoyé en ligne ? Un guide clair sur le chiffrement de bout en bout et les liens privés. Gratuit, sans compte.
+short: Partager des fichiers en toute confidentialité
+kind: post
+order: 2
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>Partager des fichiers en toute confidentialité</h1>
+<p class="lead">Photos, pièces d'identité scannées, contrats : beaucoup de ce que nous envoyons est personnel. Voici ce qui le protège réellement en chemin, expliqué sans jargon.</p>
+
+<h2>Trois endroits où un fichier peut être vu</h2>
+<ol>
+  <li><em>Sur le réseau</em> : n'importe qui sur le même Wi‑Fi public. Tout site en https protège contre cela.</li>
+  <li><em>Sur les serveurs du service</em> : l'entreprise qui transporte ou stocke le fichier. Seul le chiffrement de bout en bout protège contre cela.</li>
+  <li><em>Sur les appareils</em> : le vôtre et celui de l'autre personne. Cette partie dépend de vous.</li>
+</ol>
+
+<h2>Ce que signifie « chiffré de bout en bout »</h2>
+<p>Le fichier est verrouillé sur votre appareil et déverrouillé seulement sur l'autre. Le service au milieu transmet des données brouillées et n'a jamais la clé. Si ses serveurs étaient piratés, ou si quelqu'un demandait vos fichiers à l'entreprise, il n'y aurait rien de lisible à remettre.</p>
+
+<h2>Comment OmniBeam s'y prend</h2>
+<ul>
+  <li>Les transferts directs entre appareils utilisent WebRTC, toujours chiffré de bout en bout.</li>
+  <li>Quand la connexion directe est impossible et que le fichier passe par notre serveur, les deux appareils conviennent d'abord d'une clé : le serveur ne fait que transmettre des données brouillées et n'enregistre rien.</li>
+  <li>Les liens partagés sont chiffrés dans votre navigateur avant l'envoi. La clé est la partie du lien après #, que les navigateurs n'envoient jamais au serveur. Les liens expirent tout seuls.</li>
+  <li>Pas de compte. Les appareils associés sont mémorisés dans votre propre navigateur.</li>
+</ul>
+
+<h2>Cinq bonnes habitudes</h2>
+<ul>
+  <li>Préférez les transferts directs ou les services chiffrés de bout en bout pour tout ce qui est personnel.</li>
+  <li>Quand un lien ou un salon a un mot de passe, envoyez le mot de passe par une autre appli que le lien.</li>
+  <li>Choisissez des liens qui expirent, et supprimez-les quand l'autre personne a le fichier.</li>
+  <li>Vérifiez ce que vous partagez : une photo peut contenir le lieu où elle a été prise.</li>
+  <li>N'acceptez des fichiers que d'appareils que vous reconnaissez. Dans OmniBeam, ne marquez comme « De confiance » que vos propres appareils.</li>
+</ul>
+<p>Plus de détails dans notre <a href="/fr/privacy">politique de confidentialité</a>.</p>
+<p>Un test rapide pour tout service de partage : demandez-vous s'il pourrait lire vos fichiers s'il le voulait. Si les fichiers sont chiffrés sur votre appareil avant de le quitter, le service ne voit que des données brouillées. C'est ainsi qu'OmniBeam chiffre chaque transfert.</p>
+<p>Pour partager des fichiers en toute confidentialité, choisissez un envoi chiffré de bout en bout comme OmniBeam.</p>
+<section class="qa">
+<h2>Questions et réponses</h2>
+<h3>Un lien cloud est-il privé ?</h3>
+<p>Un lien cloud classique est stocké sur les serveurs du fournisseur, qui peut en général lire le fichier. Avec le chiffrement de bout en bout, seuls les appareils aux deux extrémités ont la clé, et personne entre les deux ne peut ouvrir le fichier.</p>
+<h3>Comment savoir si un service chiffre de bout en bout ?</h3>
+<p>Cherchez une déclaration claire : les fichiers sont chiffrés sur votre appareil avant de le quitter, et la clé n’est jamais envoyée au serveur. OmniBeam l’explique précisément dans sa politique de confidentialité.</p>
+<h3>Que faire d’autre pour garder ses fichiers privés ?</h3>
+<p>N’envoyez les liens qu’aux personnes concernées, choisissez une durée d’expiration courte et supprimez un lien une fois utilisé.</p>
+<h3>L’e-mail est-il privé ?</h3>
+<p>L’e-mail est pratique mais pas privé par défaut : messages et pièces jointes sont en général stockés sur les serveurs de messagerie des deux côtés. Pour des fichiers privés, les transferts ou liens chiffrés de bout en bout sont plus sûrs.</p>
+<h3>Dois-je faire confiance à OmniBeam ?</h3>
+<p>Bien moins qu’à un service cloud classique. Les fichiers sont chiffrés sur votre appareil, et les clés n’atteignent jamais les serveurs d’OmniBeam : même OmniBeam ne peut pas les ouvrir.</p>
+</section>
