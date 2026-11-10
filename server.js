@@ -19,11 +19,11 @@ const RELAY = process.env.RELAY !== 'false';
 // Google Analytics measurement ID (looks like G-ABC123XYZ). Put it between the quotes below, or set the
 // GA_ID environment variable in cPanel. Leave it empty to turn visitor statistics off. Visitors are asked
 // first (public/consent.js); nothing is loaded from Google until they allow it.
-const GA_ID = (process.env.GA_ID || 'G-XCPM5D8NQC').trim();
+const GA_ID = (process.env.GA_ID ?? 'G-XCPM5D8NQC').trim();
 // "Support OmniBeam": your donation page (Ko-fi, Buy Me a Coffee, PayPal.me…), starting with https://. Put it between
 // the quotes below or set SUPPORT_URL in cPanel. Empty: the Support links stay hidden.
 const SUPPORT_URL = (() => {
-  const url = (process.env.SUPPORT_URL || 'https://paypal.me/Ymb1988').trim();
+  const url = (process.env.SUPPORT_URL ?? 'https://paypal.me/Ymb1988').trim();
   if (url && !/^https:\/\/[^\s"'<>]+$/.test(url)) { console.warn(`SUPPORT_URL "${url}" must start with https://; the Support links are off`); return ''; }
   return url;
 })();
