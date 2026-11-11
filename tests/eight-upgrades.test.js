@@ -225,7 +225,8 @@ test('automatic deploys: the workflow tests, builds, uploads, restarts and check
   expect(wf).not.toMatch(/\t/);
   const ignore = read('.gitignore').split(/\r?\n/);
   for (const k of ['data/', 'deploy/', 'node_modules/', 'backup-*/', '*.keystore', '**/KEEP-SAFE/', '.env', '*.pem', 'tests/.data/']) expect(ignore, k).toContain(k);
-  expect(read('deploy', 'AUTO-DEPLOY-SETUP.txt')).toContain('CPANEL_TOKEN');
+  // The setup steps live in deploy/ on the owner's PC, which never goes to GitHub: only checked where it exists
+  if (fs.existsSync(path.join(__dirname, '..', 'deploy', 'AUTO-DEPLOY-SETUP.txt'))) expect(read('deploy', 'AUTO-DEPLOY-SETUP.txt')).toContain('CPANEL_TOKEN');
 });
 
 // ---------- 6. Chat view ----------
