@@ -40,9 +40,10 @@ on:
         required: false
         default: ''
 
-# One deploy at a time; a newer push waits for the one running
+# One deploy at a time; a newer push waits for the one running. (Renamed from "deploy" on 2026-11-11: a re-run
+# that GitHub left stuck as "in progress" held the old group, so every new run waited in the queue.)
 concurrency:
-  group: deploy
+  group: omnibeam-deploy
   cancel-in-progress: false
 
 permissions:
