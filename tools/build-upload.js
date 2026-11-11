@@ -4,6 +4,10 @@
 //   node tools/build-upload.js upgrades-1105      -> deploy/omnibeam-upgrades-1105-upload.zip
 // Prints the fingerprint the live site will report after the upload (the "build" the deploy check compares).
 // Never uploads anything itself.
+//
+// Only what changed (used by the GitHub auto-deploy): set ONLY_FILES to a text file with one path per line (as git
+// prints them, e.g. public/app.js). The zip then holds just those files, plus server.js, service-worker.js, the
+// sitemap and the tool downloads, which are small and always safe to send again.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -31,6 +35,12 @@ const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
   const files = [path.join(ROOT, 'server.js'), ...walk(path.join(ROOT, 'public'))]
     // Stray zips in public/ (only the tool downloads belong there)
     .filter((f) => !(rel(f).endsWith('.zip') && !rel(f).startsWith('public/tools/')));
+  // ONLY_FILES: keep only the listed files (and the few that are always sent)
+  const only = process.env.ONLY_FILES
+    ? new Set(fs.readFileSync(process.env.ONLY_FILES, 'utf8').split(/\r?\n/).map((l) => l.trim()).filter(Boolean))
+    : null;
+  const always = (r) => r === 'server.js' || r === 'public/sitemap.xml' || r.startsWith('public/tools/');
+  if (only) files.splice(0, files.length, ...files.filter((f) => only.has(rel(f)) || always(rel(f))));
   const entries = [];
   let before = 0, after = 0;
   for (const f of files) {

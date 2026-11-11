@@ -1,5 +1,8 @@
 # Deploying OmniBeam to omnibeam.site (cPanel shared hosting)
 
+> **Automatic updates from GitHub:** once the cPanel token is set up (10 minutes, see **AUTO-DEPLOY.md**), every
+> change merged into `main` goes live by itself and the steps below are only needed as a fallback.
+
 ## Updating the site (every time you change something)
 1. Optional but recommended: double-click **run-tests.cmd**. Every test should say "passed".
 2. Double-click **deploy.cmd** (or run `npm run deploy`). It checks the files for mistakes, raises
