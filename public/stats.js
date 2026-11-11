@@ -421,6 +421,16 @@
       tile('Camera and voice', num(sum('photosTaken')), `photos taken and sent · ${num(sum('voiceNotes'))} voice notes`),
       tile('Request links', num(sum('requests')), `made · ${num(sum('requestFiles'))} uploads received (${size(sum('requestBytes'))})`),
       tile('Screen sharing', num(sum('screenShares')), `screens shown to a device · ${num(sum('previews'))} file previews opened`),
+      tile('Ring my device', num(sum('rings')), 'times a device was rung to find it'),
+      tile('Links opened', num(sum('linksOpened')), 'links that opened by themselves on the other device'),
+      tile('Send to all my devices', num(sum('sendAll')), 'sends to several of your devices at once'),
+      tile('Invite cards', num(sum('inviteCards')), 'invite pictures made to share OmniBeam'),
+      tile('Device chats', num(sum('chatOpen')), `chats opened · ${num(sum('pins'))} notes pinned`),
+      tile('Scan to PDF', num(sum('scans')), 'PDFs made from photos of pages'),
+      tile('Video size', num(sum('videoShrunk')), `videos made smaller before sending · ${size(sum('videoSaved'))} saved`),
+      tile('Telegram bot', num(sum('telegramOut')), `sent to Telegram · ${num(sum('telegramIn'))} received from it · ${num(sum('telegramLinks'))} chats linked`),
+      tile('Embed box', num(sum('requestEmbedUploads')), 'uploads through the "Send me files" box on other sites'),
+      tile('App lock', num(sum('lockOn')), `locks turned on · ${num(sum('cleanOn'))} auto-clean turned on`),
     ].join('');
     const table = (el, rows) => {
       rows = rows.filter((r) => r.ok + r.fail > 0).sort((a, b) => b.ok + b.fail - (a.ok + a.fail));
@@ -648,7 +658,9 @@
     const fields = ['visitors', 'views', 'time', 'engaged', 'timed', 'app', 'connections', 'networks', 'transfers', 't_lan', 't_internet', 't_turn',
       't_relay', 'texts', 'files', 'bytes', 'relayBytes', 'links', 'linkDownloads', 'err', 'tfail', 'tcancel', 'tresumed',
       'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo',
-      'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes'];
+      'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes',
+      'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',
+      'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn'];
     const countries = Object.keys(group(days, 'uc_')).sort();
     const head = ['date', ...fields, ...countries.map((c) => 'visitors_' + c)];
     const rows = days.map((d) => [d.date, ...fields.map((f) => d[f] || 0), ...countries.map((c) => d['uc_' + c] || 0)]);

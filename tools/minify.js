@@ -38,7 +38,8 @@ async function minifyJs(code) {
 
 // Which files get minified: scripts and styles of the website, not the downloads in public/tools/ (people run those
 // themselves and may read them) and not the page sources
-const wanted = (rel) => /^public\/(?!tools\/|pages\/|media\/|store\/).+\.(js|css)$/.test(rel);
+// mediabunny.js is already minified and must keep its licence notice (MPL-2.0): shipped as it is
+const wanted = (rel) => /^public\/(?!tools\/|pages\/|media\/|store\/).+\.(js|css)$/.test(rel) && !/^public\/mediabunny\.js$/.test(rel);
 
 async function shipped(rel, buf) {
   rel = rel.split(path.sep).join('/');

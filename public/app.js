@@ -104,7 +104,7 @@ function loadScript(src) {
   }
   return scriptLoads.get(src);
 }
-const loadMore = () => loadScript('/more.js?v=7');
+const loadMore = () => loadScript('/more.js?v=8');
 const loadQr = () => loadScript('/qrcode.js?v=1');
 // Auto-send a folder (Settings): loaded when Settings opens, or at the start when it is turned on
 const loadAutoSend = () => loadScript('/autosend.js?v=1');
@@ -285,6 +285,7 @@ async function sha256Hex(text) {
 // opts.always: also while the page is on screen (a message whose chat isn't showing)
 function notify(title, body, opts = {}) {
   if ((!document.hidden && !opts.always) || !('Notification' in window) || Notification.permission !== 'granted') return;
+  if (typeof AppLock !== 'undefined' && AppLock.locked) body = t('Open OmniBeam to see it.'); // App lock: no message text
   const data = opts.chat ? { chat: opts.chat, url: '/?chat=' + encodeURIComponent(opts.chat), ...(opts.link ? { link: opts.link } : {}) } : undefined;
   // Through the service worker where there is one: Android and installed apps don't allow new Notification()
   const show = () => {
@@ -2207,11 +2208,12 @@ async function convertHeic(files, receiverDevice) {
 // they play silently in the background for as long as the video lasts). Smaller results only: anything that
 // wouldn't shrink by much is sent as it is. The originals on this device are never changed. Default: Original.
 const SHRINK_KEY = 'omnibeam-shrink';
-let shrinkMode = (() => { try { return localStorage.getItem(SHRINK_KEY) || 'off'; } catch { return 'off'; } })(); // off | photos | all
-if (!['off', 'photos', 'all'].includes(shrinkMode)) shrinkMode = 'off';
+let shrinkMode = (() => { try { return localStorage.getItem(SHRINK_KEY) || 'off'; } catch { return 'off'; } })(); // off | photos | all | small
+const SHRINK_MODES = ['off', 'photos', 'all', 'small'];
+if (!SHRINK_MODES.includes(shrinkMode)) shrinkMode = 'off';
 // One choice for every place that shows it; remembered on this device
 function setShrink(mode) {
-  shrinkMode = ['off', 'photos', 'all'].includes(mode) ? mode : 'off';
+  shrinkMode = SHRINK_MODES.includes(mode) ? mode : 'off';
   try { localStorage.setItem(SHRINK_KEY, shrinkMode); } catch {}
   updateShrinkUi();
 }
@@ -2222,14 +2224,16 @@ function updateShrinkUi() {
   if (notes) notes.hidden = shrinkMode === 'off';
   for (const b of document.querySelectorAll('[data-shrink]')) b.setAttribute('aria-pressed', String((b.dataset.shrink === 'off') === (shrinkMode === 'off')));
 }
-window.addEventListener('storage', (e) => { if (e.key === SHRINK_KEY) { shrinkMode = e.newValue || 'off'; updateShrinkUi(); } });
+window.addEventListener('storage', (e) => { if (e.key === SHRINK_KEY) { shrinkMode = SHRINK_MODES.includes(e.newValue) ? e.newValue : 'off'; updateShrinkUi(); } });
 const VIDEO_TYPE = typeof MediaRecorder === 'undefined' || !HTMLCanvasElement.prototype.captureStream ? null
   : ['video/mp4;codecs=avc1.42E01F,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4'].find((m) => { try { return MediaRecorder.isTypeSupported(m); } catch { return false; } }) || null;
+// WebCodecs: videos can be made smaller much faster than they play (see shrinkVideoFast in more.js)
+const FAST_VIDEO = typeof VideoEncoder === 'function' && typeof VideoDecoder === 'function' && typeof AudioEncoder === 'function';
 // Photos that can be made smaller (not GIFs: they may move; PNGs only without transparent parts, checked in more.js)
 const isPhoto = (f) => /^image\/(jpeg|webp|png|hei[cf])$/.test(f.type) || /\.(jpe?g|webp|png|heic|heif)$/i.test(f.name);
 const isVideo = (f) => /^video\//.test(f.type) || /\.(mp4|mov|m4v|webm|mkv)$/i.test(f.name);
 // The shrinking itself is in more.js
-const wantShrink = (f) => isPhoto(f) || (shrinkMode === 'all' && isVideo(f) && VIDEO_TYPE);
+const wantShrink = (f) => isPhoto(f) || ((shrinkMode === 'all' || shrinkMode === 'small') && isVideo(f) && !!(VIDEO_TYPE || FAST_VIDEO));
 async function shrinkFiles(files, peer, gone) {
   if (shrinkMode === 'off' || !files.some(wantShrink)) return files;
   await loadMore();
@@ -2828,9 +2832,17 @@ async function fingerprints(files, dated = true) {
 
 // ---------- Received-files history ----------
 // Files received recently, so they can be saved again later. Files kept on disk survive a reload
-// (for HISTORY_DAYS); files kept in memory only last until the page is closed.
+// (for as long as Keep history says); files kept in memory only last until the page is closed.
 const HISTORY_KEY = 'omnibeam-history';
-const HISTORY_DAYS = 7;
+// Keep history (Settings > Privacy): how long received files, messages, the Sent list and clipboard history stay
+// on this device before they are deleted by themselves. 7 days unless changed. Pinned notes stay until unpinned.
+const KEEP_KEY = 'omnibeam-keep';
+const KEEP_TIMES = { '1h': 36e5, '1d': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5 };
+const keepChoice = () => { try { const k = localStorage.getItem(KEEP_KEY); return k in KEEP_TIMES ? k : '7d'; } catch { return '7d'; } };
+const keepMs = () => KEEP_TIMES[keepChoice()];
+const keepCutoff = () => Date.now() - keepMs();
+// "1 hour", "7 days"… for the notes in the History window and the chat view
+const keepText = () => ({ '1h': t('1 hour'), '1d': t('1 day'), '7d': t('7 days'), '30d': t('30 days') })[keepChoice()];
 const History = {
   items: [], // { id?, name, size, mime, from, at, blob? }
   onChange: null, // set while the history dialog is open
@@ -2845,7 +2857,7 @@ const History = {
   },
   load() {
     this.items = this.stored();
-    const cutoff = Date.now() - HISTORY_DAYS * 864e5;
+    const cutoff = keepCutoff();
     const old = this.items.filter((f) => f.at < cutoff);
     old.forEach((f) => f.id && Store.remove(f.id));
     this.items = this.items.filter((f) => f.at >= cutoff && f.id);
@@ -2861,6 +2873,18 @@ const History = {
   },
   save() {
     try { localStorage.setItem(HISTORY_KEY, JSON.stringify(this.items.filter((f) => f.id).map(({ blob, ...f }) => f))); } catch {}
+  },
+  // Delete what is older than Keep history allows, while the page stays open (memory-only files too)
+  prune() {
+    this.sync();
+    const cutoff = keepCutoff();
+    const old = this.items.filter((f) => f.at < cutoff);
+    if (!old.length) return false;
+    old.forEach((f) => f.id && Store.remove(f.id));
+    this.items = this.items.filter((f) => f.at >= cutoff);
+    this.save();
+    this.updateButton();
+    return true;
   },
   // pair: the pairing secret of the device it came from, if any (the chat view finds a device's files by it)
   add(file, from, pair) {
@@ -2890,14 +2914,14 @@ const History = {
 };
 
 // ---------- Received messages ----------
-// The last messages received, kept on this device for HISTORY_DAYS like received files
+// The last messages received, kept on this device like received files (Keep history)
 const MESSAGES_KEY = 'omnibeam-messages';
 const MAX_MESSAGES = 100;
 const Messages = {
   items: [], // { text, from, at }, newest first
   load() {
     try { this.items = JSON.parse(localStorage.getItem(MESSAGES_KEY)) || []; } catch { this.items = []; }
-    const cutoff = Date.now() - HISTORY_DAYS * 864e5;
+    const cutoff = keepCutoff();
     this.items = this.items.filter((m) => m && typeof m.text === 'string' && m.at >= cutoff);
   },
   save() {
@@ -2924,7 +2948,7 @@ const Messages = {
 };
 
 // ---------- Sent files ----------
-// What this device sent in the last HISTORY_DAYS, for the Sent tab of the history: Send again, and the export.
+// What this device sent recently (Keep history), for the Sent tab of the history: Send again, and the export.
 // Kept here: the names and sizes, which device, when, and how it went (and the text of messages). The files
 // themselves stay in this page's memory only; after the page is closed, Send again asks to choose them again.
 const SENT_KEY = 'omnibeam-sent';
@@ -2934,7 +2958,7 @@ const Sent = {
   items: [], // { id, at, to, device, pair?, files: [{ name, size }], n, bytes, result, xid?, text? }, newest first
   load() {
     try { this.items = JSON.parse(localStorage.getItem(SENT_KEY)) || []; } catch { this.items = []; }
-    const cutoff = Date.now() - HISTORY_DAYS * 864e5;
+    const cutoff = keepCutoff();
     this.items = this.items.filter((e) => e && e.id && e.at >= cutoff);
   },
   save() {
@@ -2988,7 +3012,7 @@ window.addEventListener('storage', (e) => { if (e.key === SENT_KEY) History.onCh
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=5');
+const loadChat = () => loadScript('/chat.js?v=6');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -3171,7 +3195,7 @@ function messageArrived(peer, text) {
 // window over the page: the link is in the chat anyway, with an Open link button.
 function linkArrived(peer, link) {
   const name = peer.info.name;
-  if (openLinksAuto && peer.pairSecret && document.visibilityState === 'visible' && !userBusy()) {
+  if (openLinksAuto && !AppLock.locked && peer.pairSecret && document.visibilityState === 'visible' && !userBusy()) {
     if (openLink(link)) return toast(t('Opened a link from {name}', { name }));
     toast(t('Your browser blocked opening the link by itself. Allow pop-ups for {host} to open links right away.', { host: location.host }), 7000);
   }
@@ -3255,7 +3279,7 @@ async function openScan(peer) {
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-shrink]');
   if (!b) return;
-  setShrink(b.dataset.shrink === 'off' ? 'off' : shrinkMode === 'all' ? 'all' : 'photos');
+  setShrink(b.dataset.shrink === 'off' ? 'off' : shrinkMode === 'all' || shrinkMode === 'small' ? shrinkMode : 'photos');
   toast(shrinkMode === 'off' ? t('Photos are sent in their original size') : t('Photos are made smaller before sending (up to 2048 px)'));
 });
 
@@ -3301,7 +3325,7 @@ function chooseDevice() {
 
 // ---------- Export the history ----------
 // A spreadsheet (CSV, opens in Excel, Numbers and Google Sheets) of everything sent and received in the last
-// HISTORY_DAYS: one row per file or message. Made on this device; nothing is uploaded.
+// days Keep history allows: one row per file or message. Made on this device; nothing is uploaded.
 function exportHistory() {
   History.sync();
   Messages.load();
@@ -3615,7 +3639,8 @@ const ClipHistory = {
     if (!v) this.clear();
   },
   load() {
-    try { this.items = JSON.parse(localStorage.getItem(CLIPS_KEY) || '[]').filter((c) => c && typeof c.text === 'string').slice(0, CLIPS_MAX); } catch { this.items = []; }
+    const cutoff = keepCutoff();
+    try { this.items = JSON.parse(localStorage.getItem(CLIPS_KEY) || '[]').filter((c) => c && typeof c.text === 'string' && !(c.at < cutoff)).slice(0, CLIPS_MAX); } catch { this.items = []; }
     return this.items;
   },
   save() {
@@ -3923,10 +3948,10 @@ function openHistory() {
     $('.history-note', dlg).textContent = tab === 'clips'
       ? (ClipHistory.on ? t('The last {n} texts sent or received with Clipboard sync, kept only on this device.', { n: CLIPS_MAX }) : t('Clipboard history is off (Settings).'))
       : tab === 'sent'
-      ? t('Names and sizes are kept for {n} days. The files themselves only while this page is open.', { n: HISTORY_DAYS })
+      ? t('Names and sizes are kept for {time}. The files themselves only while this page is open.', { time: keepText() })
       : Store.kind === 'memory'
       ? t('This browser can\'t store files, so this list is cleared when you close or reload the page.')
-      : t('Files are kept on this device for {n} days.', { n: HISTORY_DAYS });
+      : t('Files are kept on this device for {time}.', { time: keepText() });
     $('[data-act=clear]', dlg).hidden = tab === 'gallery' || count === 0;
     $('[data-act=gallery-save]', dlg).hidden = tab !== 'gallery' || galleryItems.length === 0;
     $('[data-act=gallery-save]', dlg).textContent = canSaveToPhotos(galleryItems.filter((f) => f.blob)) && galleryItems.every((f) => f.blob)
@@ -6162,10 +6187,10 @@ Store.init().then(() => History.load());
 try { if (JSON.parse(localStorage.getItem('omnibeam-autosend') || '{}').on) setTimeout(() => loadAutoSend().catch(() => {}), 1500); } catch {}
 $('#btn-history').onclick = openHistory;
 
-// Settings shows one group at a time: Device, Transfers, Clipboard, Apps. It opens on the group used last.
+// Settings shows one group at a time: Device, Transfers, Clipboard, Privacy, Apps. It opens on the group used last.
 const SET_TAB_KEY = 'omnibeam-settings-tab';
 const SetTabs = {
-  names: ['device', 'transfers', 'clipboard', 'apps'],
+  names: ['device', 'transfers', 'clipboard', 'privacy', 'apps'],
   now: 'device',
   show(name, { save = false, focus = false } = {}) {
     if (!this.names.includes(name)) name = 'device';
@@ -6205,13 +6230,280 @@ $('.set-tabs').onkeydown = (e) => {
   SetTabs.show(list[i], { save: true, focus: true });
 };
 
+// ---------- App lock (Settings > Privacy) ----------
+// An optional PIN (4–8 digits) to open OmniBeam on this device, and optionally fingerprint, face or Windows Hello
+// (a passkey made on this device, WebAuthn). Locks when the page opens and again after it was left for a while
+// (Lock again). look.js hides the page before it is drawn; the lock screen is a modal <dialog> kept on top of any
+// other window that opens while locked (an incoming file waits behind it). Files keep arriving while locked;
+// notifications then don't show the message text. Only a salted PBKDF2 hash of the PIN is kept (localStorage
+// omnibeam-lock): it keeps people out of OmniBeam on a shared device, it doesn't encrypt what's stored here.
+// Forgot your PIN: the lock is removed together with the history, chats and remembered devices on this device.
+const LOCK_KEY = 'omnibeam-lock';
+const LOCK_TRIES_KEY = 'omnibeam-lock-tries';
+const b64u = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const AppLock = {
+  locked: false,
+  hiddenAt: 0,
+  verifying: null, // resolve() of a PIN check for Change PIN / Turn off
+  get conf() { try { return JSON.parse(localStorage.getItem(LOCK_KEY)) || null; } catch { return null; } },
+  set conf(c) {
+    try { if (c) localStorage.setItem(LOCK_KEY, JSON.stringify(c)); else localStorage.removeItem(LOCK_KEY); } catch {}
+    this.updateUi();
+  },
+  get on() { return !!this.conf?.hash; },
+  async hash(pin, salt, iter) {
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: unb64u(salt), iterations: iter }, key, 256);
+    return b64u(bits);
+  },
+  async check(pin) {
+    const c = this.conf;
+    if (!c) return true;
+    return (await this.hash(pin, c.salt, c.iter)) === c.hash;
+  },
+  async setPin(pin) {
+    const salt = b64u(crypto.getRandomValues(new Uint8Array(16)));
+    const iter = 200000;
+    const old = this.conf || {};
+    this.conf = { ...old, salt, iter, hash: await this.hash(pin, salt, iter), after: old.after ?? 5 };
+  },
+  // Wrong PINs: after 5, wait 30 s, then twice as long after each further wrong one (at most an hour)
+  tries() { try { return JSON.parse(localStorage.getItem(LOCK_TRIES_KEY)) || { n: 0, until: 0 }; } catch { return { n: 0, until: 0 }; } },
+  setTries(v) { try { if (v) localStorage.setItem(LOCK_TRIES_KEY, JSON.stringify(v)); else localStorage.removeItem(LOCK_TRIES_KEY); } catch {} },
+  waitLeft() { return Math.max(0, Math.ceil((this.tries().until - Date.now()) / 1000)); },
+  dlg: () => $('#dlg-lock'),
+  // Show the lock screen. verify: only check the PIN (Change PIN, Turn off), with Cancel, resolves true/false.
+  lock({ verify = false } = {}) {
+    const dlg = this.dlg();
+    if (!dlg || !this.on) return Promise.resolve(true);
+    if (!verify) {
+      this.locked = true;
+      document.documentElement.dataset.locked = '1';
+    }
+    $('#lock-title').textContent = verify ? t('Type your PIN') : t('OmniBeam is locked');
+    $('#lock-sub').textContent = verify ? t('To change the app lock, type your PIN first.') : t('Type your PIN to open it.');
+    $('#lock-cancel').hidden = !verify;
+    $('#lock-forgot').hidden = verify;
+    $('#lock-bio').hidden = !(this.conf.bio && window.PublicKeyCredential);
+    $('#lock-pin').value = '';
+    this.showWait();
+    this.raise();
+    $('#lock-pin').focus();
+    if (verify) return new Promise((resolve) => { this.verifying = resolve; });
+    return Promise.resolve(true);
+  },
+  // Keep the lock screen above everything (a window opened while locked goes behind it, still hidden)
+  raise() {
+    const dlg = this.dlg();
+    if (!dlg) return;
+    if (dlg.open) dlg.close();
+    dlg.showModal();
+  },
+  unlock() {
+    this.locked = false;
+    this.setTries(null);
+    const v = this.verifying;
+    this.verifying = null;
+    delete document.documentElement.dataset.locked;
+    if (this.dlg()?.open) this.dlg().close();
+    if (v) v(true);
+  },
+  showWait() {
+    const left = this.waitLeft();
+    $('#lock-msg').textContent = left ? t('Too many wrong PINs. Try again in {n} s.', { n: left }) : '';
+    $('#lock-go').disabled = !!left;
+    clearTimeout(this.waitTimer);
+    if (left) this.waitTimer = setTimeout(() => this.showWait(), 1000);
+  },
+  async submit() {
+    const pin = $('#lock-pin').value.trim();
+    if (this.waitLeft()) return this.showWait();
+    if (!/^\d{4,8}$/.test(pin)) { $('#lock-msg').textContent = t('The PIN is 4 to 8 digits.'); return; }
+    if (this.checking) return; // one check at a time, so every wrong PIN is counted
+    this.checking = true;
+    let ok = false;
+    try { ok = await this.check(pin); } finally { this.checking = false; }
+    if (ok) return this.unlock();
+    const tr = this.tries();
+    tr.n = (tr.n || 0) + 1;
+    if (tr.n >= 5) tr.until = Date.now() + Math.min(36e5, 30000 * 2 ** (tr.n - 5));
+    this.setTries(tr);
+    $('#lock-pin').value = '';
+    if (tr.until > Date.now()) this.showWait();
+    else $('#lock-msg').textContent = t('Wrong PIN. Try again.');
+  },
+  // Fingerprint, face or Windows Hello: a passkey made for this site on this device (it never leaves the device)
+  async bioAvailable() {
+    try { return !!window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } catch { return false; }
+  },
+  async bioCreate() {
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: 'OmniBeam', id: location.hostname },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'OmniBeam app lock', displayName: me.name || 'OmniBeam' },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+      timeout: 60000, attestation: 'none',
+    } });
+    if (!cred) throw new Error('no passkey');
+    this.conf = { ...this.conf, bio: b64u(cred.rawId) };
+  },
+  async bioUnlock() {
+    const c = this.conf;
+    if (!c?.bio) return;
+    try {
+      const a = await navigator.credentials.get({ publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)), rpId: location.hostname, timeout: 60000,
+        allowCredentials: [{ type: 'public-key', id: unb64u(c.bio) }], userVerification: 'required',
+      } });
+      // The device checked the fingerprint/face/PIN itself: flag "user verified" in the authenticator data
+      const flags = a && new Uint8Array(a.response.authenticatorData)[32];
+      if (flags & 0x04) this.unlock();
+      else $('#lock-msg').textContent = t('That didn\'t work. Type your PIN instead.');
+    } catch {
+      $('#lock-msg').textContent = t('That didn\'t work. Type your PIN instead.');
+    }
+  },
+  // Forgot your PIN: remove the lock and everything private OmniBeam keeps on this device, then start fresh
+  async forgot() {
+    if (!confirm(t('Remove the lock? This also deletes the history, chats, clipboard history, pinned notes and remembered devices on this device.'))) return;
+    for (const k of [LOCK_KEY, LOCK_TRIES_KEY, HISTORY_KEY, MESSAGES_KEY, SENT_KEY, CLIPS_KEY, CHAT_READ_KEY, PAIRED_KEY,
+      'omnibeam-pins', 'omnibeam-links', 'omnibeam-requests', 'omnibeam-inbox', 'omnibeam-partials', 'omnibeam-interrupted', 'omnibeam-outgoing']) {
+      try { localStorage.removeItem(k); } catch {}
+    }
+    try { for (const id of await Store.list()) await Store.remove(id); } catch {}
+    location.reload();
+  },
+  // Settings > Privacy
+  updateUi() {
+    const on = this.on, c = this.conf;
+    if (!$('#lock-state')) return;
+    $('#lock-state').textContent = on ? (c.bio ? t('On: PIN, fingerprint or face') : t('On: PIN')) : t('Off');
+    $('#lock-on').hidden = on;
+    $('#lock-now').hidden = $('#lock-change').hidden = $('#lock-off').hidden = $('#lock-more').hidden = !on;
+    $('#menu-lock').hidden = !on;
+    if (on) $('#lock-after').value = String(c.after ?? 5);
+    $('#lock-bio-on').checked = !!c?.bio;
+  },
+  // Choose a PIN (Turn on, Change PIN): resolves true once saved
+  choosePin() {
+    const dlg = $('#dlg-lockset');
+    $('#lockset-a').value = $('#lockset-b').value = '';
+    $('#lockset-msg').textContent = '';
+    dlg.showModal();
+    $('#lockset-a').focus();
+    return new Promise((resolve) => {
+      $('#lockset-save').onclick = async () => {
+        const a = $('#lockset-a').value.trim(), b = $('#lockset-b').value.trim();
+        if (!/^\d{4,8}$/.test(a)) { $('#lockset-msg').textContent = t('The PIN is 4 to 8 digits.'); return; }
+        if (a !== b) { $('#lockset-msg').textContent = t('The two PINs are not the same.'); return; }
+        await this.setPin(a);
+        dlg.close();
+        resolve(true);
+      };
+      dlg.onclose = () => resolve(false);
+    });
+  },
+};
+if ($('#dlg-lock')) {
+  $('#lock-form').onsubmit = (e) => { e.preventDefault(); AppLock.submit(); };
+  $('#lock-bio').onclick = () => AppLock.bioUnlock();
+  $('#lock-forgot').onclick = () => AppLock.forgot();
+  $('#lock-cancel').onclick = () => {
+    const v = AppLock.verifying;
+    AppLock.verifying = null;
+    AppLock.dlg().close();
+    if (v) v(false);
+  };
+  // Escape doesn't open a locked OmniBeam: the lock screen comes straight back
+  $('#dlg-lock').addEventListener('cancel', (e) => { if (AppLock.locked) e.preventDefault(); else $('#lock-cancel').click(); });
+  $('#dlg-lock').addEventListener('close', () => { if (AppLock.locked && !AppLock.dlg().open) setTimeout(() => AppLock.locked && !AppLock.dlg().open && AppLock.raise(), 0); });
+  // Any other window opening while locked: put the lock screen back on top
+  new MutationObserver((records) => {
+    if (AppLock.locked && records.some((r) => r.target !== AppLock.dlg() && r.target.open)) AppLock.raise();
+  }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open'] });
+  // Lock again after the page was left for a while (0 = right away; -1 = only when it opens)
+  document.addEventListener('visibilitychange', () => {
+    if (!AppLock.on || AppLock.locked) return;
+    const after = AppLock.conf.after ?? 5;
+    if (document.visibilityState === 'hidden') { AppLock.hiddenAt = Date.now(); if (after === 0) AppLock.lock(); return; }
+    if (after > 0 && AppLock.hiddenAt && Date.now() - AppLock.hiddenAt >= after * 60000) AppLock.lock();
+  });
+  // The lock turned off (or the PIN changed) in another tab
+  window.addEventListener('storage', (e) => {
+    if (e.key !== LOCK_KEY) return;
+    AppLock.updateUi();
+    if (!AppLock.on && AppLock.locked) AppLock.unlock();
+  });
+  $('#lock-on').onclick = async () => {
+    if (await AppLock.choosePin()) {
+      toast(t('App lock is on. OmniBeam asks for the PIN when it opens.'), 4000);
+      wsSend({ type: 'stat', kind: 'lock' });
+    }
+  };
+  $('#lock-change').onclick = async () => {
+    if (!(await AppLock.lock({ verify: true }))) return;
+    if (await AppLock.choosePin()) toast(t('New PIN saved'));
+  };
+  $('#lock-off').onclick = async () => {
+    if (!(await AppLock.lock({ verify: true }))) return;
+    AppLock.conf = null;
+    AppLock.setTries(null);
+    toast(t('App lock is off'));
+  };
+  const lockNow = () => { $('#dlg-settings').open && $('#dlg-settings').close(); AppLock.lock(); };
+  $('#lock-now').onclick = lockNow;
+  $('#menu-lock').onclick = lockNow;
+  $('#lock-after').onchange = (e) => { AppLock.conf = { ...AppLock.conf, after: Number(e.target.value) }; };
+  $('#lock-bio-on').onchange = async (e) => {
+    if (!e.target.checked) { const c = AppLock.conf; delete c.bio; AppLock.conf = c; return; }
+    try { await AppLock.bioCreate(); toast(t('Fingerprint or face unlock is on')); }
+    catch { e.target.checked = false; toast(t('This device didn\'t set up fingerprint or face unlock.')); }
+  };
+  AppLock.bioAvailable().then((ok) => { $('#lock-bio-row').hidden = !ok; });
+  AppLock.updateUi();
+  if (AppLock.on) AppLock.lock();
+  else delete document.documentElement.dataset.locked;
+}
+
+// Keep history (Settings > Privacy): what's older than the chosen time is deleted, now and every few minutes
+function pruneHistory() {
+  History.prune();
+  const n = Messages.items.length;
+  Messages.load();
+  if (Messages.items.length !== n) Messages.save();
+  const s = Sent.items.length;
+  Sent.load();
+  if (Sent.items.length !== s) Sent.save();
+  const c = ClipHistory.items.length;
+  ClipHistory.load();
+  if (ClipHistory.items.length !== c) ClipHistory.save();
+}
+function updateKeepUi() {
+  const k = keepChoice();
+  for (const r of document.querySelectorAll('input[name=keep]')) r.checked = r.value === k;
+}
+$('#keep-choice').onchange = (e) => {
+  try { localStorage.setItem(KEEP_KEY, e.target.value); } catch {}
+  pruneHistory();
+  History.onChange?.();
+  if (e.target.value === '1h' || e.target.value === '1d') wsSend({ type: 'stat', kind: 'clean' });
+};
+window.addEventListener('storage', (e) => { if (e.key === KEEP_KEY) updateKeepUi(); });
+setInterval(pruneHistory, 5 * 60 * 1000);
+updateKeepUi();
+
 // Settings: shrinking photos and videos before sending
 $('#btn-settings').onclick = () => {
   const dlg = $('#dlg-settings');
   SetTabs.opening();
   updateShrinkUi();
-  $('#shrink-video-note').hidden = !VIDEO_TYPE;
-  $('#shrink-video-none').hidden = !!VIDEO_TYPE;
+  updateKeepUi();
+  AppLock.updateUi();
+  $('#shrink-video-fast').hidden = !FAST_VIDEO;
+  $('#shrink-video-note').hidden = FAST_VIDEO || !VIDEO_TYPE;
+  $('#shrink-video-none').hidden = !!(VIDEO_TYPE || FAST_VIDEO);
   updateClipUi();
   updatePushUi();
   updateThemeUi();

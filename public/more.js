@@ -42,10 +42,12 @@
   const PHOTO_MAX = 2048; // longest side
   const PHOTO_QUALITY = 0.82;
   const PHOTO_MIN_BYTES = 500 * 1024; // smaller photos are sent as they are
-  const VIDEO_MAX = 1280;
-  const VIDEO_BITRATE = 2500000;
-  const VIDEO_MAX_SECONDS = 15 * 60;
-  const VIDEO_MIN_BYTES = 10 * 1024 * 1024;
+  // Videos: 720p (Smaller photos and videos) or 480p (Smallest), as MP4 (H.264 + AAC, plays everywhere)
+  const VIDEO_SIZES = { all: { side: 720, bitrate: 2500000 }, small: { side: 480, bitrate: 1200000 } };
+  const videoSize = () => VIDEO_SIZES[shrinkMode] || VIDEO_SIZES.all;
+  const VIDEO_MAX_SECONDS = 15 * 60; // the slow way (played and recorded): longer videos are sent as they are
+  const FAST_MAX_SECONDS = 2 * 3600;
+  const VIDEO_MIN_BYTES = testNumber('omnibeam-video-min') || 10 * 1024 * 1024; // smaller videos are sent as they are
   const renamed = (f, ext) => {
     const name = f.name.replace(/\.[^./]+$/, '') + ext;
     const out = { name, path: pathOf(f) !== f.name ? pathOf(f).replace(/[^/]+$/, name) : null };
@@ -88,11 +90,72 @@
       URL.revokeObjectURL(url);
     }
   }
-  // Plays the video (silently: its sound goes into the recording, not the speakers), draws each frame smaller on
-  // a canvas and records that. Gives up, sending the original, if the page is hidden (browsers pause drawing then)
-  // or every send waiting for it was cancelled.
+  // The fast way (Chrome, Edge, Safari 26, Firefox 130+ with WebCodecs): the video is read straight from the file,
+  // decoded, made smaller and encoded again by the browser's own video encoder (on the graphics chip where there is
+  // one), much faster than it plays and with the page in the background too. Mediabunny (public/mediabunny.js,
+  // loaded only now) reads and writes the MP4/MOV/WebM files. Returns null when this video or browser can't do it
+  // (the slow way below is tried next), the file itself when it's already small enough.
+  const loadMediabunny = () => loadScript('/mediabunny.js?v=1.63.0');
+  async function shrinkVideoFast(file, job) {
+    if (!FAST_VIDEO) return null;
+    let input = null, conv = null;
+    try {
+      await loadMediabunny();
+      const M = window.Mediabunny;
+      input = new M.Input({ source: new M.BlobSource(file), formats: [M.MP4, M.QTFF, M.WEBM, M.MATROSKA] });
+      const track = await input.getPrimaryVideoTrack();
+      if (!track || !(await track.canDecode())) return null;
+      const dur = await input.computeDuration();
+      if (!isFinite(dur) || dur <= 0 || dur > FAST_MAX_SECONDS) return null;
+      const { side, bitrate } = videoSize();
+      if ((file.size * 8) / dur < bitrate * 1.6) return file; // already about as small as it would get
+      // The size the video is shown at (turned the right way up); its shorter side becomes 720 or 480
+      const sw = await track.getSquarePixelWidth(), sh = await track.getSquarePixelHeight();
+      const [w, h] = (await track.getRotation()) % 180 ? [sh, sw] : [sw, sh];
+      const size = Math.min(w, h) <= side ? {} : w < h ? { width: side } : { height: side };
+      const outW = size.width || (size.height ? Math.round((w * side) / h) : w), outH = size.height || (size.width ? Math.round((h * side) / w) : h);
+      if (!(await M.canEncodeVideo('avc', { width: outW + (outW % 2), height: outH + (outH % 2), bitrate }))) return null;
+      const fps = (await track.computePacketStats(120).catch(() => null))?.averagePacketRate || 0;
+      const output = new M.Output({ format: new M.Mp4OutputFormat({ fastStart: 'in-memory' }), target: new M.BufferTarget() });
+      conv = await M.Conversion.init({
+        input, output, showWarnings: false, tracks: 'primary',
+        // 60 fps phone videos become 30 fps (half the frames to send); slower ones keep their frame rate
+        video: { ...size, codec: 'avc', bitrate, ...(fps > 31 ? { frameRate: 30 } : {}) },
+        // The sound is copied as it is (phone videos: AAC), only re-encoded if MP4 can't hold it
+      });
+      // Never lose the sound or the picture: anything this browser can't encode means the slow way instead
+      if (!conv.isValid || conv.discardedTracks.some((d) => d.track.type === 'video' || d.track.type === 'audio')) return null;
+      conv.onProgress = (p) => {
+        job.progress(p);
+        if (job.cancelled()) conv.cancel();
+      };
+      await conv.execute();
+      const buf = output.target.buffer;
+      if (!buf || !buf.byteLength || buf.byteLength > file.size * 0.8) return file;
+      const { name, path } = renamed(file, '.mp4');
+      const out = new File([buf], name, { type: 'video/mp4', lastModified: file.lastModified });
+      if (path) out.relPath = path;
+      return out;
+    } catch (err) {
+      if (conv && conv.state === 'canceled') return file;
+      report('shrink', 'Could not shrink a video quickly: ' + (err.name || '') + ' ' + (err.message || ''), { size: file.size });
+      return null;
+    } finally {
+      try { input && input.dispose(); } catch {}
+    }
+  }
   async function shrinkVideo(file, job) {
-    if (!VIDEO_TYPE || file.size < VIDEO_MIN_BYTES) return file;
+    if (file.size < VIDEO_MIN_BYTES) return file;
+    const fast = await shrinkVideoFast(file, job);
+    if (fast) return fast;
+    if (job.cancelled()) return file;
+    return shrinkVideoSlow(file, job);
+  }
+  // The slow way: plays the video (silently: its sound goes into the recording, not the speakers), draws each frame
+  // smaller on a canvas and records that. Gives up, sending the original, if the page is hidden (browsers pause
+  // drawing then) or every send waiting for it was cancelled.
+  async function shrinkVideoSlow(file, job) {
+    if (!VIDEO_TYPE) return file;
     const url = URL.createObjectURL(file);
     const video = document.createElement('video');
     video.playsInline = true;
@@ -109,9 +172,10 @@
         setTimeout(() => reject(new Error('Reading the video took too long')), 15000);
       });
       const dur = video.duration, w = video.videoWidth, h = video.videoHeight;
+      const { side, bitrate: VIDEO_BITRATE } = videoSize();
       if (!w || !h || !isFinite(dur) || dur <= 0 || dur > VIDEO_MAX_SECONDS) return file;
       if ((file.size * 8) / dur < VIDEO_BITRATE * 1.6) return file; // already about as small as it would get
-      const scale = Math.min(1, VIDEO_MAX / Math.max(w, h));
+      const scale = Math.min(1, side / Math.min(w, h));
       const canvas = document.createElement('canvas');
       canvas.width = Math.round((w * scale) / 2) * 2;
       canvas.height = Math.round((h * scale) / 2) * 2;
@@ -199,7 +263,7 @@
   }
   async function shrinkFiles(files, peer, gone) {
     if (shrinkMode === 'off') return files;
-    const wanted = (f) => isPhoto(f) || (shrinkMode === 'all' && isVideo(f) && VIDEO_TYPE);
+    const wanted = wantShrink;
     if (!files.some(wanted)) return files;
     const out = [];
     let before = 0, after = 0;
@@ -212,7 +276,10 @@
       const user = { gone, progress: (p) => peer.setStatus(t('Shrinking video… {pct}%', { pct: Math.min(99, Math.floor(p * 100)) })) };
       job.users.add(user);
       const small = await job.promise.finally(() => job.users.delete(user));
-      if (small !== f) { before += f.size; after += small.size; }
+      if (small !== f) {
+        before += f.size; after += small.size;
+        if (video) wsSend({ type: 'stat', kind: 'video', saved: f.size - small.size });
+      }
       out.push(small);
     }
     if (before) toast(t('Smaller: {size} instead of {was} (saved {saved})', { size: formatSize(after), was: formatSize(before), saved: formatSize(before - after) }), 4000);

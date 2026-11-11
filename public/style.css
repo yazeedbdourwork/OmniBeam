@@ -1359,3 +1359,22 @@ html.tv body { min-height: 100vh; }
 @media (prefers-reduced-motion: no-preference) {
   .set-pane:not([hidden]) { animation: pane-in 0.22s ease-out; }
 }
+
+/* App lock (2026-11-11): the lock screen covers everything (look.js marks <html> before the page is drawn) */
+html[data-locked] body > :not(#dlg-lock) { visibility: hidden !important; }
+html[data-locked] body { overflow: hidden; }
+dialog.lock-dialog { width: min(380px, calc(100vw - 32px)); text-align: center; }
+dialog.lock-dialog::backdrop { background: var(--bg); }
+[data-look="glass"] dialog.lock-dialog::backdrop { background: var(--glass-solid, var(--bg)); }
+.lock-box h3 { margin-top: 6px; }
+.lock-icon { width: 46px; height: 46px; fill: none; stroke: var(--accent, currentColor); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lock-input { display: block; width: 100%; margin: 10px 0 0; text-align: center; font-size: 1.4rem; letter-spacing: 0.3em; }
+.lock-msg { min-height: 1.3em; margin: 8px 0 0; color: #d03b3b; }
+.lock-row { justify-content: center; margin-top: 12px; }
+.lock-row .btn { min-width: 120px; }
+.lock-box .link-btn, #set-pane-privacy .link-btn { border: 0; background: none; padding: 6px; color: var(--muted); font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+.lock-field { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; font-size: 0.9rem; }
+.lock-field select { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
+#set-pane-privacy .me-row { flex-wrap: wrap; gap: 8px; }
+#keep-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); }
+.lock-input:placeholder-shown { letter-spacing: normal; font-size: 1.1rem; }

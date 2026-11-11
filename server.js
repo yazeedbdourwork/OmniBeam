@@ -187,6 +187,7 @@ function minifyAll() {
       if (e.isDirectory()) { if (!['tools', 'media', 'pages', 'store'].includes(e.name)) walk(p); continue; }
       const ext = path.extname(e.name);
       if (ext !== '.js' && ext !== '.css') continue;
+      if (e.name === 'mediabunny.js') continue; // already minified, keeps its licence notice (MPL-2.0)
       const src = fs.readFileSync(p);
       const key = sha1(src);
       wanted.add(key + ext);
@@ -3724,7 +3725,7 @@ function onConnection(ws, req) {
         // 'none' only for a failed send that never connected.
         // Small counts with no transfer attached: the rating/share prompt after sends (shown / rate / share / no),
         // the rest of a dropped send going to another device, a link sent on to an email address or phone
-        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin'].includes(msg.kind)) {
+        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean'].includes(msg.kind)) {
           client.extraStats = (client.extraStats || 0) + 1;
           if (client.extraStats > 30) return;
           if (msg.kind === 'handoff') count('thandoff');
@@ -3750,6 +3751,10 @@ function onConnection(ws, req) {
           else if (msg.kind === 'sendall') count('sendAll');
           else if (msg.kind === 'invite') count('inviteCards');
           else if (msg.kind === 'pin') count('pins');
+          // A video made smaller before sending (and how many bytes that saved), App lock / Auto-clean turned on
+          else if (msg.kind === 'video') { count('videoShrunk'); count('videoSaved', Math.min(4e10, Math.max(0, Math.floor(Number(msg.saved)) || 0))); }
+          else if (msg.kind === 'lock') count('lockOn');
+          else if (msg.kind === 'clean') count('cleanOn');
           else if (['shown', 'rate', 'share', 'no'].includes(msg.act)) count('ask_' + msg.act);
           break;
         }

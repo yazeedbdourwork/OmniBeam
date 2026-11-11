@@ -52,7 +52,7 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 - Progress bar with percentage, speed, time left and the route used (direct Wi‑Fi, internet, or relay).
 - Automatic resume: if a direct connection drops mid‑transfer, it carries on over the relay.
 - **⚡ Faster Wi‑Fi transfers** option for direct local connections.
-- **Original or Smaller photos** (2048 px), remembered per device.
+- **Original or Smaller photos** (2048 px), remembered per device. **Smaller videos** at 720p, or **Smallest** at 480p: made with the browser's own video encoder (WebCodecs, via Mediabunny), so a one-minute clip takes a few seconds; browsers without it fall back to playing and recording the video.
 - iPhone HEIC photos can be saved as JPG on Windows and Android.
 - Every transfer must be accepted on the receiving device (unless the sender is a Trusted device with Auto‑accept on).
 
@@ -155,6 +155,8 @@ Downloads served by the site (`public/tools/`):
 - When devices can reach each other, files go directly between them. When they can't, the encrypted data passes through the server, which forwards it straight away and cannot read it.
 - Nothing from a live transfer is saved on a server. Shared links and file requests are stored encrypted and deleted when they expire.
 - Every transfer must be accepted on the receiving device.
+- **App lock** (Settings → Privacy): an optional 4–8 digit PIN, and optionally fingerprint, face or Windows Hello (a passkey on that device), before OmniBeam opens; locks again after 0, 1, 5 or 15 minutes away. Only a salted PBKDF2 hash of the PIN is stored. It keeps people out of OmniBeam on a shared device; it doesn't encrypt the files stored there.
+- **Keep history** (Settings → Privacy): received files and messages, the Sent list and clipboard history are deleted by themselves after 1 hour, 1 day, 7 days (default) or 30 days.
 - Pairing codes are rate limited per network, and each code works for 2 devices only.
 - Google Analytics and the Meta Pixel load only after the visitor presses **Allow** on the cookie banner.
 - Visitor counting stores no IP addresses and no cookies.
@@ -289,7 +291,7 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 
 ## Owner tools: stats, status and alerts
 
-- **`/stats`** (enter `STATS_KEY`): visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
+- **`/stats`** (enter `STATS_KEY`): visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, feature counts (rings, links opened, send to all, invite cards, chats and pins, scans, smaller videos, Telegram, embed box, app lock), problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
 - **`/status`**: the server checks itself every few minutes, and a Cloudflare Worker (`omnibeam-ping`) posts outside checks.
 - **Telegram alerts** through @OmniBeam_bot: spikes in problem reports, crashed tabs, stuck transfers and new script errors, plus a weekly summary.
 
@@ -310,4 +312,4 @@ Facebook: https://www.facebook.com/omnibeamsite
 
 ## License
 
-OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
+OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).

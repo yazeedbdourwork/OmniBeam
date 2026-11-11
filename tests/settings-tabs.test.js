@@ -10,7 +10,7 @@ test.afterEach(async () => {
   devices = [];
 });
 
-const GROUPS = { device: ['#theme-choice', '#look-choice', '#set-me'], transfers: ['#shrink-choice', '#msg-sound', '#speed-open'],
+const GROUPS = { device: ['#theme-choice', '#look-choice', '#set-me'], transfers: ['#shrink-choice', '#msg-sound', '#speed-open'], privacy: ['#lock-on', '#keep-choice'],
   clipboard: ['#clip-sync', '#autosend-section'], apps: ['#tg-section'] };
 
 test('Settings shows one group at a time and opens on the one used last', async ({ browser }) => {
