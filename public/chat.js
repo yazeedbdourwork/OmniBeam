@@ -337,7 +337,7 @@
     if (!items.length) {
       const empty = document.createElement('p');
       empty.className = 'chat-empty';
-      empty.textContent = t('Nothing sent or received with {name} in the last {n} days yet. Messages and files appear here.', { name, n: HISTORY_DAYS });
+      empty.textContent = t('Nothing sent or received with {name} in the last {time} yet. Messages and files appear here.', { name, time: keepText() });
       thread.appendChild(empty);
     }
     let day = '';

@@ -44,7 +44,7 @@ test('the app opens without internet, in its language, from the files saved on t
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.locator('h1').first()).not.toHaveText("You're offline");
   // Files loaded on demand (the speed test, QR codes) also work offline
-  expect(await page.evaluate(async () => (await fetch('/more.js?v=7')).ok)).toBe(true);
+  expect(await page.evaluate(async () => (await fetch('/more.js?v=8')).ok)).toBe(true);
   await context.setOffline(false);
 });
 

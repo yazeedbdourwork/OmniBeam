@@ -58,9 +58,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=74" as="script">
-  <script src="/look.js?v=1"></script>
-  <link rel="stylesheet" href="/style.css?v=66">
+  <link rel="preload" href="/app.js?v=75" as="script">
+  <script src="/look.js?v=2"></script>
+  <link rel="stylesheet" href="/style.css?v=67">
 </head>
 <body>
   <header>
@@ -124,6 +124,7 @@
           <button type="button" class="menu-item" role="menuitem" id="menu-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg><span>Connection check</span></button>
           <button type="button" class="menu-item bar-twin" role="menuitem" id="btn-settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
           <button type="button" class="menu-item bar-twin" role="menuitem" id="btn-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark mode</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="menu-lock" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Lock now</span></button>
           <hr>
           <button type="button" class="menu-item" role="menuitem" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the intro video</span></button>
           <button type="button" class="menu-item" role="menuitem" id="menu-invite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span>Invite a friend</span></button>
@@ -460,11 +461,12 @@
   <!-- Settings -->
   <dialog id="dlg-settings" class="settings-dialog">
     <h3>Settings</h3>
-    <!-- One group at a time (app.js: SetTabs): Device, Transfers, Clipboard, Apps. The last one used opens next time. -->
+    <!-- One group at a time (app.js: SetTabs): Device, Transfers, Clipboard, Privacy, Apps. The last one used opens next time. -->
     <div class="tabs set-tabs" role="tablist" aria-label="Settings sections">
       <button type="button" class="tab" role="tab" id="set-tab-device" data-set-tab="device" aria-controls="set-pane-device"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M11 18h2"/></svg><span>Device</span></button>
       <button type="button" class="tab" role="tab" id="set-tab-transfers" data-set-tab="transfers" aria-controls="set-pane-transfers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></svg><span>Transfers</span></button>
       <button type="button" class="tab" role="tab" id="set-tab-clipboard" data-set-tab="clipboard" aria-controls="set-pane-clipboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zM9 12h6M9 16h4"/></svg><span>Clipboard</span></button>
+      <button type="button" class="tab" role="tab" id="set-tab-privacy" data-set-tab="privacy" aria-controls="set-pane-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Privacy</span></button>
       <button type="button" class="tab" role="tab" id="set-tab-apps" data-set-tab="apps" aria-controls="set-pane-apps"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Apps</span></button>
     </div>
 
@@ -527,9 +529,11 @@
           <label><input type="radio" name="shrink" value="off"> <span>Original: send photos as they are</span></label>
           <label><input type="radio" name="shrink" value="photos"> <span>Smaller photos (up to 2048 px, JPG)</span></label>
           <label><input type="radio" name="shrink" value="all"> <span>Smaller photos and videos (videos at 720p)</span></label>
+          <label><input type="radio" name="shrink" value="small"> <span>Smallest: photos and videos at 480p</span></label>
         </div>
         <div id="shrink-notes">
           <p class="muted small">GIFs, pictures with transparent parts and photos that are already small are always sent as they are.</p>
+          <p class="muted small" id="shrink-video-fast" hidden>This browser makes videos smaller quickly: a one-minute clip takes a few seconds.</p>
           <p class="muted small" id="shrink-video-note">Shrinking a video takes about as long as the video plays. Keep this page open while it runs.</p>
           <p class="muted small" id="shrink-video-none" hidden>This browser can't shrink videos, so they are sent as they are. Chrome, Edge and Safari can.</p>
         </div>
@@ -605,6 +609,45 @@
           <div class="row"><button class="btn small" id="autosend-resume" hidden>Allow again</button></div>
           <p class="muted small">Tip: on the phone, open the Link window and turn on Auto-accept for this computer, so the files arrive without a tap.</p>
         </div>
+      </section>
+    </div>
+
+    <!-- App lock and Keep history (app.js: AppLock, keep history) -->
+    <div class="set-pane" id="set-pane-privacy" role="tabpanel" aria-labelledby="set-tab-privacy" hidden>
+      <section class="set-sec">
+        <p class="step"><b>App lock</b></p>
+        <p class="muted small">Asks for a PIN before OmniBeam opens on this device, so people who use it after you can't see your history, chats or devices. Files still arrive while it's locked.</p>
+        <p class="small" id="lock-state" role="status">Off</p>
+        <div class="me-row">
+          <button class="btn small" id="lock-on">Turn on</button>
+          <button class="btn small" id="lock-now" hidden>Lock now</button>
+          <button class="btn small ghost" id="lock-change" hidden>Change PIN</button>
+          <button class="btn small ghost" id="lock-off" hidden>Turn off</button>
+        </div>
+        <div id="lock-more" hidden>
+          <p class="lock-field"><label for="lock-after">Lock again</label>
+          <select id="lock-after">
+            <option value="0">Right away when I leave OmniBeam</option>
+            <option value="1">After 1 minute away</option>
+            <option value="5">After 5 minutes away</option>
+            <option value="15">After 15 minutes away</option>
+            <option value="-1">Only when OmniBeam opens</option>
+          </select></p>
+          <div class="choice" id="lock-bio-row" hidden>
+            <label><input type="checkbox" id="lock-bio-on"> <span>Also unlock with fingerprint, face or Windows Hello</span></label>
+          </div>
+        </div>
+        <p class="muted small">The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.</p>
+      </section>
+      <section class="set-sec">
+        <p class="step"><b>Keep history</b></p>
+        <div class="choice choice-row" id="keep-choice">
+          <label><input type="radio" name="keep" value="1h"> <span>1 hour</span></label>
+          <label><input type="radio" name="keep" value="1d"> <span>1 day</span></label>
+          <label><input type="radio" name="keep" value="7d"> <span>7 days</span></label>
+          <label><input type="radio" name="keep" value="30d"> <span>30 days</span></label>
+        </div>
+        <p class="muted small">Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.</p>
       </section>
     </div>
 
@@ -915,6 +958,34 @@
   </dialog>
 
   <!-- Send files or a message to the linked Telegram chat (request.js: Telegram part) -->
+  <!-- App lock (app.js: AppLock): the lock screen, also used to check the PIN before changing or turning off the lock -->
+  <dialog id="dlg-lock" class="lock-dialog" aria-labelledby="lock-title">
+    <form class="lock-box" id="lock-form" autocomplete="off" novalidate>
+      <svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <h3 id="lock-title">OmniBeam is locked</h3>
+      <p class="muted" id="lock-sub">Type your PIN to open it.</p>
+      <input id="lock-pin" class="pass-input lock-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" aria-label="PIN" placeholder="PIN">
+      <p class="small lock-msg" id="lock-msg" role="alert"></p>
+      <div class="row lock-row">
+        <button class="btn ghost" id="lock-cancel" type="button" hidden>Cancel</button>
+        <button class="btn" id="lock-go" type="submit">Unlock OmniBeam</button>
+      </div>
+      <p class="center"><button class="btn ghost small" id="lock-bio" type="button" hidden>Use fingerprint, face or Windows Hello</button></p>
+      <p class="center"><button class="link-btn small" id="lock-forgot" type="button">Forgot your PIN?</button></p>
+    </form>
+  </dialog>
+  <dialog id="dlg-lockset" aria-labelledby="lockset-title">
+    <h3 id="lockset-title">Choose a PIN</h3>
+    <p class="muted">4 to 8 digits. You type it to open OmniBeam on this device.</p>
+    <input id="lockset-a" class="pass-input lock-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password" aria-label="New PIN" placeholder="New PIN">
+    <input id="lockset-b" class="pass-input lock-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="new-password" aria-label="Type it again" placeholder="Type it again">
+    <p class="small lock-msg" id="lockset-msg" role="alert"></p>
+    <div class="row">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" id="lockset-save">Save</button>
+    </div>
+  </dialog>
+
   <dialog id="dlg-tg" aria-labelledby="tg-title">
     <h3 id="tg-title">Send to Telegram</h3>
     <p class="muted">Files and text go to your chat with the OmniBeam bot. Up to 50 MB per file. Not end-to-end encrypted: Telegram can see them.</p>
@@ -1008,7 +1079,7 @@
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=74" defer></script>
+  <script src="/app.js?v=75" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>
