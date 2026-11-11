@@ -47,7 +47,8 @@ test('secret note to a device: shown once, hidden until Show, never kept in hist
   await expect(dlg.locator('pre')).toHaveText('wifi: hunter2-Ω');
   await dlg.locator('[data-act=close]').click();
   await expect(dlg).toBeHidden();
-  expect(await b.page.evaluate(() => document.getElementById('dlg-secret').innerHTML)).toBe('');
+  // The note is wiped by the dialog's close event, which comes a moment after the window is hidden
+  await expect.poll(() => b.page.evaluate(() => document.getElementById('dlg-secret').innerHTML)).toBe('');
   // Not in the messages history, the Sent log or the normal message window
   const stored = await b.page.evaluate(() => JSON.stringify(localStorage));
   expect(stored).not.toContain('hunter2');
