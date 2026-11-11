@@ -19,13 +19,12 @@ Build described here: `a6b153900d32` (2026-11-07)
 7. [Privacy and security](#privacy-and-security)
 8. [Project layout](#project-layout)
 9. [Run it locally](#run-it-locally)
-10. [Self-host with Docker](#self-host-with-docker)
-11. [Deploy on cPanel](#deploy-on-cpanel)
-12. [Environment variables](#environment-variables)
-13. [Owner tools: stats, status and alerts](#owner-tools-stats-status-and-alerts)
-14. [Tests](#tests)
-15. [Credits](#credits)
-16. [License](#license)
+10. [Deploy on cPanel](#deploy-on-cpanel)
+11. [Environment variables](#environment-variables)
+12. [Owner tools: stats, status and alerts](#owner-tools-stats-status-and-alerts)
+13. [Tests](#tests)
+14. [Credits](#credits)
+15. [License](#license)
 
 ---
 
@@ -195,15 +194,6 @@ node server.js
 ```
 
 No `npm install` is needed to run it (ws and terser are in `vendor/`). Use another port with `PORT=4556 node server.js`. Open the page in two browser windows or on two devices on the same network to try a transfer.
-
-## Self-host with Docker
-
-```bash
-docker compose up -d
-# then open http://localhost:3000
-```
-
-The image holds only `server.js`, `service-worker.js`, `public/` and `vendor/` (about 155 MB, Node 22 on Alpine). Everything the server saves goes to the `/data` volume. omnibeam.site's own analytics, Meta Pixel, donation link and alert email are off in the image. For phones and other computers, put it behind HTTPS; [SELF-HOSTING.md](SELF-HOSTING.md) has Caddy and nginx examples, TURN, backups and every setting.
 
 ## Deploy on cPanel
 
