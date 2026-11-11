@@ -3,8 +3,7 @@
 **Send files, photos and text from any device to any device, right in the browser.**
 iPhone, Android, Windows, Mac, Linux and Chromebook. Encrypted end to end, free, no app and no sign-up.
 
-Live site: **https://omnibeam.site**
-Build described here: `a6b153900d32` (2026-11-07)
+**👉 Use it now: [omnibeam.site](https://omnibeam.site)** (nothing to install)
 
 ---
 
