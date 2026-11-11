@@ -25,6 +25,7 @@ Build described here: `a6b153900d32` (2026-11-07)
 13. [Owner tools: stats, status and alerts](#owner-tools-stats-status-and-alerts)
 14. [Tests](#tests)
 15. [Credits](#credits)
+16. [License](#license)
 
 ---
 
@@ -306,3 +307,7 @@ npm test
 
 Created by **Yazeed Bdour**. © 2026 OmniBeam.Site
 Facebook: https://www.facebook.com/omnibeamsite
+
+## License
+
+OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).

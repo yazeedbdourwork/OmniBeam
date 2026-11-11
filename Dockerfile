@@ -7,7 +7,7 @@ FROM node:22-alpine
 LABEL org.opencontainers.image.title="OmniBeam" \
       org.opencontainers.image.description="Send files and text between your devices in the browser. WebRTC, end to end encrypted, no account." \
       org.opencontainers.image.source="https://github.com/yazeedbdourwork/OmniBeam" \
-      org.opencontainers.image.licenses="NOASSERTION"
+      org.opencontainers.image.licenses="GPL-3.0-or-later"
 
 # omnibeam.site's own analytics, Meta pixel, donation link and alert email stay off in your copy.
 # Set them to your own values with -e (or in docker-compose.yml) if you want them.

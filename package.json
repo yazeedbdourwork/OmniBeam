@@ -13,5 +13,10 @@
   "dependencies": {},
   "devDependencies": {
     "@playwright/test": "^1.63.0"
+  },
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yazeedbdourwork/OmniBeam.git"
   }
 }
