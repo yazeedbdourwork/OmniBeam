@@ -186,8 +186,15 @@ for (const relayOnly of [false, true]) {
     const chooser = a.page.waitForEvent('filechooser');
     await target.hover();
     await target.locator('[data-act=files]').click();
+    // Every message the sender shows is kept: over the server a small test file can finish within a second, and
+    // the "Sent" message then replaces the big-file one before a check of the screen sees it
+    await a.page.evaluate(() => {
+      window.__toasts = [];
+      new MutationObserver(() => window.__toasts.push(document.getElementById('toast').textContent))
+        .observe(document.getElementById('toast'), { childList: true, characterData: true, subtree: true });
+    });
     await (await chooser).setFiles([file]);
-    await expect(a.page.locator('#toast')).toContainText('Big-file mode');
+    await expect.poll(() => a.page.evaluate(() => window.__toasts.join('\n'))).toContain('Big-file mode');
     const got = b.page.locator('#dlg-received');
     await expect(got).toBeVisible({ timeout: 60000 });
     await expect(got.locator('.intact')).toBeVisible({ timeout: 20000 });
