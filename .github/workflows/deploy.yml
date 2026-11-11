@@ -1,5 +1,5 @@
 # OmniBeam: test, build and put the site live on cPanel, every time main changes (or by hand: Actions -> Deploy ->
-# Run workflow). Setup steps for the owner: deploy/AUTO-DEPLOY-SETUP.txt on the PC.
+# Run workflow). Setup steps in plain words: AUTO-DEPLOY.md
 #
 #   1. test    npm test (the same tests as run-tests.cmd), on a fresh Ubuntu machine
 #   2. deploy  node tools/build-upload.js ci  -> deploy/omnibeam-ci-upload.zip (server.js + public/, minified),
@@ -12,12 +12,33 @@
 #   B. FTP: FTP_HOST, FTP_USER, FTP_PASSWORD, FTP_APP_DIR (FTPS on port 21)
 # Optional: CLOUDFLARE_ZONE + CLOUDFLARE_TOKEN (a token allowed "Cache Purge") to purge Cloudflare afterwards.
 # Nothing in data/ (stats, links, pairings…) is touched: the zip only holds server.js and public/.
+#
+# With the cPanel token, only the files that changed since the last deploy are sent (the commit that went live is
+# kept in tmp/omnibeam-deployed-commit.txt in the app folder). A push that changes no site file (tests, docs) puts
+# nothing live. Every run first checks that CPANEL_APP_DIR really is the OmniBeam app folder. By hand
+# (Actions -> Deploy -> Run workflow) you can also:
+#   - Test the connection: checks the token and the app folder, changes nothing
+#   - Send everything: uploads the whole site again
+#   - Commit: put an older commit live again (to undo a bad update)
 name: Deploy
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      mode:
+        description: What to do
+        type: choice
+        default: Put the changes live
+        options:
+          - Put the changes live
+          - Send everything
+          - Test the connection
+      commit:
+        description: Commit to put live (empty = the newest). Pick an older one to undo an update.
+        required: false
+        default: ''
 
 # One deploy at a time; a newer push waits for the one running
 concurrency:
@@ -27,12 +48,19 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MODE: ${{ inputs.mode || 'Put the changes live' }}
+
 jobs:
   test:
+    # A connection test changes nothing, so it needs no tests
+    if: inputs.mode != 'Test the connection'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -51,6 +79,8 @@ jobs:
 
   deploy:
     needs: test
+    # After the tests passed, or straight away for a connection test (which skips the tests)
+    if: ${{ !cancelled() && (needs.test.result == 'success' || (needs.test.result == 'skipped' && inputs.mode == 'Test the connection')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
@@ -67,20 +97,96 @@ jobs:
       CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit || github.sha }}
+          # The whole history, to see what changed since the commit that is live now
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
 
+      # ---------- A. cPanel API token ----------
+      # Checks that the token works and that CPANEL_APP_DIR really is the OmniBeam app folder (it holds server.js
+      # and public/), so the site's files can never be unpacked into the wrong folder.
+      - name: Check the cPanel connection and the app folder
+        if: env.CPANEL_TOKEN != ''
+        run: |
+          set -uo pipefail
+          API="https://${CPANEL_HOST}:2083"
+          AUTH="Authorization: cpanel ${CPANEL_USER}:${CPANEL_TOKEN}"
+          DIR="${CPANEL_APP_DIR%/}"
+          if ! CODE=$(curl -sS -o list.json -w '%{http_code}' -H "$AUTH" --get "$API/execute/Fileman/list_files" \
+              --data-urlencode "dir=${DIR}"); then
+            echo "::error::Could not reach ${CPANEL_HOST}:2083. Check CPANEL_HOST (the server name, without https:// or :2083)."
+            exit 1
+          fi
+          if [ "$CODE" = 401 ] || [ "$CODE" = 403 ]; then
+            echo "::error::cPanel said no (HTTP ${CODE}). Check CPANEL_USER (your cPanel username) and CPANEL_TOKEN (the API token)."
+            exit 1
+          fi
+          if ! jq -e '.status == 1' list.json > /dev/null 2>&1; then
+            WHY=$(jq -r '(.errors // []) | join(" ")' list.json 2>/dev/null || echo "HTTP ${CODE}")
+            echo "::error::cPanel could not open the folder ${DIR}: ${WHY}. Check CPANEL_APP_DIR."
+            exit 1
+          fi
+          NAMES=$(jq -r '.data[].file' list.json)
+          if ! grep -qx 'server.js' <<< "$NAMES" || ! grep -qx 'public' <<< "$NAMES"; then
+            echo "::error::${DIR} has no server.js and public folder, so it is not the OmniBeam app folder. Check CPANEL_APP_DIR (Setup Node.js App -> Application root, as /home/<user>/<folder>)."
+            exit 1
+          fi
+          echo "Connection works: ${DIR} is the OmniBeam app folder."
+
+      - name: Connection test done
+        if: env.MODE == 'Test the connection'
+        run: |
+          if [ -z "${CPANEL_TOKEN}" ]; then
+            echo "::error::CPANEL_TOKEN is not set. Add the CPANEL_* secrets first (see AUTO-DEPLOY.md)."
+            exit 1
+          fi
+          echo "All good. Nothing was changed on the site."
+
+      # Which files changed since the commit that is live (tmp/omnibeam-deployed-commit.txt in the app folder)?
+      # Only those are sent. The first deploy, "Send everything", or an unknown commit sends the whole site.
+      - name: What changed since the last deploy
+        if: env.CPANEL_TOKEN != '' && env.MODE != 'Test the connection'
+        run: |
+          set -uo pipefail
+          API="https://${CPANEL_HOST}:2083"
+          AUTH="Authorization: cpanel ${CPANEL_USER}:${CPANEL_TOKEN}"
+          DIR="${CPANEL_APP_DIR%/}"
+          LAST=$(curl -sS -H "$AUTH" --get "$API/execute/Fileman/get_file_content" \
+            --data-urlencode "dir=${DIR}/tmp" --data-urlencode "file=omnibeam-deployed-commit.txt" \
+            | jq -r 'if .status == 1 then .data.content else "" end' 2>/dev/null | tr -dc '0-9a-f' | head -c 40)
+          if [ "$MODE" = 'Send everything' ]; then
+            echo "Sending the whole site (asked for)."
+          elif [ -z "$LAST" ] || ! git cat-file -e "${LAST}^{commit}" 2>/dev/null; then
+            echo "No earlier deploy from GitHub found, so this time the whole site is sent."
+          else
+            echo "The live site is on commit ${LAST}."
+            git diff --name-only "$LAST" HEAD > changed-all.txt
+            # Only files the site uses, and the sources of the downloads in public/tools
+            grep -E '^(server\.js|service-worker\.js|public/|tools/omnibeam-|tools/install-|tools/README|vendor/ws/)' \
+              changed-all.txt > changed.txt || true
+            if [ ! -s changed.txt ]; then
+              echo "No site file changed since ${LAST} (only tests, docs or tools). Nothing to put live."
+              echo "SKIP=1" >> "$GITHUB_ENV"
+            else
+              echo "Changed site files:"
+              cat changed.txt
+              echo "ONLY_FILES=$PWD/changed.txt" >> "$GITHUB_ENV"
+            fi
+          fi
+
       - name: Build the upload zip
+        if: env.MODE != 'Test the connection' && env.SKIP != '1'
         run: |
           node tools/build-upload.js ci | tee build.txt
           echo "BUILD=$(grep -o 'reports build [0-9a-f]*' build.txt | awk '{print $3}')" >> "$GITHUB_ENV"
 
-      # ---------- A. cPanel API token ----------
       - name: Upload and unpack (cPanel API)
-        if: env.CPANEL_TOKEN != ''
+        if: env.CPANEL_TOKEN != '' && env.MODE != 'Test the connection' && env.SKIP != '1'
         run: |
           set -euo pipefail
           API="https://${CPANEL_HOST}:2083"
@@ -88,6 +194,7 @@ jobs:
           ZIP=deploy/omnibeam-ci-upload.zip
           # The app folder as cPanel's file manager sees it, e.g. /home/<user>/omnibeam
           DIR="${CPANEL_APP_DIR%/}"
+          COMMIT=$(git rev-parse HEAD)
           echo "Uploading $(du -h "$ZIP" | cut -f1) to ${DIR}"
           curl -fsS -H "$AUTH" "$API/execute/Fileman/upload_files" \
             -F "dir=${DIR}" -F "overwrite=1" -F "file-1=@${ZIP};filename=omnibeam-ci-upload.zip" | tee upload.json
@@ -106,19 +213,24 @@ jobs:
           # Restart the Node app: Passenger restarts it when tmp/restart.txt changes
           curl -fsS -H "$AUTH" "$API/execute/Fileman/save_file_content" \
             --data-urlencode "dir=${DIR}/tmp" --data-urlencode "file=restart.txt" \
-            --data-urlencode "content=deploy $(date -u +%FT%TZ) ${GITHUB_SHA}" --data-urlencode "fallback=1" | tee restart.json
+            --data-urlencode "content=deploy $(date -u +%FT%TZ) ${COMMIT}" --data-urlencode "fallback=1" | tee restart.json
           grep -q '"status":1' restart.json
+          # Remember which commit is live now, so the next deploy only sends what changed after it
+          curl -fsS -H "$AUTH" "$API/execute/Fileman/save_file_content" \
+            --data-urlencode "dir=${DIR}/tmp" --data-urlencode "file=omnibeam-deployed-commit.txt" \
+            --data-urlencode "content=${COMMIT}" --data-urlencode "fallback=1" | tee commit.json
+          grep -q '"status":1' commit.json
 
       # ---------- B. FTP ----------
       - name: Unpack the zip for FTP
-        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != ''
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != '' && env.MODE != 'Test the connection'
         run: |
           mkdir -p ftp-out
           cd ftp-out && unzip -q ../deploy/omnibeam-ci-upload.zip
           # Changing tmp/restart.txt makes Passenger restart the app once the upload is done
-          mkdir -p tmp && echo "deploy $(date -u +%FT%TZ) ${GITHUB_SHA}" > tmp/restart.txt
+          mkdir -p tmp && echo "deploy $(date -u +%FT%TZ) $(git rev-parse HEAD)" > tmp/restart.txt
       - name: Upload (FTP)
-        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != ''
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD != '' && env.MODE != 'Test the connection'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -134,19 +246,20 @@ jobs:
             **/.git*/**
 
       - name: No way to reach cPanel
-        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD == ''
+        if: env.CPANEL_TOKEN == '' && env.FTP_PASSWORD == '' && env.MODE != 'Test the connection'
         run: |
-          echo "::error::Set the CPANEL_* secrets (or FTP_*) in GitHub -> Settings -> Secrets and variables -> Actions. See deploy/AUTO-DEPLOY-SETUP.txt."
+          echo "::error::Set the CPANEL_* secrets (or FTP_*) in GitHub -> Settings -> Secrets and variables -> Actions. See AUTO-DEPLOY.md."
           exit 1
 
       - name: Purge Cloudflare
-        if: env.CLOUDFLARE_TOKEN != ''
+        if: env.CLOUDFLARE_TOKEN != '' && env.MODE != 'Test the connection' && env.SKIP != '1'
         run: |
           curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/purge_cache" \
             -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}" -H "Content-Type: application/json" \
             --data '{"purge_everything":true}' | grep -q '"success":true'
 
       - name: Is the live site on this build?
+        if: env.MODE != 'Test the connection' && env.SKIP != '1'
         run: |
           echo "Waiting for omnibeam.site to report build ${BUILD}"
           for i in $(seq 1 20); do
@@ -157,7 +270,9 @@ jobs:
           exit 1
 
       - run: npx playwright install --with-deps chromium
+        if: env.MODE != 'Test the connection' && env.SKIP != '1'
       - name: Quick live check
+        if: env.MODE != 'Test the connection' && env.SKIP != '1'
         run: npx playwright test -c tests/live.config.js --reporter=line
       - name: Keep the live check report when something failed
         if: failure()
