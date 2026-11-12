@@ -1175,6 +1175,7 @@
     "Reply": "Ответить",
     "Type a reply…": "Введите ответ…",
     "Your reply wasn't sent: {name} isn't here anymore.": "Ответ не отправлен: {name} больше нет рядом.",
+    "Reply sent to {name}": "Ответ отправлен: {name}",
     "Move to a new phone": "Переезд на новый телефон",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "Сохраните один файл резервной копии с сопряжёнными устройствами, настройками, закреплёнными заметками и чатами. Откройте его в OmniBeam на новом телефоне, и всё вернётся. Полученных файлов в нём нет.",
     "Save backup file": "Сохранить резервную копию",

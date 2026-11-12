@@ -1175,6 +1175,7 @@
     "Reply": "Rispondi",
     "Type a reply…": "Scrivi una risposta…",
     "Your reply wasn't sent: {name} isn't here anymore.": "La risposta non è stata inviata: {name} non c'è più.",
+    "Reply sent to {name}": "Risposta inviata a {name}",
     "Move to a new phone": "Passa a un nuovo telefono",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "Salva un unico file di backup con i dispositivi associati, le impostazioni, le note fissate e le chat. Aprilo in OmniBeam sul nuovo telefono e torna tutto. I file ricevuti non ci sono.",
     "Save backup file": "Salva file di backup",

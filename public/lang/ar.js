@@ -1175,6 +1175,7 @@
     "Reply": "رد",
     "Type a reply…": "اكتب ردًا…",
     "Your reply wasn't sent: {name} isn't here anymore.": "لم يُرسل ردك: {name} لم يعد موجودًا.",
+    "Reply sent to {name}": "تم إرسال ردك إلى {name}",
     "Move to a new phone": "الانتقال إلى هاتف جديد",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "احفظ ملف نسخة احتياطية واحدًا يضم أجهزتك المرتبطة وإعداداتك وملاحظاتك المثبتة ومحادثاتك. افتحه في OmniBeam على الهاتف الجديد ويعود كل شيء. الملفات المستلمة ليست فيه.",
     "Save backup file": "حفظ ملف النسخة الاحتياطية",

@@ -215,18 +215,20 @@ test('App lock on: notifications offer no Reply or Save, and a reply is not sent
 // sw.js itself: what each button on the notification does, with a pretend browser around it
 test('sw.js: notification buttons go to the open tab, or open OmniBeam with the reply kept', async () => {
   const src = fs.readFileSync(path.join(__dirname, '..', 'service-worker.js'), 'utf8');
-  const run = async (event, { tab = true } = {}) => {
+  const run = async (event, { tab = true, answers = true, others = [] } = {}) => {
     const listeners = {};
     const posted = [];
     const opened = [];
     const kept = [];
     let focused = false;
-    const client = { url: 'https://omnibeam.site/', postMessage: (m) => posted.push(m), focus: () => { focused = true; } };
+    // The app tab answers a reply on the port sw.js sends with it (a paused tab doesn't)
+    const client = { url: 'https://omnibeam.site/', postMessage: (m, ports) => { posted.push(m); if (answers && ports?.[0]) ports[0].postMessage('ok'); }, focus: () => { focused = true; } };
+    const other = (u) => ({ url: u, postMessage: (m) => posted.push({ wrongTab: u, ...m }), focus: () => {} });
     const self = {
       location: { origin: 'https://omnibeam.site' },
       registration: { scope: 'https://omnibeam.site/' },
       addEventListener: (type, fn) => { listeners[type] = fn; },
-      clients: { matchAll: async () => (tab ? [client] : []), openWindow: async (u) => { opened.push(u); } },
+      clients: { matchAll: async () => [...others.map(other), ...(tab ? [client] : [])], openWindow: async (u) => { opened.push(u); } },
     };
     // A small IndexedDB: enough for saveReply
     const indexedDB = { open: () => {
@@ -235,7 +237,7 @@ test('sw.js: notification buttons go to the open tab, or open OmniBeam with the 
       setTimeout(() => { r.result = db; r.onsuccess(); });
       return r;
     } };
-    vm.runInNewContext(src, { self, caches: {}, fetch: () => {}, indexedDB, URL, Response: function () {}, setTimeout, console });
+    vm.runInNewContext(src, { self, caches: {}, fetch: () => {}, indexedDB, URL, Response: function () {}, setTimeout, clearTimeout, MessageChannel, console });
     let done;
     listeners.notificationclick({ ...event, notification: { close() {}, data: event.data }, waitUntil: (p) => { done = p; } });
     await done;
@@ -245,6 +247,13 @@ test('sw.js: notification buttons go to the open tab, or open OmniBeam with the 
   let r = await run({ action: 'reply', reply: '  on my way  ', data });
   expect(r.posted).toEqual([{ type: 'notif-reply', chat: data.chat, text: 'on my way' }]);
   expect(r.focused).toBe(false);
+  // A paused tab (a phone with OmniBeam in the background): no answer, so OmniBeam comes to the front and sends it
+  r = await run({ action: 'reply', reply: 'on my way', data }, { answers: false });
+  expect(r.posted).toEqual([{ type: 'notif-reply', chat: data.chat, text: 'on my way' }]);
+  expect(r.focused).toBe(true);
+  // The app's tab, not an open /admin or guide page
+  r = await run({ action: 'reply', reply: 'on my way', data }, { others: ['https://omnibeam.site/admin', 'https://omnibeam.site/guide/send-files'] });
+  expect(r.posted).toEqual([{ type: 'notif-reply', chat: data.chat, text: 'on my way' }]);
   r = await run({ action: 'reply', reply: 'on my way', data }, { tab: false });
   expect(r.kept[0][0]).toBe('reply');
   expect(r.kept[0][1]).toMatchObject({ chat: data.chat, text: 'on my way' });

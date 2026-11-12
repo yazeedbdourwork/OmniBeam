@@ -1175,6 +1175,7 @@
     "Reply": "답장",
     "Type a reply…": "답장 입력…",
     "Your reply wasn't sent: {name} isn't here anymore.": "답장을 보내지 못했어요: {name}이(가) 더 이상 없어요.",
+    "Reply sent to {name}": "{name}에게 답장을 보냈어요",
     "Move to a new phone": "새 휴대폰으로 옮기기",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "페어링한 기기, 설정, 고정한 메모, 채팅을 백업 파일 하나에 저장하세요. 새 휴대폰의 OmniBeam에서 열면 모두 돌아와요. 받은 파일은 포함되지 않아요.",
     "Save backup file": "백업 파일 저장",
