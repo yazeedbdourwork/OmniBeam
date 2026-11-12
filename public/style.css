@@ -1496,3 +1496,10 @@ main:focus { outline: none; }
 .fs-dir .fs-n { font-weight: 700; }
 .fs-s { flex: none; color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .fs-dev { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+/* Event photo album (album.js): the same fields as Request files */
+#dlg-album select { padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
+#dlg-album .field input { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--inset-sm); font: inherit; font-weight: 400; }
+#dlg-album .link-opts { display: grid; grid-template-columns: 1fr; }
+#dlg-album .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
+#dlg-album h4 { margin: 18px 0 8px; }
+#dlg-album #album-url { overflow-wrap: anywhere; }
