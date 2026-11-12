@@ -431,6 +431,8 @@
       tile('Telegram bot', num(sum('telegramOut')), `sent to Telegram · ${num(sum('telegramIn'))} received from it · ${num(sum('telegramLinks'))} chats linked`),
       tile('Embed box', num(sum('requestEmbedUploads')), 'uploads through the "Send me files" box on other sites'),
       tile('App lock', num(sum('lockOn')), `locks turned on · ${num(sum('cleanOn'))} auto-clean turned on`),
+      tile('Move to a new phone', num(sum('backupsSaved')), `backup files saved · ${num(sum('backupsOpened'))} opened on a new device`),
+      tile('Notification replies', num(sum('notifReplies')), 'quick replies sent from a notification'),
     ].join('');
     const table = (el, rows) => {
       rows = rows.filter((r) => r.ok + r.fail > 0).sort((a, b) => b.ok + b.fail - (a.ok + a.fail));
@@ -660,7 +662,7 @@
       'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo',
       'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes',
       'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',
-      'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn'];
+      'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn', 'backupsSaved', 'backupsOpened', 'notifReplies'];
     const countries = Object.keys(group(days, 'uc_')).sort();
     const head = ['date', ...fields, ...countries.map((c) => 'visitors_' + c)];
     const rows = days.map((d) => [d.date, ...fields.map((f) => d[f] || 0), ...countries.map((c) => d['uc_' + c] || 0)]);

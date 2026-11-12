@@ -58,7 +58,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=76" as="script">
+  <link rel="preload" href="/app.js?v=77" as="script">
   <script src="/look.js?v=2"></script>
   <link rel="stylesheet" href="/style.css?v=68">
 </head>
@@ -494,6 +494,17 @@
           <label><input type="radio" name="look" value=""> <span>Classic</span></label>
           <label><input type="radio" name="look" value="glass"> <span>Liquid Glass</span></label>
         </div>
+      </section>
+      <!-- Move to a new phone: one encrypted backup file (backup.js, loaded when used) -->
+      <section class="set-sec" id="backup-section">
+        <p class="step"><b>Move to a new phone</b></p>
+        <p class="muted small">Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.</p>
+        <div class="me-row">
+          <button class="btn small" id="backup-save">Save backup file</button>
+          <button class="btn small ghost" id="backup-open">Open backup file</button>
+        </div>
+        <input type="file" id="backup-file" accept=".json,application/json" hidden>
+        <p class="muted small">Tip: send the file to the new phone with OmniBeam itself.</p>
       </section>
       <!-- Supporter perks (app.js: Supporter), shown when the server has supporter codes (SUPPORTER_KEY) -->
       <section class="set-sec" id="supporter-section" hidden>
@@ -989,6 +1000,19 @@
     </div>
   </dialog>
 
+  <dialog id="dlg-backup" aria-labelledby="backup-title">
+    <h3 id="backup-title">Save a backup file</h3>
+    <p class="muted" id="backup-sub">Choose a PIN or password for the file. You type it to open the file on the new phone.</p>
+    <input id="backup-a" class="pass-input lock-input" type="password" maxlength="64" autocomplete="new-password" aria-label="PIN or password" placeholder="PIN or password">
+    <input id="backup-b" class="pass-input lock-input" type="password" maxlength="64" autocomplete="new-password" aria-label="Type it again" placeholder="Type it again">
+    <p class="muted small" id="backup-tip">You can use your App lock PIN. A longer password is safer.</p>
+    <p class="small lock-msg" id="backup-msg" role="alert"></p>
+    <div class="row">
+      <button class="btn ghost" data-close>Cancel</button>
+      <button class="btn" id="backup-go">Save file</button>
+    </div>
+  </dialog>
+
   <dialog id="dlg-tg" aria-labelledby="tg-title">
     <h3 id="tg-title">Send to Telegram</h3>
     <p class="muted">Files and text go to your chat with the OmniBeam bot. Up to 50 MB per file. Not end-to-end encrypted: Telegram can see them.</p>
@@ -1082,7 +1106,7 @@
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=76" defer></script>
+  <script src="/app.js?v=77" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>

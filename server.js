@@ -3725,7 +3725,7 @@ function onConnection(ws, req) {
         // 'none' only for a failed send that never connected.
         // Small counts with no transfer attached: the rating/share prompt after sends (shown / rate / share / no),
         // the rest of a dropped send going to another device, a link sent on to an email address or phone
-        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean'].includes(msg.kind)) {
+        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply'].includes(msg.kind)) {
           client.extraStats = (client.extraStats || 0) + 1;
           if (client.extraStats > 30) return;
           if (msg.kind === 'handoff') count('thandoff');
@@ -3755,6 +3755,10 @@ function onConnection(ws, req) {
           else if (msg.kind === 'video') { count('videoShrunk'); count('videoSaved', Math.min(4e10, Math.max(0, Math.floor(Number(msg.saved)) || 0))); }
           else if (msg.kind === 'lock') count('lockOn');
           else if (msg.kind === 'clean') count('cleanOn');
+          // Move to a new phone (backup file saved / opened), a quick reply typed in a notification
+          else if (msg.kind === 'backup') count('backupsSaved');
+          else if (msg.kind === 'restore') count('backupsOpened');
+          else if (msg.kind === 'nreply') count('notifReplies');
           else if (['shown', 'rate', 'share', 'no'].includes(msg.act)) count('ask_' + msg.act);
           break;
         }

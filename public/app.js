@@ -283,10 +283,24 @@ async function sha256Hex(text) {
 }
 // opts.chat: the thread key of a message (tapping the notification opens that chat)
 // opts.always: also while the page is on screen (a message whose chat isn't showing)
+// opts.actions: buttons on the notification (sw.js does what they say): 'reply' (type a quick reply right there where
+// the browser allows it, else it opens the chat ready to type), 'open' (the chat), 'link' (open the link that was
+// sent), 'save' (save the files that just arrived), 'stop' (stop Ring my device). Android and computers show them;
+// iPhone and iPad show none. While App lock is on, only Open chat and Stop (no text goes out of a locked OmniBeam).
+const NOTIF_ACTIONS = {
+  reply: () => ({ action: 'reply', type: 'text', title: t('Reply'), placeholder: t('Type a reply…') }),
+  open: () => ({ action: 'open', title: t('Open chat') }),
+  link: () => ({ action: 'link', title: t('Open link') }),
+  save: () => ({ action: 'save', title: t('Save') }),
+  stop: () => ({ action: 'stop', title: t('Stop') }),
+};
 function notify(title, body, opts = {}) {
   if ((!document.hidden && !opts.always) || !('Notification' in window) || Notification.permission !== 'granted') return;
-  if (typeof AppLock !== 'undefined' && AppLock.locked) body = t('Open OmniBeam to see it.'); // App lock: no message text
+  const locked = typeof AppLock !== 'undefined' && AppLock.locked;
+  if (locked) body = t('Open OmniBeam to see it.'); // App lock: no message text
   const data = opts.chat ? { chat: opts.chat, url: '/?chat=' + encodeURIComponent(opts.chat), ...(opts.link ? { link: opts.link } : {}) } : undefined;
+  const max = Math.max(0, Number(window.Notification?.maxActions) || 2);
+  const actions = (opts.actions || []).filter((a) => NOTIF_ACTIONS[a] && (!locked || a === 'open' || a === 'stop')).slice(0, max).map((a) => NOTIF_ACTIONS[a]());
   // Through the service worker where there is one: Android and installed apps don't allow new Notification()
   const show = () => {
     try {
@@ -295,9 +309,69 @@ function notify(title, body, opts = {}) {
     } catch {}
   };
   if (navigator.serviceWorker?.controller) {
-    navigator.serviceWorker.ready.then((reg) => reg.showNotification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png', data, ...(opts.chat ? { tag: opts.chat, renotify: true, vibrate: opts.vibrate || [70] } : {}), ...(opts.sticky ? { requireInteraction: true } : {}) })).catch(show);
+    navigator.serviceWorker.ready.then((reg) => reg.showNotification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png', data, ...(actions.length ? { actions } : {}), ...(opts.chat ? { tag: opts.chat, renotify: true, vibrate: opts.vibrate || [70] } : {}), ...(opts.sticky ? { requireInteraction: true } : {}) })).catch(show);
   } else show();
 }
+// The device of a thread key (chatKey), if it is here now
+function peerOfKey(key) {
+  if (typeof key !== 'string' || !/^[pn]:/.test(key)) return null;
+  const val = key.slice(2);
+  const here = [...peers.values()];
+  return (key[0] === 'p' ? here.find((p) => p.pairSecret?.startsWith(val)) : here.find((p) => p.info.name === val)) || null;
+}
+// A quick reply typed in a message's notification (sw.js): to the device if it is here, else, for a paired device,
+// it waits for it like a message typed in the chat of an offline device. A device that isn't paired and has left
+// can't get it: a notification says so.
+function replyFromNotification(key, text) {
+  text = String(text || '').trim().slice(0, 20000);
+  if (!text || AppLock.locked || typeof key !== 'string' || !/^[pn]:/.test(key)) return false;
+  wsSend({ type: 'stat', kind: 'nreply' });
+  const peer = peerOfKey(key);
+  if (peer) { peer.sendText(text); return true; }
+  const pairing = key[0] === 'p' ? loadPaired().find((p) => p.secret.startsWith(key.slice(2))) : null;
+  if (!pairing) {
+    const name = key.slice(2);
+    toast(t('Your reply wasn\'t sent: {name} isn\'t here anymore.', { name }), 6000);
+    notify(t('Your reply wasn\'t sent: {name} isn\'t here anymore.', { name }), text.slice(0, 100), { always: true });
+    return false;
+  }
+  const w = waiting.get(pairing.secret);
+  sendWhenOnline(pairing, w ? w.files : [], w?.text ? w.text + '\n\n' + text : text);
+  toast(t('The message goes as soon as {name} opens OmniBeam.', { name: pairing.name }));
+  return true;
+}
+// A reply typed in a notification while no OmniBeam was open (sw.js kept it): sent once the devices had a moment to
+// show up. Only a recent one (10 minutes), so an old reply never goes out by surprise.
+async function loadNotifReply() {
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const r = indexedDB.open('omnibeam-share', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('shared');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const item = await new Promise((resolve, reject) => {
+      const tx = db.transaction('shared', 'readwrite');
+      const st = tx.objectStore('shared');
+      const g = st.get('reply');
+      st.delete('reply');
+      tx.oncomplete = () => resolve(g.result);
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+    if (!item || typeof item.text !== 'string' || !(Date.now() - item.at < 600000)) return;
+    const send = () => {
+      if (AppLock.locked) return setTimeout(send, 1000); // waits for the PIN
+      replyFromNotification(item.chat, item.text);
+    };
+    // The device has a few seconds to show up (else a paired one gets it as soon as it does)
+    let tries = 0;
+    const wait = () => (peerOfKey(item.chat) || ++tries > 16 ? send() : setTimeout(wait, 500));
+    setTimeout(wait, 1000);
+  } catch {}
+}
+// The files that arrived last, per device, for Save on their notification (this page's memory only)
+const lastReceived = new Map(); // thread key -> files
 // Short two-note chime when something arrives (Web Audio, no sound file needed). Browsers only allow sound
 // after the user has interacted with the page, so the audio context is created on the first tap/click.
 let audioCtx = null;
@@ -381,7 +455,7 @@ const Ringer = {
     $('p', dlg).textContent = t('Found it? Tap Stop.');
     $('[data-act=stop]', dlg).textContent = t('Stop');
     if (!dlg.open) dlg.showModal();
-    notify(t('{name} is ringing this device', { name }), t('Found it? Tap Stop.'), { chat: chatKey(chatWho(peer)), always: true, sticky: true, vibrate: [500, 200, 500, 200, 500] });
+    notify(t('{name} is ringing this device', { name }), t('Found it? Tap Stop.'), { chat: chatKey(chatWho(peer)), always: true, sticky: true, vibrate: [500, 200, 500, 200, 500], actions: ['stop'] });
     this.beeps = 0;
     const beep = () => {
       if (++this.beeps > 30) return this.stop(this.peer, false);
@@ -3106,14 +3180,15 @@ async function openChat(x, draft) {
   window.Chat.open(who, draft);
 }
 // The chat of a thread key (chatKey above), e.g. from a notification: the device if it is here, else its pairing
-function openChatByKey(key) {
+// focus: put the cursor in its typing box (Reply on a notification that can't take typing)
+async function openChatByKey(key, focus) {
   if (typeof key !== 'string' || !/^[pn]:/.test(key)) return;
   const val = key.slice(2);
-  const here = [...peers.values()];
-  const peer = key[0] === 'p' ? here.find((p) => p.pairSecret?.startsWith(val)) : here.find((p) => p.info.name === val);
-  if (peer) return openChat(peer);
-  if (key[0] === 'p') { const pairing = loadPaired().find((p) => p.secret.startsWith(val)); if (pairing) return openChat(pairing); }
-  else openChat({ name: val });
+  const peer = peerOfKey(key);
+  if (peer) await openChat(peer);
+  else if (key[0] === 'p') { const pairing = loadPaired().find((p) => p.secret.startsWith(val)); if (pairing) await openChat(pairing); else return; }
+  else await openChat({ name: val });
+  if (focus) document.querySelector('#dlg-chat[open] .chat-compose textarea')?.focus();
 }
 // A message arrived while its chat isn't open: a small banner at the top, "Name: the first words · Open", that opens
 // the chat (no window over the page). The card's number counts it; a notification too when the page is hidden.
@@ -3184,7 +3259,7 @@ function userBusy() {
 function messageArrived(peer, text) {
   const busy = userBusy();
   if (document.visibilityState !== 'visible' || busy) {
-    notify(t('Message from {name}', { name: peer.info.name }), text.slice(0, 100), { chat: chatKey(chatWho(peer)), always: true });
+    notify(t('Message from {name}', { name: peer.info.name }), text.slice(0, 100), { chat: chatKey(chatWho(peer)), always: true, actions: ['reply', 'open'] });
   }
   if (busy) return messageBanner(peer, text);
   openChat(peer);
@@ -3200,7 +3275,7 @@ function linkArrived(peer, link) {
     toast(t('Your browser blocked opening the link by itself. Allow pop-ups for {host} to open links right away.', { host: location.host }), 7000);
   }
   if (document.visibilityState !== 'visible') {
-    notify(t('Link from {name}', { name }), linkLabel(link), { chat: chatKey(chatWho(peer)), always: true, link });
+    notify(t('Link from {name}', { name }), linkLabel(link), { chat: chatKey(chatWho(peer)), always: true, link, actions: ['link', 'reply'] });
   }
   messageBanner(peer, link, link);
 }
@@ -3264,7 +3339,18 @@ function undoToast(text, undo) {
   undoTimer = setTimeout(() => el.classList.remove('show'), 6000);
 }
 // A tapped notification of a message opens its chat (the service worker passes it on, or ?chat= in a new tab)
-navigator.serviceWorker?.addEventListener('message', (e) => { if (e.data?.type === 'open-chat') openChatByKey(e.data.chat); });
+// The buttons on a notification (sw.js): open a chat, send a quick reply, save the files that arrived, stop ringing
+navigator.serviceWorker?.addEventListener('message', (e) => {
+  const m = e.data || {};
+  if (m.type === 'open-chat') openChatByKey(m.chat, !!m.focus);
+  else if (m.type === 'notif-reply') replyFromNotification(m.chat, m.text);
+  else if (m.type === 'ring-stop') Ringer.stop(null, true);
+  else if (m.type === 'save-files') {
+    const files = lastReceived.get(m.chat);
+    if (!files || AppLock.locked) return;
+    saveAllFiles(files).then(() => { const dlg = $('#dlg-received'); if (dlg?.open) dlg.close(); }, (err) => toast(err.message));
+  }
+});
 // Scan to PDF (scan.js), loaded when first used
 const loadScan = () => loadScript('/scan.js?v=1');
 async function openScan(peer) {
@@ -4186,7 +4272,10 @@ function showReceived(peer, files) {
   showLoop(dlg);
   if (!dlg.open) dlg.showModal();
   chime();
-  notify(t('Received files from {name}', { name: peer.info.name }), files.map((f) => f.name).join(', '));
+  // Save on the notification saves these (the newest ones from this device)
+  const key = chatKey(chatWho(peer));
+  lastReceived.set(key, files);
+  notify(t('Received files from {name}', { name: peer.info.name }), files.map((f) => f.name).join(', '), { chat: key, actions: ['save', 'open'] });
 }
 
 // "Worked well? Tell a friend" card in the received-files dialog: from the second time files arrive, then at most
@@ -6163,9 +6252,11 @@ if (/[?&]wake=1/.test(location.search)) history.replaceState(null, '', location.
 {
   const chatKeyFromLink = new URLSearchParams(location.search).get('chat');
   if (chatKeyFromLink) {
+    const focus = /[?&]reply=1/.test(location.search);
     history.replaceState(null, '', location.pathname + location.hash);
-    setTimeout(() => openChatByKey(chatKeyFromLink), 1500);
+    setTimeout(() => openChatByKey(chatKeyFromLink, focus), 1500);
   }
+  loadNotifReply();
 }
 maybeShowTour();
 $('#public-code').onkeydown = (e) => { if (e.key === 'Enter') joinPublic(e.target.value, $('#public-pass').value); };
@@ -6524,6 +6615,15 @@ $('#btn-settings').onclick = () => {
   dlg.showModal();
 };
 $('#set-me').onclick = () => { $('#dlg-settings').close(); openMeDialog(); };
+// Move to a new phone (backup.js): save one encrypted backup file, or open one made on the old phone
+const loadBackup = () => loadScript('/backup.js?v=1');
+$('#backup-save').onclick = () => loadBackup().then(() => window.Backup.save(), (err) => toast(err.message));
+$('#backup-open').onclick = () => $('#backup-file').click();
+$('#backup-file').onchange = (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (file) loadBackup().then(() => window.Backup.open(file), (err) => toast(err.message));
+};
 // Settings -> Supporter
 $('#supporter-unlock').onclick = async () => {
   const input = $('#supporter-code');
