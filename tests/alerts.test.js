@@ -18,7 +18,7 @@ const report = (request, ip, m) => request.post('/api/report', {
 });
 
 test('the stats page shows the alert settings and sends a test alert', async ({ page }) => {
-  await page.goto('/stats');
+  await page.goto('/admin#settings');
   await page.fill('#key', 'test-stats-key');
   await page.click('#login button');
   await expect(page.locator('#alerts')).toContainText('email to o…@example.com');
@@ -39,7 +39,7 @@ test('a spike of problem reports from several networks sends one alert, not one 
   const m = mail();
   expect(m).toContain('× transfer: Connection lost');
   expect(m).toContain('Safari 18 on iOS');
-  expect(m).toContain('/stats');
+  expect(m).toContain('/admin');
   // More reports right after: no second alert for an hour
   for (let i = 0; i < 5; i++) await report(request, `192.0.2.${i + 1}`, 'Connection lost');
   expect(mail().split('problem reports in 15 minutes').length - 1).toBe(1);

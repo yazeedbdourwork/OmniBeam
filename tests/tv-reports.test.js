@@ -150,7 +150,7 @@ test('a tab that crashed and a stuck transfer are reported to /stats and Telegra
   const all = msgs.map((m) => m.text).join('\n');
   expect(all).toMatch(/Stuck transfer: receiving at 2%, nothing moved for \d+ s · not connected · 50 MB/);
   expect(all).toMatch(/Tab crashed: during a transfer, open 5 min · page: tv/);
-  expect(all).toContain('/stats');
+  expect(all).toContain('/admin');
 });
 
 test('new script errors go to Telegram once; /stats shows crashes and stuck transfers', async ({ page, request }) => {

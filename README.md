@@ -121,7 +121,7 @@ The browser's language is picked automatically on the first visit and can be cha
 | `/r/…` | Request files (upload) page |
 | `/embed` | How to put a "Send me files" box on your website |
 | `/status` | Public status page (noindex) |
-| `/stats` | Owner‑only statistics (needs `STATS_KEY`) |
+| `/admin` | Owner‑only admin panel: stats and status in tabs (needs `STATS_KEY`; `/stats` opens it too) |
 | `/amp/<lang>/<slug>` | AMP versions of the guide pages |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | For search engines and AI crawlers |
 
@@ -177,13 +177,13 @@ OmniBeam/
 │   ├── app.js            Main app logic (WebRTC, pairing, transfers, UI)
 │   ├── chat.js           Per‑device chat
 │   ├── media.js, scan.js, more.js, drop.js, get.js, put.js, request.js, share.js …
-│   ├── style.css, pages.css, stats.css
+│   ├── style.css, pages.css, stats.css (admin panel)
 │   ├── i18n.js + lang/   Translations (15 languages)
 │   ├── pages/<lang>/     Guide pages
 │   ├── media/            Intro videos and posters (videos live ONLY here)
 │   ├── fonts/, store/, parts/, tools/, .well-known/
 │   ├── manifest.webmanifest, icons, og.png
-│   └── stats.html, drop.html, request.html, embed-box.html, 404.html
+│   └── admin.html (admin panel; stats.html only sends old links there), drop.html, request.html, embed-box.html, 404.html
 └── data/                 Created by the server at runtime (stats, links, keys). Never delete on deploy.
 ```
 
@@ -252,7 +252,7 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 ### Owner tools and alerts
 | Variable | Purpose |
 |---|---|
-| `STATS_KEY` | Secret that unlocks `/stats` (secret) |
+| `STATS_KEY` | Secret that unlocks the admin panel `/admin` (secret) |
 | `STATUS_KEY` | Shared secret for the uptime Worker posting to `/status` (secret) |
 | `STATUS_EVERY_MIN` | How often the server checks itself |
 | `VISITS` | `false` turns off visitor counting |
@@ -282,7 +282,7 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 
 ## Owner tools: stats, status and alerts
 
-- **`/stats`** (enter `STATS_KEY`): visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, feature counts (rings, links opened, send to all, invite cards, chats and pins, scans, smaller videos, Telegram, embed box, app lock), problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
+- **`/admin`** (enter `STATS_KEY`; the old `/stats` address opens it too): tabs for Overview (status line, main numbers, At a glance), Visitors, Transfers, Features (one list, most used first), Problems, Status (the public `/status` numbers plus the TURN server) and Settings (alerts, weekly summary, supporter codes, backup). Covers visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, feature counts (rings, links opened, send to all, invite cards, chats and pins, scans, smaller videos, Telegram, embed box, app lock), problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
 - **`/status`**: the server checks itself every few minutes, and a Cloudflare Worker (`omnibeam-ping`) posts outside checks.
 - **Telegram alerts** through @OmniBeam_bot: spikes in problem reports, crashed tabs, stuck transfers and new script errors, plus a weekly summary.
 
