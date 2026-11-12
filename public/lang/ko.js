@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "15분 동안 떠나 있으면",
     "Only when OmniBeam opens": "OmniBeam을 열 때만",
     "Also unlock with fingerprint, face or Windows Hello": "지문, 얼굴 또는 Windows Hello로도 잠금 해제",
+    "Turn on App lock first": "먼저 앱 잠금을 켜세요",
+    "This device or browser doesn't support fingerprint or face unlock": "이 기기 또는 브라우저는 지문이나 얼굴 잠금 해제를 지원하지 않습니다",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "잠금은 이 기기에서 다른 사람이 OmniBeam에 들어오지 못하게 합니다. 여기 저장된 파일을 암호화하지는 않습니다.",
     "Keep history": "기록 보관 기간",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "이보다 오래된 받은 파일과 메시지, 보낸 목록, 클립보드 기록은 이 기기에서 자동으로 삭제됩니다. 고정한 메모는 남습니다.",

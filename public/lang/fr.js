@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "Après 15 minutes d'absence",
     "Only when OmniBeam opens": "Seulement à l'ouverture d'OmniBeam",
     "Also unlock with fingerprint, face or Windows Hello": "Déverrouiller aussi avec l'empreinte, le visage ou Windows Hello",
+    "Turn on App lock first": "Activez d'abord le verrouillage",
+    "This device or browser doesn't support fingerprint or face unlock": "Cet appareil ou ce navigateur ne permet pas le déverrouillage par empreinte ou visage",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "Le verrouillage empêche les autres d'entrer dans OmniBeam sur cet appareil. Il ne chiffre pas les fichiers gardés ici.",
     "Keep history": "Garder l'historique",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "Les fichiers et messages reçus, la liste des envois et l'historique du presse-papiers plus anciens sont supprimés tout seuls de cet appareil. Les notes épinglées restent.",

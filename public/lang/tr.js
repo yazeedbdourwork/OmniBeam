@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "15 dakika uzakta kalınca",
     "Only when OmniBeam opens": "Yalnızca OmniBeam açılırken",
     "Also unlock with fingerprint, face or Windows Hello": "Parmak izi, yüz veya Windows Hello ile de aç",
+    "Turn on App lock first": "Önce uygulama kilidini açın",
+    "This device or browser doesn't support fingerprint or face unlock": "Bu cihaz veya tarayıcı parmak izi ya da yüzle kilit açmayı desteklemiyor",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "Kilit, başkalarının bu cihazda OmniBeam'e girmesini engeller. Burada tutulan dosyaları şifrelemez.",
     "Keep history": "Geçmişi sakla",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "Bundan eski alınan dosyalar ve mesajlar, Gönderilenler listesi ve pano geçmişi bu cihazdan kendiliğinden silinir. Sabitlenen notlar kalır.",

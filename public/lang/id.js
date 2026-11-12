@@ -1139,6 +1139,8 @@
     "After 15 minutes away": "Setelah 15 menit pergi",
     "Only when OmniBeam opens": "Hanya saat OmniBeam dibuka",
     "Also unlock with fingerprint, face or Windows Hello": "Buka juga dengan sidik jari, wajah, atau Windows Hello",
+    "Turn on App lock first": "Aktifkan kunci aplikasi dulu",
+    "This device or browser doesn't support fingerprint or face unlock": "Perangkat atau browser ini tidak mendukung buka kunci dengan sidik jari atau wajah",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "Kunci ini mencegah orang lain masuk ke OmniBeam di perangkat ini. Kunci ini tidak mengenkripsi file yang disimpan di sini.",
     "Keep history": "Simpan riwayat",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "File dan pesan yang diterima, daftar Terkirim, dan riwayat papan klip yang lebih lama dari ini terhapus sendiri dari perangkat ini. Catatan yang disematkan tetap ada.",

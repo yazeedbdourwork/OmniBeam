@@ -58,9 +58,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=75" as="script">
+  <link rel="preload" href="/app.js?v=76" as="script">
   <script src="/look.js?v=2"></script>
-  <link rel="stylesheet" href="/style.css?v=67">
+  <link rel="stylesheet" href="/style.css?v=68">
 </head>
 <body>
   <header>
@@ -633,9 +633,12 @@
             <option value="15">After 15 minutes away</option>
             <option value="-1">Only when OmniBeam opens</option>
           </select></p>
-          <div class="choice" id="lock-bio-row" hidden>
-            <label><input type="checkbox" id="lock-bio-on"> <span>Also unlock with fingerprint, face or Windows Hello</span></label>
-          </div>
+        </div>
+        <!-- Shown from the start, greyed out with a note until it can be used (no PIN yet, or no fingerprint/face on this device) -->
+        <div class="choice" id="lock-bio-row">
+          <label><input type="checkbox" id="lock-bio-on" disabled aria-describedby="lock-bio-note"> <span>Also unlock with fingerprint, face or Windows Hello</span></label>
+          <p class="muted small" id="lock-bio-note">Turn on App lock first</p>
+          <p class="muted small" id="lock-bio-none" hidden>This device or browser doesn't support fingerprint or face unlock</p>
         </div>
         <p class="muted small">The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.</p>
       </section>
@@ -1079,7 +1082,7 @@
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=75" defer></script>
+  <script src="/app.js?v=76" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>

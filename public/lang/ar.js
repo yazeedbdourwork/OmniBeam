@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "بعد 15 دقيقة من المغادرة",
     "Only when OmniBeam opens": "فقط عند فتح OmniBeam",
     "Also unlock with fingerprint, face or Windows Hello": "افتح القفل أيضًا بالبصمة أو الوجه أو Windows Hello",
+    "Turn on App lock first": "شغّل قفل التطبيق أولًا",
+    "This device or browser doesn't support fingerprint or face unlock": "هذا الجهاز أو المتصفح لا يدعم فتح القفل بالبصمة أو الوجه",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "القفل يمنع الآخرين من دخول OmniBeam على هذا الجهاز. لكنه لا يشفّر الملفات المحفوظة هنا.",
     "Keep history": "مدة حفظ السجل",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "الملفات والرسائل المستلمة وقائمة المُرسَل وسجل الحافظة الأقدم من هذه المدة تُحذف من هذا الجهاز تلقائيًا. الملاحظات المثبّتة تبقى.",

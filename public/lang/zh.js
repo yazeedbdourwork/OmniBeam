@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "离开 15 分钟后",
     "Only when OmniBeam opens": "仅在打开 OmniBeam 时",
     "Also unlock with fingerprint, face or Windows Hello": "也可用指纹、面容或 Windows Hello 解锁",
+    "Turn on App lock first": "请先开启应用锁",
+    "This device or browser doesn't support fingerprint or face unlock": "此设备或浏览器不支持用指纹或面容解锁",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "应用锁让别人无法在此设备上进入 OmniBeam。它不会加密保存在这里的文件。",
     "Keep history": "记录保留时间",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "早于此时间的已收文件和消息、已发送列表和剪贴板记录会自动从此设备删除。置顶的便签会保留。",

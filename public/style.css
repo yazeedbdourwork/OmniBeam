@@ -1373,6 +1373,8 @@ dialog.lock-dialog::backdrop { background: var(--bg); }
 .lock-row { justify-content: center; margin-top: 12px; }
 .lock-row .btn { min-width: 120px; }
 .lock-box .link-btn, #set-pane-privacy .link-btn { border: 0; background: none; padding: 6px; color: var(--muted); font: inherit; font-size: 0.85rem; cursor: pointer; text-decoration: underline; }
+#lock-bio-row label:has(input:disabled) { opacity: 0.55; cursor: default; }
+#lock-bio-row p { margin: 0 4px; }
 .lock-field { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; font-size: 0.9rem; }
 .lock-field select { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
 #set-pane-privacy .me-row { flex-wrap: wrap; gap: 8px; }
