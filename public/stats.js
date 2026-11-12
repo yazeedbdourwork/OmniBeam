@@ -1,4 +1,6 @@
-// OmniBeam owner stats page (/stats). Asks for STATS_KEY once, keeps it in this browser, and shows the daily
+// OmniBeam admin panel (/admin; /stats opens the same page). Sections in tabs: Overview, Visitors, Transfers,
+// Features, Problems, Status (the public /status numbers and the TURN server) and Settings (alerts, weekly summary,
+// supporter codes, backup). Asks for STATS_KEY once, keeps it in this browser, and shows the daily
 // totals from /api/stats for the chosen period (today, 7, 30, 90 days or a year, compared with the period before):
 // visitors (countries, time spent, pages, sources, devices), transfers per day by route, a table, the problems
 // browsers reported (report.js) and whether the TURN server works. Reloads itself every minute while it's open.
@@ -37,6 +39,7 @@
   let endBack = 0; // the period ends this many days before today (0 = today), set by the From/To boxes
   let printing = false; // Save as PDF is open: no reload every minute
   let allCountries = false;
+  let status = null; // the latest /api/status answer
   // Days as YYYY-MM-DD (UTC): isoDay(0) is today, isoDay(1) yesterday; dayBack('2026-11-01') = days from then to today
   const isoDay = (back) => new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
   const dayBack = (d) => Math.round((Date.parse(isoDay(0)) - Date.parse(d)) / 86400000);
@@ -51,7 +54,7 @@
 
   async function load() {
     const r = await fetch(`/api/stats?days=${Math.min(400, Math.max(2, endBack + range * 2))}`, { headers: { Authorization: `Bearer ${key}` }, cache: 'no-store' });
-    if (r.status === 404) throw new Error('The stats page is off: set STATS_KEY in server.js (or in cPanel) and restart the app.');
+    if (r.status === 404) throw new Error('The admin panel is off: set STATS_KEY in cPanel and restart the app.');
     if (r.status === 429) throw new Error('Too many wrong keys. Wait 10 minutes.');
     if (r.status === 403) throw new Error('Wrong key.');
     if (!r.ok) throw new Error('Could not load the stats.');
@@ -59,6 +62,7 @@
   }
   function showLogin(message = '') {
     $('#view').hidden = true;
+    $('#login-wrap').hidden = false;
     $('#login').hidden = false;
     $('#error').textContent = message;
     $('#key').focus();
@@ -66,7 +70,10 @@
   async function start() {
     if (!key) return showLogin();
     try {
-      last = await load();
+      // The status numbers are public (/api/status); a failure there never stops the rest
+      const [data, st] = await Promise.all([load(), fetch('/api/status', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)]);
+      last = data;
+      if (st) status = st;
       render(last);
       $('#updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
       try { localStorage.setItem(KEY, key); } catch {}
@@ -109,13 +116,16 @@
   };
   // What the period before is called: "yesterday", "the day before", "the 30 days before"
   const beforeName = () => (range === 1 ? (endBack ? 'the day before' : 'yesterday') : `the ${endBack ? range + ' days' : label()} before`);
+  // "today", "in the last 30 days", "in 30 days to 2026-11-01"
+  const inPeriod = () => (endBack ? 'in ' + label() : range === 1 ? 'today' : 'in the last ' + label());
   const tile = (name, value, sub = '', delta = '') => `<div class="tile"><span>${esc(name)}</span><b>${esc(value)}</b>${delta}${sub ? `<small>${esc(sub)}</small>` : ''}</div>`;
   // "▲ 12% vs the 30 days before"
-  function change(now, before) {
+  // lowerIsBetter: fewer is good news (problems), so a drop is shown in green
+  function change(now, before, lowerIsBetter = false) {
     if (!before && !now) return '';
-    if (!before) return '<small class="delta up">new</small>';
+    if (!before) return `<small class="delta ${lowerIsBetter ? 'down' : 'up'}">new</small>`;
     const p = Math.round(((now - before) / before) * 100);
-    return `<small class="delta ${p >= 0 ? 'up' : 'down'}">${p >= 0 ? '▲' : '▼'} ${Math.abs(p)}% vs ${esc(beforeName())}</small>`;
+    return `<small class="delta ${(p >= 0) !== lowerIsBetter ? 'up' : 'down'}">${p >= 0 ? '▲' : '▼'} ${Math.abs(p)}% vs ${esc(beforeName())}</small>`;
   }
   const duration = (sec) => {
     sec = Math.round(sec || 0);
@@ -249,6 +259,7 @@
 
   function render(data) {
     $('#login').hidden = true;
+    $('#login-wrap').hidden = true;
     $('#view').hidden = false;
     for (const b of document.querySelectorAll('.range button')) b.setAttribute('aria-pressed', String(!endBack && Number(b.dataset.days) === range));
     const days = period(data, range, endBack);
@@ -318,6 +329,9 @@
       .map((d) => `<tr>${cols.map(([, f]) => `<td>${esc(f(d))}</td>`).join('')}</tr>`).join('')}</tbody>`;
 
     renderSuccess(days, before);
+    renderFeatures(days, before);
+    renderOverview(data, days, before);
+    renderStatus();
     renderCrashes(days, before, data.errors || []);
     renderProblems(data.errors || []);
     renderTurn(data.turn || {});
@@ -409,30 +423,6 @@
       tile('Cancelled', num(sum('tcancel')), 'someone pressed Stop'),
       tile('Finished by itself', num(sum('tresumed')), 'continued after the connection dropped'),
       tile('Sent on to another device', num(sum('thandoff')), 'the rest went to another paired device after the first went offline'),
-      tile('Rating / share prompt', num(sum('ask_shown')), `shown after sends · ${num(sum('ask_rate'))} rated · ${num(sum('ask_share'))} shared · ${num(sum('ask_no'))} not now`),
-      tile('Link options', num(sum('linkPins')), `links with a PIN · ${num(sum('linkLimited'))} with a download limit · ${num(sum('linkLong'))} longer than 3 days · ${num(sum('linkSendTo'))} sent to an email or phone`),
-      tile('Team rooms', num(sum('teamRooms')), `opened · ${num(sum('teamNew'))} new teams created`),
-      tile('History', num(sum('sendAgain')), `Send again used · ${num(sum('histExport'))} exports · ${num(sum('galleryOpen'))} gallery views`),
-      tile('Emails sent', num(sum('emailsSent')), `links emailed by the server (Resend) · ${num(sum('emailsFailed'))} failed`),
-      tile('Clipboard history', num(sum('clipResend')), 'texts sent again from the Clipboard tab'),
-      tile('Auto-send folder', num(sum('autoSend')), 'files sent by themselves from a watched folder'),
-      tile('Big-file mode', num(sum('bigFiles')), 'sends with a file of 1 GB or more, checked piece by piece'),
-      tile('Secret notes', num(sum('secretNotes')), `sent to a device · ${num(sum('noteLinks'))} read-once links made`),
-      tile('Camera and voice', num(sum('photosTaken')), `photos taken and sent · ${num(sum('voiceNotes'))} voice notes`),
-      tile('Request links', num(sum('requests')), `made · ${num(sum('requestFiles'))} uploads received (${size(sum('requestBytes'))})`),
-      tile('Screen sharing', num(sum('screenShares')), `screens shown to a device · ${num(sum('previews'))} file previews opened`),
-      tile('Ring my device', num(sum('rings')), 'times a device was rung to find it'),
-      tile('Links opened', num(sum('linksOpened')), 'links that opened by themselves on the other device'),
-      tile('Send to all my devices', num(sum('sendAll')), 'sends to several of your devices at once'),
-      tile('Invite cards', num(sum('inviteCards')), 'invite pictures made to share OmniBeam'),
-      tile('Device chats', num(sum('chatOpen')), `chats opened · ${num(sum('pins'))} notes pinned`),
-      tile('Scan to PDF', num(sum('scans')), 'PDFs made from photos of pages'),
-      tile('Video size', num(sum('videoShrunk')), `videos made smaller before sending · ${size(sum('videoSaved'))} saved`),
-      tile('Telegram bot', num(sum('telegramOut')), `sent to Telegram · ${num(sum('telegramIn'))} received from it · ${num(sum('telegramLinks'))} chats linked`),
-      tile('Embed box', num(sum('requestEmbedUploads')), 'uploads through the "Send me files" box on other sites'),
-      tile('App lock', num(sum('lockOn')), `locks turned on · ${num(sum('cleanOn'))} auto-clean turned on`),
-      tile('Move to a new phone', num(sum('backupsSaved')), `backup files saved · ${num(sum('backupsOpened'))} opened on a new device`),
-      tile('Notification replies', num(sum('notifReplies')), 'quick replies sent from a notification'),
     ].join('');
     const table = (el, rows) => {
       rows = rows.filter((r) => r.ok + r.fail > 0).sort((a, b) => b.ok + b.fail - (a.ok + a.fail));
@@ -448,6 +438,139 @@
     const bo = group(days, 'bo_'), bf = group(days, 'bf_');
     table($('#success-browsers'), [...new Set([...Object.keys(bo), ...Object.keys(bf)])].map((b) => ({ name: b, ok: bo[b] || 0, fail: bf[b] || 0 })));
     barList($('#success-why'), { 'Connection lost or other device left': sum('tw_lost'), 'Other error (saving, secure connection…)': sum('tw_error'), 'Cancelled': sum('tcancel') });
+  }
+
+  // Features: how often each one was used in the period, most used first, with the period before for comparison.
+  // [name, the day field that counts it, the details line]
+  function renderFeatures(days, before) {
+    const sum = (f) => sumOf(days, f);
+    const FEATURES = [
+      ['Rating / share prompt', 'ask_shown', `shown after sends · ${num(sum('ask_rate'))} rated · ${num(sum('ask_share'))} shared · ${num(sum('ask_no'))} not now`],
+      ['Link options', 'linkPins', `links with a PIN · ${num(sum('linkLimited'))} with a download limit · ${num(sum('linkLong'))} longer than 3 days · ${num(sum('linkSendTo'))} sent to an email or phone`],
+      ['Team rooms', 'teamRooms', `opened · ${num(sum('teamNew'))} new teams created`],
+      ['History', 'sendAgain', `Send again used · ${num(sum('histExport'))} exports · ${num(sum('galleryOpen'))} gallery views`],
+      ['Emails sent', 'emailsSent', `links emailed by the server (Resend) · ${num(sum('emailsFailed'))} failed`],
+      ['Clipboard history', 'clipResend', 'texts sent again from the Clipboard tab'],
+      ['Auto-send folder', 'autoSend', 'files sent by themselves from a watched folder'],
+      ['Big-file mode', 'bigFiles', 'sends with a file of 1 GB or more, checked piece by piece'],
+      ['Secret notes', 'secretNotes', `sent to a device · ${num(sum('noteLinks'))} read-once links made`],
+      ['Camera and voice', 'photosTaken', `photos taken and sent · ${num(sum('voiceNotes'))} voice notes`],
+      ['Request links', 'requests', `made · ${num(sum('requestFiles'))} uploads received (${size(sum('requestBytes'))})`],
+      ['Screen sharing', 'screenShares', `screens shown to a device · ${num(sum('previews'))} file previews opened`],
+      ['Ring my device', 'rings', 'times a device was rung to find it'],
+      ['Links opened', 'linksOpened', 'links that opened by themselves on the other device'],
+      ['Send to all my devices', 'sendAll', 'sends to several of your devices at once'],
+      ['Invite cards', 'inviteCards', 'invite pictures made to share OmniBeam'],
+      ['Device chats', 'chatOpen', `chats opened · ${num(sum('pins'))} notes pinned`],
+      ['Scan to PDF', 'scans', 'PDFs made from photos of pages'],
+      ['Video size', 'videoShrunk', `videos made smaller before sending · ${size(sum('videoSaved'))} saved`],
+      ['Telegram bot', 'telegramOut', `sent to Telegram · ${num(sum('telegramIn'))} received from it · ${num(sum('telegramLinks'))} chats linked`],
+      ['Embed box', 'requestEmbedUploads', 'uploads through the "Send me files" box on other sites'],
+      ['App lock', 'lockOn', `locks turned on · ${num(sum('cleanOn'))} auto-clean turned on`],
+      ['Move to a new phone', 'backupsSaved', `backup files saved · ${num(sum('backupsOpened'))} opened on a new device`],
+      ['Notification replies', 'notifReplies', 'quick replies sent from a notification'],
+    ];
+    const rows = FEATURES.map(([name, field, sub]) => ({ name, sub, n: sum(field), p: sumOf(before, field) }));
+    const used = rows.filter((r) => r.n > 0).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
+    const unused = rows.filter((r) => !r.n).map((r) => r.name).sort((a, b) => a.localeCompare(b));
+    const top = Math.max(1, ...used.map((r) => r.n));
+    $('#features-lead').textContent = used.length
+      ? `${used.length} of ${rows.length} features were used ${inPeriod()}, most used first.`
+      : `No feature was used ${inPeriod()}.`;
+    $('#features').innerHTML = used.length ? `<thead><tr><th>Feature</th><th>Uses</th><th class="share"></th><th>Change</th><th class="details">Details</th></tr></thead><tbody>${used
+      .map((r) => `<tr><td><b>${esc(r.name)}</b></td><td>${num(r.n)}</td><td class="share"><i style="width:${((r.n / top) * 100).toFixed(1)}%"></i></td><td>${change(r.n, r.p).replace(/ vs [^<]*/, '') || '–'}</td><td class="details">${esc(r.sub)}</td></tr>`).join('')}</tbody>`
+      : '';
+    $('#features-unused').textContent = unused.length ? `Not used in this period: ${unused.join(', ')}.` : '';
+  }
+
+  // Overview: how the site is doing (status), the main numbers of the period and At a glance
+  function renderOverview(data, days, before) {
+    const sum = (f) => sumOf(days, f);
+    const short = (html) => html.replace(/ vs [^<]*/, ' vs before');
+    const prev = (f) => sumOf(before, f);
+    const transfers = sum('transfers'), fail = sum('tfail');
+    const pFail = prev('tfail'), pDone = prev('transfers');
+    const rate = transfers + fail ? Math.round((transfers / (transfers + fail)) * 100) : null;
+    const pRate = pDone + pFail ? Math.round((pDone / (pDone + pFail)) * 100) : null;
+    const pts = rate !== null && pRate !== null ? `<small class="delta ${rate >= pRate ? 'up' : 'down'}">${rate >= pRate ? '▲' : '▼'} ${Math.abs(rate - pRate)} points vs before</small>` : '';
+    $('#ov-kpis').innerHTML = [
+      tile('Visitors', num(sum('visitors')), `${num(sum('views'))} page views`, short(change(sum('visitors'), prev('visitors')))),
+      tile('Transfers', num(transfers), size(sum('bytes')), short(change(transfers, prev('transfers')))),
+      tile('Finished', rate === null ? '–' : rate + '%', `${num(fail)} failed`, pts),
+      tile('Problems', num(sum('err')), `${num(sum('e_crash'))} crashes · ${num(sum('e_stuck'))} stuck`, short(change(sum('err'), prev('err'), true))),
+      tile('Right now', num((data.now || {}).visitors), `on the site · ${num((data.now || {}).online)} devices connected`),
+    ].join('');
+    const p = sum('err');
+    $('#nav-problems').hidden = !p;
+    $('#nav-problems').textContent = p > 999 ? '999+' : String(p);
+  }
+
+  // Status: the same numbers as the public /status page (/api/status), shown here with the TURN server
+  const PARTS = { web: 'Website and sending', turn: 'Direct connections (TURN)', links: 'Shared links', telegram: 'Telegram bot' };
+  const pct = (p) => (p >= 99.995 ? '100' : p.toFixed(2)) + '%';
+  function renderStatus() {
+    const s = status;
+    const strip = $('#ov-status');
+    $('#nav-status').className = 'nav-dot' + (s ? (s.ok ? ' ok' : ' bad') : '');
+    if (!s) {
+      strip.className = 'status-strip';
+      strip.innerHTML = '<span class="status-dot" aria-hidden="true"></span><b>Status not available</b><span class="muted">Could not load /api/status.</span>';
+      $('#status-now').innerHTML = '<p class="lead">Could not load the status numbers.</p>';
+      return;
+    }
+    const broken = Object.entries(s.parts).filter(([, ok]) => !ok).map(([k]) => PARTS[k] || k);
+    strip.className = 'status-strip ' + (s.ok ? 'ok' : 'bad');
+    strip.innerHTML = `<span class="status-dot" aria-hidden="true"></span><b>${s.ok ? 'All systems working' : 'Not working: ' + esc(broken.join(', '))}</b>`
+      + `<span class="muted">${s.uptime === null ? 'No uptime yet' : `${pct(s.uptime)} uptime, 30 days`} · ${num(s.incidents.filter((i) => !i.end).length)} open incidents</span><span class="go" aria-hidden="true">›</span>`;
+    $('#status-now').innerHTML = `<p class="status-now ${s.ok ? 'ok' : 'bad'}"><span class="status-dot" aria-hidden="true"></span>${s.ok ? 'All systems working' : 'Something is not working'}</p>`
+      + `<ul class="status-parts">${Object.entries(s.parts).map(([k, ok]) => `<li class="${ok ? 'ok' : 'bad'}"><b>${esc(PARTS[k] || k)}</b><span>${ok ? 'Working' : 'Not working'}</span></li>`).join('')}</ul>`;
+    $('#status-uptime').innerHTML = s.uptime === null ? 'No checks yet' : `<b>${pct(s.uptime)}</b>`;
+    $('#status-source').textContent = s.outside ? '(checked from outside every 5 minutes)' : '(the server’s own checks; no outside checks yet)';
+    $('#status-bars').innerHTML = s.days.map((d) => {
+      const cls = d.pct === null ? 'none' : d.pct >= 99.9 ? 'ok' : d.pct >= 98 ? 'warn' : 'bad';
+      return `<span class="${cls}" title="${esc(`${niceDay(d.date)}: ${d.pct === null ? 'no data' : pct(d.pct)}`)}"></span>`;
+    }).join('');
+    const dur = (ms) => { const m = Math.max(1, Math.round(ms / 60000)); return m < 120 ? `${m} min` : `${Math.round(m / 60)} h`; };
+    $('#status-incidents').innerHTML = s.incidents.length
+      ? `<ul class="status-incidents">${s.incidents.map((i) => `<li class="${i.end ? 'done' : 'open'}"><b>${esc(PARTS[i.part] || i.part)}</b><span>${esc(when(i.start))} · ${i.end ? 'fixed after ' + dur(i.end - i.start) : 'still going on'}</span></li>`).join('')}</ul>`
+      : '<p class="empty">No incidents in the last 30 days.</p>';
+    $('#status-note').textContent = `Last outside check: ${s.lastOutsideCheck ? when(s.lastOutsideCheck) : 'none yet (the omnibeam-ping Worker sends them with STATUS_KEY)'}. Visitors see the same parts and uptime on the public status page.`;
+  }
+
+  // Tabs: one section on screen at a time; the address (#visitors…) and this browser remember which
+  const TABS = ['overview', 'visitors', 'transfers', 'features', 'problems', 'status', 'settings'];
+  const TITLES = { overview: 'Overview', visitors: 'Visitors', transfers: 'Transfers', features: 'Features', problems: 'Problems', status: 'Status', settings: 'Settings' };
+  let tab = 'overview';
+  function showTab(name, { focus = false, push = true } = {}) {
+    if (!TABS.includes(name)) name = 'overview';
+    tab = name;
+    for (const b of document.querySelectorAll('[role="tab"]')) {
+      const on = b.dataset.tab === name;
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    }
+    for (const t of TABS) $('#p-' + t).hidden = t !== name;
+    $('#panel-title').textContent = TITLES[name];
+    $('#period-bar').hidden = $('#bar-actions').hidden = name === 'status' || name === 'settings';
+    document.title = `${TITLES[name]} · OmniBeam admin`;
+    try { localStorage.setItem(KEY + '-tab', name); } catch {}
+    if (push && location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  }
+  const nav = document.querySelector('[role="tablist"]');
+  nav.onclick = (e) => { const b = e.target.closest('[role="tab"]'); if (b) { showTab(b.dataset.tab); $('#content').scrollTop = 0; window.scrollTo(0, 0); } };
+  nav.onkeydown = (e) => {
+    const i = TABS.indexOf(tab);
+    const next = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    showTab(TABS[(next + TABS.length) % TABS.length], { focus: true });
+  };
+  window.addEventListener('hashchange', () => showTab(location.hash.slice(1), { push: false }));
+  {
+    let saved = '';
+    try { saved = localStorage.getItem(KEY + '-tab') || ''; } catch {}
+    showTab(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : saved || 'overview');
   }
 
   // Alerts by email or Telegram when problem reports spike (set up in server.js / cPanel)
@@ -573,6 +696,7 @@
           e.r ? ROUTE_NAMES[e.r] || e.r : '', e.same ? 'same Wi‑Fi' : '', e.size ? size(e.size) : '']
         : [e.busy ? 'during a transfer' : 'no transfer running', e.up ? `open ${e.up} min` : '', e.page && e.page !== 'app' ? `page: ${e.page}` : ''])
         .concat(e.v ? ['v' + e.v] : []).filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody>` : '';
+    $('#crash-empty').hidden = rows.length > 0;
   }
 
   // Problems: the same problem grouped (most frequent first), then the latest reports one by one
@@ -675,12 +799,13 @@
   };
 
   // Save as PDF: the browser's print dialog (choose "Save as PDF"), with every country listed and a title that
-  // becomes the file name; stats.css hides the buttons and prints light colours
+  // becomes the file name; stats.css prints every section but Settings one after the other, without buttons, in light colours
   let beforePrint = { title: '', all: false };
   $('#pdf').onclick = () => {
     if (!last) return;
-    beforePrint = { title: document.title, all: allCountries };
+    beforePrint = { title: document.title, all: allCountries, open: $('.day-table').open };
     allCountries = true;
+    $('.day-table').open = true; // the day-by-day table goes into the PDF too
     render(last);
     document.title = `OmniBeam stats ${isoDay(endBack + range - 1)} to ${isoDay(endBack)}`;
     printing = true;
@@ -691,6 +816,7 @@
     printing = false;
     document.title = beforePrint.title;
     allCountries = beforePrint.all;
+    $('.day-table').open = beforePrint.open;
     if (last) render(last);
   });
 

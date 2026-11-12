@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OmniBeam admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="stylesheet" href="/pages.css?v=12">
+  <link rel="stylesheet" href="/stats.css?v=4">
+</head>
+<body class="admin">
+  <a class="skip" href="#content">Skip to the numbers</a>
+  <!-- Sign in: the same key as before (STATS_KEY in cPanel) -->
+  <main class="admin-login" id="login-wrap">
+    <form id="login" class="stats-login card" hidden>
+      <h1><img src="/icon.svg" alt="" width="36" height="36"> OmniBeam admin</h1>
+      <p class="lead">Enter your admin key (STATS_KEY in cPanel).</p>
+      <input type="password" id="key" autocomplete="current-password" placeholder="Admin key" aria-label="Admin key">
+      <button class="open-app" type="submit">Sign in</button>
+      <p class="stats-error" id="error" role="alert"></p>
+    </form>
+  </main>
+
+  <div id="view" class="admin-shell" hidden>
+    <aside class="admin-side">
+      <a class="admin-brand" href="/" title="Open OmniBeam"><img src="/icon.svg" alt="" width="30" height="30"><span>OmniBeam <small>admin</small></span></a>
+      <nav class="admin-nav" role="tablist" aria-label="Admin sections" aria-orientation="vertical">
+        <button type="button" role="tab" id="tab-overview" aria-controls="p-overview" data-tab="overview">Overview</button>
+        <button type="button" role="tab" id="tab-visitors" aria-controls="p-visitors" data-tab="visitors">Visitors</button>
+        <button type="button" role="tab" id="tab-transfers" aria-controls="p-transfers" data-tab="transfers">Transfers</button>
+        <button type="button" role="tab" id="tab-features" aria-controls="p-features" data-tab="features">Features</button>
+        <button type="button" role="tab" id="tab-problems" aria-controls="p-problems" data-tab="problems">Problems <b class="nav-count" id="nav-problems" hidden></b></button>
+        <button type="button" role="tab" id="tab-status" aria-controls="p-status" data-tab="status">Status <i class="nav-dot" id="nav-status" aria-hidden="true"></i></button>
+        <button type="button" role="tab" id="tab-settings" aria-controls="p-settings" data-tab="settings">Settings</button>
+      </nav>
+      <p class="admin-side-foot"><a href="/status" target="_blank" rel="noopener">Public status page ↗</a><br><a href="#" id="logout">Sign out on this device</a></p>
+    </aside>
+
+    <div class="admin-main" id="content" tabindex="-1">
+      <header class="admin-top">
+        <h1 id="panel-title">Overview</h1>
+        <span class="updated-at" id="updated" role="status"></span>
+        <div class="bar-actions" id="bar-actions">
+          <button type="button" class="ghost-btn" id="csv">⤓ CSV</button>
+          <button type="button" class="ghost-btn" id="pdf">⎙ Save as PDF</button>
+          <button type="button" class="ghost-btn danger" id="clear">Clear…</button>
+        </div>
+        <button type="button" class="ghost-btn" id="refresh">↻ Refresh</button>
+      </header>
+
+      <!-- The period: shown on the tabs with numbers (not on Status and Settings) -->
+      <div class="stats-bar" id="period-bar">
+        <div class="range" role="group" aria-label="Period">
+          <button type="button" data-days="1">Today</button>
+          <button type="button" data-days="7">7 days</button>
+          <button type="button" data-days="30">30 days</button>
+          <button type="button" data-days="90">90 days</button>
+          <button type="button" data-days="365">Year</button>
+        </div>
+        <form class="dates" id="dates">
+          <label for="from">From</label> <input type="date" id="from" required>
+          <label for="to">to</label> <input type="date" id="to" required>
+          <button type="submit" class="ghost-btn">Show</button>
+        </form>
+      </div>
+      <p class="print-head" id="print-head"></p>
+
+      <!-- Overview -->
+      <section class="panel" role="tabpanel" id="p-overview" aria-labelledby="tab-overview">
+        <a class="status-strip" id="ov-status" href="#status"></a>
+        <div class="tiles kpis" id="ov-kpis"></div>
+        <section class="glance card" id="glance"></section>
+      </section>
+
+      <!-- Visitors -->
+      <section class="panel" role="tabpanel" id="p-visitors" aria-labelledby="tab-visitors" hidden>
+        <h2 class="print-only">Visitors</h2>
+        <div class="tiles" id="visit-tiles"></div>
+        <p class="lead" id="visits-off" hidden></p>
+        <div class="now" id="now"></div>
+        <section class="card">
+          <h3 id="visit-chart-title">Visitors per day</h3>
+          <div class="chart" id="visit-chart"></div>
+        </section>
+        <div class="cards">
+          <section class="card wide">
+            <h3>Countries</h3>
+            <div class="table-wrap"><table id="countries" class="rank"></table></div>
+            <button type="button" class="link-btn" id="countries-more" hidden>Show all countries</button>
+          </section>
+          <section class="card wide">
+            <h3>Pages</h3>
+            <div class="table-wrap"><table id="pages" class="rank"></table></div>
+          </section>
+          <section class="card"><h3>Time spent on a page</h3><div id="time-buckets"></div></section>
+          <section class="card"><h3>Visits by hour <small id="hour-zone"></small></h3><div class="chart" id="hours"></div></section>
+          <section class="card"><h3>Where visitors came from</h3><div id="sources"></div></section>
+          <section class="card"><h3>Devices</h3><div id="devices"></div></section>
+          <section class="card"><h3>Browsers</h3><div id="browsers"></div></section>
+          <section class="card"><h3>Systems</h3><div id="systems"></div></section>
+          <section class="card"><h3>Languages</h3><div id="langs"></div></section>
+        </div>
+      </section>
+
+      <!-- Transfers -->
+      <section class="panel" role="tabpanel" id="p-transfers" aria-labelledby="tab-transfers" hidden>
+        <h2 class="print-only">Transfers</h2>
+        <div class="tiles" id="tiles"></div>
+        <section class="card">
+          <h3>Transfers per day, by route</h3>
+          <div class="legend" id="legend"></div>
+          <div class="chart" id="chart"></div>
+        </section>
+        <h2>Did transfers finish?</h2>
+        <p class="lead" id="success-lead"></p>
+        <div class="tiles" id="success-tiles"></div>
+        <div class="cards">
+          <section class="card"><h3>By route</h3><div class="table-wrap"><table id="success-routes" class="rank"></table></div></section>
+          <section class="card"><h3>Why sends stopped</h3><div id="success-why"></div></section>
+          <section class="card wide"><h3>By browser <small>(both devices of a transfer count)</small></h3><div class="table-wrap"><table id="success-browsers" class="rank"></table></div></section>
+        </div>
+        <details class="card day-table">
+          <summary><h3>Day by day</h3><small>every number for each day</small></summary>
+          <div class="table-wrap"><table id="table"></table></div>
+        </details>
+      </section>
+
+      <!-- Features: how often each feature was used, in one sorted list -->
+      <section class="panel" role="tabpanel" id="p-features" aria-labelledby="tab-features" hidden>
+        <h2 class="print-only">Features</h2>
+        <p class="lead" id="features-lead"></p>
+        <section class="card">
+          <div class="table-wrap"><table id="features" class="rank features"></table></div>
+        </section>
+        <p class="lead small" id="features-unused"></p>
+      </section>
+
+      <!-- Problems -->
+      <section class="panel" role="tabpanel" id="p-problems" aria-labelledby="tab-problems" hidden>
+        <h2 class="print-only">Problems</h2>
+        <div class="tiles" id="crash-tiles"></div>
+        <p class="lead small" id="crash-lead"></p>
+        <section class="card">
+          <h3>Crashes and stuck transfers</h3>
+          <div class="table-wrap"><table id="crash-recent" class="problems"></table></div>
+          <p class="empty" id="crash-empty">None in this period.</p>
+        </section>
+        <section class="card">
+          <h3>Most common problems</h3>
+          <p class="lead small" id="problems-lead"></p>
+          <div class="table-wrap"><table id="problems-top"></table></div>
+        </section>
+        <section class="card">
+          <h3>Latest reports</h3>
+          <div class="table-wrap"><table id="problems-recent" class="problems"></table></div>
+        </section>
+      </section>
+
+      <!-- Status: the same numbers as the public /status page, plus the TURN server -->
+      <section class="panel" role="tabpanel" id="p-status" aria-labelledby="tab-status" hidden>
+        <h2 class="print-only">Status</h2>
+        <div id="status-now"></div>
+        <div class="cards">
+          <section class="card wide">
+            <h3>Uptime, last 30 days <small id="status-source"></small></h3>
+            <p class="status-big" id="status-uptime"></p>
+            <div class="status-bars" id="status-bars" role="img" aria-label="Uptime per day, last 30 days"></div>
+            <p class="status-legend"><span>30 days ago</span><span>Today</span></p>
+          </section>
+          <section class="card wide">
+            <h3>Incidents</h3>
+            <div id="status-incidents"></div>
+          </section>
+          <section class="card wide">
+            <h3>TURN server</h3>
+            <div id="turn"></div>
+            <p><button class="open-app" type="button" id="turn-test">Test TURN from this browser</button> <span id="turn-result" role="status"></span></p>
+          </section>
+        </div>
+        <p class="lead small" id="status-note"></p>
+      </section>
+
+      <!-- Settings: alerts, weekly summary, supporter codes, your data -->
+      <section class="panel" role="tabpanel" id="p-settings" aria-labelledby="tab-settings" hidden>
+        <div class="cards">
+          <section class="card wide">
+            <h3>Alerts</h3>
+            <div id="alerts"></div>
+            <p><button class="open-app" type="button" id="alert-test">Send a test alert</button> <span id="alert-result" role="status"></span></p>
+          </section>
+          <section class="card wide">
+            <h3>Weekly summary</h3>
+            <div id="weekly"></div>
+            <p><button class="open-app" type="button" id="weekly-test">Send the weekly summary now</button> <span id="weekly-result" role="status"></span></p>
+            <pre class="weekly-preview" id="weekly-preview"></pre>
+          </section>
+          <section class="card wide">
+            <h3>Supporter codes</h3>
+            <div id="supporters"></div>
+            <p class="no-print sup-make"><input id="sup-note" type="text" maxlength="120" placeholder="Who it is for (optional, only you see it)" aria-label="Note"> <button class="open-app" type="button" id="sup-make">Make a supporter code</button> <span id="sup-result" role="status"></span></p>
+            <div class="table-wrap"><table id="sup-list" class="rank"></table></div>
+          </section>
+          <section class="card wide no-print">
+            <h3>Your data</h3>
+            <p class="lead" id="undo-info"></p>
+            <p><button class="open-app" type="button" id="backup">Download a backup (JSON)</button> <button class="open-app" type="button" id="undo" hidden>Undo the last clear</button> <span id="data-result" role="status"></span></p>
+          </section>
+        </div>
+      </section>
+
+      <p class="updated admin-foot">Days are UTC. Visitors are counted once per day per device and browser, with no cookies and no addresses stored; the country comes from Cloudflare. People who pressed “No thanks” on the cookie banner and your own devices opened with ?analytics=off are not counted. “Networks” counts different internet connections per day. Routes are reported by the sending device.</p>
+    </div>
+  </div>
+
+  <dialog id="clear-dlg" class="clear-dlg">
+    <form id="clear-form">
+      <h2>Clear stats</h2>
+      <fieldset>
+        <legend>What</legend>
+        <label><input type="radio" name="clear-what" value="all" checked> Everything (visitors, transfers, problems)</label>
+        <label><input type="radio" name="clear-what" value="visitors"> Only visitors</label>
+        <label><input type="radio" name="clear-what" value="transfers"> Only transfers and feature counts</label>
+        <label><input type="radio" name="clear-what" value="problems"> Only problem reports, crashes and stuck transfers</label>
+      </fieldset>
+      <fieldset>
+        <legend>Which days</legend>
+        <label><input type="radio" name="clear-days" value="all" checked> All days</label>
+        <label><input type="radio" name="clear-days" value="shown"> <span>Only the period shown: <span id="clear-period"></span></span></label>
+      </fieldset>
+      <p>You can undo the last clear in Settings → Your data. Type CLEAR to go on.</p>
+      <input type="text" id="clear-word" autocomplete="off" placeholder="CLEAR" aria-label="Type CLEAR">
+      <p class="stats-error" id="clear-msg" role="alert"></p>
+      <p class="clear-buttons">
+        <button type="button" class="link-btn" id="clear-cancel">Cancel</button>
+        <button type="submit" class="open-app danger" id="clear-go" disabled>Clear</button>
+      </p>
+    </form>
+  </dialog>
+  <script src="/stats.js?v=17"></script>
+</body>
+</html>

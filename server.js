@@ -1159,11 +1159,13 @@ const server = http.createServer((req, res) => {
       sendFile(req, res, 200, 'request.html', Buffer.from(withAnalytics(data)), { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
-  if (urlPath === '/stats' || urlPath === '/stats.html') {
-    if (urlPath !== '/stats') return redirect(res, '/stats');
-    return fs.readFile(path.join(PUBLIC_DIR, 'stats.html'), (err, data) => {
+  // The admin panel (Overview, Visitors, Transfers, Features, Problems, Status, Settings), for whoever knows STATS_KEY.
+  // /stats, the old address, opens the same page; /admin.html and /stats.html go to /admin
+  if (urlPath === '/admin' || urlPath === '/admin/' || urlPath === '/admin.html' || urlPath === '/stats' || urlPath === '/stats.html') {
+    if (urlPath !== '/admin' && urlPath !== '/stats') return redirect(res, '/admin');
+    return fs.readFile(path.join(PUBLIC_DIR, 'admin.html'), (err, data) => {
       if (err) return notFound(req, res);
-      sendFile(req, res, 200, 'stats.html', data, { 'X-Robots-Tag': 'noindex, nofollow' });
+      sendFile(req, res, 200, 'admin.html', data, { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
   const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
@@ -2299,7 +2301,7 @@ function handleInbox(req, res, urlPath) {
 
 // ---------- Owner statistics ----------
 // Counts per day (UTC), kept in data/stats.json: connections, networks (counted with a daily random salt, so
-// no addresses are stored), transfers by route, bytes, shared links. Shown at /stats to whoever knows STATS_KEY.
+// no addresses are stored), transfers by route, bytes, shared links. Shown in the admin panel (/admin) to whoever knows STATS_KEY.
 const STATS_FILE = path.join(DATA_DIR, 'stats.json');
 let stats = { days: {} };
 try { stats = JSON.parse(fs.readFileSync(STATS_FILE, 'utf8')); stats.days = stats.days || {}; } catch {}
@@ -2405,7 +2407,7 @@ function handleAlertTest(req, res) {
   const json = statsAuth(req, res);
   if (!json) return;
   sendAlert('OmniBeam test alert', 'Alerts work. You will get a message like this when problem reports on omnibeam.site spike.\n'
-    + `${SITE_URL}/stats`).then((result) => json(200, { ...result, alerts: alertInfo() }));
+    + `${SITE_URL}/admin`).then((result) => json(200, { ...result, alerts: alertInfo() }));
 }
 
 // "Clear stats" on /stats. POST /api/stats/clear?what=all|visitors|transfers|problems&from=YYYY-MM-DD&to=YYYY-MM-DD
@@ -2882,7 +2884,7 @@ function checkSpike(now = Date.now()) {
   const mins = Math.round(ALERT_WINDOW / 60000);
   sendAlert(`OmniBeam: ${recent.length} problem reports in ${mins} minutes`,
     `${recent.length} problem reports on omnibeam.site in the last ${mins} minutes (usually about ${Math.max(0, Math.round(usual * 10) / 10)}).\n\n`
-    + `Most common:\n${list(top)}\n\nOn:\n${list(systems)}\n\nDetails: ${SITE_URL}/stats`);
+    + `Most common:\n${list(top)}\n\nOn:\n${list(systems)}\n\nDetails: ${SITE_URL}/admin`);
 }
 // Instant alerts (see INSTANT_ALERTS near the top): crashes, stuck transfers and new script errors
 const instant = { pending: [], timer: null, last: 0, day: '', sentToday: 0, seen: new Map(), skipped: 0 };
@@ -2939,7 +2941,7 @@ async function flushInstant() {
   const subject = `OmniBeam: ${Object.entries(counts).map(([k, n]) => `${n} ${(PLURAL[k] || [k, k])[n > 1 ? 1 : 0]}`).join(', ')}`;
   const skipped = instant.skipped ? `\n(${instant.skipped} more were not sent: the daily limit of ${INSTANT_MAX_DAY} messages was reached)` : '';
   instant.skipped = 0;
-  const text = `${list.slice(0, 15).map(describeReport).join('\n')}${list.length > 15 ? `\n… and ${list.length - 15} more` : ''}${skipped}\n\nDetails: ${SITE_URL}/stats`;
+  const text = `${list.slice(0, 15).map(describeReport).join('\n')}${list.length > 15 ? `\n… and ${list.length - 15} more` : ''}${skipped}\n\nDetails: ${SITE_URL}/admin`;
   const channels = instantChannels();
   const failed = [];
   if (channels.includes('telegram')) {
@@ -3175,7 +3177,7 @@ function weeklySummary() {
   if (countries) lines.push(`Top countries: ${countries}`);
   if (pagesTop) lines.push(`Top pages: ${pagesTop}`);
   if (sources) lines.push(`Top sources: ${sources}`);
-  return { subject: `OmniBeam weekly: ${n(w.visitors)} visitors, ${n(done)} transfers (${from} to ${to})`, text: `${lines.join('\n')}\n\nDetails: ${SITE_URL}/stats` };
+  return { subject: `OmniBeam weekly: ${n(w.visitors)} visitors, ${n(done)} transfers (${from} to ${to})`, text: `${lines.join('\n')}\n\nDetails: ${SITE_URL}/admin` };
 }
 async function sendWeekly() {
   const { subject, text } = weeklySummary();
