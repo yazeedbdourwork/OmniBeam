@@ -9,7 +9,7 @@
 //     Optional: TELEGRAM_CHAT (your chat id). Without it, send any message to the bot once and the Worker finds
 //     the chat by itself.
 //   - Triggers: Cron */5 * * * *
-//   - For the public status page (omnibeam.site/status): STATUS_KEY as a Secret, the same long random text as the
+//   - For the Status tab of the admin panel (omnibeam.site/admin): STATUS_KEY as a Secret, the same long random text as the
 //     STATUS_KEY environment variable of the Node app in cPanel. The Worker then sends every check result to
 //     https://omnibeam.site/api/status/checks. Results it could not send (the site was down) are kept in KV and sent
 //     with the next check that gets through, so the status page also shows the outage.

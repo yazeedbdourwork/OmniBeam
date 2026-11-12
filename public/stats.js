@@ -70,8 +70,8 @@
   async function start() {
     if (!key) return showLogin();
     try {
-      // The status numbers are public (/api/status); a failure there never stops the rest
-      const [data, st] = await Promise.all([load(), fetch('/api/status', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)]);
+      // The status numbers (/api/status, same key); a failure there never stops the rest
+      const [data, st] = await Promise.all([load(), fetch('/api/status', { headers: { Authorization: `Bearer ${key}` }, cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)]);
       last = data;
       if (st) status = st;
       render(last);
@@ -534,7 +534,7 @@
     $('#status-incidents').innerHTML = s.incidents.length
       ? `<ul class="status-incidents">${s.incidents.map((i) => `<li class="${i.end ? 'done' : 'open'}"><b>${esc(PARTS[i.part] || i.part)}</b><span>${esc(when(i.start))} · ${i.end ? 'fixed after ' + dur(i.end - i.start) : 'still going on'}</span></li>`).join('')}</ul>`
       : '<p class="empty">No incidents in the last 30 days.</p>';
-    $('#status-note').textContent = `Last outside check: ${s.lastOutsideCheck ? when(s.lastOutsideCheck) : 'none yet (the omnibeam-ping Worker sends them with STATUS_KEY)'}. Visitors see the same parts and uptime on the public status page.`;
+    $('#status-note').textContent = `Last outside check: ${s.lastOutsideCheck ? when(s.lastOutsideCheck) : 'none yet (the omnibeam-ping Worker sends them with STATUS_KEY)'}. Only you see this: /status sends everyone to this tab, which needs your key.`;
   }
 
   // Tabs: one section on screen at a time; the address (#visitors…) and this browser remember which

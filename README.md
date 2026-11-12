@@ -120,7 +120,7 @@ The browser's language is picked automatically on the first visit and can be cha
 | `/d/…` | Download page for a shared link |
 | `/r/…` | Request files (upload) page |
 | `/embed` | How to put a "Send me files" box on your website |
-| `/status` | Public status page (noindex) |
+| `/status` | Sends to the admin panel's Status tab (the status page is owner‑only since 2026‑11‑12) |
 | `/admin` | Owner‑only admin panel: stats and status in tabs (needs `STATS_KEY`; `/stats` opens it too) |
 | `/amp/<lang>/<slug>` | AMP versions of the guide pages |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | For search engines and AI crawlers |
@@ -253,7 +253,7 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 | Variable | Purpose |
 |---|---|
 | `STATS_KEY` | Secret that unlocks the admin panel `/admin` (secret) |
-| `STATUS_KEY` | Shared secret for the uptime Worker posting to `/status` (secret) |
+| `STATUS_KEY` | Shared secret for the uptime Worker posting to `/api/status/checks` (secret) |
 | `STATUS_EVERY_MIN` | How often the server checks itself |
 | `VISITS` | `false` turns off visitor counting |
 | `ALERT_EMAIL` | Address for problem alerts (`''` turns email alerts off) |
@@ -282,8 +282,8 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 
 ## Owner tools: stats, status and alerts
 
-- **`/admin`** (enter `STATS_KEY`; the old `/stats` address opens it too): tabs for Overview (status line, main numbers, At a glance), Visitors, Transfers, Features (one list, most used first), Problems, Status (the public `/status` numbers plus the TURN server) and Settings (alerts, weekly summary, supporter codes, backup). Covers visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, feature counts (rings, links opened, send to all, invite cards, chats and pins, scans, smaller videos, Telegram, embed box, app lock), problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
-- **`/status`**: the server checks itself every few minutes, and a Cloudflare Worker (`omnibeam-ping`) posts outside checks.
+- **`/admin`** (enter `STATS_KEY`; the old `/stats` address opens it too): tabs for Overview (status line, main numbers, At a glance), Visitors, Transfers, Features (one list, most used first), Problems, Status (uptime, parts and incidents plus the TURN server) and Settings (alerts, weekly summary, supporter codes, backup). Covers visits, countries, pages, referrers, transfers per day, direct vs relay, success rate, feature counts (rings, links opened, send to all, invite cards, chats and pins, scans, smaller videos, Telegram, embed box, app lock), problem reports, supporter codes. Includes Clear with Undo, Save as PDF and a JSON backup.
+- **Status** (admin panel → Status; `/status` sends there, nothing is public): the server checks itself every few minutes, and a Cloudflare Worker (`omnibeam-ping`) posts outside checks.
 - **Telegram alerts** through @OmniBeam_bot: spikes in problem reports, crashed tabs, stuck transfers and new script errors, plus a weekly summary.
 
 ## Tests
