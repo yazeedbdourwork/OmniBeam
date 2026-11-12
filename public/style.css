@@ -176,6 +176,9 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
   background: none; color: var(--accent); font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
 }
 .intro-link:hover { box-shadow: var(--raise-sm); }
+/* Dark: a lighter purple, so the link reads clearly on the grey (WCAG AA) */
+:root[data-theme="dark"] .intro-link { color: #9a93ff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .intro-link { color: #9a93ff; } }
 .intro-link svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
 
 /* Intro video window: as wide as the video allows on the screen */
@@ -1380,3 +1383,97 @@ dialog.lock-dialog::backdrop { background: var(--bg); }
 #set-pane-privacy .me-row { flex-wrap: wrap; gap: 8px; }
 #keep-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); }
 .lock-input:placeholder-shown { letter-spacing: normal; font-size: 1.1rem; }
+
+/* ---------- Easier to read and use (Settings -> This device: Text size, Contrast; app.js: Access) ---------- */
+/* Skip link: hidden until the first Tab, then Enter jumps past the top bar */
+.skip-link {
+  position: fixed; top: 10px; inset-inline-start: 10px; z-index: 1000; padding: 10px 16px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-fg); font-weight: 700; text-decoration: none;
+  transform: translateY(-160%); transition: transform 0.15s;
+}
+.skip-link:focus { transform: none; outline: 3px solid var(--fg); outline-offset: 2px; }
+main:focus { outline: none; }
+
+/* Text size: everything sized in rem grows with it */
+:root[data-text="large"] { font-size: 118%; }
+:root[data-text="xl"] { font-size: 136%; }
+/* Bigger words need the room: the name next to the logo goes first, the logo alone still links home */
+@media (max-width: 560px) { :root[data-text] .wordmark { display: none; } }
+@media (max-width: 760px) { :root[data-text="xl"] .wordmark { display: none; } }
+/* Tab rows wrap onto two lines instead of cutting words off */
+:root[data-text] .tabs { flex-wrap: wrap; overflow: visible; border-radius: 22px; }
+:root[data-text] .tabs .tab { flex: 1 1 28%; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+
+/* High contrast: solid colours, clear 2px edges instead of soft shadows, no see-through glass. The edges come from the
+   same shadow variables everything already uses, so every card, button and field gets one. */
+:root[data-contrast="more"] {
+  --bg: #ffffff !important; --fg: #000000 !important; --muted: #1f2330 !important;
+  --accent: #3426c9 !important; --accent-2: #3426c9 !important; --accent-fg: #ffffff !important;
+  --accent-soft: rgba(52, 38, 201, 0.12) !important; --border: #000000 !important;
+  --ok: #0a5a31 !important; --danger: #9b1111 !important;
+  --hc-line: #000000;
+  --raise: 0 0 0 2px var(--hc-line) !important; --raise-sm: 0 0 0 2px var(--hc-line) !important; --raise-lg: 0 0 0 2px var(--hc-line) !important;
+  --inset: inset 0 0 0 2px var(--hc-line) !important; --inset-sm: inset 0 0 0 2px var(--hc-line) !important;
+  --glass-page: #ffffff !important; --glass-solid: #ffffff !important; --glass-dialog: #ffffff !important; --glass-well: #ffffff !important;
+  --glass-blur: none !important;
+}
+:root[data-contrast="more"][data-theme="dark"] {
+  --bg: #000000 !important; --fg: #ffffff !important; --muted: #e2e4ec !important;
+  --accent: #c2bdff !important; --accent-2: #c2bdff !important; --accent-fg: #000000 !important;
+  --accent-soft: rgba(194, 189, 255, 0.18) !important; --border: #ffffff !important;
+  --ok: #7ef0b4 !important; --danger: #ffb0b0 !important;
+  --hc-line: #ffffff;
+  --glass-page: #000000 !important; --glass-solid: #000000 !important; --glass-dialog: #000000 !important; --glass-well: #000000 !important;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-contrast="more"]:not([data-theme="light"]) {
+    --bg: #000000 !important; --fg: #ffffff !important; --muted: #e2e4ec !important;
+    --accent: #c2bdff !important; --accent-2: #c2bdff !important; --accent-fg: #000000 !important;
+    --accent-soft: rgba(194, 189, 255, 0.18) !important; --border: #ffffff !important;
+    --ok: #7ef0b4 !important; --danger: #ffb0b0 !important;
+    --hc-line: #ffffff;
+    --glass-page: #000000 !important; --glass-solid: #000000 !important; --glass-dialog: #000000 !important; --glass-well: #000000 !important;
+  }
+}
+[data-contrast="more"] body { background: var(--bg) !important; }
+[data-contrast="more"] * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; text-shadow: none !important; }
+[data-contrast="more"] :is(dialog, .menu, .peer-actions, .toast, .nudge) { background: var(--bg) !important; }
+[data-contrast="more"] dialog::backdrop { background: rgba(0, 0, 0, 0.6) !important; }
+/* Main buttons: one solid colour (no gradients), with an edge */
+[data-contrast="more"] :is(.btn:not(.ghost), .peer-actions button:first-child, .skip-link) {
+  background: var(--accent) !important; color: var(--accent-fg) !important; box-shadow: 0 0 0 2px var(--hc-line) !important;
+}
+[data-contrast="more"] .wordmark span { background: none; color: var(--accent); }
+[data-contrast="more"] .icon-btn { color: var(--fg); }
+[data-contrast="more"] .support-btn { color: var(--danger); }
+/* The chosen option and tab: filled, so it doesn't rely on a shadow */
+[data-contrast="more"] :is(.choice label:has(input:checked), .tab[aria-selected="true"], [aria-pressed="true"]) {
+  background: var(--accent) !important; color: var(--accent-fg) !important;
+}
+[data-contrast="more"] main a:not(.btn):not(.icon-btn):not(.share-btn):not(.menu-item):not(.intro-play),
+[data-contrast="more"] footer a { text-decoration: underline; text-underline-offset: 2px; }
+[data-contrast="more"] :focus-visible { outline: 3px solid var(--fg) !important; outline-offset: 3px !important; box-shadow: 0 0 0 6px var(--bg) !important; }
+[data-contrast="more"] .xfer-bar { box-shadow: 0 0 0 1px var(--hc-line); }
+[data-contrast="more"] .xfer-bar span { background: var(--accent) !important; }
+[data-contrast="more"] .peer.offline { opacity: 1; }
+[data-contrast="more"] .peer.offline .name { text-decoration: line-through; }
+
+/* Windows High Contrast and other forced colours: the browser drops shadows and backgrounds, so draw real edges */
+@media (forced-colors: active) {
+  :is(header, .icon-btn, .btn, .peer, .peer-actions button, .tab, .choice label, dialog, .menu, .toast, .nudge, .empty,
+    .me-card, .learn, .share-btn, textarea, input, select, .code-box, .xfer-bar, .install-bar, .msg-banner) {
+    border: 1px solid CanvasText !important;
+  }
+  :is(.btn, .icon-btn, .tab, .peer-actions button, .share-btn) { border-color: ButtonText !important; }
+  :is(.choice label:has(input:checked), .tab[aria-selected="true"], [aria-pressed="true"]) {
+    forced-color-adjust: none; background: Highlight !important; color: HighlightText !important; box-shadow: none !important;
+  }
+  /* Device pictures keep their colours: without them the white icon on a coloured circle disappears */
+  :is(.avatar, .me-avatar) { forced-color-adjust: none; }
+  .xfer-bar span { forced-color-adjust: none; background: Highlight !important; }
+  .progress circle { stroke: Highlight; }
+  .wordmark span { background: none; color: LinkText; -webkit-text-fill-color: LinkText; }
+  :focus-visible { outline: 3px solid Highlight !important; outline-offset: 2px; }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+  .skip-link { border: 2px solid ButtonText; }
+}

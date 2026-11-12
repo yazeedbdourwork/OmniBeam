@@ -276,6 +276,18 @@ function toast(msg, ms = 3000) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
+// Said by screen readers without moving the focus (#sr-live): a device arrived or left, a transfer finished.
+// Not in the first seconds after the page opens, when every device on the network shows up at once.
+const pageOpenedAt = Date.now();
+let announceTimer;
+function announce(msg) {
+  const el = document.getElementById('sr-live');
+  if (!el || Date.now() - pageOpenedAt < 4000) return;
+  // Emptied first, so the same words twice in a row are still read out
+  el.textContent = '';
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(() => { el.textContent = msg; }, 60);
+}
 const randomHex = (bytes) => [...crypto.getRandomValues(new Uint8Array(bytes))].map((b) => b.toString(16).padStart(2, '0')).join('');
 async function sha256Hex(text) {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -881,7 +893,7 @@ class Peer {
       <div class="device"></div>
       <div class="status"></div>
       <div class="xfer" hidden>
-        <div class="xfer-bar"><span></span></div>
+        <div class="xfer-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
         <div class="xfer-meta"><b class="xfer-pct"></b><span class="xfer-speed"></span></div>
         <div class="xfer-sub"></div>
         <div class="xfer-route"></div>
@@ -911,6 +923,7 @@ class Peer {
     $('.name', el).textContent = this.info.name;
     $('.device', el).textContent = this.info.device;
     $('.peer-main', el).setAttribute('aria-label', t('Send to {name}', { name: this.info.name }));
+    $('.xfer-bar', el).setAttribute('aria-label', t('Transfer with {name}', { name: this.info.name }));
     this.paintSupporter(el);
     this.markTab(el); // this.el isn't set yet: the constructor assigns it when render() returns
 
@@ -1034,6 +1047,7 @@ class Peer {
     const frac = done / p.total;
     this.setProgress(frac);
     $('.xfer-bar span', this.el).style.width = `${(frac * 100).toFixed(1)}%`;
+    $('.xfer-bar', this.el).setAttribute('aria-valuenow', String(Math.floor(frac * 100)));
     $('.xfer-pct', this.el).textContent = `${Math.floor(frac * 100)}%`;
     $('.xfer-speed', this.el).textContent = speed > 0 ? `${formatSize(speed)}/s` : '';
     const left = speed > 0 && done < p.total ? formatDuration((p.total - done) / speed) : '';
@@ -1067,6 +1081,8 @@ class Peer {
     if (completed && p) {
       this.setProgress(1);
       $('.xfer-bar span', this.el).style.width = '100%';
+      $('.xfer-bar', this.el).setAttribute('aria-valuenow', '100');
+      announce(t(p.sending ? 'Sent to {name}' : 'Received from {name}', { name: this.info.name }));
       $('.xfer-pct', this.el).textContent = '100%';
       $('.xfer-speed', this.el).textContent = '';
       $('.xfer-sub', this.el).textContent = `${formatSize(p.total)} · ${t('Done')}`;
@@ -4967,9 +4983,37 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', updateBa
 updateBarTheme();
 $('#theme-choice').onchange = (e) => setTheme(e.target.value);
 $('#look-choice').onchange = (e) => setLook(e.target.value);
+
+// Text size (Normal, Large, Largest) and Contrast (Automatic, Normal, High), in Settings -> This device. They put
+// data-text and data-contrast on <html> (style.css: "Easier to read"); look.js does the same before the page is drawn.
+// Contrast Automatic follows the device's own "increase contrast" setting (prefers-contrast: more).
+const Access = {
+  textKey: 'omnibeam-text',
+  contrastKey: 'omnibeam-contrast',
+  moreQuery: matchMedia('(prefers-contrast: more)'),
+  saved(key) { try { return localStorage.getItem(key) || ''; } catch { return ''; } },
+  apply() {
+    const d = document.documentElement;
+    const text = this.saved(this.textKey);
+    if (text === 'large' || text === 'xl') d.dataset.text = text; else delete d.dataset.text;
+    const contrast = this.saved(this.contrastKey);
+    if (contrast === 'more' || (!contrast && this.moreQuery.matches)) d.dataset.contrast = 'more'; else delete d.dataset.contrast;
+    for (const r of document.querySelectorAll('#text-choice input')) r.checked = r.value === (['large', 'xl'].includes(text) ? text : '');
+    for (const r of document.querySelectorAll('#contrast-choice input')) r.checked = r.value === (['more', 'normal'].includes(contrast) ? contrast : '');
+  },
+  set(key, value) {
+    try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key); } catch {}
+    this.apply();
+  },
+};
+Access.apply();
+$('#text-choice').onchange = (e) => Access.set(Access.textKey, e.target.value);
+$('#contrast-choice').onchange = (e) => Access.set(Access.contrastKey, e.target.value);
+Access.moreQuery.addEventListener?.('change', () => Access.apply());
 window.addEventListener('storage', (e) => {
   if (e.key === themeKey) { applyTheme(e.newValue); updateThemeUi(); }
   if (e.key === lookKey) { applyLook(e.newValue); updateThemeUi(); }
+  if (e.key === Access.textKey || e.key === Access.contrastKey) Access.apply();
 });
 
 // ---------- Menu (the ⋯ button at the top) ----------
@@ -5027,6 +5071,7 @@ function addPeer(info) {
   if (peers.has(info.id)) return;
   const p = new Peer(info);
   peers.set(info.id, p);
+  announce(t('{name} is here', { name: info.name }));
   peersEl.insertBefore(p.el, peersEl.querySelector('.peer.offline')); // online devices first
   p.markTrusted();
   if (pairDlg.open) Teams.render();
@@ -5134,6 +5179,7 @@ function removePeer(id) {
   if (!p) return;
   p.destroy();
   peers.delete(id);
+  announce(t('{name} left', { name: p.info.name }));
   window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing with it (media.js)
   updateSendAll();
   tellExtension();
@@ -6616,7 +6662,7 @@ $('#btn-settings').onclick = () => {
 };
 $('#set-me').onclick = () => { $('#dlg-settings').close(); openMeDialog(); };
 // Move to a new phone (backup.js): save one encrypted backup file, or open one made on the old phone
-const loadBackup = () => loadScript('/backup.js?v=1');
+const loadBackup = () => loadScript('/backup.js?v=2');
 $('#backup-save').onclick = () => loadBackup().then(() => window.Backup.save(), (err) => toast(err.message));
 $('#backup-open').onclick = () => $('#backup-file').click();
 $('#backup-file').onchange = (e) => {
