@@ -166,6 +166,7 @@ jobs:
             echo "No earlier deploy from GitHub found, so this time the whole site is sent."
           else
             echo "The live site is on commit ${LAST}."
+            echo "LAST=${LAST}" >> "$GITHUB_ENV"
             git diff --name-only "$LAST" HEAD > changed-all.txt
             # Only files the site uses, and the sources of the downloads in public/tools
             grep -E '^(server\.js|service-worker\.js|public/|tools/omnibeam-|tools/install-|tools/README|vendor/ws/)' \
@@ -179,6 +180,37 @@ jobs:
               echo "ONLY_FILES=$PWD/changed.txt" >> "$GITHUB_ENV"
             fi
           fi
+
+      # Unpacking the zip never deletes anything, so files that left the site would stay on the host (and the host
+      # serves a file in public/ before server.js is asked). Move them to the cPanel trash: the files deleted from
+      # public/ in git since the last deploy, plus the hand-uploaded leftovers in tools/old-site-files.txt.
+      # Runs even when no site file changed. A file that is already gone is skipped.
+      - name: Remove old files
+        if: env.CPANEL_TOKEN != '' && env.MODE != 'Test the connection'
+        run: |
+          set -uo pipefail
+          API="https://${CPANEL_HOST}:2083"
+          AUTH="Authorization: cpanel ${CPANEL_USER}:${CPANEL_TOKEN}"
+          DIR="${CPANEL_APP_DIR%/}"
+          { grep -v '^\s*\(#\|$\)' tools/old-site-files.txt || true
+            if [ -n "${LAST:-}" ]; then git diff --diff-filter=D --name-only "$LAST" HEAD -- public/ || true; fi
+          } | tr -d '\r' | sort -u > remove.txt
+          while IFS= read -r f; do
+            # Only plain paths inside public/ (no "..", no spaces), and only if git does not have the file now
+            if ! printf '%s' "$f" | grep -Eq '^public/[A-Za-z0-9._/-]+$' || printf '%s' "$f" | grep -q '\.\.'; then
+              echo "Skipped (not a plain public/ path): $f"; continue
+            fi
+            if [ -e "$f" ]; then echo "Skipped (still part of the site): $f"; continue; fi
+            dir=$(dirname "$f"); name=$(basename "$f")
+            found=$(curl -sS -H "$AUTH" --get "$API/execute/Fileman/list_files" --data-urlencode "dir=${DIR}/${dir}" \
+              | jq -r --arg n "$name" '[.data[]? | select(.file == $n)] | length' 2>/dev/null || echo 0)
+            if [ "${found:-0}" = "0" ]; then echo "Already gone: $f"; continue; fi
+            curl -sS -H "$AUTH" --get "$API/json-api/cpanel" \
+              --data-urlencode "cpanel_jsonapi_user=${CPANEL_USER}" --data-urlencode "cpanel_jsonapi_apiversion=2" \
+              --data-urlencode "cpanel_jsonapi_module=Fileman" --data-urlencode "cpanel_jsonapi_func=fileop" \
+              --data-urlencode "op=trash" --data-urlencode "sourcefiles=${DIR}/${f}" --data-urlencode "doubledecode=0" > trash.json
+            if grep -q '"result":1' trash.json; then echo "Moved to the cPanel trash: $f"; else echo "::warning::Could not remove $f: $(head -c 300 trash.json)"; fi
+          done < remove.txt
 
       - name: Build the upload zip
         if: env.MODE != 'Test the connection' && env.SKIP != '1'
