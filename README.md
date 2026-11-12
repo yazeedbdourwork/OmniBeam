@@ -78,6 +78,8 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 - **Gallery** view for received photos, with Save all.
 - **Send to Telegram** and a Telegram bot (@OmniBeamsend_bot) for sending and receiving files.
 - **TV mode** at `/tv`: receive‑only screen with a big QR code and a photo slideshow.
+- **Event photo album**: one QR code for a wedding, a party or a class. Guests scan it (`/e/…`), add photos and videos with no app and see everyone's; the person who made it can print a poster with the QR code, stop new photos, delete any photo or the whole album, and Save all (ZIP on computers, the Photos share sheet 20 at a time on phones). Photos are made smaller (2048 px) unless the album is set to Original. Everything is encrypted in the browser with the key after `#`: the server stores only encrypted bytes. Albums last 1, 3, 7 or 30 days.
+- **Share a folder / Browse files**: on a computer, pick a folder (⋯ menu → Share a folder) and tick which paired devices may look in it. On those devices, More… → Browse files shows the folder and its subfolders, with search; the files you pick come straight from the computer like any transfer (accepted without asking because you asked for them). Nothing is uploaded, the tab must stay open, names starting with "." are never shown. Chrome and Edge remember the folder (and ask again after a restart); other browsers keep it until the tab closes.
 
 ### Personal touches
 - Rename each device and pick its picture.
@@ -119,6 +121,7 @@ The browser's language is picked automatically on the first visit and can be cha
 | `/tv` | TV mode |
 | `/d/…` | Download page for a shared link |
 | `/r/…` | Request files (upload) page |
+| `/e/…` | Event photo album (`?poster=1` prints its QR poster) |
 | `/embed` | How to put a "Send me files" box on your website |
 | `/status` | Sends to the admin panel's Status tab (the status page is owner‑only since 2026‑11‑12) |
 | `/admin` | Owner‑only admin panel: stats and status in tabs (needs `STATS_KEY`; `/stats` opens it too) |
@@ -238,6 +241,10 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 | `DROP_MAX_HOURS` | 168 | Longest a link lives (720 adds a 30‑day option) |
 | `REQUESTS` | on | `false` turns off Request files |
 | `REQUEST_MAX_HOURS`, `REQUEST_UPLOADS_PER_LINK_DAY` | | Request limits |
+| `ALBUMS` | on | `false` turns off event photo albums |
+| `ALBUM_MAX_MB` | 1024 | All the photos of one album together |
+| `ALBUM_TOTAL_MB` | 4096 | Disk all albums may use together |
+| `ALBUM_ITEM_MB` | 60 | Largest single photo or video in an album |
 | `RESEND_API_KEY` | | Resend.com key for emailing links (secret) |
 | `EMAIL_FROM` | `OmniBeam <no-reply@omnibeam.site>` | Sender address |
 | `EMAIL_PER_DAY`, `EMAIL_PER_IP_DAY` | | Email limits |

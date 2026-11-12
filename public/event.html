@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event album | OmniBeam</title>
+  <meta name="description" content="Add your photos to the event album. No app, no account. End-to-end encrypted.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OmniBeam">
+  <meta property="og:title" content="Add your photos to the event album">
+  <meta property="og:description" content="Open the link to add your photos and see everyone's. No app, no account. End-to-end encrypted.">
+  <meta property="og:image" content="https://omnibeam.site/og.png">
+  <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/pages.css?v=12">
+  <link rel="stylesheet" href="/event.css?v=1">
+</head>
+<body class="event-page">
+  <header class="page-header">
+    <nav aria-label="Main">
+      <a class="brand" href="/"><img src="/icon.svg?v=4" alt="" width="32" height="32"><span>Omni<span>Beam</span></span></a>
+      <a class="open-app" href="/" data-t="Open OmniBeam">Open OmniBeam</a>
+    </nav>
+  </header>
+  <main>
+    <article class="drop ev">
+      <p class="ev-kicker" data-t="Event album">Event album</p>
+      <h1 id="ev-title" data-t="Event album">Event album</h1>
+      <p class="lead" id="ev-status" role="status" data-t="Loading…">Loading…</p>
+      <div id="ev-add" hidden>
+        <label class="req-field"><span data-t="Your name (optional)">Your name (optional)</span>
+          <input type="text" id="ev-from" maxlength="40" autocomplete="name">
+        </label>
+        <label class="req-zone" id="ev-zone">
+          <input type="file" id="ev-input" multiple accept="image/*,video/*">
+          <span class="req-zone-big" data-t="Add photos and videos">Add photos and videos</span>
+          <span class="req-zone-small" id="ev-zone-small" data-t="Everyone with this link sees them">Everyone with this link sees them</span>
+        </label>
+      </div>
+      <div class="drop-bar" id="ev-bar" hidden><span></span></div>
+      <div class="ev-tools" id="ev-tools" hidden>
+        <button type="button" class="ev-btn primary" id="ev-save-all" data-t="Save all">Save all</button>
+        <button type="button" class="ev-btn" id="ev-qr-btn" data-t="Show QR code">Show QR code</button>
+        <button type="button" class="ev-btn" id="ev-copy" data-t="Copy link">Copy link</button>
+      </div>
+      <div class="ev-host" id="ev-host" hidden>
+        <p class="ev-host-note" data-t="You made this album.">You made this album.</p>
+        <button type="button" class="ev-btn" id="ev-poster" data-t="Print poster">Print poster</button>
+        <button type="button" class="ev-btn" id="ev-open" data-t="Stop taking photos">Stop taking photos</button>
+        <button type="button" class="ev-btn bad" id="ev-delete" data-t="Delete album">Delete album</button>
+      </div>
+      <div class="ev-qr" id="ev-qr" hidden></div>
+      <ul class="ev-grid" id="ev-grid" aria-label="Photos"></ul>
+      <p class="drop-note" data-t="End-to-end encrypted: photos are encrypted on the device that adds them, and only people with this link can see them. The OmniBeam server can't.">End-to-end encrypted: photos are encrypted on the device that adds them, and only people with this link can see them. The OmniBeam server can't.</p>
+    </article>
+    <p class="drop-own"><a href="/" data-t="Make your own event album with OmniBeam: free, no app">Make your own event album with OmniBeam: free, no app</a></p>
+  </main>
+  <div class="ev-poster" id="ev-poster-page" hidden>
+    <p class="ev-poster-kicker" data-t="Event album">Event album</p>
+    <h1 id="ev-poster-title"></h1>
+    <div class="ev-poster-qr" id="ev-poster-qr"></div>
+    <p class="ev-poster-big" data-t="Scan to add your photos">Scan to add your photos</p>
+    <p class="ev-poster-small" data-t="No app needed: point your phone's camera at the code.">No app needed: point your phone's camera at the code.</p>
+    <p class="ev-poster-brand">omnibeam.site</p>
+  </div>
+  <dialog class="ev-view" id="ev-view" aria-label="Photo">
+    <div class="ev-view-media" id="ev-view-media"></div>
+    <p class="ev-view-who" id="ev-view-who"></p>
+    <div class="ev-view-bar">
+      <button type="button" class="ev-btn" data-act="prev" data-t="Previous">Previous</button>
+      <button type="button" class="ev-btn primary" data-act="save" data-t="Save">Save</button>
+      <button type="button" class="ev-btn bad" data-act="delete" data-t="Delete" hidden>Delete</button>
+      <button type="button" class="ev-btn" data-act="next" data-t="Next">Next</button>
+      <button type="button" class="ev-btn" data-act="close" data-t="Close">Close</button>
+    </div>
+  </dialog>
+  <script src="/report.js?v=3"></script>
+  <script src="/event.js?v=1"></script>
+</body>
+</html>

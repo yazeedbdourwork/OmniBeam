@@ -5,6 +5,7 @@ Disallow: /config.json
 Disallow: /api/
 Disallow: /d/
 Disallow: /r/
+Disallow: /e/
 Disallow: /stats
 Disallow: /info-dialogs
 Disallow: /parts/

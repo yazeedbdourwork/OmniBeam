@@ -1477,3 +1477,22 @@ main:focus { outline: none; }
   dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
   .skip-link { border: 2px solid ButtonText; }
 }
+
+/* Share a folder (this computer) and Browse files (the other device): browse.js */
+.fs-state { font-weight: 700; margin: 10px 0; overflow-wrap: anywhere; }
+.fs-row { justify-content: flex-start; flex-wrap: wrap; }
+.fs-who { display: grid; gap: 8px; margin: 8px 0 14px; }
+.fs-dev span { overflow-wrap: anywhere; }
+.browse-dialog { width: min(96vw, 640px); }
+.fs-path { display: flex; align-items: center; gap: 10px; min-height: 36px; margin-bottom: 8px; }
+.fs-crumb { font-weight: 700; overflow-wrap: anywhere; }
+.fs-search { width: 100%; padding: 10px 16px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); font: inherit; box-shadow: var(--inset-sm, inset 2px 2px 5px rgba(0,0,0,.15)); }
+.fs-msg:empty { display: none; }
+.fs-list { list-style: none; margin: 10px 0; padding: 4px; display: grid; gap: 6px; max-height: 52vh; overflow: auto; }
+.fs-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: 14px; background: var(--bg); color: var(--fg); font: inherit; text-align: start; cursor: pointer; box-shadow: var(--raise-sm); }
+.fs-item svg { flex: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fs-item input { flex: none; width: 20px; height: 20px; accent-color: var(--accent); }
+.fs-n { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.fs-dir .fs-n { font-weight: 700; }
+.fs-s { flex: none; color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.fs-dev { display: flex; align-items: center; gap: 8px; cursor: pointer; }

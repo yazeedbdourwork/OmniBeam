@@ -35,3 +35,5 @@ similar check against the real omnibeam.site.
 Measurements (not tests; see tools/perf): page-load.js (slow 4G + 4x slower processor, phone screen),
 sizes.js (bytes of the home page and scripts), transfer-speed.js (100 MB direct and through the server).
   phone-move.test.js   Move to a new phone (encrypted backup file), notification buttons (Reply, Open chat, Save, Stop)
+  album-browse.test.js event photo albums (guests add photos, everything encrypted, host tools, Save all ZIP, poster, limits),
+                       Share a folder / Browse files (a paired phone looks in a computer's folder and takes files)

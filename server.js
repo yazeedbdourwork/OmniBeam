@@ -1077,6 +1077,7 @@ const server = http.createServer((req, res) => {
   if (urlPath.startsWith('/poll/')) return handlePoll(req, res, urlPath);
   if (urlPath.startsWith('/api/drop')) return handleDrop(req, res, urlPath);
   if (urlPath.startsWith('/api/request')) return handleRequest(req, res, urlPath);
+  if (urlPath.startsWith('/api/album')) return handleAlbum(req, res, urlPath);
   if (urlPath.startsWith('/api/inbox/')) return handleInbox(req, res, urlPath);
   if (urlPath === '/api/stats') return handleStats(req, res);
   if (urlPath === '/api/stats/alert-test') return handleAlertTest(req, res);
@@ -1103,6 +1104,7 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
       res.end(JSON.stringify({ iceServers: list, relay: RELAY,
         drop: DROPS ? { maxMb: DROP_MAX_MB, maxHours: DROP_MAX_HOURS, email: EMAIL_ON, requests: REQUESTS, requestMaxHours: REQ_MAX_HOURS } : null,
+        album: ALBUMS ? { itemMb: ALBUM_ITEM_MB, maxMb: ALBUM_MAX_MB, maxDays: ALBUM_MAX_DAYS } : null,
         telegram: tgOn() ? { bot: TG_BOT_NAME, downMb: TG_DOWN_MB, upMb: TG_UP_MB } : null,
         push: pushKeys ? pushKeys.publicKey : null, inbox: INBOX ? { maxMb: INBOX_MAX_MB, hours: INBOX_HOURS } : null,
         support: SUPPORT_URL || null, supporter: !!SUPPORTER_KEY }));
@@ -1145,6 +1147,13 @@ const server = http.createServer((req, res) => {
       res.setHeader('Content-Security-Policy', String(res.getHeader('Content-Security-Policy')).replace("frame-ancestors 'none'", 'frame-ancestors *'));
       res.removeHeader('X-Frame-Options');
       sendFile(req, res, 200, 'embed-box.html', data, { 'X-Robots-Tag': 'noindex, nofollow' });
+    });
+  }
+  // An event photo album (the key is after #, like /d/)
+  if (/^\/e\/[A-Za-z0-9_-]{8,40}$/.test(urlPath)) {
+    return fs.readFile(path.join(PUBLIC_DIR, 'event.html'), (err, data) => {
+      if (err) return notFound(req, res);
+      sendFile(req, res, 200, 'event.html', Buffer.from(withAnalytics(data)), { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
   // Upload page of a request link (the key is after #, like /d/)
@@ -1828,6 +1837,211 @@ function handleRequest(req, res, urlPath) {
       if (body.embed === true) count('requestEmbedUploads');
       json(200, { id: d.id, token, part: DROP_PART });
     }).catch(() => json(400, { error: 'bad request' }));
+  }
+  req.resume();
+  json(405, { error: 'method' });
+}
+
+// ---------- Event photo albums ----------
+// A device makes an album for a wedding, a party or a class (the ⋯ menu, Event photo album: album.js) and shows its
+// QR code. Guests scan it (omnibeam.site/e/<id>#<key>: event.html + event.js), add their photos and videos, and see
+// everyone else's; the host saves them all at the end. Like shared links, everything is encrypted in the browser
+// with the key after #, which never reaches this server: it only keeps encrypted bytes and a little bookkeeping.
+// Each photo is one upload: [encrypted small picture][encrypted photo], with its name and size in an encrypted box
+// (X-Album-Meta). data/albums/<id>.json: { id, tokenHash, meta, created, expires, open, used, next, items: [...] },
+// data/albums/<id>/<n>.bin. The host (X-Album-Token) can stop uploads, delete any photo or the album; a guest can
+// delete their own photos (the X-Album-Del token their upload got back). Albums are deleted when they end.
+//   ALBUMS=false        turns albums off
+//   ALBUM_MAX_MB=1024   all the photos of one album together
+//   ALBUM_TOTAL_MB=4096 all albums together
+//   ALBUM_ITEM_MB=60    largest single photo or video
+const ALBUMS = DROPS && process.env.ALBUMS !== 'false';
+const ALBUM_DIR = path.join(DATA_DIR, 'albums');
+const ALBUM_MAX_MB = Number(process.env.ALBUM_MAX_MB) || 1024;
+const ALBUM_TOTAL_MB = Number(process.env.ALBUM_TOTAL_MB) || 4096;
+const ALBUM_ITEM_MB = Number(process.env.ALBUM_ITEM_MB) || 60;
+const ALBUM_MAX_DAYS = 30;
+const ALBUM_MAX_ITEMS = 3000;
+const ALBUM_NEW_PER_HOUR = 5;       // new albums per network
+// Everyone at a party is often on the same Wi-Fi, so uploads are counted per album more than per network
+const ALBUM_UPLOADS_PER_HOUR = 600; // per network
+const ALBUM_UPLOADS_PER_DAY = 2000; // per album
+const albums = new Map();
+let albumBytes = 0;
+const albumAttempts = new Map();
+const albumUploadAttempts = new Map();
+const albumJson = (id) => path.join(ALBUM_DIR, `${id}.json`);
+const albumItem = (id, n) => path.join(ALBUM_DIR, id, `${n}.bin`);
+function saveAlbum(a) {
+  fs.writeFile(albumJson(a.id), JSON.stringify(a), (err) => { if (err) console.error('Could not save album', err.message); });
+}
+function deleteAlbum(id) {
+  const a = albums.get(id);
+  if (!a) return;
+  albums.delete(id);
+  albumBytes -= a.used;
+  fs.rm(path.join(ALBUM_DIR, id), { recursive: true, force: true }, () => {});
+  fs.unlink(albumJson(id), () => {});
+}
+function loadAlbums() {
+  if (!ALBUMS) return;
+  try {
+    fs.mkdirSync(ALBUM_DIR, { recursive: true });
+    for (const f of fs.readdirSync(ALBUM_DIR)) {
+      if (!/^[A-Za-z0-9_-]+\.json$/.test(f)) continue;
+      try {
+        const a = JSON.parse(fs.readFileSync(path.join(ALBUM_DIR, f), 'utf8'));
+        albums.set(a.id, a);
+        albumBytes += a.used;
+      } catch { fs.unlink(path.join(ALBUM_DIR, f), () => {}); }
+    }
+    // Photo folders without bookkeeping (deleted while the server was off)
+    for (const e of fs.readdirSync(ALBUM_DIR, { withFileTypes: true })) {
+      if (e.isDirectory() && !albums.has(e.name)) fs.rm(path.join(ALBUM_DIR, e.name), { recursive: true, force: true }, () => {});
+    }
+  } catch (err) {
+    console.error('Event albums: cannot use', ALBUM_DIR, err.message);
+  }
+}
+function cleanAlbums() {
+  const now = Date.now();
+  for (const a of [...albums.values()]) if (now > a.expires) deleteAlbum(a.id);
+  for (const map of [albumAttempts, albumUploadAttempts]) for (const [key, list] of map) if (!list.some((t) => now - t < 3600 * 1000)) map.delete(key);
+}
+const albumView = (it) => ({ n: it.n, at: it.at, meta: it.meta, thumb: it.thumb, size: it.size });
+
+function handleAlbum(req, res, urlPath) {
+  const json = (code, obj) => {
+    res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+    res.end(JSON.stringify(obj));
+  };
+  if (!ALBUMS) { req.resume(); return json(404, { error: 'off' }); }
+  const m = urlPath.match(/^\/api\/album(?:\/([A-Za-z0-9_-]{8,40}))?(?:\/(add|settings|(\d{1,5})(?:\/(thumb|full))?))?$/);
+  if (!m) { req.resume(); return json(404, { error: 'not found' }); }
+  const [, id, sub, num, part] = m;
+  const a = id ? albums.get(id) : null;
+  const net = 'ip:' + getIp(req);
+  const host = () => {
+    const token = String(req.headers['x-album-token'] || '');
+    return !!a && token.length === 32 && samePassword(a.tokenHash, tokenHashOf(token));
+  };
+
+  // New album: { days, meta (the album's name and quality, encrypted) } -> { id, token, expires }
+  if (!id && req.method === 'POST') {
+    return readJsonBody(req).then((body) => {
+      const days = Math.min(ALBUM_MAX_DAYS, Math.max(1, Math.floor(Number(body.days) || 7)));
+      const meta = String(body.meta || '');
+      if (!/^[A-Za-z0-9_-]{20,2000}$/.test(meta)) return json(400, { error: 'bad request' });
+      if (!allowAttempt(albumAttempts, net, ALBUM_NEW_PER_HOUR, 3600 * 1000)) return json(429, { error: 'too-many' });
+      const token = crypto.randomBytes(16).toString('hex');
+      const now = Date.now();
+      const a2 = { id: crypto.randomBytes(12).toString('base64url'), tokenHash: tokenHashOf(token), meta, created: now,
+        expires: now + days * 86400000, open: true, used: 0, next: 1, items: [] };
+      albums.set(a2.id, a2);
+      fs.mkdirSync(path.join(ALBUM_DIR, a2.id), { recursive: true });
+      saveAlbum(a2);
+      count('albums');
+      json(200, { id: a2.id, token, expires: a2.expires });
+    }).catch(() => json(400, { error: 'bad request' }));
+  }
+  if (!a || Date.now() > a.expires) { req.resume(); return json(404, { error: 'gone' }); }
+
+  // The album page: name (encrypted), photos (encrypted names), whether it still takes photos, room left
+  if (!sub && req.method === 'GET') {
+    return json(200, { meta: a.meta, expires: a.expires, open: a.open, host: host(), itemMb: ALBUM_ITEM_MB,
+      left: Math.max(0, ALBUM_MAX_MB * 1048576 - a.used), items: a.items.map(albumView) });
+  }
+  // The host: delete the album now
+  if (!sub && req.method === 'DELETE') {
+    req.resume();
+    if (!host()) return json(403, { error: 'forbidden' });
+    deleteAlbum(a.id);
+    return json(200, { ok: true });
+  }
+  // The host: stop or start taking photos { open }
+  if (sub === 'settings' && req.method === 'POST') {
+    if (!host()) { req.resume(); return json(403, { error: 'forbidden' }); }
+    return readJsonBody(req, 1024).then((body) => {
+      a.open = body.open !== false;
+      saveAlbum(a);
+      json(200, { open: a.open });
+    }).catch(() => json(400, { error: 'bad request' }));
+  }
+  // A guest adds a photo: the body is [small picture][photo], both encrypted; X-Thumb-Size says where the
+  // photo starts, X-Album-Size is the whole body, X-Album-Meta is the encrypted box with its name, type and who added it. -> { n, del }
+  if (sub === 'add' && req.method === 'POST') {
+    // (its own header, not Content-Length: a proxy on the way may send the body in chunks without one)
+    const size = Number(req.headers['x-album-size']);
+    const thumb = Number(req.headers['x-thumb-size']);
+    const meta = String(req.headers['x-album-meta'] || '');
+    if (!a.open) { req.resume(); return json(403, { error: 'closed' }); }
+    if (!(size > 16) || !(thumb >= 0) || thumb >= size || !Number.isInteger(thumb) || !/^[A-Za-z0-9_-]{20,1500}$/.test(meta)) { req.resume(); return json(400, { error: 'bad request' }); }
+    if (size > ALBUM_ITEM_MB * 1048576 + 4096) { req.resume(); return json(413, { error: 'too-large', maxMb: ALBUM_ITEM_MB }); }
+    if (a.items.length >= ALBUM_MAX_ITEMS || a.used + size > ALBUM_MAX_MB * 1048576) { req.resume(); return json(507, { error: 'album-full' }); }
+    if (albumBytes + size > ALBUM_TOTAL_MB * 1048576) { req.resume(); return json(507, { error: 'full' }); }
+    const now = Date.now();
+    a.day = a.day && now - a.day.at < 86400000 ? a.day : { at: now, n: 0 };
+    if (a.day.n >= ALBUM_UPLOADS_PER_DAY || !allowAttempt(albumUploadAttempts, net, ALBUM_UPLOADS_PER_HOUR, 3600 * 1000)) { req.resume(); return json(429, { error: 'too-many' }); }
+    // Reserved now, so uploads at the same moment can't go over the limits together
+    a.used += size;
+    albumBytes += size;
+    const n = a.next++;
+    const file = albumItem(a.id, n);
+    const out = fs.createWriteStream(file);
+    let len = 0;
+    let failed = false;
+    const fail = (code, error) => {
+      if (failed) return;
+      failed = true;
+      out.destroy();
+      fs.unlink(file, () => {});
+      if (albums.get(a.id) === a) a.used -= size;
+      albumBytes -= size;
+      if (!res.headersSent) json(code, { error });
+    };
+    req.on('data', (c) => { len += c.length; if (len > size) { fail(400, 'size'); req.destroy(); } });
+    req.on('aborted', () => fail(400, 'aborted'));
+    req.on('error', () => fail(400, 'aborted'));
+    out.on('error', () => fail(500, 'disk'));
+    req.pipe(out);
+    out.on('finish', () => {
+      if (failed) return;
+      if (len !== size) return fail(400, 'size');
+      if (albums.get(a.id) !== a) { fs.unlink(file, () => {}); return json(404, { error: 'gone' }); }
+      const del = crypto.randomBytes(16).toString('hex');
+      a.items.push({ n, at: Date.now(), meta, thumb, size, delHash: tokenHashOf(del) });
+      a.day.n++;
+      saveAlbum(a);
+      count('albumPhotos');
+      count('albumBytes', size);
+      json(200, { n, del });
+    });
+    return;
+  }
+  const it = num ? a.items.find((x) => x.n === Number(num)) : null;
+  if (num && !it) { req.resume(); return json(404, { error: 'gone' }); }
+  // The small picture or the photo itself (encrypted)
+  if (it && part && req.method === 'GET') {
+    const start = part === 'thumb' ? 0 : it.thumb;
+    const end = part === 'thumb' ? it.thumb : it.size;
+    if (end <= start) return json(404, { error: 'none' });
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': end - start,
+      'Cache-Control': 'private, max-age=604800, immutable', 'X-Robots-Tag': 'noindex' });
+    if (part === 'full') count('albumViews');
+    return fs.createReadStream(albumItem(a.id, it.n), { start, end: end - 1 }).on('error', () => res.destroy()).pipe(res);
+  }
+  // Delete one photo: the host, or the guest who added it
+  if (it && !part && req.method === 'DELETE') {
+    req.resume();
+    const del = String(req.headers['x-album-del'] || '');
+    const mine = del.length === 32 && samePassword(it.delHash, tokenHashOf(del));
+    if (!mine && !host()) return json(403, { error: 'forbidden' });
+    a.items = a.items.filter((x) => x !== it);
+    a.used -= it.size;
+    albumBytes -= it.size;
+    fs.unlink(albumItem(a.id, it.n), () => {});
+    saveAlbum(a);
+    return json(200, { ok: true });
   }
   req.resume();
   json(405, { error: 'method' });
@@ -2662,6 +2876,7 @@ function recordView(req, id, r, ip, now) {
   let page = String(r.p || '/').toLowerCase().replace(/[?#].*$/, '');
   if (page.startsWith('/d/')) page = '/d/'; // shared links: one entry, not one per link
   if (page.startsWith('/r/')) page = '/r/'; // request links: the same
+  if (page.startsWith('/e/')) page = '/e/'; // event albums: the same
   if (!/^\/[a-z0-9/._-]{0,80}$/.test(page)) page = '(other)';
   page = visitKey('vp', page).slice(3);
   const day = today();
@@ -3693,7 +3908,7 @@ function onConnection(ws, req) {
         // 'none' only for a failed send that never connected.
         // Small counts with no transfer attached: the rating/share prompt after sends (shown / rate / share / no),
         // the rest of a dropped send going to another device, a link sent on to an email address or phone
-        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply'].includes(msg.kind)) {
+        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply', 'fshare', 'fbrowse', 'fget'].includes(msg.kind)) {
           client.extraStats = (client.extraStats || 0) + 1;
           if (client.extraStats > 30) return;
           if (msg.kind === 'handoff') count('thandoff');
@@ -3727,6 +3942,10 @@ function onConnection(ws, req) {
           else if (msg.kind === 'backup') count('backupsSaved');
           else if (msg.kind === 'restore') count('backupsOpened');
           else if (msg.kind === 'nreply') count('notifReplies');
+          // Browse my computer: a folder shared, another device looking in it, a file taken from it (browse.js)
+          else if (msg.kind === 'fshare') count('folderShares');
+          else if (msg.kind === 'fbrowse') count('folderBrowse');
+          else if (msg.kind === 'fget') count('folderGets', Math.min(100, Math.max(1, Math.floor(Number(msg.n)) || 1)));
           else if (['shown', 'rate', 'share', 'no'].includes(msg.act)) count('ask_' + msg.act);
           break;
         }
@@ -3830,6 +4049,10 @@ cleanDrops();
 loadRequests();
 setInterval(cleanRequests, 5 * 60 * 1000).unref();
 cleanRequests();
+// Event albums: the same
+loadAlbums();
+setInterval(cleanAlbums, 5 * 60 * 1000).unref();
+cleanAlbums();
 // Shortcut inbox and notifications: same, and the list of devices to notify is saved every minute
 loadInbox();
 setInterval(cleanInbox, 5 * 60 * 1000).unref();
