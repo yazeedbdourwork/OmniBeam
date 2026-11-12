@@ -71,16 +71,13 @@ test('no WCAG AA problems on the home page and its windows, in both styles, ligh
   }
 });
 
-test('no WCAG AA problems on the guides, the status page and the other pages', async ({ page }) => {
+test('no WCAG AA problems on the guides and the other pages', async ({ page }) => {
   test.setTimeout(120000);
   await page.route(/^https?:\/\/(?!localhost[:/])/, (route) => route.abort());
-  for (const path of ['/how-to-use', '/guides', '/omnibeam-vs-airdrop', '/about', '/privacy', '/status', '/ar/how-to-use', '/drop.html', '/request.html', '/no-such-page']) {
+  for (const path of ['/how-to-use', '/guides', '/omnibeam-vs-airdrop', '/about', '/privacy', '/ar/how-to-use', '/drop.html', '/request.html', '/no-such-page']) {
     await page.goto(path);
     expect(await axeCheck(page), path).toEqual([]);
   }
-  // The status page never reloads itself while it is being read
-  await page.goto('/status');
-  expect(await page.locator('meta[http-equiv="refresh"]').count()).toBe(0);
 });
 
 test('keyboard: the first Tab offers a skip link that jumps past the top bar', async ({ browser }) => {

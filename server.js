@@ -586,11 +586,6 @@ function loadPages() {
       });
     }
   }
-  // The public status page (/status, /ar/status…): its body is filled in on every visit (statusBody)
-  for (const lang of ALL_LANGS) {
-    found.set(`${lang}/status`, { lang, slug: 'status', title: ui(lang, 'statusTitle'), description: ui(lang, 'statusDescription'), kind: 'status',
-      short: ui(lang, 'statusHeading'), order: 99, updated: '', published: '', body: '<!--status-->' });
-  }
   return found;
 }
 // Guides in their set order, blog posts newest first (the status page is added to the list in loadPages)
@@ -646,7 +641,7 @@ function pageParts(page) {
     .map((l) => `<a href="${langPath(l, slug)}" hreflang="${l}" lang="${l}">${LANGS[l].name}</a>`).join(' ');
   const articleHtml = `${dateLine ? page.body.replace('</h1>', `</h1>\n      ${dateLine.trim()}`) : page.body}${relatedHtml}
       <p class="cta"><a class="open-app" href="${homeUrl}">${ui(lang, 'start')}</a></p>`;
-  const footerHtml = `<p><a href="${homeUrl}">OmniBeam</a> <a href="${link('how-to-use')}">${ui(lang, 'howTo')}</a> <a href="${link('status')}">${ui(lang, 'status')}</a> <a href="${link('guides')}">${ui(lang, 'guides')}</a>${pages.has(`en/blog`) ? ` <a href="${link('blog')}">${ui(lang, 'blog')}</a>` : ''}${pages.has(`en/compare`) ? ` <a href="${link('compare')}">${ui(lang, 'compare')}</a>` : ''} <a href="${link('about')}">${ui(lang, 'about')}</a> <a href="${link('privacy')}">${ui(lang, 'privacy')}</a> <a href="${link('terms')}">${ui(lang, 'terms')}</a></p>${others ? `\n    <p class="page-langs">${others}</p>` : ''}
+  const footerHtml = `<p><a href="${homeUrl}">OmniBeam</a> <a href="${link('how-to-use')}">${ui(lang, 'howTo')}</a> <a href="${link('guides')}">${ui(lang, 'guides')}</a>${pages.has(`en/blog`) ? ` <a href="${link('blog')}">${ui(lang, 'blog')}</a>` : ''}${pages.has(`en/compare`) ? ` <a href="${link('compare')}">${ui(lang, 'compare')}</a>` : ''} <a href="${link('about')}">${ui(lang, 'about')}</a> <a href="${link('privacy')}">${ui(lang, 'privacy')}</a> <a href="${link('terms')}">${ui(lang, 'terms')}</a></p>${others ? `\n    <p class="page-langs">${others}</p>` : ''}
     <p>© 2026 OmniBeam.Site • ${ui(lang, 'createdBy')} <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer">Yazeed Bdour</a></p>`;
   return { lang, slug, url, versions, alternates, homeUrl, ld, articleHtml, footerHtml };
 }
@@ -1159,6 +1154,13 @@ const server = http.createServer((req, res) => {
       sendFile(req, res, 200, 'request.html', Buffer.from(withAnalytics(data)), { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
+  // The status page is only in the admin panel now (since 2026-11-12): old links to /status, /ar/status, /amp/…/status
+  // go to its Status tab. 302 + no-store, so it can be made public again later without stale redirects.
+  if (/^\/(?:amp\/)?(?:[a-z]{2}\/)?status(?:\.html|\/)?$/.test(urlPath)) {
+    req.resume();
+    res.writeHead(302, { Location: '/admin#status', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+    return res.end();
+  }
   // The admin panel (Overview, Visitors, Transfers, Features, Problems, Status, Settings), for whoever knows STATS_KEY.
   // /stats, the old address, opens the same page; /admin.html and /stats.html go to /admin
   if (urlPath === '/admin' || urlPath === '/admin/' || urlPath === '/admin.html' || urlPath === '/stats' || urlPath === '/stats.html') {
@@ -1217,7 +1219,6 @@ const server = http.createServer((req, res) => {
     const key = `${lang}/${slug}`;
     if (pages.has(key) && !(lang === 'en' && urlPath.startsWith('/en/'))) {
       if (extra) return redirect(res, langPath(lang, slug) + query);
-      if (slug === 'status') return sendStatusPage(req, res, key, lang);
       return sendFile(req, res, 200, 'page.html', pageHtml(key));
     }
     // Old address of a page that now only exists in English, or /en/…: send to the English one
@@ -3221,9 +3222,9 @@ function handleWeeklyTest(req, res) {
   sendWeekly().then((result) => json(200, { ...result, weekly: weeklyInfo(), preview: weeklySummary() }));
 }
 
-// ---------- Public status page (/status) ----------
-// "All systems working" or what isn't, uptime for the last 30 days and recent incidents. Nothing personal: only
-// whether each part of OmniBeam works, numbers per day and times.
+// ---------- Status (the admin panel's Status tab; /status sends there) ----------
+// "All systems working" or what isn't, uptime for the last 30 days and recent incidents, at /api/status for whoever
+// knows STATS_KEY. Until 2026-11-12 this was also a public page at /status.
 // Two sources:
 // - The uptime Worker (tools/uptime-worker.js, Cloudflare, every 5 minutes from outside) POSTs its results to
 //   /api/status/checks with the shared secret STATUS_KEY (the same value in cPanel and as a Worker secret). Checks
@@ -3326,7 +3327,8 @@ function handleStatusApi(req, res, urlPath) {
     res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
     res.end(JSON.stringify(obj));
   };
-  if (urlPath === '/api/status') { req.resume(); return json(200, statusSummary()); }
+  // The numbers are for the owner only (the admin panel's Status tab sends STATS_KEY)
+  if (urlPath === '/api/status') { const ok = statsAuth(req, res); if (ok) ok(200, statusSummary()); return; }
   // The uptime Worker sends its checks (Authorization: Bearer <STATUS_KEY>)
   if (req.method !== 'POST') { req.resume(); return json(405, { error: 'method' }); }
   if (!STATUS_KEY) { req.resume(); return json(404, { error: 'off' }); }
@@ -3336,42 +3338,6 @@ function handleStatusApi(req, res, urlPath) {
     json(200, { ok: true, added: statusWorkerChecks(Array.isArray(body.checks) ? body.checks : []) });
   }).catch(() => json(400, { error: 'bad request' }));
 }
-// The page itself: the shared page layout (renderPage) with this body, made fresh on every visit
-function statusBody(lang) {
-  const s = statusSummary();
-  const u = (k) => ui(lang, k);
-  const fmtTime = (t) => { try { return new Date(t).toLocaleString(lang === 'ar' ? 'ar-EG' : lang, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC'; } catch { return new Date(t).toISOString(); } };
-  const dur = (ms) => { const m = Math.max(1, Math.round(ms / 60000)); return m < 120 ? u('statusMinutes').replace('{n}', m) : u('statusHours').replace('{n}', Math.round(m / 60)); };
-  const pct = (p) => (p >= 99.995 ? '100' : p.toFixed(2)).replace('.', ['en', 'hi', 'ja', 'zh', 'ko', 'ur'].includes(lang) ? '.' : ',');
-  const names = { web: u('statusPartWeb'), turn: u('statusPartTurn'), links: u('statusPartLinks'), telegram: u('statusPartTelegram') };
-  const incidentText = { web: u('statusIncWeb'), turn: u('statusIncTurn'), links: u('statusIncLinks'), telegram: u('statusIncTelegram') };
-  const parts = Object.entries(s.parts).map(([k, ok]) => `  <li class="${ok ? 'ok' : 'bad'}"><b>${names[k] || k}</b><span>${ok ? u('statusWorking') : u('statusNotWorking')}</span></li>`).join('\n');
-  const bars = s.days.map((d) => {
-    const cls = d.pct === null ? 'none' : d.pct >= 99.9 ? 'ok' : d.pct >= 98 ? 'warn' : 'bad';
-    const label = `${prettyDate(d.date, lang)}: ${d.pct === null ? u('statusNoData') : pct(d.pct) + '%'}`;
-    return `<span class="${cls}" title="${encodeHtml(label)}"></span>`;
-  }).join('');
-  const incidents = s.incidents.length ? `<ul class="status-incidents">\n${s.incidents.map((i) => `  <li class="${i.end ? 'done' : 'open'}"><b>${incidentText[i.part] || names[i.part] || i.part}</b><span><time datetime="${new Date(i.start).toISOString()}">${fmtTime(i.start)}</time> · ${i.end ? dur(i.end - i.start) : u('statusOngoing')}</span></li>`).join('\n')}\n</ul>` : `<p>${u('statusNoIncidents')}</p>`;
-  return `<h1>${u('statusHeading')}</h1>
-<p class="status-now ${s.ok ? 'ok' : 'bad'}" role="status"><span class="status-dot" aria-hidden="true"></span>${s.ok ? u('statusOk') : u('statusBad')}</p>
-<ul class="status-parts">
-${parts}
-</ul>
-<h2>${u('statusUptime')}</h2>
-<p class="status-uptime">${s.uptime === null ? u('statusNoData') : `<b>${pct(s.uptime)}%</b>`}${s.uptime !== null && !s.outside ? ` <span>${u('statusSelfNote')}</span>` : ''}</p>
-<div class="status-bars" role="img" aria-label="${encodeHtml(u('statusUptime'))}">${bars}</div>
-<p class="status-legend"><span>${u('statusDaysAgo')}</span><span>${u('statusToday')}</span></p>
-<h2>${u('statusIncidents')}</h2>
-${incidents}
-<p class="status-note">${u('statusExplain')} ${u('statusUpdated').replace('{time}', `<time datetime="${new Date(s.updated).toISOString()}">${fmtTime(s.updated)}</time>`)}</p>`;
-}
-function sendStatusPage(req, res, key, lang) {
-  const html = pageHtml(key).toString('utf8')
-    .replace('<!--status-->', () => statusBody(lang))
-    .replace('</head>', '  <script src="/status-refresh.js?v=1" defer></script>\n</head>');
-  sendFile(req, res, 200, 'status.html', Buffer.from(html), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
-}
-
 // ---------- Names ----------
 const ADJECTIVES = ['Red', 'Blue', 'Green', 'Golden', 'Silver', 'Purple', 'Orange', 'Pink', 'Teal', 'Amber',
   'Swift', 'Calm', 'Brave', 'Clever', 'Happy', 'Lucky', 'Quiet', 'Sunny', 'Witty', 'Cosmic'];

@@ -2,7 +2,7 @@
 // 1. faster load: minified scripts in the upload zip (and the site still works from them), Google Analytics only
 //    after Allow and when the page is idle, the Support links in the page from the start (no layout shift on /ar/)
 // 2. the intro video on the home page: a poster that loads no video until pressed, in the page's language, VideoObject
-// 3. the public status page (/status), with the uptime Worker's checks
+// 3. the status numbers (admin panel only since 2026-11-12), with the uptime Worker's checks
 // 4. the "Send me files" box for other websites (/embed/r/<id>), end-to-end with the device's public key
 // 5. the Telegram bot (a fake Telegram API on port 3998 here)
 const { test, expect } = require('@playwright/test');
@@ -197,16 +197,18 @@ test('intro video: a poster until pressed (no video bytes), the page language, i
 
 // ---------- 3. The status page ----------
 
-test('status page: all working, the Worker\'s checks make uptime and incidents, in every language, linked in the footer', async ({ request, baseURL }) => {
-  const res = await request.get('/status');
-  expect(res.status()).toBe(200);
-  expect(res.headers()['cache-control']).toBe('no-store');
-  expect(res.headers()['x-robots-tag']).toBe('noindex');
-  let html = await res.text();
-  expect(html).toContain('<h1>OmniBeam status</h1>');
-  expect(html).toMatch(/class="status-now (ok|bad)"/);
-  expect(html.match(/<div class="status-bars"[^>]*>([\s\S]*?)<\/div>/)[1].match(/<span/g).length).toBe(30);
-  // The Worker's secret is needed
+test('status: only in the admin panel; the Worker\'s checks make uptime and incidents; no public page or link', async ({ request }) => {
+  // /status (any language, AMP too) sends to the admin panel's Status tab
+  for (const path of ['/status', '/ar/status', '/status.html', '/amp/status', '/amp/fr/status']) {
+    const res = await request.get(path, { maxRedirects: 0 });
+    expect(res.status(), path).toBe(302);
+    expect(res.headers().location).toBe('/admin#status');
+    expect(res.headers()['cache-control']).toBe('no-store');
+  }
+  // The numbers need the admin key
+  expect((await request.get('/api/status')).status()).toBe(403);
+  const admin = { Authorization: 'Bearer test-stats-key' };
+  // The Worker's secret is needed to send checks
   expect((await request.post('/api/status/checks', { data: { checks: [] } })).status()).toBe(403);
   expect((await request.post('/api/status/checks', { data: { checks: [] }, headers: { Authorization: 'Bearer wrong' } })).status()).toBe(403);
   // An outage of two checks while the site was down, sent late (the Worker keeps them), then it is back
@@ -217,27 +219,17 @@ test('status page: all working, the Worker\'s checks make uptime and incidents, 
   expect(await post.json()).toMatchObject({ ok: true, added: 3 });
   // Sent again: not counted twice
   expect(await (await request.post('/api/status/checks', { headers: auth, data: { checks: [{ at: t + 600000, ok: true }] } })).json()).toMatchObject({ added: 0 });
-  const s = await (await request.get('/api/status')).json();
+  const s = await (await request.get('/api/status', { headers: admin })).json();
   expect(s.parts.web).toBe(true);
   expect(s.outside).toBe(true);
   expect(s.incidents[0]).toMatchObject({ part: 'web', start: t });
   expect(s.incidents[0].end).toBe(t + 600000);
-  html = await (await request.get('/status')).text();
-  expect(html).toContain('The website could not be reached');
-  expect(html).toContain('10 min');
+  expect(s.days).toHaveLength(30);
   expect(JSON.stringify(s)).not.toMatch(/\d+\.\d+\.\d+\.\d+/); // no addresses
-  // Translated, and linked from the home page and every page's footer
-  for (const [lang, word] of [['ar', 'حالة OmniBeam'], ['fr', "État d'OmniBeam"], ['hi', 'OmniBeam की स्थिति']]) {
-    const page = await (await request.get(`/${lang}/status`)).text();
-    expect(page).toContain(`<h1>${word}</h1>`);
-    expect(page).toContain(`<link rel="alternate" hreflang="en" href="https://omnibeam.site/status">`);
+  // No link to it for visitors: home page, page footers, guides, privacy page, sitemap
+  for (const path of ['/', '/ar/', '/privacy', '/how-to-use', '/fr/how-to-use', '/sitemap.xml']) {
+    expect(await (await request.get(path)).text(), path).not.toMatch(/href="(https:\/\/omnibeam\.site)?\/([a-z]{2}\/)?status"|\/status</);
   }
-  expect(await (await request.get('/')).text()).toMatch(/<a class="footer-link-btn" href="\/status">Status<\/a>/);
-  expect(await (await request.get('/ar/')).text()).toMatch(/<a class="footer-link-btn" href="\/ar\/status">الحالة<\/a>/);
-  expect(await (await request.get('/privacy')).text()).toContain('<a href="/status">Status</a>');
-  // Not in the sitemap (it changes all the time and isn't indexed)
-  expect(await (await request.get('/sitemap.xml')).text()).not.toContain('/status<');
-  void baseURL;
 });
 
 // ---------- 4. The "Send me files" box for websites ----------

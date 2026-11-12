@@ -34,7 +34,7 @@
         <button type="button" role="tab" id="tab-status" aria-controls="p-status" data-tab="status">Status <i class="nav-dot" id="nav-status" aria-hidden="true"></i></button>
         <button type="button" role="tab" id="tab-settings" aria-controls="p-settings" data-tab="settings">Settings</button>
       </nav>
-      <p class="admin-side-foot"><a href="/status" target="_blank" rel="noopener">Public status page ↗</a><br><a href="#" id="logout">Sign out on this device</a></p>
+      <p class="admin-side-foot"><a href="/" target="_blank" rel="noopener">Open OmniBeam ↗</a><br><a href="#" id="logout">Sign out on this device</a></p>
     </aside>
 
     <div class="admin-main" id="content" tabindex="-1">
@@ -157,7 +157,7 @@
         </section>
       </section>
 
-      <!-- Status: the same numbers as the public /status page, plus the TURN server -->
+      <!-- Status: uptime, parts and incidents (only here; /status sends to this tab), plus the TURN server -->
       <section class="panel" role="tabpanel" id="p-status" aria-labelledby="tab-status" hidden>
         <h2 class="print-only">Status</h2>
         <div id="status-now"></div>
@@ -237,6 +237,6 @@
       </p>
     </form>
   </dialog>
-  <script src="/stats.js?v=17"></script>
+  <script src="/stats.js?v=18"></script>
 </body>
 </html>

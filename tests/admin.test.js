@@ -21,7 +21,7 @@ test('the admin panel: sign in, Overview first, tabs, the address remembers the 
   await expect(page.locator('#ov-status')).toContainText(/All systems working|Not working/);
   await expect(page.locator('#glance')).toContainText('At a glance');
 
-  // Status: the same parts and uptime as the public /status page, and the TURN server
+  // Status: parts, uptime and incidents (only here now), and the TURN server
   await page.click('#tab-status');
   await expect(page).toHaveURL(/#status$/);
   await expect(page.locator('#p-status')).toBeVisible();
