@@ -135,6 +135,20 @@ test('event album: guests add photos and see everyone\'s, everything encrypted, 
   await other.page.reload();
   await expect(other.page.locator('#ev-grid li')).toHaveCount(1);
   await expect(other.page.locator('#ev-add')).toBeHidden();
+  await expect(other.page.locator('#ev-closed')).toBeVisible();
+  await expect(hostPage.locator('#ev-closed')).toBeHidden();
+  // A guest whose page was already open sees it too, without reloading
+  await expect(guest.page.locator('#ev-closed')).toBeVisible({ timeout: 15000 });
+  await expect(guest.page.locator('#ev-add')).toBeHidden();
+  // Photos picked on a page that still thought the album was open: a clear message, nothing uploaded
+  await guest.page.evaluate(() => { document.querySelector('#ev-closed').hidden = true; });
+  const told = guest.page.waitForEvent('dialog');
+  await guest.page.setInputFiles('#ev-input', [{ name: 'late.png', mimeType: 'image/png', buffer: blue }]);
+  const dlgMsg = await told;
+  expect(dlgMsg.message()).toContain('The host stopped taking new photos');
+  await dlgMsg.accept();
+  await expect(guest.page.locator('#ev-closed')).toBeVisible();
+  expect((await (await request.get(`/api/album/${id}`)).json()).items).toHaveLength(1);
 
   // Print poster: a page with the QR code
   const poster = await host.context.newPage();

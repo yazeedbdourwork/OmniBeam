@@ -60,7 +60,8 @@
       "Adding {i} of {n}…": "جارٍ إضافة {i} من {n}…",
       "Could not change it. Try again.": "تعذّر التغيير. حاول مجددًا.",
       "Delete this album and all its photos for everyone?": "حذف هذا الألبوم وكل صوره لدى الجميع؟",
-      "Album deleted": "تم حذف الألبوم"
+      "Album deleted": "تم حذف الألبوم",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "أوقف صاحب الألبوم استقبال صور جديدة. لا يزال بإمكانك رؤية الصور الموجودة في الألبوم وحفظها."
     },
     "de": {
       "Event album": "Event-Album",
@@ -114,7 +115,8 @@
       "Adding {i} of {n}…": "{i} von {n} wird hinzugefügt…",
       "Could not change it. Try again.": "Das hat nicht geklappt. Versuch es noch einmal.",
       "Delete this album and all its photos for everyone?": "Dieses Album und alle seine Fotos für alle löschen?",
-      "Album deleted": "Album gelöscht"
+      "Album deleted": "Album gelöscht",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "Der Gastgeber nimmt keine neuen Fotos mehr an. Du kannst die Fotos im Album weiterhin ansehen und speichern."
     },
     "es": {
       "Event album": "Álbum del evento",
@@ -168,7 +170,8 @@
       "Adding {i} of {n}…": "Añadiendo {i} de {n}…",
       "Could not change it. Try again.": "No se pudo cambiar. Inténtalo de nuevo.",
       "Delete this album and all its photos for everyone?": "¿Eliminar este álbum y todas sus fotos para todos?",
-      "Album deleted": "Álbum eliminado"
+      "Album deleted": "Álbum eliminado",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "El anfitrión dejó de recibir fotos nuevas. Aún puedes ver y guardar las del álbum."
     },
     "fr": {
       "Event album": "Album de l'événement",
@@ -222,7 +225,8 @@
       "Adding {i} of {n}…": "Ajout de {i} sur {n}…",
       "Could not change it. Try again.": "Impossible de modifier. Réessayez.",
       "Delete this album and all its photos for everyone?": "Supprimer cet album et toutes ses photos pour tout le monde ?",
-      "Album deleted": "Album supprimé"
+      "Album deleted": "Album supprimé",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "L'organisateur n'accepte plus de nouvelles photos. Vous pouvez toujours voir et enregistrer celles de l'album."
     },
     "hi": {
       "Event album": "इवेंट एल्बम",
@@ -276,7 +280,8 @@
       "Adding {i} of {n}…": "{n} में से {i} जोड़ रहे हैं…",
       "Could not change it. Try again.": "बदला नहीं जा सका। फिर कोशिश करें।",
       "Delete this album and all its photos for everyone?": "यह एल्बम और इसकी सारी फ़ोटो सबके लिए हटाएँ?",
-      "Album deleted": "एल्बम हटा दिया गया"
+      "Album deleted": "एल्बम हटा दिया गया",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "होस्ट ने नई फ़ोटो लेना बंद कर दिया है। एल्बम की फ़ोटो आप अब भी देख और सेव कर सकते हैं।"
     },
     "id": {
       "Event album": "Album acara",
@@ -330,7 +335,8 @@
       "Adding {i} of {n}…": "Menambahkan {i} dari {n}…",
       "Could not change it. Try again.": "Tidak dapat mengubah. Coba lagi.",
       "Delete this album and all its photos for everyone?": "Hapus album ini dan semua fotonya untuk semua orang?",
-      "Album deleted": "Album dihapus"
+      "Album deleted": "Album dihapus",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "Pemilik album berhenti menerima foto baru. Anda masih bisa melihat dan menyimpan foto di album."
     },
     "it": {
       "Event album": "Album dell'evento",
@@ -384,7 +390,8 @@
       "Adding {i} of {n}…": "Aggiungo {i} di {n}…",
       "Could not change it. Try again.": "Impossibile modificare. Riprova.",
       "Delete this album and all its photos for everyone?": "Eliminare questo album e tutte le sue foto per tutti?",
-      "Album deleted": "Album eliminato"
+      "Album deleted": "Album eliminato",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "L'organizzatore non accetta più nuove foto. Puoi ancora vedere e salvare quelle nell'album."
     },
     "ja": {
       "Event album": "イベントアルバム",
@@ -438,7 +445,8 @@
       "Adding {i} of {n}…": "{n} 枚中 {i} 枚目を追加中…",
       "Could not change it. Try again.": "変更できませんでした。もう一度お試しください。",
       "Delete this album and all its photos for everyone?": "このアルバムとすべての写真を全員に対して削除しますか？",
-      "Album deleted": "アルバムを削除しました"
+      "Album deleted": "アルバムを削除しました",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "主催者が新しい写真の受付を止めました。アルバムの写真は引き続き見たり保存したりできます。"
     },
     "ko": {
       "Event album": "이벤트 앨범",
@@ -492,7 +500,8 @@
       "Adding {i} of {n}…": "{n}개 중 {i}번째 올리는 중…",
       "Could not change it. Try again.": "변경할 수 없습니다. 다시 시도하세요.",
       "Delete this album and all its photos for everyone?": "이 앨범과 모든 사진을 모두에게서 삭제할까요?",
-      "Album deleted": "앨범을 삭제했습니다"
+      "Album deleted": "앨범을 삭제했습니다",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "앨범 주인이 새 사진 받기를 중지했습니다. 앨범의 사진은 계속 보고 저장할 수 있습니다."
     },
     "pt": {
       "Event album": "Álbum do evento",
@@ -546,7 +555,8 @@
       "Adding {i} of {n}…": "Adicionando {i} de {n}…",
       "Could not change it. Try again.": "Não foi possível mudar. Tente de novo.",
       "Delete this album and all its photos for everyone?": "Excluir este álbum e todas as fotos para todos?",
-      "Album deleted": "Álbum excluído"
+      "Album deleted": "Álbum excluído",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "O anfitrião parou de receber fotos novas. Você ainda pode ver e salvar as do álbum."
     },
     "ru": {
       "Event album": "Альбом события",
@@ -600,7 +610,8 @@
       "Adding {i} of {n}…": "Добавление {i} из {n}…",
       "Could not change it. Try again.": "Не удалось изменить. Попробуйте ещё раз.",
       "Delete this album and all its photos for everyone?": "Удалить этот альбом и все его фото для всех?",
-      "Album deleted": "Альбом удалён"
+      "Album deleted": "Альбом удалён",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "Организатор больше не принимает новые фото. Фото в альбоме по-прежнему можно смотреть и сохранять."
     },
     "tr": {
       "Event album": "Etkinlik albümü",
@@ -654,7 +665,8 @@
       "Adding {i} of {n}…": "{n} içinden {i}. ekleniyor…",
       "Could not change it. Try again.": "Değiştirilemedi. Tekrar dene.",
       "Delete this album and all its photos for everyone?": "Bu albüm ve tüm fotoğrafları herkes için silinsin mi?",
-      "Album deleted": "Albüm silindi"
+      "Album deleted": "Albüm silindi",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "Albüm sahibi yeni fotoğraf almayı durdurdu. Albümdekileri yine de görebilir ve kaydedebilirsin."
     },
     "ur": {
       "Event album": "تقریب کا البم",
@@ -708,7 +720,8 @@
       "Adding {i} of {n}…": "{n} میں سے {i} شامل ہو رہی ہے…",
       "Could not change it. Try again.": "تبدیل نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
       "Delete this album and all its photos for everyone?": "یہ البم اور اس کی سب تصویریں سب کے لیے حذف کریں؟",
-      "Album deleted": "البم حذف ہو گیا"
+      "Album deleted": "البم حذف ہو گیا",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "میزبان نے نئی تصویریں لینا بند کر دیا ہے۔ آپ البم کی تصویریں اب بھی دیکھ اور محفوظ کر سکتے ہیں۔"
     },
     "zh": {
       "Event album": "活动相册",
@@ -762,7 +775,8 @@
       "Adding {i} of {n}…": "正在添加第 {i} 张，共 {n} 张…",
       "Could not change it. Try again.": "无法更改。请重试。",
       "Delete this album and all its photos for everyone?": "要为所有人删除此相册及其所有照片吗？",
-      "Album deleted": "相册已删除"
+      "Album deleted": "相册已删除",
+      "The host stopped taking new photos. You can still see and save the ones in the album.": "主办人已停止接收新照片。你仍可以查看并保存相册中的照片。"
     }
   };
   let lang = 'en';
@@ -847,7 +861,7 @@
     if (POSTER) return showPoster();
     try { $('#ev-from').value = localStorage.getItem('omnibeam-album-name') || ''; } catch {}
     $('#ev-from').addEventListener('change', (e) => { try { localStorage.setItem('omnibeam-album-name', e.target.value.trim()); } catch {} });
-    setInterval(() => { if (document.visibilityState === 'visible' && !adding) refresh(); }, 15000);
+    setInterval(() => { if (document.visibilityState === 'visible' && !adding) refresh(); }, 10000);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !adding) refresh(); });
   }
 
@@ -892,6 +906,8 @@
     $('#ev-host').hidden = !host;
     $('#ev-open').textContent = info.open ? t('Stop taking photos') : t('Take photos again');
     $('#ev-add').hidden = !info.open;
+    // Guests see clearly that the album is closed (also when it closes while this page is open)
+    $('#ev-closed').hidden = info.open || host;
     $('#ev-tools').hidden = false;
     $('#ev-save-all').hidden = !order.length;
     $('#ev-zone-small').textContent = t('Everyone with this link sees them. Up to {size} each.', { size: formatSize(info.itemMb * 1048576) });
@@ -1204,12 +1220,17 @@
       v.src = url;
     });
   }
+  const closedNotice = () => alert(t('The host stopped taking new photos. You can still see and save the ones in the album.'));
   async function addFiles(list) {
-    if (adding || !list.length || !info?.open) return;
+    if (adding || !list.length || !info) return;
+    // The page may have been open a while (or in the background while photos were picked): ask the server first
+    await refresh();
+    if (!info.open) { $('#ev-input').value = ''; return closedNotice(); }
     adding = true;
     const bar = $('#ev-bar');
     const from = $('#ev-from').value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 40);
     let ok = 0;
+    let closed = false;
     const problems = [];
     bar.hidden = false;
     try {
@@ -1236,7 +1257,8 @@
             : j.error === 'too-many' ? t('Too many photos at once. Try again in a few minutes.')
             : j.error === 'too-large' ? t('{file} is too large: up to {size} each.', { file: file.name, size: formatSize(info.itemMb * 1048576) })
             : t('Could not add {file}. Check the connection and try again.', { file: file.name });
-          problems.push(why);
+          if (j.error === 'closed') closed = true;
+          else problems.push(why);
           if (['closed', 'album-full', 'full', 'too-many'].includes(j.error)) break;
           continue;
         }
@@ -1253,6 +1275,7 @@
     await refresh();
     const msg = [ok ? (ok === 1 ? t('1 photo added ✓') : t('{n} photos added ✓', { n: ok })) : '', ...new Set(problems)].filter(Boolean).join(' ');
     if (msg) status(msg);
+    if (closed) closedNotice();
   }
   $('#ev-input').addEventListener('change', (e) => addFiles([...e.target.files]));
   const zone = $('#ev-zone');

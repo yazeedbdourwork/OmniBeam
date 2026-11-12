@@ -46,3 +46,5 @@ body.poster .page-header, body.poster main { display: none; }
 @media (forced-colors: active) {
   .ev-btn, .ev-grid li, .ev-host { border: 1px solid CanvasText; }
 }
+.ev-closed { margin: 16px 0; padding: 14px 18px; border-radius: 18px; font-weight: 700; color: var(--bad); box-shadow: var(--inset-sm); }
+.ev-closed[hidden] { display: none; }
