@@ -159,19 +159,62 @@ self.addEventListener('push', (e) => {
   }));
 });
 
-// Tapping it opens OmniBeam, or brings an open OmniBeam window to the front
+// Tapping it opens OmniBeam, or brings an open OmniBeam window to the front. The buttons on it (notify() in app.js):
+// - reply: a message's quick reply. Where the browser lets people type in the notification (e.reply), the open
+//   OmniBeam tab sends it without coming to the front; with no tab open, OmniBeam opens and sends it. Where it
+//   doesn't, Reply opens the chat with the typing box ready.
+// - open: the chat. link: the link that was sent. save: the files that just arrived. stop: stops Ring my device.
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
-  const url = new URL(e.notification.data?.url || '/', self.registration.scope).href;
+  const data = e.notification.data || {};
+  const act = e.action || '';
+  const url = new URL(data.url || '/', self.registration.scope).href;
   e.waitUntil((async () => {
-    // A link sent from another device: tapping its notification opens the link itself
-    const link = e.notification.data?.link;
-    if (typeof link === 'string' && /^https?:\/\//i.test(link)) return self.clients.openWindow(link);
+    const link = data.link;
+    const isLink = typeof link === 'string' && /^https?:\/\//i.test(link);
+    // A link sent from another device: tapping its notification (or Open link) opens the link itself
+    if (isLink && (act === '' || act === 'link')) return self.clients.openWindow(link);
     const open = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const app = open.find((c) => new URL(c.url).origin === self.location.origin);
-    // A message's notification: the open tab shows that chat
-    if (app && e.notification.data?.chat) app.postMessage({ type: 'open-chat', chat: e.notification.data.chat });
+    const chat = typeof data.chat === 'string' ? data.chat : '';
+    const text = act === 'reply' && typeof e.reply === 'string' ? e.reply.trim().slice(0, 20000) : '';
+    if (act === 'reply' && text && chat) {
+      if (app) return app.postMessage({ type: 'notif-reply', chat, text });
+      // No OmniBeam open: it opens and sends the reply once the device shows up
+      await saveReply({ chat, text, at: Date.now() });
+      return self.clients.openWindow(url);
+    }
+    if (act === 'stop') {
+      if (app) app.postMessage({ type: 'ring-stop' });
+      return;
+    }
+    if (act === 'save') {
+      if (!app) return self.clients.openWindow(url);
+      app.postMessage({ type: 'save-files', chat });
+      return app.focus();
+    }
+    // A message's notification (or Reply where nothing can be typed in it): the open tab shows that chat
+    if (app && chat) app.postMessage({ type: 'open-chat', chat, focus: act === 'reply' });
     if (app) return app.focus();
-    return self.clients.openWindow(url);
+    return self.clients.openWindow(act === 'reply' && chat ? url + (url.includes('?') ? '&' : '?') + 'reply=1' : url);
   })());
 });
+
+// A reply typed in a notification while no OmniBeam was open, kept until the page that opens picks it up
+async function saveReply(reply) {
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const r = indexedDB.open('omnibeam-share', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('shared');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction('shared', 'readwrite');
+      tx.objectStore('shared').put(reply, 'reply');
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  } catch {}
+}
