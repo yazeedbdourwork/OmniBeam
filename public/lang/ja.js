@@ -1175,6 +1175,7 @@
     "Reply": "返信",
     "Type a reply…": "返信を入力…",
     "Your reply wasn't sent: {name} isn't here anymore.": "返信は送られませんでした：{name} はもういません。",
+    "Reply sent to {name}": "{name} に返信しました",
     "Move to a new phone": "新しいスマホに移行",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "ペアリングしたデバイス、設定、ピン留めしたメモ、チャットを1つのバックアップファイルに保存します。新しいスマホの OmniBeam で開くと、すべて元どおりになります。受け取ったファイルは含まれません。",
     "Save backup file": "バックアップを保存",

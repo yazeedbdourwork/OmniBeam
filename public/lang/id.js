@@ -1177,6 +1177,7 @@
     "Reply": "Balas",
     "Type a reply…": "Ketik balasan…",
     "Your reply wasn't sent: {name} isn't here anymore.": "Balasan Anda tidak terkirim: {name} sudah tidak ada.",
+    "Reply sent to {name}": "Balasan terkirim ke {name}",
     "Move to a new phone": "Pindah ke ponsel baru",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "Simpan satu file cadangan berisi perangkat yang dipasangkan, pengaturan, catatan yang disematkan, dan obrolan Anda. Buka di OmniBeam pada ponsel baru dan semuanya kembali. File yang diterima tidak termasuk.",
     "Save backup file": "Simpan file cadangan",

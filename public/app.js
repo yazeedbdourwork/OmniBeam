@@ -339,7 +339,13 @@ function replyFromNotification(key, text) {
   if (!text || AppLock.locked || typeof key !== 'string' || !/^[pn]:/.test(key)) return false;
   wsSend({ type: 'stat', kind: 'nreply' });
   const peer = peerOfKey(key);
-  if (peer) { peer.sendText(text); return true; }
+  if (peer) {
+    peer.sendText(text);
+    // Seen in the background too: the reply went
+    if (document.hidden) notify(t('Reply sent to {name}', { name: peer.info.name }), text.slice(0, 100), { always: true });
+    else toast(t('Reply sent to {name}', { name: peer.info.name }));
+    return true;
+  }
   const pairing = key[0] === 'p' ? loadPaired().find((p) => p.secret.startsWith(key.slice(2))) : null;
   if (!pairing) {
     const name = key.slice(2);
@@ -3359,7 +3365,10 @@ function undoToast(text, undo) {
 navigator.serviceWorker?.addEventListener('message', (e) => {
   const m = e.data || {};
   if (m.type === 'open-chat') openChatByKey(m.chat, !!m.focus);
-  else if (m.type === 'notif-reply') replyFromNotification(m.chat, m.text);
+  else if (m.type === 'notif-reply') {
+    e.ports?.[0]?.postMessage('ok'); // sw.js: the reply arrived here (else it brings this tab to the front)
+    replyFromNotification(m.chat, m.text);
+  }
   else if (m.type === 'ring-stop') Ringer.stop(null, true);
   else if (m.type === 'save-files') {
     const files = lastReceived.get(m.chat);

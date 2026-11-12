@@ -1175,6 +1175,7 @@
     "Reply": "回复",
     "Type a reply…": "输入回复…",
     "Your reply wasn't sent: {name} isn't here anymore.": "你的回复没有发出：{name} 已不在。",
+    "Reply sent to {name}": "已回复 {name}",
     "Move to a new phone": "换到新手机",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "把已配对的设备、设置、置顶便签和聊天保存成一个备份文件。在新手机的 OmniBeam 中打开它，一切都会回来。收到的文件不在其中。",
     "Save backup file": "保存备份文件",

@@ -1175,6 +1175,7 @@
     "Reply": "Yanıtla",
     "Type a reply…": "Bir yanıt yaz…",
     "Your reply wasn't sent: {name} isn't here anymore.": "Yanıtın gönderilmedi: {name} artık burada değil.",
+    "Reply sent to {name}": "Yanıt {name} cihazına gönderildi",
     "Move to a new phone": "Yeni telefona geç",
     "Save one backup file with your paired devices, settings, pinned notes and chats. Open it in OmniBeam on the new phone and everything is back. Received files aren't in it.": "Eşleşmiş cihazların, ayarların, sabitlenmiş notların ve sohbetlerinle tek bir yedek dosyası kaydet. Yeni telefonda OmniBeam'de aç, her şey geri gelsin. Alınan dosyalar içinde değil.",
     "Save backup file": "Yedek dosyasını kaydet",
