@@ -9,7 +9,7 @@
 // - Files with a version in their address (app.js?v=37): saved once and served from the device. A new version of
 //   such a file always gets a new address, so the saved one can never be out of date.
 // - Other files (icons, the manifest): served from the device and refreshed in the background.
-// - Everything that talks to the server (/ws, /poll, /api, /d/, /r/, /stats…) and the intro video (/media/, streamed in
+// - Everything that talks to the server (/ws, /poll, /api, /d/, /r/, /e/, /stats…) and the intro video (/media/, streamed in
 //   pieces the browser asks for) is never touched.
 const VERSION = 'dev';
 const CACHE = `omnibeam-${VERSION}`;
@@ -18,7 +18,7 @@ const MAX_PAGES = 40;
 // The app's files besides the home page. The server adds the files the home page and app.js load on demand.
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon.svg?v=4', '/favicon.ico'];
 const isHome = (p) => /^\/(?:[a-z]{2}\/)?$/.test(p);
-const LIVE = /^\/(?:ws|poll\/|api\/|d\/|r\/|media\/|stats|sw\.js|share$|sitemap\.xml|robots\.txt|\.well-known\/)/;
+const LIVE = /^\/(?:ws|poll\/|api\/|d\/|r\/|e\/|media\/|stats|sw\.js|share$|sitemap\.xml|robots\.txt|\.well-known\/)/;
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

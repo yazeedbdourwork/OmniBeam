@@ -1544,9 +1544,12 @@ class Peer {
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
     try {
-      files = await convertHeic(files, this.info.device);
-      if (shrinkMode !== 'off') this.connect().catch(() => {}); // connect while shrinking
-      files = await shrinkFiles(files, this, gone);
+      // Files the other device asked for (Browse files) go as they are
+      if (!opts.want) {
+        files = await convertHeic(files, this.info.device);
+        if (shrinkMode !== 'off') this.connect().catch(() => {}); // connect while shrinking
+        files = await shrinkFiles(files, this, gone);
+      }
       if (gone()) return;
       this.setStatus(opts.xid ? 'Resuming…' : 'Connecting…');
       await this.connect();
@@ -1560,7 +1563,7 @@ class Peer {
       this.acceptHave = null;
       const accepted = await new Promise((resolve) => {
         this.acceptWaiter = resolve;
-        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid });
+        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid, ...(opts.want ? { want: opts.want } : {}) });
       });
       this.acceptWaiter = null;
       if (!accepted) {
@@ -1867,6 +1870,13 @@ class Peer {
       case 'ping':
         this.sendJson({ t: 'pong' });
         break;
+      // Share a folder / Browse files (browse.js)
+      case 'fs-ls':
+      case 'fs-get':
+      case 'fs-dir':
+      case 'fs-no':
+        loadBrowse().then(() => window.Browse.onMsg(this, msg)).catch(() => {});
+        break;
       case 'pong':
         if (this.pongWaiter) this.pongWaiter();
         break;
@@ -1890,7 +1900,9 @@ class Peer {
         // The rest of a transfer this device already accepted, after the connection dropped: no need to ask again
         const resuming = Interrupted.take(xid);
         (async () => {
-          const auto = resuming || (await autoAcceptFrom(this.info.id, msg.proofs));
+          // Files this device asked for itself (Browse files): no need to ask again
+          const asked = !resuming && !!window.Browse?.wanted(this.info.id, msg.want);
+          const auto = resuming || asked || (await autoAcceptFrom(this.info.id, msg.proofs));
           if (resuming) toast(t('Continuing the transfer from {name}', { name: this.info.name }));
           else if (auto) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
           // A TV with a PIN takes files only from phones that paired with the PIN
@@ -4396,6 +4408,8 @@ function openActions(peer) {
   $('[data-act=voice]', dlg).hidden = !window.MediaRecorder || !navigator.mediaDevices?.getUserMedia;
   // Phones and tablets can't share their screen from a browser; they can still watch one
   $('[data-act=screen]', dlg).hidden = !navigator.mediaDevices?.getDisplayMedia || isPhone;
+  // Looking in a folder another device shares: only between paired devices
+  $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
   updateShrinkUi();
   dlg.onclick = (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
@@ -4414,6 +4428,7 @@ function openActions(peer) {
     else if (act === 'scan') openScan(peer);
     else if (act === 'chat') openChat(peer);
     else if (act === 'ring') ringDevice(peer);
+    else if (act === 'browse') loadBrowse().then(() => window.Browse.look(peer), (err) => toast(err.message));
   };
   if (!dlg.open) dlg.showModal();
 }
@@ -5073,6 +5088,15 @@ async function openInvite() {
   window.Invite.open(FRIEND_URL().replace('utm_source=friend', 'utm_source=invite'));
 }
 $('#menu-invite').onclick = () => openInvite();
+// Event photo album (album.js) and Share a folder / Browse files (browse.js), loaded on first use
+const loadAlbum = () => loadScript('/album.js?v=1');
+const loadBrowse = () => loadScript('/browse.js?v=1');
+let albumCfg = null;
+$('#btn-album').onclick = () => loadAlbum().then(() => window.Album.open(albumCfg), (err) => toast(err.message));
+$('#btn-fshare').hidden = isPhone || !(typeof window.showDirectoryPicker === 'function' || CAN_PICK_FOLDER);
+$('#btn-fshare').onclick = () => loadBrowse().then(() => window.Browse.open(), (err) => toast(err.message));
+// A folder shared before: pick it up again (Chrome and Edge keep it)
+try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
 if ($('#share-card')) $('#share-card').onclick = () => openInvite();
 
 // ---------- Signaling ----------
@@ -6879,6 +6903,8 @@ fetch('/config.json', { cache: 'no-store' })
     RELAY_ENABLED = cfg.relay !== false;
     showSupport(cfg.support);
     $('#supporter-section').hidden = !cfg.supporter && !Supporter.on();
+    albumCfg = cfg.album || null;
+    $('#btn-album').hidden = !albumCfg || !window.crypto?.subtle;
     window.dispatchEvent(new CustomEvent('omnibeam-config', { detail: cfg })); // for drop.js (share by link)
   })
   .catch(() => {});

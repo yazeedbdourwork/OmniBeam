@@ -469,6 +469,8 @@
       ['App lock', 'lockOn', `locks turned on · ${num(sum('cleanOn'))} auto-clean turned on`],
       ['Move to a new phone', 'backupsSaved', `backup files saved · ${num(sum('backupsOpened'))} opened on a new device`],
       ['Notification replies', 'notifReplies', 'quick replies sent from a notification'],
+      ['Event albums', 'albums', `albums made · ${num(sum('albumPhotos'))} photos added (${size(sum('albumBytes'))}) · ${num(sum('albumViews'))} photos opened`],
+      ['Browse my computer', 'folderShares', `folders shared · ${num(sum('folderBrowse'))} times looked through · ${num(sum('folderGets'))} files taken`],
     ];
     const rows = FEATURES.map(([name, field, sub]) => ({ name, sub, n: sum(field), p: sumOf(before, field) }));
     const used = rows.filter((r) => r.n > 0).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
@@ -786,7 +788,8 @@
       'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo',
       'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes',
       'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',
-      'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn', 'backupsSaved', 'backupsOpened', 'notifReplies'];
+      'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn', 'backupsSaved', 'backupsOpened', 'notifReplies',
+      'albums', 'albumPhotos', 'albumBytes', 'albumViews', 'folderShares', 'folderBrowse', 'folderGets'];
     const countries = Object.keys(group(days, 'uc_')).sort();
     const head = ['date', ...fields, ...countries.map((c) => 'visitors_' + c)];
     const rows = days.map((d) => [d.date, ...fields.map((f) => d[f] || 0), ...countries.map((c) => d['uc_' + c] || 0)]);
