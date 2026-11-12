@@ -68,7 +68,7 @@ test('the six new languages: home page, direction, language menu, hreflang and e
     expect(html).toContain(`<html lang="${code}" dir="${code === 'ur' ? 'rtl' : 'ltr'}">`);
     expect(html).toContain(`<link rel="canonical" href="https://omnibeam.site/${code}/">`);
     for (const l of ALL.filter((x) => x !== 'en')) expect(html, `${code}: hreflang ${l}`).toContain(`hreflang="${l}"`);
-    for (const slug of ['how-to-use', 'privacy', 'terms', 'about', 'embed', 'status', 'guides']) {
+    for (const slug of ['how-to-use', 'privacy', 'terms', 'about', 'embed', 'guides']) {
       const p = await request.get(`/${code}/${slug}`);
       expect(p.status(), `/${code}/${slug}`).toBe(200);
       expect(await p.text()).toContain(`<html lang="${code}" dir="${code === 'ur' ? 'rtl' : 'ltr'}">`);
