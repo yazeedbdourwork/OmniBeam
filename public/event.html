@@ -19,7 +19,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/pages.css?v=12">
-  <link rel="stylesheet" href="/event.css?v=1">
+  <link rel="stylesheet" href="/event.css?v=2">
 </head>
 <body class="event-page">
   <header class="page-header">
@@ -33,6 +33,7 @@
       <p class="ev-kicker" data-t="Event album">Event album</p>
       <h1 id="ev-title" data-t="Event album">Event album</h1>
       <p class="lead" id="ev-status" role="status" data-t="Loading…">Loading…</p>
+      <p class="ev-closed" id="ev-closed" role="alert" hidden data-t="The host stopped taking new photos. You can still see and save the ones in the album.">The host stopped taking new photos. You can still see and save the ones in the album.</p>
       <div id="ev-add" hidden>
         <label class="req-field"><span data-t="Your name (optional)">Your name (optional)</span>
           <input type="text" id="ev-from" maxlength="40" autocomplete="name">
@@ -81,6 +82,6 @@
     </div>
   </dialog>
   <script src="/report.js?v=3"></script>
-  <script src="/event.js?v=1"></script>
+  <script src="/event.js?v=2"></script>
 </body>
 </html>
