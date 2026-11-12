@@ -58,11 +58,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=77" as="script">
-  <script src="/look.js?v=2"></script>
-  <link rel="stylesheet" href="/style.css?v=68">
+  <link rel="preload" href="/app.js?v=78" as="script">
+  <script src="/look.js?v=3"></script>
+  <link rel="stylesheet" href="/style.css?v=69">
 </head>
 <body>
+  <!-- For keyboard users: the first Tab shows this, Enter jumps past the top bar to the devices -->
+  <a class="skip-link" href="#main">Skip to main content</a>
   <header>
     <a class="brand" href="/" aria-label="OmniBeam home">
       <!-- The logo inline (same drawing as icon.svg) so its dark parts can turn light in dark mode -->
@@ -136,7 +138,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
     <div id="share-banner" class="share-banner" hidden>
       <span></span>
       <button type="button" class="btn ghost small">Cancel</button>
@@ -494,6 +496,22 @@
           <label><input type="radio" name="look" value=""> <span>Classic</span></label>
           <label><input type="radio" name="look" value="glass"> <span>Liquid Glass</span></label>
         </div>
+      </section>
+      <!-- Easier to read (app.js: Access, look.js puts the saved choice on the page before it is drawn) -->
+      <section class="set-sec" id="access-section">
+        <p class="step"><b id="text-size-title">Text size</b></p>
+        <div class="choice choice-row" id="text-choice" role="radiogroup" aria-labelledby="text-size-title">
+          <label><input type="radio" name="textsize" value=""> <span>Normal</span></label>
+          <label><input type="radio" name="textsize" value="large"> <span>Large</span></label>
+          <label><input type="radio" name="textsize" value="xl"> <span>Largest</span></label>
+        </div>
+        <p class="step"><b id="contrast-title">Contrast</b></p>
+        <div class="choice choice-row" id="contrast-choice" role="radiogroup" aria-labelledby="contrast-title">
+          <label><input type="radio" name="contrast" value=""> <span>Automatic</span></label>
+          <label><input type="radio" name="contrast" value="normal"> <span>Normal</span></label>
+          <label><input type="radio" name="contrast" value="more"> <span>High</span></label>
+        </div>
+        <p class="muted small">High contrast: solid colours with clear edges. Automatic follows your device's setting.</p>
       </section>
       <!-- Move to a new phone: one encrypted backup file (backup.js, loaded when used) -->
       <section class="set-sec" id="backup-section">
@@ -1103,10 +1121,12 @@
     <button type="button" class="nudge-x" aria-label="Close">×</button>
   </div>
   <div id="toast" class="toast" role="status"></div>
+  <!-- Screen readers hear what happens on screen: a device arrives or leaves, a transfer ends (app.js: announce) -->
+  <div id="sr-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=77" defer></script>
+  <script src="/app.js?v=78" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>

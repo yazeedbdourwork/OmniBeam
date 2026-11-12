@@ -10,9 +10,9 @@
     "deploy": "node tools/deploy.js",
     "deploy:check": "node tools/deploy.js --check"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@playwright/test": "^1.63.0",
+    "axe-core": "^4.10.3"
   },
   "license": "GPL-3.0-or-later",
   "repository": {

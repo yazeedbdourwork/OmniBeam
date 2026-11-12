@@ -683,7 +683,7 @@ function renderPage(page) {
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/pages.css?v=11">
+  <link rel="stylesheet" href="/pages.css?v=12">
 </head>
 <body>
   <header class="page-header">
@@ -3366,7 +3366,7 @@ ${incidents}
 function sendStatusPage(req, res, key, lang) {
   const html = pageHtml(key).toString('utf8')
     .replace('<!--status-->', () => statusBody(lang))
-    .replace('</head>', '  <meta http-equiv="refresh" content="120">\n</head>');
+    .replace('</head>', '  <script src="/status-refresh.js?v=1" defer></script>\n</head>');
   sendFile(req, res, 200, 'status.html', Buffer.from(html), { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
 }
 

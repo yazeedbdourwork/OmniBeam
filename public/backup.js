@@ -11,7 +11,7 @@
   const ITER = 600000;
   const FILE_KIND = 'omnibeam-backup';
   // Simple settings: the value on the new device becomes the one in the file
-  const PLAIN = ['omnibeam-name', 'omnibeam-avatar', 'omnibeam-theme', 'omnibeam-look', 'omnibeam-color', 'omnibeam-lang',
+  const PLAIN = ['omnibeam-name', 'omnibeam-avatar', 'omnibeam-theme', 'omnibeam-look', 'omnibeam-text', 'omnibeam-contrast', 'omnibeam-color', 'omnibeam-lang',
     'omnibeam-open-links', 'omnibeam-msg-sound', 'omnibeam-keep', 'omnibeam-shrink', 'omnibeam-ask', 'omnibeam-clips-off',
     'omnibeam-bg-audio', 'omnibeam-analytics', 'omnibeam-scan-bw', 'omnibeam-tv-pin', 'omnibeam-supporter',
     'omnibeam-public-room', 'omnibeam-public-pass', 'omnibeam-stats-key', 'omnibeam-req-from'];
