@@ -11,6 +11,9 @@ test.afterEach(async () => {
 test('a device card can be used with the keyboard', async ({ browser }) => {
   a = await openDevice(browser, 'Test Laptop');
   b = await openDevice(browser, 'Test Phone');
+  // Playwright catches the file chooser only once it has told the browser to (a round trip that starts with the
+  // first listener). Listening from the start, the chooser that Enter opens below can't slip past that.
+  a.page.on('filechooser', () => {});
   const target = await card(a.page, 'Test Phone');
   // The card is a named group; its avatar is the main button (no buttons inside buttons)
   await expect(target).toHaveAttribute('role', 'group');
