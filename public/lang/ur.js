@@ -1137,6 +1137,8 @@
     "After 15 minutes away": "15 منٹ دور رہنے کے بعد",
     "Only when OmniBeam opens": "صرف OmniBeam کھلنے پر",
     "Also unlock with fingerprint, face or Windows Hello": "فنگر پرنٹ، چہرے یا Windows Hello سے بھی کھولیں",
+    "Turn on App lock first": "پہلے ایپ لاک آن کریں",
+    "This device or browser doesn't support fingerprint or face unlock": "یہ ڈیوائس یا براؤزر فنگر پرنٹ یا چہرے سے ان لاک کی سہولت نہیں دیتا",
     "The lock keeps people out of OmniBeam on this device. It doesn't encrypt the files kept here.": "لاک اس ڈیوائس پر دوسروں کو OmniBeam سے باہر رکھتا ہے۔ یہ یہاں رکھی فائلوں کو انکرپٹ نہیں کرتا۔",
     "Keep history": "ہسٹری کتنی دیر رکھیں",
     "Received files and messages, the Sent list and clipboard history older than this are deleted from this device by themselves. Pinned notes stay.": "اس سے پرانی موصول فائلیں اور پیغامات، بھیجی گئی فہرست اور کلپ بورڈ ہسٹری اس ڈیوائس سے خود بخود حذف ہو جاتی ہیں۔ پن کیے گئے نوٹس رہتے ہیں۔",

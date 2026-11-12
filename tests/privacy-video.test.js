@@ -204,3 +204,53 @@ test('videos are made smaller quickly with the video encoder (480p), and sent as
   expect(shrinkSeconds).toBeLessThan(6);
   expect(a.errors).toEqual([]);
 });
+
+// The fingerprint/face option is always in view: greyed out with "Turn on App lock first" until a PIN is set, and
+// with "This device or browser doesn't support…" where there is no fingerprint/face (instead of being hidden)
+test('App lock: the fingerprint/face option shows greyed out with the reason until it can be used', async ({ browser }) => {
+  const box = (page) => page.locator('#lock-bio-on');
+  // A device with fingerprint/face (a virtual authenticator, added before the page loads again)
+  const a = await open(browser, 'Bio PC');
+  const cdp = await a.context.newCDPSession(a.page);
+  await cdp.send('WebAuthn.enable');
+  await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true } });
+  await a.page.reload();
+  await expect(a.page.locator('#me-name')).toHaveText('Bio PC');
+  await menu(a.page, 'btn-settings');
+  await settingsTab(a.page, 'privacy');
+  await expect(a.page.locator('#lock-bio-row')).toBeVisible();
+  await expect(box(a.page)).toBeDisabled();
+  await expect(a.page.locator('#lock-bio-note')).toHaveText('Turn on App lock first');
+  await expect(box(a.page)).toHaveAttribute('aria-describedby', 'lock-bio-note');
+  await expect(a.page.locator('#lock-bio-none')).toBeHidden();
+  await a.page.locator('#dlg-settings [data-close]').click();
+  await turnOnLock(a.page, '2581'); // (turnOnLock mistypes the last digit as 0 once)
+  await menu(a.page, 'btn-settings');
+  await settingsTab(a.page, 'privacy');
+  await expect(box(a.page)).toBeEnabled();
+  await expect(a.page.locator('#lock-bio-note')).toBeHidden();
+  await expect(box(a.page)).not.toHaveAttribute('aria-describedby', /./);
+  await box(a.page).check();
+  await expect(a.page.locator('#toast')).toContainText('Fingerprint or face unlock is on');
+  await expect(a.page.locator('#lock-state')).toHaveText('On: PIN, fingerprint or face');
+
+  // A device without: greyed out with the unsupported note, before and after a PIN; translated
+  const b = await open(browser, 'No Bio PC');
+  await menu(b.page, 'btn-settings');
+  await settingsTab(b.page, 'privacy');
+  await expect(box(b.page)).toBeDisabled();
+  await expect(b.page.locator('#lock-bio-none')).toHaveText("This device or browser doesn't support fingerprint or face unlock");
+  await expect(b.page.locator('#lock-bio-note')).toBeHidden();
+  await expect(box(b.page)).toHaveAttribute('aria-describedby', 'lock-bio-none');
+  await b.page.locator('#dlg-settings [data-close]').click();
+  await turnOnLock(b.page, '1357');
+  await menu(b.page, 'btn-settings');
+  await settingsTab(b.page, 'privacy');
+  await expect(box(b.page)).toBeDisabled();
+  await expect(b.page.locator('#lock-bio-none')).toBeVisible();
+  const ar = await open(browser, 'Bio AR', { path: '/ar/', storage: { 'omnibeam-lang': 'ar' } });
+  await menu(ar.page, 'btn-settings');
+  await settingsTab(ar.page, 'privacy');
+  await expect(ar.page.locator('#lock-bio-none')).toHaveText('هذا الجهاز أو المتصفح لا يدعم فتح القفل بالبصمة أو الوجه');
+  expect([...a.errors, ...b.errors, ...ar.errors]).toEqual([]);
+});

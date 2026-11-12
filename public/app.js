@@ -6245,6 +6245,7 @@ const unb64u = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/
 const AppLock = {
   locked: false,
   hiddenAt: 0,
+  bioOk: null, // can this device unlock with fingerprint/face (null: not known yet)
   verifying: null, // resolve() of a PIN check for Change PIN / Turn off
   get conf() { try { return JSON.parse(localStorage.getItem(LOCK_KEY)) || null; } catch { return null; } },
   set conf(c) {
@@ -6385,6 +6386,14 @@ const AppLock = {
     $('#menu-lock').hidden = !on;
     if (on) $('#lock-after').value = String(c.after ?? 5);
     $('#lock-bio-on').checked = !!c?.bio;
+    // Fingerprint/face: always in view, greyed out with the reason until it can be used (bioOk: null until known)
+    const none = this.bioOk === false;
+    const note = none ? 'lock-bio-none' : on ? '' : 'lock-bio-note';
+    $('#lock-bio-on').disabled = !on || this.bioOk !== true;
+    $('#lock-bio-note').hidden = note !== 'lock-bio-note';
+    $('#lock-bio-none').hidden = note !== 'lock-bio-none';
+    if (note) $('#lock-bio-on').setAttribute('aria-describedby', note);
+    else $('#lock-bio-on').removeAttribute('aria-describedby');
   },
   // Choose a PIN (Turn on, Change PIN): resolves true once saved
   choosePin() {
@@ -6461,7 +6470,7 @@ if ($('#dlg-lock')) {
     try { await AppLock.bioCreate(); toast(t('Fingerprint or face unlock is on')); }
     catch { e.target.checked = false; toast(t('This device didn\'t set up fingerprint or face unlock.')); }
   };
-  AppLock.bioAvailable().then((ok) => { $('#lock-bio-row').hidden = !ok; });
+  AppLock.bioAvailable().then((ok) => { AppLock.bioOk = ok; AppLock.updateUi(); });
   AppLock.updateUi();
   if (AppLock.on) AppLock.lock();
   else delete document.documentElement.dataset.locked;
