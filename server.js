@@ -533,7 +533,9 @@ function tvPage(lang) {
     .replace(/<h1 id="learn-title">([\s\S]*?)<\/h1>/, '<h2 id="learn-title">$1</h2>')
     .replace(/<p class="tv-heading" id="tv-title">([\s\S]*?)<\/p>/, '<h1 class="tv-heading" id="tv-title">$1</h1>')
     .replace(/<title>[^<]*<\/title>/, `<title>${(LANGS[lang] && LANGS[lang].strings['TV mode']) || 'TV mode'} · OmniBeam</title>`)
-    .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="robots" content="noindex">');
+    .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="robots" content="noindex">')
+    // The TV screen's own script (slideshow, photo wall, music, the remote), right after app.js
+    .replace(/(\s*)(<script src="\/app\.js\?v=\d+" defer><\/script>)/, '$1$2$1<script src="/tv.js?v=1" defer></script>');
   const out = Buffer.from(html);
   tvCache.set(lang, out);
   return out;

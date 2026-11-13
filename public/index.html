@@ -58,9 +58,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=81" as="script">
+  <link rel="preload" href="/app.js?v=82" as="script">
   <script src="/look.js?v=3"></script>
-  <link rel="stylesheet" href="/style.css?v=71">
+  <link rel="stylesheet" href="/style.css?v=72">
 </head>
 <body>
   <!-- For keyboard users: the first Tab shows this, Enter jumps past the top bar to the devices -->
@@ -153,7 +153,7 @@
         <ol class="tv-steps">
           <li>Scan the code with your phone's camera.</li>
           <li>In OmniBeam on your phone, tap this TV and choose photos or videos.</li>
-          <li>They play here as a slideshow.</li>
+          <li>They play here as a slideshow. Music and messages show here too.</li>
         </ol>
         <p class="tv-alt" id="tv-alt">On the same Wi‑Fi? Just open <b id="tv-host">omnibeam.site</b> on your phone: this TV shows up there.</p>
         <p class="tv-alt" id="tv-pin-note" hidden>🔒 This TV has a PIN: after scanning, type it on your phone.</p>
@@ -165,7 +165,7 @@
           <button type="button" class="btn ghost" id="tv-name">This TV: <b>TV</b></button>
           <button type="button" class="btn ghost" id="tv-pin">Set a PIN</button>
         </div>
-        <p class="tv-keys">Remote: ◀ ▶ browse · OK pause · Back to this screen</p>
+        <p class="tv-keys">Remote: arrows move · OK chooses · Back goes back</p>
       </div>
     </section>
     <div id="tv-show" class="tv-show" hidden>
@@ -1112,6 +1112,7 @@
   <dialog id="dlg-actions" class="actions-dialog" aria-labelledby="actions-title">
     <h3 id="actions-title">Send to <span class="who"></span></h3>
     <div class="action-grid">
+      <button type="button" data-act="tv-remote" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7h20v12H2zM7 3l5 4 5-4"/></svg><span>TV remote</span></button>
       <button type="button" data-act="files"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><span>Files</span></button>
       <button type="button" data-act="folder" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Folder</span></button>
       <button type="button" data-act="message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Message</span></button>
@@ -1177,7 +1178,7 @@
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=81" defer></script>
+  <script src="/app.js?v=82" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>

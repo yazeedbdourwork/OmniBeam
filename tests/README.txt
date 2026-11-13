@@ -37,3 +37,5 @@ sizes.js (bytes of the home page and scripts), transfer-speed.js (100 MB direct 
   phone-move.test.js   Move to a new phone (encrypted backup file), notification buttons (Reply, Open chat, Save, Stop)
   album-browse.test.js event photo albums (guests add photos, everything encrypted, host tools, Save all ZIP, poster, limits),
                        Share a folder / Browse files (a paired phone looks in a computer's folder and takes files)
+  tv-upgrades.test.js  TV mode: photo wall, remote keys, video controls, music, HEIC card, slideshow settings, photos kept
+                       after a reload, Clear photos, the phone as the remote, messages and links on screen, screen saver

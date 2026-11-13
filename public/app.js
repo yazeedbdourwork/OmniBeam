@@ -942,6 +942,7 @@ class Peer {
       else if (act === 'folder') { this.warmUp(); pickAndSend(folderInput, [this]); }
       else if (act === 'more') openActions(this);
       else if (act === 'chat') openChat(this);
+      else if (act === 'tv-remote') openTvRemote(this);
       else if (shared) sendShared(this);
       else pickFiles();
     });
@@ -1836,6 +1837,7 @@ class Peer {
     switch (msg.t) {
       case 'text': {
         Messages.add(String(msg.text), this.info.name, this.pairSecret);
+        if (IS_TV && window.Tv) { window.Tv.note(this, String(msg.text)); break; } // big on the TV screen (tv.js)
         messageSound();
         if (chatShowing(this)) break;
         const link = linkOnly(msg.text);
@@ -1845,6 +1847,14 @@ class Peer {
       }
       case 'ring':
         Ringer.start(this);
+        break;
+      // TV mode (tv.js): a phone works the TV's slideshow; the TV tells phones it is a TV and what it shows
+      case 'tv-cmd':
+        if (IS_TV) window.Tv?.command(this, msg);
+        break;
+      case 'tv-hi':
+      case 'tv-state':
+        if (!IS_TV) onTvState(this, msg.state);
         break;
       case 'ring-ok':
         toast(msg.sound ? t('{name} is ringing', { name: this.info.name })
@@ -4235,7 +4245,10 @@ function showIntact(f) {
   el.title = f.intact === true ? t('Checked: every byte matches the original') : '';
 }
 function showReceived(peer, files) {
-  if (IS_TV) return Tv.received(peer, files);
+  if (IS_TV) {
+    if (window.Tv) return window.Tv.received(peer, files);
+    return void loadTv().then(() => window.Tv.received(peer, files), () => {});
+  }
   const dlg = $('#dlg-received');
   $('.who', dlg).textContent = peer.info.name;
   const box = $('.received', dlg);
@@ -4410,6 +4423,7 @@ function openActions(peer) {
   $('[data-act=screen]', dlg).hidden = !navigator.mediaDevices?.getDisplayMedia || isPhone;
   // Looking in a folder another device shares: only between paired devices
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
+  $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
   updateShrinkUi();
   dlg.onclick = (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
@@ -4429,8 +4443,30 @@ function openActions(peer) {
     else if (act === 'chat') openChat(peer);
     else if (act === 'ring') ringDevice(peer);
     else if (act === 'browse') loadBrowse().then(() => window.Browse.look(peer), (err) => toast(err.message));
+    else if (act === 'tv-remote') openTvRemote(peer);
   };
   if (!dlg.open) dlg.showModal();
+}
+
+// A TV in TV mode said so (tv.js): its card gets a Remote button, and the remote (if open) shows what the TV shows
+function onTvState(peer, state) {
+  if (!peer.isTv) {
+    peer.isTv = true;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tv-remote-chip';
+    btn.dataset.act = 'tv-remote';
+    btn.textContent = `📺 ${t('Remote')}`;
+    btn.setAttribute('aria-label', t('TV remote · {name}', { name: peer.info.name }));
+    peer.el.querySelector('.status').before(btn);
+  }
+  if (state && typeof state === 'object') {
+    peer.tvState = state;
+    window.TvRemote?.state(peer, state);
+  }
+}
+function openTvRemote(peer) {
+  loadTv().then(() => window.TvRemote.open(peer), (err) => toast(err.message));
 }
 
 function showText(peer, text) {
@@ -4825,7 +4861,7 @@ function renderOffline() {
 function renderPairQr() {
   const box = $('#pair-qr');
   box.innerHTML = '';
-  if (!qrPair) { if (IS_TV) Tv.drawQr(); return; }
+  if (!qrPair) { if (IS_TV) window.Tv?.drawQr(); return; }
   if (typeof qrcode !== 'function') { loadQr().then(renderPairQr, () => {}); return; }
   try {
     const qr = qrcode(0, 'M');
@@ -4833,7 +4869,7 @@ function renderPairQr() {
     qr.make();
     box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
   } catch {}
-  if (IS_TV) Tv.drawQr();
+  if (IS_TV) window.Tv?.drawQr();
 }
 function randomSecret() {
   const b = new Uint8Array(32);
@@ -5946,183 +5982,11 @@ function scanFromLink(secret, name, needPin) {
 // For a smart TV's browser: no sending, just a big QR code. A phone scans it with its camera, which opens OmniBeam
 // there and pairs it with the TV (the one-tap QR pairing above); then the phone taps the TV and picks photos.
 // Phones on the same Wi-Fi see the TV without scanning. Paired devices' files are accepted by themselves. Photos and
-// videos play as a full-screen slideshow (newest first in line); a TV remote works it: ◀ ▶ browse, OK pauses,
-// Back returns to the QR code. Each QR code pairs one phone, so a new one appears right after each pairing.
-const TV_PHOTO_MS = 8000;
+// videos play as a slideshow, with a photo wall, music and messages on screen, and a phone can be the remote (tv.js).
 const TV_PIN_KEY = 'omnibeam-tv-pin';
 function tvPin() { try { return localStorage.getItem(TV_PIN_KEY) || ''; } catch { return ''; } }
-const TV_MAX_SLIDES = 60; // TVs have little memory: older slides are let go
-const Tv = {
-  slides: [], at: 0, timer: null, paused: false, open: false,
-  start() {
-    document.title = `${t('TV mode')} · OmniBeam`;
-    $('#tv').hidden = false;
-    keepAwake('tv', true);
-    startQrPair();
-    $('#tv-host').textContent = location.host;
-    $('#tv-name').onclick = openMeDialog;
-    $('#tv-full').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {});
-    $('#tv-photos').onclick = () => this.show(this.at);
-    $('#tv-pin').onclick = () => this.setPin();
-    this.pinNote();
-    $('#tv-shut').onclick = () => this.close();
-    setInterval(() => this.status(), 500);
-    document.addEventListener('keydown', (e) => this.key(e));
-    // The remote's first press should land on something
-    // (without scrolling: on a short TV screen that pushed the title up under the top bar)
-    setTimeout(() => { if (!document.querySelector('dialog[open]')) ($('#tv-photos').hidden ? $('#tv-full') : $('#tv-photos')).focus({ preventScroll: true }); }, 500);
-  },
-  drawQr() {
-    if (!qrPair) { startQrPair(); return; } // a phone just used it, or it ran out: show a new one
-    const box = $('#tv-qr');
-    if (!box) return;
-    const link = qrPairLink();
-    if (box.dataset.link === link) return;
-    if (typeof qrcode === 'function') {
-      try {
-        const qr = qrcode(0, 'M');
-        qr.addData(link);
-        qr.make();
-        box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
-        box.dataset.link = link;
-        return;
-      } catch {}
-    }
-    // qrcode.js didn't load (seen on an Android TV browser: slow Wi-Fi at start-up, or its own ad blocker). Before,
-    // one failed try left the box empty for good. Now: try again every few seconds, and meanwhile let the server draw it.
-    if (this.qrBusy || Date.now() < (this.qrNext || 0)) return;
-    this.qrBusy = true;
-    this.qrNext = Date.now() + 5000;
-    const wait = (ms) => new Promise((resolve, reject) => setTimeout(reject, ms));
-    const fromServer = () => fetch('/api/qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ d: link }) })
-      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
-      .then((svg) => {
-        if (/^<svg[\s>]/.test(svg) && qrPair && qrPairLink() === link && box.dataset.link !== link) {
-          box.innerHTML = svg;
-          box.dataset.link = link;
-        }
-      });
-    Promise.race([loadQr(), wait(6000)])
-      .catch(() => fromServer())
-      .catch(() => {})
-      .then(() => { this.qrBusy = false; this.drawQr(); });
-  },
-  // Who is here, and what is arriving
-  status() {
-    $('#tv-name b').textContent = me.name || 'TV';
-    this.drawQr(); // again once the name is known (it is in the code's link)
-    const names = [...peers.values()].map((p) => p.info.name);
-    $('#tv-peers').textContent = names.length ? t('Connected: {names}', { names: names.join(', ') }) : t('No phone connected yet');
-    const p = [...peers.values()].find((x) => x.prog && !x.prog.sending);
-    const text = p ? t('Receiving from {name}… {pct}%', { name: p.info.name, pct: Math.floor((Math.min(p.prog.done, p.prog.total) / (p.prog.total || 1)) * 100) }) : '';
-    for (const el of [$('#tv-status'), $('#tv-show-status')]) { el.textContent = text; el.hidden = !text; }
-    $('#tv-photos').hidden = !this.slides.length;
-    $('#tv-photos span').textContent = t('Show photos ({n})', { n: this.slides.length });
-  },
-  // Optional PIN: phones must type it after scanning. Setting or changing it unpairs every phone.
-  setPin() {
-    const v = prompt(t('Choose a PIN of 4 to 8 digits for this TV. Phones must type it to pair. Leave it empty to turn the PIN off.'), '');
-    if (v === null) return;
-    const pin = v.trim();
-    if (pin && !/^\d{4,8}$/.test(pin)) return toast(t('The PIN must be 4 to 8 digits.'));
-    try { pin ? localStorage.setItem(TV_PIN_KEY, pin) : localStorage.removeItem(TV_PIN_KEY); } catch {}
-    for (const p of loadPaired()) forgetPairing(p.secret);
-    if (qrPair) wsSend({ type: 'leave-secret', secret: qrPair.secret });
-    qrPair = null;
-    startQrPair();
-    this.pinNote();
-    toast(pin ? t('PIN set. Phones paired before must scan the code again and type the PIN.') : t('PIN turned off.'), 6000);
-  },
-  pinNote() {
-    const on = !!tvPin();
-    $('#tv-pin-note').hidden = !on;
-    $('#tv-pin').textContent = on ? t('Change PIN') : t('Set a PIN');
-    $('#tv-alt').hidden = on; // with a PIN, phones on the same Wi-Fi must pair first too
-  },
-  received(peer, files) {
-    chime();
-    const media = files.filter((f) => /^(image|video)\//.test(f.mime || mediaType(f) || '') && f.blob && !/hei[cf]/i.test(f.mime || ''));
-    const other = files.length - media.length;
-    if (other) toast(t('Other files received: {n}. TV mode shows photos and videos only; they are kept in Received files.', { n: other }), 6000);
-    if (!media.length) return;
-    const first = this.slides.length;
-    for (const f of media) {
-      this.slides.push({ url: URL.createObjectURL(f.blob), video: /^video\//.test(f.mime || mediaType(f) || ''), from: peer.info.name });
-    }
-    let start = first;
-    while (this.slides.length > TV_MAX_SLIDES) {
-      URL.revokeObjectURL(this.slides.shift().url);
-      start--;
-      if (this.at > 0) this.at--;
-    }
-    this.show(Math.max(0, start)); // new photos show at once
-  },
-  show(i) {
-    if (!this.slides.length) return;
-    this.at = (i + this.slides.length) % this.slides.length;
-    this.open = true;
-    const box = $('#tv-show');
-    box.hidden = false;
-    clearTimeout(this.timer);
-    const s = this.slides[this.at];
-    const stage = $('#tv-stage');
-    stage.querySelectorAll('video').forEach((v) => v.pause());
-    stage.innerHTML = '';
-    const el = document.createElement(s.video ? 'video' : 'img');
-    el.src = s.url;
-    el.alt = '';
-    if (s.video) {
-      el.playsInline = true;
-      el.onended = () => this.next();
-      el.onerror = () => this.next();
-      // With sound if the TV allows it, otherwise muted
-      el.play().catch(() => { el.muted = true; el.play().catch(() => {}); });
-    } else {
-      el.onerror = () => this.schedule();
-      this.schedule();
-    }
-    stage.appendChild(el);
-    $('#tv-caption').textContent = `${this.at + 1} / ${this.slides.length} · ${t('from {name}', { name: s.from })}${this.paused ? ` · ${t('Paused')}` : ''}`;
-    box.classList.remove('idle');
-    clearTimeout(this.idleTimer);
-    this.idleTimer = setTimeout(() => box.classList.add('idle'), 4000);
-  },
-  schedule() {
-    clearTimeout(this.timer);
-    if (!this.paused && this.slides.length > 1) this.timer = setTimeout(() => this.next(), TV_PHOTO_MS);
-  },
-  next() { if (this.open) this.show(this.at + 1); },
-  close() {
-    this.open = false;
-    clearTimeout(this.timer);
-    $('#tv-stage').querySelectorAll('video').forEach((v) => v.pause());
-    $('#tv-show').hidden = true;
-    $('#tv-photos').focus();
-  },
-  togglePause() {
-    this.paused = !this.paused;
-    const v = $('#tv-stage video');
-    if (v) this.paused ? v.pause() : v.play().catch(() => {});
-    this.show(this.at);
-  },
-  key(e) {
-    if (!this.open || document.querySelector('dialog[open]')) return;
-    // Back on TV remotes: Escape, Backspace, Samsung (10009), LG (461)
-    const back = ['Escape', 'Backspace', 'BrowserBack', 'GoBack'].includes(e.key) || [10009, 461].includes(e.keyCode);
-    if (back) { e.preventDefault(); return this.close(); }
-    if (e.key === 'ArrowRight' || e.key === 'MediaTrackNext') { e.preventDefault(); return this.show(this.at + 1); }
-    if (e.key === 'ArrowLeft' || e.key === 'MediaTrackPrevious') { e.preventDefault(); return this.show(this.at - 1); }
-    if (['Enter', ' ', 'MediaPlayPause', 'MediaPlay', 'MediaPause'].includes(e.key)) { e.preventDefault(); return this.togglePause(); }
-    this.show(this.at); // any other key: show the caption again
-  },
-};
-$('#tv-show').addEventListener('click', (e) => {
-  if (e.target.closest('#tv-shut')) return;
-  const x = e.clientX / innerWidth;
-  if (x < 0.25) Tv.show(Tv.at - 1);
-  else if (x > 0.75) Tv.show(Tv.at + 1);
-  else Tv.togglePause();
-});
+// The TV screen itself is in tv.js (the TV page loads it after this script; see server.js tvPage)
+const loadTv = () => loadScript('/tv.js?v=1');
 
 // ---------- First-visit walkthrough ----------
 // Three short steps for new visitors: open it on the other device, pair if it doesn't show up, tap to send.
@@ -6912,7 +6776,8 @@ function showSupport(url) {
 $('#menu-tv').href = appPath() + 'tv'; // TV mode in this page's language
 $('#bar-tv').setAttribute('href', $('#menu-tv').getAttribute('href'));
 $('#bar-settings').onclick = () => $('#btn-settings').onclick();
-if (IS_TV) Tv.start();
+// tv.js normally comes with the TV page; if the TV's browser couldn't get it, try again until it can
+if (IS_TV) addEventListener('load', function tvRetry() { if (!window.Tv) loadTv().catch(() => setTimeout(tvRetry, 5000)); });
 connectSocket();
 Outgoing.show();
 fetch('/config.json', { cache: 'no-store' })
