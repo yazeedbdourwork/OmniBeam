@@ -1947,8 +1947,12 @@ function handleAlbum(req, res, urlPath) {
   if (!a || Date.now() > a.expires) { req.resume(); return json(404, { error: 'gone' }); }
 
   // The album page: name (encrypted), photos (encrypted names), whether it still takes photos, room left
+  // ?v=<version>: the album page checks every few seconds; nothing changed -> a tiny answer
   if (!sub && req.method === 'GET') {
-    return json(200, { meta: a.meta, expires: a.expires, open: a.open, host: host(), itemMb: ALBUM_ITEM_MB,
+    const ver = `${a.next}.${a.items.length}.${a.open ? 1 : 0}`;
+    const asked = String(req.url.split('?')[1] || '').match(/(?:^|&)v=([0-9.]{1,40})(?:&|$)/);
+    if (asked && asked[1] === ver) return json(200, { same: true, v: ver });
+    return json(200, { v: ver, meta: a.meta, expires: a.expires, open: a.open, host: host(), itemMb: ALBUM_ITEM_MB,
       left: Math.max(0, ALBUM_MAX_MB * 1048576 - a.used), items: a.items.map(albumView) });
   }
   // The host: delete the album now
