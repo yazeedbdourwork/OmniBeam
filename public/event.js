@@ -847,6 +847,7 @@
   let key = null;
   let album = null; // { name, q } from the encrypted box
   let info = null;  // the server's answer
+  let version = ''; // the album's version in that answer (see refresh)
   const items = new Map(); // n -> { n, at, size, thumb, meta: {name, type, from}, thumbUrl, el }
   let order = [];   // n, newest first
 
@@ -861,14 +862,16 @@
     if (POSTER) return showPoster();
     try { $('#ev-from').value = localStorage.getItem('omnibeam-album-name') || ''; } catch {}
     $('#ev-from').addEventListener('change', (e) => { try { localStorage.setItem('omnibeam-album-name', e.target.value.trim()); } catch {} });
-    setInterval(() => { if (document.visibilityState === 'visible' && !adding) refresh(); }, 10000);
+    // A quick look every 3 seconds (the server answers in a few bytes when nothing changed), so new and deleted
+    // photos and a closed album show up on every open page almost at once
+    setInterval(() => { if (document.visibilityState === 'visible' && !adding) refresh(false, true); }, 3000);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !adding) refresh(); });
   }
 
   // Ask the server for the album and its photos; draw the new ones
-  async function refresh(first = false) {
+  async function refresh(first = false, quick = false) {
     let res;
-    try { res = await fetch(`/api/album/${id}`, { cache: 'no-store', headers: TOKEN ? { 'X-Album-Token': TOKEN } : {} }); } catch {
+    try { res = await fetch(`/api/album/${id}${quick && version ? `?v=${version}` : ''}`, { cache: 'no-store', headers: TOKEN ? { 'X-Album-Token': TOKEN } : {} }); } catch {
       if (first) status(t('Could not load this album. Check the connection and try again.'));
       return false;
     }
@@ -879,7 +882,10 @@
       return false;
     }
     if (!res.ok) { if (first) status(t('Could not load this album. Check the connection and try again.')); return false; }
-    info = await res.json();
+    const got = await res.json();
+    if (got.same) return true; // nothing new since the last look
+    info = got;
+    version = got.v || '';
     if (!album) {
       try { album = await open(key, info.meta); } catch { status(t('This link is incomplete. Copy the whole link, including the part after #.')); return false; }
       const name = String(album.name || '').slice(0, 80) || t('Event album');
@@ -895,7 +901,13 @@
       try { meta = await open(key, it.meta); } catch { continue; }
       items.set(it.n, { ...it, meta });
     }
-    for (const n of [...items.keys()]) if (!seen.has(n)) { items.get(n).el?.remove(); items.delete(n); }
+    for (const n of [...items.keys()]) {
+      if (seen.has(n)) continue;
+      // Deleted by the guest who added it, or by the host: gone here too (and from the viewer if it's open)
+      items.get(n).el?.remove();
+      items.delete(n);
+      if (viewing === n) $('#ev-view').close();
+    }
     order = [...items.keys()].sort((a, b) => b - a);
     draw();
     return true;

@@ -113,6 +113,8 @@ test('event album: guests add photos and see everyone\'s, everything encrypted, 
   await guest.page.locator('#ev-grid li button').first().click();
   await guest.page.locator('#ev-view [data-act=delete]').click();
   await expect(guest.page.locator('#ev-grid li')).toHaveCount(1);
+  // Every other open page (the host's too) drops it within a few seconds, without reloading
+  await expect(other.page.locator('#ev-grid li')).toHaveCount(1, { timeout: 8000 });
 
   // The host's page: host tools, Save all as a ZIP, stop taking photos
   const hostPage = await host.context.newPage();
