@@ -95,6 +95,17 @@ test('the newest version is live', async ({ request }) => {
   expect(csp).toContain("font-src 'self'");
 });
 
+test('old page addresses send visitors to the current pages', async ({ request }) => {
+  // The old hand-uploaded copies (public/about.html…) are removed on deploy (tools/old-site-files.txt), so the
+  // server answers these and sends them to the pages built from public/pages/
+  for (const slug of ['about', 'privacy', 'terms', 'how-to-use']) {
+    const res = await request.get(`/${slug}.html`, { maxRedirects: 0 });
+    expect(res.status(), `/${slug}.html`).toBe(301);
+    expect(res.headers().location, `/${slug}.html`).toMatch(new RegExp(`/${slug}$`));
+  }
+  expect((await request.get('/index.zip', { maxRedirects: 0 })).status()).toBe(404);
+});
+
 for (const lang of ['', 'ar/', 'fr/', 'es/', 'tr/']) {
   test(`home page /${lang} and its guides load without errors`, async ({ browser, request }) => {
     const d = await device(browser, `Live check ${run}`, { path: '/' + lang });
