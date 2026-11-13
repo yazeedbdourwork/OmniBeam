@@ -1108,6 +1108,98 @@ html.tv main { padding: 0; }
 .tv-shut { position: absolute; top: 16px; inset-inline-end: 16px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 26px; cursor: pointer; transition: opacity .6s; }
 .tv-show.idle .tv-caption:not(.tv-show-status), .tv-show.idle .tv-shut { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .tv-stage img, .tv-stage video { animation: none; } }
+/* TV mode upgrades (tv.js): a clear focus for the remote, photo wall, video bar, slideshow fades and zoom, music,
+   messages, settings, clock screen saver; and the phone remote */
+html.tv .btn:focus-visible, html.tv .tv-tile:focus-visible, html.tv .tv-set button:focus-visible { outline: 5px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 9px rgba(255, 255, 255, .35); transform: scale(1.06); transition: transform .12s; }
+html.tv .btn:focus { outline: 5px solid var(--accent); outline-offset: 4px; }
+html.tv .btn:focus:not(:focus-visible) { outline-width: 3px; }
+.tv-remote-tip { font-size: .62em; opacity: .65; margin-top: .6em; }
+/* More buttons now: the home screen stays within one TV screen (smaller QR code and buttons) */
+html.tv .tv-qr { width: min(36vw, 54vh); }
+html.tv .tv-text { font-size: clamp(13px, min(2vw, 2.9vh), 28px); max-width: 46rem; }
+html.tv .tv-text .tv-heading { font-size: clamp(20px, min(3.6vw, 5.4vh), 54px); }
+html.tv .tv-buttons { gap: 10px; margin-top: .7em; }
+html.tv .tv-buttons .btn { font-size: .74em; padding: .5em 1em; }
+html.tv .tv-keys { margin-top: .8em; }
+@media (max-aspect-ratio: 1/1) { html.tv .tv-qr { width: min(80vw, 44vh); } html.tv .tv-music { justify-content: center; } }
+.tv-music { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: .9em; padding: .5em .8em; border-radius: 16px; background: var(--accent-soft); font-size: .8em; }
+.tv-music[hidden] { display: none; }
+.tv-music-title { flex: 1 1 12em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tv-music-title span { opacity: .7; font-size: .85em; }
+.tv-music .btn { font-size: .85em; }
+.tv-stage.tv-prev { z-index: 0; pointer-events: none; }
+.tv-stage:not(.tv-prev) { z-index: 1; }
+.tv-stage:not(.fade) img, .tv-stage:not(.fade) video { animation: none; }
+.tv-stage.fade img { animation: tv-in .9s ease; }
+.tv-prev img.out { animation: tv-out .9s ease forwards; }
+@keyframes tv-out { from { opacity: 1; } to { opacity: 0; } }
+.tv-stage img.kb { animation: tv-in .9s ease, tv-kb var(--kb-time, 10s) linear forwards; }
+.tv-stage:not(.fade) img.kb { animation: tv-kb var(--kb-time, 10s) linear forwards; }
+@keyframes tv-kb { from { transform: scale(1); } to { transform: scale(1.14); } }
+.tv-caption, .tv-shut, .tv-bar { z-index: 2; }
+.tv-hint { bottom: auto; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: clamp(12px, 1.3vw, 20px); }
+.tv-show-status { left: 24px; top: 64px; }
+.tv-song { left: auto; inset-inline-end: 24px; right: 24px; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[dir=rtl] .tv-song { right: auto; left: 24px; }
+.tv-show.idle .tv-hint, .tv-show.idle .tv-song { opacity: 0; }
+.tv-bar { position: absolute; left: 24px; right: 24px; bottom: 64px; display: flex; align-items: center; gap: 14px; transition: opacity .6s; }
+.tv-bar[hidden] { display: none; }
+.tv-bar-track { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+.tv-bar-track span { display: block; height: 100%; width: 0; background: var(--accent); }
+.tv-bar-time { font-size: clamp(14px, 1.5vw, 22px); text-shadow: 0 1px 3px #000; font-variant-numeric: tabular-nums; }
+.tv-show.idle .tv-bar { opacity: 0; }
+.tv-heic { max-width: 40rem; padding: 2em; text-align: center; font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
+.tv-heic .muted { opacity: .7; font-size: .7em; }
+.tv-wall { position: fixed; inset: 0; z-index: 45; background: var(--bg); color: var(--fg); overflow-y: auto; padding: clamp(14px, 3vh, 40px) clamp(16px, 4vw, 56px); box-sizing: border-box; }
+.tv-wall[hidden] { display: none; }
+.tv-wall-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; font-size: clamp(14px, 1.8vw, 24px); }
+.tv-wall-title { flex: 1; margin: 0; font-size: 1.4em; }
+.tv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 18vw, 300px), 1fr)); gap: clamp(10px, 1.5vw, 22px); }
+.tv-tile { position: relative; aspect-ratio: 16 / 10; border: 0; padding: 0; border-radius: 14px; overflow: hidden; background: #222 center / 40% no-repeat; cursor: pointer; color: #fff; }
+.tv-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tv-tile.is-video::after { content: '▶'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 3vw, 48px); text-shadow: 0 2px 8px #000; }
+.tv-tile.is-heic::before { content: '📷 HEIC'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1em; opacity: .8; }
+.tv-tile-from { position: absolute; left: 8px; bottom: 8px; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: clamp(11px, 1vw, 16px); max-width: calc(100% - 16px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[dir=rtl] .tv-tile-from { left: auto; right: 8px; }
+.tv-tile:focus-visible { transform: scale(1.05); z-index: 1; }
+.tv-note { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .72); padding: 4vh 4vw; box-sizing: border-box; }
+.tv-note[hidden] { display: none; }
+.tv-note-card { max-width: min(90vw, 70rem); max-height: 90vh; overflow: auto; padding: clamp(18px, 4vh, 48px) clamp(20px, 4vw, 64px); border-radius: 28px; background: var(--bg); color: var(--fg); text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.tv-note-from { margin: 0 0 .6em; font-size: clamp(16px, 2vw, 28px); opacity: .75; }
+.tv-note-text { margin: 0; font-size: clamp(28px, min(5vw, 8vh), 80px); font-weight: 700; line-height: 1.25; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tv-note-text.long { font-size: clamp(20px, min(3vw, 4.5vh), 44px); font-weight: 600; text-align: start; }
+.tv-note-qr { width: min(36vw, 46vh); aspect-ratio: 1; margin: 0 auto; background: #fff; border-radius: 18px; padding: 10px; }
+.tv-note-qr[hidden] { display: none; }
+.tv-note-qr svg { width: 100%; height: 100%; display: block; }
+.tv-note-link { margin: .7em 0 0; font-size: clamp(14px, 1.8vw, 26px); overflow-wrap: anywhere; opacity: .8; }
+.tv-note-hint { margin: 1em 0 0; font-size: clamp(12px, 1.3vw, 18px); opacity: .55; }
+.tv-saver { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; cursor: none; overflow: hidden; }
+.tv-saver[hidden] { display: none; }
+.tv-saver-box { position: absolute; left: 0; top: 0; padding: 3vh 3vw; text-align: center; transition: transform 3s ease-in-out; opacity: .85; }
+.tv-saver-time { margin: 0; font-size: clamp(60px, min(12vw, 20vh), 220px); font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; }
+.tv-saver-date { margin: .3em 0 0; font-size: clamp(18px, min(2.4vw, 4vh), 40px); opacity: .7; }
+.tv-saver-song { margin: .5em 0 0; font-size: clamp(14px, 1.8vw, 28px); opacity: .7; }
+.tv-saver-qr { width: min(16vw, 22vh); aspect-ratio: 1; margin: 2.5vh auto 0; background: #fff; border-radius: 12px; padding: 6px; opacity: .8; }
+.tv-saver-qr svg { width: 100%; height: 100%; display: block; }
+.tv-saver-tip { margin: .6em 0 0; font-size: clamp(12px, 1.4vw, 20px); opacity: .6; }
+.tv-set { max-width: min(92vw, 46rem); font-size: clamp(15px, 1.8vw, 24px); }
+.tv-set h2 { margin-top: 0; }
+.tv-set-row { margin: 0 0 1em; }
+.tv-set-row p { margin: 0 0 .4em; font-weight: 600; }
+.tv-set-opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.tv-set-opts .btn { font-size: .85em; }
+.tv-set-opts .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .tv-stage img.kb, .tv-prev img.out { animation: none; } .tv-saver-box { transition: none; } }
+/* The phone remote */
+.tv-remote-chip { display: inline-block; margin: 4px auto 0; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; position: relative; z-index: 2; }
+.tv-remote { width: min(92vw, 24rem); text-align: center; }
+.tv-remote h2 { margin-top: 0; font-size: 1.15rem; }
+.tv-remote-now { min-height: 1.4em; }
+.tv-remote-pad, .tv-remote-row { display: flex; gap: 10px; justify-content: center; margin: 12px 0; flex-wrap: wrap; }
+.tv-remote-pad[hidden], .tv-remote-row[hidden] { display: none; }
+.tv-remote-pad .btn { flex: 1; min-height: 56px; font-size: 1.15rem; white-space: nowrap; padding-inline: 10px; }
+.tv-remote-row .btn { font-size: .9rem; }
+.tv-remote-song { width: 100%; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Lists of files and messages (History, Received files, your links): on a narrow screen the buttons go on their own
    line under the name, so nothing is cut off and there is no sideways scrolling. On a wide screen they stay beside it. */
