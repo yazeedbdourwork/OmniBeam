@@ -85,6 +85,28 @@ test('TV mode in other languages, and its address', async ({ page, request }) =>
   await expect(page.locator('#menu-tv')).toHaveAttribute('href', '/ar/tv');
 });
 
+// Seen on an Android TV browser: qrcode.js never loaded and the QR box stayed empty for good
+test('TV mode: the QR code still shows when qrcode.js can\'t load, and the title stays on screen', async ({ browser, request }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 560 }, serviceWorkers: 'block' });
+  const page = await ctx.newPage();
+  await page.route(/\/qrcode\.js/, (r) => r.abort());
+  await page.goto('/ar/tv');
+  await expect(page.locator('#tv-qr svg')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('#tv-qr')).toHaveAttribute('data-link', /#qr=[0-9a-f]+&n=/);
+  expect(await page.evaluate(() => typeof qrcode)).toBe('undefined');
+  // A short TV browser window: nothing scrolled away under the top bar
+  await page.waitForTimeout(800); // after the remote's first focus
+  expect(await page.locator('main').evaluate((m) => m.scrollTop)).toBe(0);
+  const title = await page.locator('#tv-title').boundingBox();
+  const header = await page.locator('header').boundingBox();
+  expect(title.y).toBeGreaterThanOrEqual(header.y + header.height);
+  await ctx.close();
+  // The server only draws codes for links to this site
+  const bad = await request.post('/api/qr', { data: { d: 'https://example.com/#qr=1' } });
+  expect(bad.status()).toBe(400);
+  expect((await request.get('/api/qr')).status()).toBe(405);
+});
+
 test('a tab that crashed and a stuck transfer are reported to /stats and Telegram', async ({ browser, request }) => {
   const a = await open(browser, 'Sender', { path: '/tv?reports=on' }); // (report.js stays quiet in test browsers otherwise)
   const b = await open(browser, 'Receiver', { path: '/?reports=on' });

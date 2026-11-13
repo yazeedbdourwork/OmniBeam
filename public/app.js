@@ -5969,21 +5969,43 @@ const Tv = {
     setInterval(() => this.status(), 500);
     document.addEventListener('keydown', (e) => this.key(e));
     // The remote's first press should land on something
-    setTimeout(() => { if (!document.querySelector('dialog[open]')) $('#tv-photos').hidden ? $('#tv-full').focus() : $('#tv-photos').focus(); }, 500);
+    // (without scrolling: on a short TV screen that pushed the title up under the top bar)
+    setTimeout(() => { if (!document.querySelector('dialog[open]')) ($('#tv-photos').hidden ? $('#tv-full') : $('#tv-photos')).focus({ preventScroll: true }); }, 500);
   },
   drawQr() {
     if (!qrPair) { startQrPair(); return; } // a phone just used it, or it ran out: show a new one
     const box = $('#tv-qr');
-    if (!box || typeof qrcode !== 'function') return;
+    if (!box) return;
     const link = qrPairLink();
     if (box.dataset.link === link) return;
-    try {
-      const qr = qrcode(0, 'M');
-      qr.addData(link);
-      qr.make();
-      box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
-      box.dataset.link = link;
-    } catch {}
+    if (typeof qrcode === 'function') {
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(link);
+        qr.make();
+        box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+        box.dataset.link = link;
+        return;
+      } catch {}
+    }
+    // qrcode.js didn't load (seen on an Android TV browser: slow Wi-Fi at start-up, or its own ad blocker). Before,
+    // one failed try left the box empty for good. Now: try again every few seconds, and meanwhile let the server draw it.
+    if (this.qrBusy || Date.now() < (this.qrNext || 0)) return;
+    this.qrBusy = true;
+    this.qrNext = Date.now() + 5000;
+    const wait = (ms) => new Promise((resolve, reject) => setTimeout(reject, ms));
+    const fromServer = () => fetch('/api/qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ d: link }) })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
+      .then((svg) => {
+        if (/^<svg[\s>]/.test(svg) && qrPair && qrPairLink() === link && box.dataset.link !== link) {
+          box.innerHTML = svg;
+          box.dataset.link = link;
+        }
+      });
+    Promise.race([loadQr(), wait(6000)])
+      .catch(() => fromServer())
+      .catch(() => {})
+      .then(() => { this.qrBusy = false; this.drawQr(); });
   },
   // Who is here, and what is arriving
   status() {

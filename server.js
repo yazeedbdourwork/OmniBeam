@@ -1088,6 +1088,7 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/api/supporter') return handleSupporter(req, res);
   if (urlPath === '/api/report') return handleReport(req, res);
   if (urlPath === '/api/visit') return handleVisit(req, res);
+  if (urlPath === '/api/qr') return handleQr(req, res);
   if (urlPath === '/api/status' || urlPath === '/api/status/checks') return handleStatusApi(req, res, urlPath);
   if (urlPath.startsWith('/api/tg/')) return handleTelegram(req, res, urlPath);
   // One address per page: www.omnibeam.site -> omnibeam.site
@@ -2906,6 +2907,37 @@ function recordView(req, id, r, ip, now) {
     count('ul_' + lang);
   }
 }
+// TV mode's QR code, drawn here when the TV browser can't load qrcode.js itself (seen on an Android TV browser: an
+// empty white box). Same library as the page (public/qrcode.js), run here. POST {d: link}: only links to this site,
+// as an SVG. The pairing code in the link already reaches this server (join-secrets), so nothing new is shared.
+let qrLib = null;
+const qrAttempts = new Map();
+function handleQr(req, res) {
+  const done = (code, body = '', type = 'text/plain') => {
+    res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+    res.end(body);
+  };
+  if (req.method !== 'POST') { req.resume(); return done(405); }
+  const ip = getIp(req);
+  const now = Date.now();
+  const a = qrAttempts.get(ip);
+  if (a && now - a.start < 60 * 1000) { if (++a.n > 60) { req.resume(); return done(429); } }
+  else qrAttempts.set(ip, { start: now, n: 1 });
+  if (qrAttempts.size > 5000) for (const [k, v] of qrAttempts) if (now - v.start > 60 * 1000) qrAttempts.delete(k);
+  readJsonBody(req, 2048).then((body) => {
+    const d = typeof body.d === 'string' ? body.d : '';
+    const host = String(req.headers.host || '');
+    let u;
+    try { u = new URL(d); } catch { return done(400); }
+    if (d.length > 600 || !/^https?:$/.test(u.protocol) || (u.host !== host && u.host !== SITE_HOST)) return done(400);
+    if (!qrLib) qrLib = new Function(`${fs.readFileSync(path.join(PUBLIC_DIR, 'qrcode.js'), 'utf8')}\nreturn qrcode;`)();
+    const qr = qrLib(0, 'M');
+    qr.addData(d);
+    qr.make();
+    done(200, qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true }), 'image/svg+xml; charset=utf-8');
+  }, () => done(400));
+}
+
 function handleVisit(req, res) {
   const done = (code) => { res.writeHead(code, { 'Cache-Control': 'no-store' }); res.end(); };
   const amp = req.method === 'GET' && /[?&]amp=1(&|$)/.test(req.url);

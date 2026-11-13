@@ -1079,12 +1079,15 @@ pre.code { margin: 0; max-height: 68vh; overflow: auto; padding: 14px; border-ra
 html.tv header .actions, html.tv .stage, html.tv .learn, html.tv footer, html.tv #install-bar, html.tv .ob-consent { display: none !important; }
 html.tv header { justify-content: center; }
 html.tv body { min-height: 100vh; }
-.tv-screen { display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); padding: clamp(16px, 4vh, 48px) clamp(16px, 5vw, 64px); min-height: calc(100vh - 90px); box-sizing: border-box; }
+/* The screen fills the space under the top bar and its text scales with the height too, so on a short TV browser
+   window (big toolbar, zoomed page) everything still fits and the title isn't scrolled up under the top bar */
+html.tv main { padding: 0; }
+.tv-screen { display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); padding: clamp(12px, 3vh, 48px) clamp(16px, 5vw, 64px); flex: 1 0 auto; box-sizing: border-box; }
 .tv-screen[hidden] { display: none; }
 .tv-qr { flex: none; width: min(42vw, 62vh); aspect-ratio: 1; background: #fff; border-radius: 24px; padding: 12px; box-shadow: 0 10px 40px rgba(20, 20, 60, .18); }
 .tv-qr svg { width: 100%; height: 100%; display: block; }
-.tv-text { max-width: 40rem; font-size: clamp(16px, 2.2vw, 30px); line-height: 1.4; }
-.tv-text h1, .tv-text .tv-heading { font-size: clamp(26px, 4vw, 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
+.tv-text { max-width: 40rem; font-size: clamp(16px, 2.2vw, 30px); font-size: clamp(14px, min(2.2vw, 3.3vh), 30px); line-height: 1.4; }
+.tv-text h1, .tv-text .tv-heading { font-size: clamp(26px, 4vw, 58px); font-size: clamp(22px, min(4vw, 6vh), 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
 .tv-steps { margin: 0 0 .8em; padding-inline-start: 1.3em; }
 .tv-steps li { margin: .25em 0; }
 .tv-alt, .tv-keys { opacity: .75; }
