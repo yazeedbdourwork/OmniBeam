@@ -67,10 +67,11 @@ test('TV: photo wall, remote keys, video controls, music, HEIC card, settings, k
   if (!(await p.locator('#tv-caption').textContent()).includes('Paused')) await p.keyboard.press('Enter');
   await expect(p.locator('#tv-caption')).toContainText('Paused');
   await p.keyboard.press('ArrowRight');
-  expect(await p.locator('#tv-stage video').evaluate((v) => v.currentTime)).toBeGreaterThan(9);
+  // The skip waits for the video's length when it isn't known yet (slow machines), so wait for it too
+  await expect.poll(() => p.locator('#tv-stage video').evaluate((v) => v.currentTime)).toBeGreaterThan(9);
   await expect(p.locator('.tv-bar-time')).toContainText('0:1');
   await p.keyboard.press('ArrowLeft');
-  expect(await p.locator('#tv-stage video').evaluate((v) => v.currentTime)).toBeLessThan(2);
+  await expect.poll(() => p.locator('#tv-stage video').evaluate((v) => v.currentTime)).toBeLessThan(2);
   // The HEIC photo: this browser can't read it, so the slide says how to send it
   await p.keyboard.press('ArrowDown');
   await expect(p.locator('#tv-stage .tv-heic')).toContainText('HEIC');
