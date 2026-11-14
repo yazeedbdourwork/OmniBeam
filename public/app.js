@@ -1575,6 +1575,8 @@ class Peer {
     const job = { send: true }; // (a speed test has a job too)
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
+    // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
+    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid); };
     try {
       // Files the other device asked for (Browse files) go as they are
       if (!opts.want) {
@@ -1601,7 +1603,7 @@ class Peer {
       if (!accepted) {
         if (!gone()) {
           toast(this.declineWhy === 'space' ? t('{name} does not have enough free space for this.', { name: this.info.name }) : t('{name} declined', { name: this.info.name }));
-          Sent.add(this, original, 'declined', job.xid);
+          log('declined');
           job.logged = true;
         }
         return;
@@ -1661,7 +1663,7 @@ class Peer {
       toast(t(files.length > 1 ? 'Sent {n} files to {name}' : 'Sent 1 file to {name}', { n: files.length, name: this.info.name }));
       this.reportStat({ bytes: total - skipped, files: files.length, ...(opts.xid ? { resumed: 1 } : {}) });
       if (big) wsSend({ type: 'stat', kind: 'bigfile' });
-      Sent.add(this, original, 'ok', job.xid);
+      log('ok');
       job.logged = true;
       AskAfterSend.sent();
     } catch (err) {
@@ -1669,12 +1671,12 @@ class Peer {
         toast(t(err.message));
         this.reportProblem(err.message);
         this.reportFail(/connection lost/i.test(err.message) ? 'lost' : 'error');
-        Sent.add(this, original, 'failed', job.xid);
+        log('failed');
         job.logged = true;
       }
     } finally {
       // Stopped with ✕ (here or on the other device) or the connection went away: still in the Sent list
-      if (!job.logged && job.xid) Sent.add(this, original, this.cancelled && !job.kept ? 'cancelled' : 'failed', job.xid);
+      if (!job.logged && job.xid) log(this.cancelled && !job.kept ? 'cancelled' : 'failed');
       // Not to be continued any more (otherwise AutoResume continues it)
       if (job.xid && !job.kept) Outgoing.remove(job.xid);
       // After an abort, abort() has already reset everything (and a newer send may be running)
@@ -1828,7 +1830,7 @@ class Peer {
         inc.keep = true;
         Store.settle(inc.chain.then(async () => {
           if (inc.current?.sink) await inc.current.sink.save().catch(() => {});
-          for (const f of inc.files) if (f.id && f.blob) History.add(f, this.info.name, this.pairSecret);
+          if (!inc.sync) for (const f of inc.files) if (f.id && f.blob) History.add(f, this.info.name, this.pairSecret);
         }));
       } else {
         // Throw away a partly written file
@@ -1918,6 +1920,16 @@ class Peer {
       case 'fs-no':
         loadBrowse().then(() => window.Browse.onMsg(this, msg)).catch(() => {});
         break;
+      // Sync a folder between two computers (sync.js)
+      case 'sy-ls':
+      case 'sy-list':
+      case 'sy-get':
+      case 'sy-done':
+      case 'sy-poke':
+      case 'sy-no':
+      case 'sy-busy':
+        loadSync().then(() => window.Sync.onMsg(this, msg)).catch(() => {});
+        break;
       // Photo backup that skips repeats (pbackup.js)
       case 'bk-check':
       case 'bk-need':
@@ -1946,14 +1958,16 @@ class Peer {
         const xid = /^[0-9a-f]{32}$/.test(msg.xid) ? msg.xid : null;
         // The rest of a transfer this device already accepted, after the connection dropped: no need to ask again
         const resuming = Interrupted.take(xid);
+        // Files for a synced folder this computer asked for (sync.js): saved into the folder, not shown
+        const syncWant = !resuming && window.Sync?.wanted(this.info.id, msg.want) ? msg.want : null;
         (async () => {
           // Files this device asked for itself (Browse files): no need to ask again
           // Photos this computer said it doesn't have yet (Photo backup): saved into the backup folder
           const backup = (!resuming && window.PhotoBackup?.wanted(this.info.id, msg.want, msg.files)) || null;
-          const asked = !resuming && (!!backup || !!window.Browse?.wanted(this.info.id, msg.want));
+          const asked = !resuming && (!!syncWant || !!backup || !!window.Browse?.wanted(this.info.id, msg.want));
           const auto = resuming || asked || (await autoAcceptFrom(this.info.id, msg.proofs));
           if (resuming) toast(t('Continuing the transfer from {name}', { name: this.info.name }));
-          else if (auto) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
+          else if (auto && !syncWant) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
           // A TV with a PIN takes files only from phones that paired with the PIN
           const ok = auto || (IS_TV && tvPin() ? (toast(t('{name} is not paired with this TV. Scan the QR code and type the PIN first.', { name: this.info.name }), 6000), false) : await askAccept(this, msg.files));
           if (!ok) return this.sendJson({ t: 'decline' });
@@ -1986,7 +2000,7 @@ class Peer {
           const skipped = Object.values(have).reduce((s, n) => s + n, 0);
           if (skipped) console.info(`Continuing a transfer from ${this.info.name}: ${formatSize(skipped)} already here`);
           // chain: every storage step of this transfer runs in order (creating files, writing chunks, closing)
-          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup };
+          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup, sync: syncWant };
           this.check = xid ? { xid, sums: {}, files: null } : null;
           // Noted at once, not only when it breaks: if this page is thrown away (a phone's screen turned off), the
           // sender can still continue it here after a reload
@@ -2000,6 +2014,7 @@ class Peer {
           // seg: this device checks big files piece by piece (big-file mode), with pieces of this size
           this.sendJson({ t: 'accept', have, ...(window.More ? { seg: BIG_SEG } : {}) });
         })().catch((err) => console.warn('Request failed', err));
+        if (syncWant) break;
         chime();
         notify(t('{name} wants to send you files', { name: this.info.name }), msg.files.slice(0, 10).map((f) => f.name).join(', '));
         break;
@@ -2074,21 +2089,27 @@ class Peer {
           this.sendJson({ t: 'received' });
           Partials.forget(inc.files.map((f) => f.id).filter(Boolean));
           if (inc.xid) Interrupted.take(inc.xid);
-          // Photo backup: written into the backup folder; only what couldn't be is shown like any received file.
-          // The browser's own copies go once the intact check has read them.
-          let shown = inc.files;
-          if (inc.backup && window.PhotoBackup) {
-            shown = await window.PhotoBackup.store(this, inc.files, inc.backup).catch(() => inc.files);
-            const done = inc.files.filter((f) => !shown.includes(f));
-            setTimeout(() => done.forEach((f) => f.id && Store.remove(f.id)), 60000);
+          if (inc.sync) {
+            // Into the synced folder (sync.js), not into History
+            window.Sync.received(this, inc.files, inc.sync).catch((err) => console.warn('Folder sync', err));
+            if (this.check?.xid === inc.xid) this.check = null;
+          } else {
+            // Photo backup: written into the backup folder; only what couldn't be is shown like any received file.
+            // The browser's own copies go once the intact check has read them.
+            let shown = inc.files;
+            if (inc.backup && window.PhotoBackup) {
+              shown = await window.PhotoBackup.store(this, inc.files, inc.backup).catch(() => inc.files);
+              const done = inc.files.filter((f) => !shown.includes(f));
+              setTimeout(() => done.forEach((f) => f.id && Store.remove(f.id)), 60000);
+            }
+            if (this.incoming !== inc) return;
+            if (shown.length) {
+              if (!chatShowing(this)) showReceived(this, shown);
+              else messageSound();
+              shown.forEach((f) => History.add(f, this.info.name, this.pairSecret));
+            }
+            if (this.check && this.check.xid === inc.xid) this.verifyFiles(this.check, inc.files);
           }
-          if (this.incoming !== inc) return;
-          if (shown.length) {
-            if (!chatShowing(this)) showReceived(this, shown);
-            else messageSound();
-            shown.forEach((f) => History.add(f, this.info.name, this.pairSecret));
-          }
-          if (this.check && this.check.xid === inc.xid) this.verifyFiles(this.check, inc.files);
           this.incoming = null;
           this.busy = false;
           this.setStatus('');
@@ -5179,11 +5200,16 @@ $('#menu-invite').onclick = () => openInvite();
 // Event photo album (album.js) and Share a folder / Browse files (browse.js), loaded on first use
 const loadAlbum = () => loadScript('/album.js?v=1');
 const loadBrowse = () => loadScript('/browse.js?v=1');
+const loadSync = () => loadScript('/sync.js?v=1');
 const loadPBackup = () => loadScript('/pbackup.js?v=1');
 let albumCfg = null;
 $('#btn-album').onclick = () => loadAlbum().then(() => window.Album.open(albumCfg), (err) => toast(err.message));
 $('#btn-fshare').hidden = isPhone || !(typeof window.showDirectoryPicker === 'function' || CAN_PICK_FOLDER);
 $('#btn-fshare').onclick = () => loadBrowse().then(() => window.Browse.open(), (err) => toast(err.message));
+// Sync a folder between two computers: Chrome and Edge on a computer (it needs to write to the folder)
+$('#btn-fsync').hidden = isPhone || typeof window.showDirectoryPicker !== 'function';
+$('#btn-fsync').onclick = () => loadSync().then(() => window.Sync.open(), (err) => toast(err.message));
+try { if (JSON.parse(localStorage.getItem('omnibeam-fsync') || 'null')?.on) setTimeout(() => loadSync().then(() => window.Sync.restore()).catch(() => {}), 1500); } catch {}
 // A folder shared before: pick it up again (Chrome and Edge keep it)
 try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
 // Photo backup (pbackup.js): on computers; picked up again at the start when it was set up before

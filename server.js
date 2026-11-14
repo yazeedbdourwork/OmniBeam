@@ -3988,6 +3988,9 @@ function onConnection(ws, req) {
           else if (msg.kind === 'pbk') count('photoBackupOn');
           else if (msg.kind === 'pbkrun') { count('photoBackups'); count('photoBackupSkipped', Math.min(2000, Math.max(0, Math.floor(Number(msg.skip)) || 0))); }
           else if (msg.kind === 'pbksave') count('photoBackupSaved', Math.min(2000, Math.max(1, Math.floor(Number(msg.n)) || 1)));
+          // Sync a folder between two computers: turned on, files copied (sync.js)
+          else if (msg.kind === 'fsync') count('folderSyncs');
+          else if (msg.kind === 'fsyncf') count('folderSyncFiles', Math.min(100, Math.max(1, Math.floor(Number(msg.n)) || 1)));
           else if (['shown', 'rate', 'share', 'no'].includes(msg.act)) count('ask_' + msg.act);
           break;
         }
