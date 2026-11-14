@@ -151,6 +151,17 @@ Downloads served by the site (`public/tools/`):
 - `omnibeam-chrome.zip`: the browser extension, to install by hand.
 - `omnibeam-wordpress.zip`: WordPress plugin with a shortcode and a block for the "Send me files" box.
 
+Command line for developers (`cli/`, the npm package `omnibeam`, Node.js 22+, no dependencies):
+
+```sh
+npx omnibeam send build.zip      # to a phone or computer with OmniBeam open (or scan the QR code it prints)
+npx omnibeam receive             # wait for files from another device
+npx omnibeam link report.pdf     # an encrypted share link
+npx omnibeam get <link>          # download a share link
+```
+
+Details in [cli/README.md](cli/README.md). It is not part of the website: the deploy only sends `server.js` and `public/`.
+
 ## Privacy and security
 
 - Files are encrypted end to end on the sending device; only the receiving device can decrypt them.
@@ -176,6 +187,7 @@ OmniBeam/
 ├── package.json          Scripts (start, test, deploy); no runtime dependencies
 ├── .htaccess             cPanel/Passenger setup + blocks everything outside public/
 ├── vendor/               Bundled ws (WebSocket) and terser (minifier), so no npm install is needed
+├── cli/                  The command-line tool (npm package "omnibeam"): send, receive, link, get
 ├── public/               Everything the browser loads
 │   ├── index.html        The app
 │   ├── app.js            Main app logic (WebRTC, pairing, transfers, UI)
@@ -311,4 +323,4 @@ Facebook: https://www.facebook.com/omnibeamsite
 
 ## License
 
-OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
+OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js` and `cli/lib/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
