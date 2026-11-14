@@ -1455,5 +1455,17 @@
     "Back up photos": "Fotoğrafları yedekle",
     "Photo backup:": "Fotoğraf yedeği:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "Bilgisayarda ⋯ menüsünde Fotoğraf yedeği'ne dokunun ve bir klasör seçin. Eşleşmiş telefonunuzda bilgisayara, sonra Daha fazla… ve Fotoğrafları yedekle'ye dokunup fotoğraflarınızı seçin. Yalnızca bilgisayarda henüz olmayanlar, tam kalitede gönderilir.",
+    // How to Use window: topics and search
+    "Get started": "Başlarken",
+    "Send files and messages": "Dosya ve mesaj gönderme",
+    "Share with other people": "Başkalarıyla paylaşma",
+    "Received files and history": "Alınan dosyalar ve geçmiş",
+    "Phone and computer together": "Telefon ve bilgisayar birlikte",
+    "Settings and privacy": "Ayarlar ve gizlilik",
+    "Apps and add-ons": "Uygulamalar ve eklentiler",
+    "Troubleshooting": "Sorun giderme",
+    "Search the guide": "Kılavuzda ara",
+    "Nothing found. Try another word.": "Bir şey bulunamadı. Başka bir kelime deneyin.",
+    "Open the full guide": "Kılavuzun tamamını aç",
   },
 });

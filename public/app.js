@@ -6820,7 +6820,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=6`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=7`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');
@@ -6856,6 +6856,30 @@ document.addEventListener('click', (e) => {
   }
   const close = e.target.closest('[data-close]');
   if (close) close.closest('dialog')?.close();
+});
+// Search in the How to Use window: only the tips with every typed word stay, and their topics open. An empty box
+// shows all topics again, closed.
+const howFold = (s) => s.toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+document.addEventListener('input', (e) => {
+  const box = e.target.closest?.('#dlg-how .how-search');
+  if (!box) return;
+  const dlg = box.closest('dialog');
+  const words = howFold(box.value).split(/\s+/).filter(Boolean);
+  let found = 0;
+  dlg.querySelectorAll('.how-group').forEach((group) => {
+    let n = 0;
+    group.querySelectorAll('li').forEach((li) => {
+      const text = howFold(li.textContent);
+      const hit = words.every((w) => text.includes(w));
+      li.hidden = !hit;
+      if (hit) n++;
+    });
+    group.hidden = !n;
+    group.open = words.length > 0 && n > 0;
+    group.querySelector('summary small').textContent = n; // how many tips of this topic are shown
+    found += n;
+  });
+  dlg.querySelector('.how-none').hidden = found > 0;
 });
 
 // Connect to the server right away; the ICE settings arrive in parallel (devices take a moment to show up anyway)

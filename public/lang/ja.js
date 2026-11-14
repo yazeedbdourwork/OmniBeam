@@ -1455,5 +1455,17 @@
     "Back up photos": "写真をバックアップ",
     "Photo backup:": "写真バックアップ:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "パソコンで ⋯ メニューの写真バックアップをタップし、フォルダを選びます。ペア設定したスマートフォンでパソコンをタップし、その他… から写真をバックアップを選んで、写真を選びます。パソコンにまだないものだけが元の画質で送られます。",
+    // How to Use window: topics and search
+    "Get started": "はじめに",
+    "Send files and messages": "ファイルとメッセージを送る",
+    "Share with other people": "ほかの人と共有",
+    "Received files and history": "受信したファイルと履歴",
+    "Phone and computer together": "スマホとパソコンを一緒に",
+    "Settings and privacy": "設定とプライバシー",
+    "Apps and add-ons": "アプリと拡張機能",
+    "Troubleshooting": "困ったときは",
+    "Search the guide": "ガイドを検索",
+    "Nothing found. Try another word.": "見つかりませんでした。別の言葉で試してください。",
+    "Open the full guide": "ガイド全体を開く",
   },
 });

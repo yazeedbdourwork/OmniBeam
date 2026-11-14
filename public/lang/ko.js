@@ -1455,5 +1455,17 @@
     "Back up photos": "사진 백업",
     "Photo backup:": "사진 백업:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "컴퓨터에서 ⋯ 메뉴의 사진 백업을 누르고 폴더를 선택하세요. 페어링된 휴대폰에서 컴퓨터를 누른 다음 더 보기…와 사진 백업을 누르고 사진을 선택하세요. 컴퓨터에 아직 없는 것만 원본 화질로 보내집니다.",
+    // How to Use window: topics and search
+    "Get started": "시작하기",
+    "Send files and messages": "파일과 메시지 보내기",
+    "Share with other people": "다른 사람과 공유",
+    "Received files and history": "받은 파일과 기록",
+    "Phone and computer together": "휴대폰과 컴퓨터 함께 쓰기",
+    "Settings and privacy": "설정과 개인정보",
+    "Apps and add-ons": "앱과 확장 프로그램",
+    "Troubleshooting": "문제 해결",
+    "Search the guide": "가이드 검색",
+    "Nothing found. Try another word.": "찾을 수 없습니다. 다른 단어로 해 보세요.",
+    "Open the full guide": "전체 가이드 열기",
   },
 });

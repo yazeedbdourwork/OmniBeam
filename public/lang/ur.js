@@ -1455,5 +1455,17 @@
     "Back up photos": "تصاویر کا بیک اپ لیں",
     "Photo backup:": "تصاویر کا بیک اپ:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "کمپیوٹر پر ⋯ مینو میں تصاویر کا بیک اپ ٹیپ کریں اور ایک فولڈر منتخب کریں۔ اپنے جوڑے گئے فون پر کمپیوٹر کو ٹیپ کریں، پھر مزید… اور تصاویر کا بیک اپ لیں، اور اپنی تصاویر منتخب کریں۔ صرف وہی بھیجی جاتی ہیں جو کمپیوٹر پر ابھی نہیں ہیں، پوری کوالٹی میں۔",
+    // How to Use window: topics and search
+    "Get started": "شروع کریں",
+    "Send files and messages": "فائلیں اور پیغامات بھیجیں",
+    "Share with other people": "دوسروں کے ساتھ شیئر کریں",
+    "Received files and history": "موصول شدہ فائلیں اور ہسٹری",
+    "Phone and computer together": "فون اور کمپیوٹر ساتھ ساتھ",
+    "Settings and privacy": "سیٹنگز اور پرائیویسی",
+    "Apps and add-ons": "ایپس اور ایکسٹینشنز",
+    "Troubleshooting": "مسائل کا حل",
+    "Search the guide": "گائیڈ میں تلاش کریں",
+    "Nothing found. Try another word.": "کچھ نہیں ملا۔ کوئی اور لفظ آزمائیں۔",
+    "Open the full guide": "پوری گائیڈ کھولیں",
   },
 });

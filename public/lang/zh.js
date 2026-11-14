@@ -1455,5 +1455,17 @@
     "Back up photos": "备份照片",
     "Photo backup:": "照片备份：",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "在电脑上，点 ⋯ 菜单里的照片备份并选择一个文件夹。在已配对的手机上，点这台电脑，然后点更多…和备份照片，选择你的照片。只发送电脑还没有的，保持原画质。",
+    // How to Use window: topics and search
+    "Get started": "开始使用",
+    "Send files and messages": "发送文件和消息",
+    "Share with other people": "与他人分享",
+    "Received files and history": "收到的文件和历史记录",
+    "Phone and computer together": "手机和电脑一起用",
+    "Settings and privacy": "设置和隐私",
+    "Apps and add-ons": "应用和扩展",
+    "Troubleshooting": "故障排除",
+    "Search the guide": "搜索指南",
+    "Nothing found. Try another word.": "没有找到。换个词试试。",
+    "Open the full guide": "打开完整指南",
   },
 });

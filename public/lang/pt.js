@@ -1457,5 +1457,17 @@
     "Back up photos": "Fazer backup das fotos",
     "Photo backup:": "Backup de fotos:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "Num computador, toque em Backup de fotos no menu ⋯ e escolha uma pasta. No celular pareado, toque no computador, depois em Mais… e Fazer backup das fotos, e escolha suas fotos. Só as que o computador ainda não tem são enviadas, em qualidade total.",
+    // How to Use window: topics and search
+    "Get started": "Primeiros passos",
+    "Send files and messages": "Enviar arquivos e mensagens",
+    "Share with other people": "Compartilhar com outras pessoas",
+    "Received files and history": "Arquivos recebidos e histórico",
+    "Phone and computer together": "Celular e computador juntos",
+    "Settings and privacy": "Configurações e privacidade",
+    "Apps and add-ons": "Apps e extensões",
+    "Troubleshooting": "Solução de problemas",
+    "Search the guide": "Pesquisar no guia",
+    "Nothing found. Try another word.": "Nada encontrado. Tente outra palavra.",
+    "Open the full guide": "Abrir o guia completo",
   },
 });

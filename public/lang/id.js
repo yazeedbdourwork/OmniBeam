@@ -1457,5 +1457,17 @@
     "Back up photos": "Cadangkan foto",
     "Photo backup:": "Cadangan foto:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "Di komputer, ketuk Cadangan foto di menu ⋯ dan pilih folder. Di ponsel yang tersambung, ketuk komputer, lalu Lainnya… dan Cadangkan foto, lalu pilih foto Anda. Hanya yang belum ada di komputer yang dikirim, dengan kualitas penuh.",
+    // How to Use window: topics and search
+    "Get started": "Mulai",
+    "Send files and messages": "Kirim file dan pesan",
+    "Share with other people": "Bagikan ke orang lain",
+    "Received files and history": "File diterima dan riwayat",
+    "Phone and computer together": "Ponsel dan komputer bersama",
+    "Settings and privacy": "Pengaturan dan privasi",
+    "Apps and add-ons": "Aplikasi dan ekstensi",
+    "Troubleshooting": "Pemecahan masalah",
+    "Search the guide": "Cari di panduan",
+    "Nothing found. Try another word.": "Tidak ditemukan. Coba kata lain.",
+    "Open the full guide": "Buka panduan lengkap",
   },
 });
