@@ -571,7 +571,10 @@
     seek(secs) {
       const v = this.video();
       if (!v) return;
-      v.currentTime = Math.max(0, Math.min((v.duration || 0) - 0.1, v.currentTime + secs));
+      // Before the video's length is known (a slow TV, or just after the slide opened) a skip would land on 0:00:
+      // do it as soon as the length arrives instead
+      if (!(v.duration > 0)) { v.addEventListener('loadedmetadata', () => this.seek(secs), { once: true }); return; }
+      v.currentTime = Math.max(0, Math.min(v.duration - 0.1, v.currentTime + secs));
       this.paintBar();
       this.wake();
     },
