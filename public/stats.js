@@ -471,6 +471,7 @@
       ['Notification replies', 'notifReplies', 'quick replies sent from a notification'],
       ['Event albums', 'albums', `albums made · ${num(sum('albumPhotos'))} photos added (${size(sum('albumBytes'))}) · ${num(sum('albumViews'))} photos opened`],
       ['Browse my computer', 'folderShares', `folders shared · ${num(sum('folderBrowse'))} times looked through · ${num(sum('folderGets'))} files taken`],
+      ['Photo backup', 'photoBackups', `backups · ${num(sum('photoBackupSaved'))} new photos saved · ${num(sum('photoBackupSkipped'))} skipped as already there · ${num(sum('photoBackupOn'))} folders set up`],
       ['Folder sync', 'folderSyncs', `syncs turned on · ${num(sum('folderSyncFiles'))} files copied between computers`],
     ];
     const rows = FEATURES.map(([name, field, sub]) => ({ name, sub, n: sum(field), p: sumOf(before, field) }));
@@ -791,6 +792,7 @@
       'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',
       'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn', 'backupsSaved', 'backupsOpened', 'notifReplies',
       'albums', 'albumPhotos', 'albumBytes', 'albumViews', 'folderShares', 'folderBrowse', 'folderGets',
+      'photoBackups', 'photoBackupSaved', 'photoBackupSkipped', 'photoBackupOn',
       'folderSyncs', 'folderSyncFiles'];
     const countries = Object.keys(group(days, 'uc_')).sort();
     const head = ['date', ...fields, ...countries.map((c) => 'visitors_' + c)];
