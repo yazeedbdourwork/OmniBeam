@@ -7,9 +7,11 @@ const { expect } = require('@playwright/test');
 // Opens OmniBeam in a fresh browser profile with a fixed device name.
 //   relayOnly: block direct connections (as on a network where they fail), so everything goes through the server
 //   clipboard: allow the page to read and write the clipboard (Chrome asks the user otherwise)
-async function openDevice(browser, name, { relayOnly = false, clipboard = false, path = '/', storage = {} } = {}) {
+//   userAgent: open it as another kind of device (e.g. an Android phone)
+async function openDevice(browser, name, { relayOnly = false, clipboard = false, path = '/', storage = {}, userAgent } = {}) {
   const context = await browser.newContext({
     acceptDownloads: true,
+    ...(userAgent ? { userAgent } : {}),
     permissions: clipboard ? ['clipboard-read', 'clipboard-write'] : [],
   });
   await context.addInitScript(({ name, storage }) => {

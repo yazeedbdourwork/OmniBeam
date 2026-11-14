@@ -121,6 +121,16 @@ const more = (name) => async (...args) => {
 };
 // media.js: taking a photo, voice notes, sharing a screen, secret notes and previews of received files
 const loadMedia = () => loadScript('/media.js?v=1');
+// webcam.js: a phone as a webcam or microphone for a computer
+const webcam = (name) => async (...args) => {
+  try {
+    await loadScript('/webcam.js?v=1');
+  } catch (err) {
+    toast(err.message);
+    throw err;
+  }
+  return window.Webcam[name](...args);
+};
 const media = (name) => async (...args) => {
   try {
     await loadMedia();
@@ -4471,6 +4481,10 @@ function openActions(peer) {
   $('[data-act=voice]', dlg).hidden = !window.MediaRecorder || !navigator.mediaDevices?.getUserMedia;
   // Phones and tablets can't share their screen from a browser; they can still watch one
   $('[data-act=screen]', dlg).hidden = !navigator.mediaDevices?.getDisplayMedia || isPhone;
+  // A phone as a webcam or mic: on the phone ("Be its webcam or mic"), or on a computer for a phone's card
+  const camBtn = $('[data-act=webcam]', dlg);
+  camBtn.hidden = !window.RTCPeerConnection || (isPhone ? !navigator.mediaDevices?.getUserMedia : deviceType(peer.info.device) !== 'mobile');
+  $('span', camBtn).textContent = isPhone ? t('Be its webcam or mic') : t('Use as webcam or mic');
   // Looking in a folder another device shares: only between paired devices
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
   $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
@@ -4488,6 +4502,7 @@ function openActions(peer) {
     else if (act === 'photo') media('snapPhoto')(peer);
     else if (act === 'voice') media('recordVoice')(peer);
     else if (act === 'screen') media('shareScreen')(peer);
+    else if (act === 'webcam') webcam(isPhone ? 'sendCamera' : 'useAsWebcam')(peer);
     else if (act === 'secret') media('secretNote')(peer);
     else if (act === 'speed') checkSpeedWith(peer.info.id);
     else if (act === 'scan') openScan(peer);
@@ -4546,6 +4561,12 @@ let screenQueue = Promise.resolve();
 function onScreenSignal(from, data) {
   if (!data || typeof data !== 'object') return;
   screenQueue = screenQueue.then(() => media('onScreenSignal')(from, data)).catch(() => {});
+}
+// Phone as a webcam or mic (webcam.js), in the same way
+let camQueue = Promise.resolve();
+function onCamSignal(from, data) {
+  if (!data || typeof data !== 'object') return;
+  camQueue = camQueue.then(() => webcam('onSignal')(from, data)).catch(() => {});
 }
 
 // Pairing with a 6-digit code
@@ -5306,7 +5327,7 @@ function removePeer(id) {
   p.destroy();
   peers.delete(id);
   announce(t('{name} left', { name: p.info.name }));
-  window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing with it (media.js)
+  window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing (media.js) and webcam (webcam.js) with it
   updateSendAll();
   tellExtension();
   if (p.pairSecret) {
@@ -5547,6 +5568,7 @@ function connectSocket() {
         else if (msg.data && typeof msg.data.qrOk === 'string') onQrOk(msg.from, msg.data);
         else if (msg.data && typeof msg.data.pairForget === 'string') onPairForget(msg.from, msg.data.pairForget);
         else if (msg.data && msg.data.screen) onScreenSignal(msg.from, msg.data.screen);
+        else if (msg.data && msg.data.cam) onCamSignal(msg.from, msg.data.cam);
         else if (msg.data && msg.data.e2e) peers.get(msg.from)?.onE2E(msg.data);
         else if (msg.data && msg.data.resume) peers.get(msg.from)?.onResume(msg.data.resume);
         else if (msg.data && msg.data.resumeOffer) AutoResume.onOffer(msg.from, msg.data.resumeOffer).catch(() => {});
@@ -6772,7 +6794,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=4`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=6`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');

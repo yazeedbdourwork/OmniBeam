@@ -3946,7 +3946,7 @@ function onConnection(ws, req) {
         // 'none' only for a failed send that never connected.
         // Small counts with no transfer attached: the rating/share prompt after sends (shown / rate / share / no),
         // the rest of a dropped send going to another device, a link sent on to an email address or phone
-        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply', 'fshare', 'fbrowse', 'fget', 'pbk', 'pbkrun', 'pbksave'].includes(msg.kind)) {
+        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'webcam', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply', 'fshare', 'fbrowse', 'fget', 'pbk', 'pbkrun', 'pbksave'].includes(msg.kind)) {
           client.extraStats = (client.extraStats || 0) + 1;
           if (client.extraStats > 30) return;
           if (msg.kind === 'handoff') count('thandoff');
@@ -3962,6 +3962,7 @@ function onConnection(ws, req) {
           else if (msg.kind === 'photo') count('photosTaken');
           else if (msg.kind === 'voice') count('voiceNotes');
           else if (msg.kind === 'screen') count('screenShares');
+          else if (msg.kind === 'webcam') count('webcamShares'); // a phone used as a webcam or mic (webcam.js)
           else if (msg.kind === 'preview') count('previews');
           // Scan to PDF (scan.js) and opening a device's chat (chat.js)
           else if (msg.kind === 'scan') count('scans');

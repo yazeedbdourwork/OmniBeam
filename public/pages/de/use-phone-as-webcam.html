@@ -1,0 +1,63 @@
+<!--
+title: Handy als Webcam oder Mikrofon für den PC nutzen, kostenlos ohne App
+description: Mach dein iPhone oder Android-Handy direkt im Browser zur Webcam oder zum Mikrofon für deinen Windows-PC oder Mac. Funktioniert mit OBS, Zoom, Meet und Teams. Kostenlos, ohne App.
+short: Handy als Webcam oder Mikrofon für den PC
+kind: guide
+order: 10
+updated: 2026-11-14
+-->
+<h1>Dein Handy als Webcam oder Mikrofon für den Computer</h1>
+<p class="lead">Die Kamera deines Handys ist fast immer schärfer als die eingebaute Webcam eines Laptops. Mit OmniBeam nutzt du sie in einer Minute als Webcam oder Mikrofon für deinen Windows-PC oder Mac, direkt im Browser: keine App auf dem Handy, kein Konto und kein Kabel.</p>
+
+<p><a class="download" href="/de/">OmniBeam öffnen</a></p>
+
+<h2>In drei Schritten loslegen</h2>
+<ol>
+  <li>Öffne <a href="/de/">omnibeam.site</a> auf dem Handy und auf dem Computer. Im selben WLAN finden sie sich von selbst. In verschiedenen Netzen koppelst du sie einmal mit dem QR-Code oder dem 6-stelligen Code.</li>
+  <li>Tippe auf dem Handy auf die Karte des Computers, dann auf <em>Mehr…</em> und <em>Als Webcam oder Mikrofon dienen</em>. Oder öffne am Computer <em>Mehr…</em> auf der Karte des Handys und wähle <em>Als Webcam oder Mikrofon nutzen</em>; das Handy öffnet das Kamerafenster dann von selbst.</li>
+  <li>Wähle <em>Kamera und Mikrofon</em>, <em>Nur Kamera</em> oder <em>Nur Mikrofon</em>, die Front- oder Rückkamera und 720p oder 1080p, und tippe auf <em>Los</em>. Das Bild erscheint live auf dem Computer.</li>
+</ol>
+<p>Stell das Handy auf einen Ständer oder lehne es an, und lass OmniBeam darauf geöffnet, solange du es nutzt. Die Rückkamera liefert das beste Bild; mit der Frontkamera siehst du dich selbst auf dem Handy.</p>
+
+<h2>In OBS verwenden</h2>
+<ol>
+  <li>Klicke am Computer im Kamerafenster auf <em>Eigenes Fenster</em>. Ein sauberes Fenster namens <em>OmniBeam camera</em> öffnet sich, in dem nur das Bild zu sehen ist.</li>
+  <li>Füge in OBS eine Quelle <em>Fensteraufnahme</em> hinzu (auf dem Mac <em>macOS-Bildschirmaufnahme</em> mit einem Fenster) und wähle das Fenster <em>OmniBeam camera</em>. Zuschneiden und skalieren kannst du es wie jede andere Quelle.</li>
+</ol>
+
+<h2>In Zoom, Google Meet oder Microsoft Teams verwenden</h2>
+<p>Eine Website kann Windows oder macOS nicht selbst eine neue Kamera hinzufügen; das kann nur installierte Software. Der kostenlose Weg ist die eingebaute virtuelle Kamera von OBS:</p>
+<ol>
+  <li>Richte das Fenster <em>OmniBeam camera</em> wie oben in OBS ein.</li>
+  <li>Klicke in OBS auf <em>Virtuelle Kamera starten</em>.</li>
+  <li>Öffne in Zoom, Meet oder Teams die Videoeinstellungen und wähle <em>OBS Virtual Camera</em> als Kamera.</li>
+</ol>
+<p>Der Ton des Handy-Mikrofons wird auf dem Computer abgespielt. Um ihn als Mikrofon einer Meeting-App zu nutzen, installiere ein kostenloses virtuelles Audiokabel wie VB-CABLE, wähle es im Kamerafenster von OmniBeam unter <em>In Zoom, Meet, Teams oder OBS verwenden</em> → <em>Ton abspielen auf</em> und dann in der Meeting-App als Mikrofon. In OBS kannst du den Ton einfach mit dem Fenster aufnehmen oder das Kabel als Audioeingang hinzufügen.</p>
+
+<h2>Privat von Grund auf</h2>
+<p>Bild und Ton gehen über eine verschlüsselte WebRTC-Verbindung direkt vom Handy zum Computer, genau wie deine Dateien. Nichts wird aufgezeichnet oder gespeichert, weder auf dem Handy noch auf dem Computer noch auf unserem Server. Gibt es keinen direkten Weg zwischen den beiden Netzen, leitet ein verschlüsseltes Relay den Stream weiter, ohne ihn sehen zu können. Beide Geräte können jederzeit aufhören.</p>
+
+<h2>Tipps für ein besseres Bild</h2>
+<ul>
+  <li>Nutze für Handy und Computer dasselbe WLAN: Das Bild läuft flüssiger als über mobile Daten.</li>
+  <li>Setz dich mit dem Gesicht zu einem Fenster oder einer Lampe. Handys machen auch bei wenig Licht ein sauberes Bild, aber Licht von vorn hilft immer.</li>
+  <li>Wähle 1080p für Aufnahmen und Streams, 720p für lange Videoanrufe oder ein langsameres Netz.</li>
+  <li>Nutze <em>Spiegeln</em> am Computer, wenn Schrift hinter dir richtig herum lesbar sein soll oder du dich lieber wie im Spiegel siehst.</li>
+  <li>Häng das Handy bei langen Anrufen ans Ladegerät. OmniBeam hält den Bildschirm des Handys an, solange die Kamera live ist.</li>
+</ul>
+
+<section class="qa">
+<h2>Fragen und Antworten</h2>
+<h3>Muss ich eine App auf dem Handy installieren?</h3>
+<p>Nein. Es funktioniert im Browser des Handys: Safari auf dem iPhone oder iPad, Chrome oder jeder moderne Browser auf Android. Der Computer braucht ebenfalls nur einen Browser, plus OBS, wenn das Bild in Zoom, Meet oder Teams erscheinen soll.</p>
+<h3>Funktioniert es mit einem iPhone und einem Windows-PC?</h3>
+<p>Ja. Jedes Handy mit Kamera funktioniert mit jedem Computer: iPhone mit Windows, Android mit Mac, iPad mit Chromebook und so weiter.</p>
+<h3>Kann ich nur das Mikrofon nutzen?</h3>
+<p>Ja. Wähle auf dem Handy <em>Nur Mikrofon</em>. Der Computer zeigt einen Pegel, damit du siehst, dass es funktioniert, und der Ton kann für Meeting-Apps an ein virtuelles Audiokabel gehen.</p>
+<h3>Kann ich zwischen Front- und Rückkamera wechseln?</h3>
+<p>Ja, jederzeit mit <em>Kamera wechseln</em>, auch während der Computer zusieht. Mit <em>Mikrofon stumm</em> schaltest du außerdem das Mikrofon am Handy stumm.</p>
+<h3>Gibt es eine Verzögerung?</h3>
+<p>Im selben WLAN beträgt die Verzögerung meist nur einen Bruchteil einer Sekunde, das reicht gut für Videoanrufe. Über verschiedene Netze hängt es von der Verbindung ab.</p>
+<h3>Ist es kostenlos?</h3>
+<p>Ja. OmniBeam ist kostenlos, ohne Konto und ohne Wasserzeichen im Bild.</p>
+</section>
