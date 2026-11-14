@@ -1,0 +1,13 @@
+# Files that were once on the live site but are no longer part of OmniBeam.
+# Every deploy (.github/workflows/deploy.yml, "Remove old files") moves them to the cPanel trash if they are
+# still in the app folder, because unpacking the upload zip only adds and replaces files, it never deletes.
+# Files deleted from public/ in git are removed the same way, so this list is only for files that were never in
+# git (uploaded by hand before the GitHub repo existed). One path per line, relative to the app folder.
+#
+# Old copies of the info pages: the server builds /about, /privacy, /terms and /how-to-use from public/pages/
+# and sends /about.html etc. there, but the host serves a real file first, so these showed out-of-date text.
+public/about.html
+public/privacy.html
+public/terms.html
+public/how-to-use.html
+public/index.zip
