@@ -56,13 +56,16 @@ test('TV mode: big QR code, a phone scans it, its photos play as a slideshow wit
   expect(await p.locator('#tv-stage img').evaluate((img) => img.complete && img.naturalWidth)).toBe(2);
   await expect(p.locator('#tv-caption')).toHaveText('1 / 2 · from Phone');
   await expect(p.locator('#toast')).toContainText('Other files received: 1.');
-  // The remote: ▶ next, OK pauses, Back returns to the QR code
+  // The remote: ▶ next, OK pauses, Back goes to the photo wall, Back again to the QR code
   await p.keyboard.press('ArrowRight');
   await expect(p.locator('#tv-caption')).toHaveText('2 / 2 · from Phone');
   await p.keyboard.press('Enter');
   await expect(p.locator('#tv-caption')).toHaveText('2 / 2 · from Phone · Paused');
   await p.keyboard.press('Escape');
   await expect(p.locator('#tv-show')).toBeHidden();
+  await expect(p.locator('#tv-wall')).toBeVisible();
+  await p.keyboard.press('Escape');
+  await expect(p.locator('#tv-wall')).toBeHidden();
   await expect(p.locator('#tv-photos')).toHaveText('Show photos (2)');
   await p.locator('#tv-photos').click();
   await expect(p.locator('#tv-show')).toBeVisible();
@@ -83,6 +86,28 @@ test('TV mode in other languages, and its address', async ({ page, request }) =>
   // The ⋯ menu on the normal app links to TV mode in the page's language
   await page.goto('/ar/');
   await expect(page.locator('#menu-tv')).toHaveAttribute('href', '/ar/tv');
+});
+
+// Seen on an Android TV browser: qrcode.js never loaded and the QR box stayed empty for good
+test('TV mode: the QR code still shows when qrcode.js can\'t load, and the title stays on screen', async ({ browser, request }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 560 }, serviceWorkers: 'block' });
+  const page = await ctx.newPage();
+  await page.route(/\/qrcode\.js/, (r) => r.abort());
+  await page.goto('/ar/tv');
+  await expect(page.locator('#tv-qr svg')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('#tv-qr')).toHaveAttribute('data-link', /#qr=[0-9a-f]+&n=/);
+  expect(await page.evaluate(() => typeof qrcode)).toBe('undefined');
+  // A short TV browser window: nothing scrolled away under the top bar
+  await page.waitForTimeout(800); // after the remote's first focus
+  expect(await page.locator('main').evaluate((m) => m.scrollTop)).toBe(0);
+  const title = await page.locator('#tv-title').boundingBox();
+  const header = await page.locator('header').boundingBox();
+  expect(title.y).toBeGreaterThanOrEqual(header.y + header.height);
+  await ctx.close();
+  // The server only draws codes for links to this site
+  const bad = await request.post('/api/qr', { data: { d: 'https://example.com/#qr=1' } });
+  expect(bad.status()).toBe(400);
+  expect((await request.get('/api/qr')).status()).toBe(405);
 });
 
 test('a tab that crashed and a stuck transfer are reported to /stats and Telegram', async ({ browser, request }) => {

@@ -1,0 +1,37 @@
+{
+  "name": "omnibeam",
+  "version": "1.0.0",
+  "description": "Send files between your devices from the terminal: to a phone or computer with OmniBeam open, or by an encrypted share link. End-to-end encrypted.",
+  "bin": {
+    "omnibeam": "bin/omnibeam.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "file-transfer",
+    "file-sharing",
+    "send-files",
+    "cli",
+    "airdrop",
+    "share-link",
+    "end-to-end-encryption",
+    "omnibeam"
+  ],
+  "homepage": "https://omnibeam.site",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yazeedbdourwork/OmniBeam.git",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/yazeedbdourwork/OmniBeam/issues"
+  },
+  "license": "GPL-3.0-or-later"
+}

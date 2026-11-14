@@ -9,7 +9,7 @@
 // - Files with a version in their address (app.js?v=37): saved once and served from the device. A new version of
 //   such a file always gets a new address, so the saved one can never be out of date.
 // - Other files (icons, the manifest): served from the device and refreshed in the background.
-// - Everything that talks to the server (/ws, /poll, /api, /d/, /r/, /stats…) and the intro video (/media/, streamed in
+// - Everything that talks to the server (/ws, /poll, /api, /d/, /r/, /e/, /stats…) and the intro video (/media/, streamed in
 //   pieces the browser asks for) is never touched.
 const VERSION = 'dev';
 const CACHE = `omnibeam-${VERSION}`;
@@ -18,7 +18,7 @@ const MAX_PAGES = 40;
 // The app's files besides the home page. The server adds the files the home page and app.js load on demand.
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon.svg?v=4', '/favicon.ico'];
 const isHome = (p) => /^\/(?:[a-z]{2}\/)?$/.test(p);
-const LIVE = /^\/(?:ws|poll\/|api\/|d\/|r\/|media\/|stats|sw\.js|share$|sitemap\.xml|robots\.txt|\.well-known\/)/;
+const LIVE = /^\/(?:ws|poll\/|api\/|d\/|r\/|e\/|media\/|stats|sw\.js|share$|sitemap\.xml|robots\.txt|\.well-known\/)/;
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -175,11 +175,16 @@ self.addEventListener('notificationclick', (e) => {
     // A link sent from another device: tapping its notification (or Open link) opens the link itself
     if (isLink && (act === '' || act === 'link')) return self.clients.openWindow(link);
     const open = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    const app = open.find((c) => new URL(c.url).origin === self.location.origin);
+    const app = appTab(open);
     const chat = typeof data.chat === 'string' ? data.chat : '';
     const text = act === 'reply' && typeof e.reply === 'string' ? e.reply.trim().slice(0, 20000) : '';
     if (act === 'reply' && text && chat) {
-      if (app) return app.postMessage({ type: 'notif-reply', chat, text });
+      // The tab says when it took the reply. A phone often pauses a tab that isn't on screen: no answer in 2 seconds
+      // brings OmniBeam to the front, which wakes it so the reply goes (and shows in the chat).
+      if (app) {
+        if (await tellTab(app, { type: 'notif-reply', chat, text }, 2000)) return;
+        return Promise.resolve(app.focus()).catch(() => {});
+      }
       // No OmniBeam open: it opens and sends the reply once the device shows up
       await saveReply({ chat, text, at: Date.now() });
       return self.clients.openWindow(url);
@@ -200,6 +205,21 @@ self.addEventListener('notificationclick', (e) => {
   })());
 });
 
+// The OmniBeam app among the open windows: its main page (not /admin, a guide page or a link page), the one on
+// screen first
+function appTab(list) {
+  const mine = list.filter((c) => { const u = new URL(c.url); return u.origin === self.location.origin && u.pathname === '/'; });
+  return mine.find((c) => c.focused) || mine.find((c) => c.visibilityState === 'visible') || mine[0];
+}
+// A message to the tab, which answers on the port it comes with: true once it did, false after ms without an answer
+function tellTab(client, msg, ms) {
+  return new Promise((resolve) => {
+    const ch = new MessageChannel();
+    const timer = setTimeout(() => resolve(false), ms);
+    ch.port1.onmessage = () => { clearTimeout(timer); resolve(true); };
+    try { client.postMessage(msg, [ch.port2]); } catch { clearTimeout(timer); resolve(false); }
+  });
+}
 // A reply typed in a notification while no OmniBeam was open, kept until the page that opens picks it up
 async function saveReply(reply) {
   try {

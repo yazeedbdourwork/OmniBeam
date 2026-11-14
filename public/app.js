@@ -121,6 +121,16 @@ const more = (name) => async (...args) => {
 };
 // media.js: taking a photo, voice notes, sharing a screen, secret notes and previews of received files
 const loadMedia = () => loadScript('/media.js?v=1');
+// webcam.js: a phone as a webcam or microphone for a computer
+const webcam = (name) => async (...args) => {
+  try {
+    await loadScript('/webcam.js?v=1');
+  } catch (err) {
+    toast(err.message);
+    throw err;
+  }
+  return window.Webcam[name](...args);
+};
 const media = (name) => async (...args) => {
   try {
     await loadMedia();
@@ -339,7 +349,13 @@ function replyFromNotification(key, text) {
   if (!text || AppLock.locked || typeof key !== 'string' || !/^[pn]:/.test(key)) return false;
   wsSend({ type: 'stat', kind: 'nreply' });
   const peer = peerOfKey(key);
-  if (peer) { peer.sendText(text); return true; }
+  if (peer) {
+    peer.sendText(text);
+    // Seen in the background too: the reply went
+    if (document.hidden) notify(t('Reply sent to {name}', { name: peer.info.name }), text.slice(0, 100), { always: true });
+    else toast(t('Reply sent to {name}', { name: peer.info.name }));
+    return true;
+  }
   const pairing = key[0] === 'p' ? loadPaired().find((p) => p.secret.startsWith(key.slice(2))) : null;
   if (!pairing) {
     const name = key.slice(2);
@@ -917,37 +933,69 @@ class Peer {
           ${t('More…')}
         </button>
       </div>
+      <button type="button" class="peer-more-btn" data-act="menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+      </button>
       <button type="button" class="xfer-cancel" data-act="cancel" title="${t('Cancel transfer')}" aria-label="${t('Cancel transfer')}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>`;
     $('.name', el).textContent = this.info.name;
     $('.device', el).textContent = this.info.device;
     $('.peer-main', el).setAttribute('aria-label', t('Send to {name}', { name: this.info.name }));
+    const moreLabel = t('More options for {name}', { name: this.info.name });
+    $('.peer-more-btn', el).setAttribute('aria-label', moreLabel);
+    $('.peer-more-btn', el).title = moreLabel;
     $('.xfer-bar', el).setAttribute('aria-label', t('Transfer with {name}', { name: this.info.name }));
     this.paintSupporter(el);
     this.markTab(el); // this.el isn't set yet: the constructor assigns it when render() returns
 
     const pickFiles = () => { this.warmUp(); pickAndSend(fileInput, [this]); };
+    // A long press on a phone opens the list of everything that can be sent (message, photo, voice note…).
+    // The ⋯ button in the corner opens the same list with one tap, since few people know to long-press.
+    let pressTimer, touching = false, longPressed = false;
+    const longPress = () => {
+      clearTimeout(pressTimer);
+      if (longPressed) return;
+      longPressed = true;
+      navigator.vibrate?.(15);
+      openActions(this);
+    };
+    el.addEventListener('touchstart', (e) => {
+      touching = true; longPressed = false;
+      clearTimeout(pressTimer);
+      if (e.target.closest('[data-act]')) return; // a button is a plain tap
+      pressTimer = setTimeout(longPress, 550);
+    }, { passive: true });
+    const endTouch = () => { touching = false; clearTimeout(pressTimer); };
+    // Lifting the finger after a long press must not also "click" (the list just opened would close)
+    el.addEventListener('touchend', (e) => {
+      endTouch();
+      if (!longPressed) return;
+      if (e.cancelable) e.preventDefault();
+      setTimeout(() => { longPressed = false; }, 400);
+    });
+    el.addEventListener('touchcancel', endTouch);
+    el.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
     // Clicking the card sends files; the hover buttons pick files, a folder or a message explicitly
     el.addEventListener('click', (e) => {
+      // The finger lifted after a long press: the list is open, don't also pick files
+      if (longPressed) { longPressed = false; e.preventDefault(); return; }
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'cancel') this.cancelTransfer();
       else if (act === 'message') { this.warmUp(); openChat(this); }
       else if (act === 'folder') { this.warmUp(); pickAndSend(folderInput, [this]); }
-      else if (act === 'more') openActions(this);
+      else if (act === 'more' || act === 'menu') openActions(this);
       else if (act === 'chat') openChat(this);
+      else if (act === 'tv-remote') openTvRemote(this);
       else if (shared) sendShared(this);
       else pickFiles();
     });
+    // Right-click opens the chat; on a phone the browser's long-press menu is replaced by the list above
     el.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      openChat(this);
+      if (touching) { if (!e.target.closest('[data-act]')) longPress(); }
+      else openChat(this);
     });
-    let pressTimer;
-    // A long press on a phone opens the list of everything that can be sent (message, photo, voice note…)
-    el.addEventListener('touchstart', () => { pressTimer = setTimeout(() => openActions(this), 600); }, { passive: true });
-    el.addEventListener('touchend', () => clearTimeout(pressTimer));
-    el.addEventListener('touchmove', () => clearTimeout(pressTimer));
 
     el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag'); });
     el.addEventListener('dragleave', () => el.classList.remove('drag'));
@@ -1537,10 +1585,15 @@ class Peer {
     const job = { send: true }; // (a speed test has a job too)
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
+    // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
+    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid); };
     try {
-      files = await convertHeic(files, this.info.device);
-      if (shrinkMode !== 'off') this.connect().catch(() => {}); // connect while shrinking
-      files = await shrinkFiles(files, this, gone);
+      // Files the other device asked for (Browse files) go as they are
+      if (!opts.want) {
+        files = await convertHeic(files, this.info.device);
+        if (shrinkMode !== 'off') this.connect().catch(() => {}); // connect while shrinking
+        files = await shrinkFiles(files, this, gone);
+      }
       if (gone()) return;
       this.setStatus(opts.xid ? 'Resuming…' : 'Connecting…');
       await this.connect();
@@ -1554,13 +1607,13 @@ class Peer {
       this.acceptHave = null;
       const accepted = await new Promise((resolve) => {
         this.acceptWaiter = resolve;
-        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid });
+        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid, ...(opts.want ? { want: opts.want } : {}) });
       });
       this.acceptWaiter = null;
       if (!accepted) {
         if (!gone()) {
           toast(this.declineWhy === 'space' ? t('{name} does not have enough free space for this.', { name: this.info.name }) : t('{name} declined', { name: this.info.name }));
-          Sent.add(this, original, 'declined', job.xid);
+          log('declined');
           job.logged = true;
         }
         return;
@@ -1620,7 +1673,7 @@ class Peer {
       toast(t(files.length > 1 ? 'Sent {n} files to {name}' : 'Sent 1 file to {name}', { n: files.length, name: this.info.name }));
       this.reportStat({ bytes: total - skipped, files: files.length, ...(opts.xid ? { resumed: 1 } : {}) });
       if (big) wsSend({ type: 'stat', kind: 'bigfile' });
-      Sent.add(this, original, 'ok', job.xid);
+      log('ok');
       job.logged = true;
       AskAfterSend.sent();
     } catch (err) {
@@ -1628,12 +1681,12 @@ class Peer {
         toast(t(err.message));
         this.reportProblem(err.message);
         this.reportFail(/connection lost/i.test(err.message) ? 'lost' : 'error');
-        Sent.add(this, original, 'failed', job.xid);
+        log('failed');
         job.logged = true;
       }
     } finally {
       // Stopped with ✕ (here or on the other device) or the connection went away: still in the Sent list
-      if (!job.logged && job.xid) Sent.add(this, original, this.cancelled && !job.kept ? 'cancelled' : 'failed', job.xid);
+      if (!job.logged && job.xid) log(this.cancelled && !job.kept ? 'cancelled' : 'failed');
       // Not to be continued any more (otherwise AutoResume continues it)
       if (job.xid && !job.kept) Outgoing.remove(job.xid);
       // After an abort, abort() has already reset everything (and a newer send may be running)
@@ -1787,7 +1840,7 @@ class Peer {
         inc.keep = true;
         Store.settle(inc.chain.then(async () => {
           if (inc.current?.sink) await inc.current.sink.save().catch(() => {});
-          for (const f of inc.files) if (f.id && f.blob) History.add(f, this.info.name, this.pairSecret);
+          if (!inc.sync) for (const f of inc.files) if (f.id && f.blob) History.add(f, this.info.name, this.pairSecret);
         }));
       } else {
         // Throw away a partly written file
@@ -1827,6 +1880,7 @@ class Peer {
     switch (msg.t) {
       case 'text': {
         Messages.add(String(msg.text), this.info.name, this.pairSecret);
+        if (IS_TV && window.Tv) { window.Tv.note(this, String(msg.text)); break; } // big on the TV screen (tv.js)
         messageSound();
         if (chatShowing(this)) break;
         const link = linkOnly(msg.text);
@@ -1836,6 +1890,14 @@ class Peer {
       }
       case 'ring':
         Ringer.start(this);
+        break;
+      // TV mode (tv.js): a phone works the TV's slideshow; the TV tells phones it is a TV and what it shows
+      case 'tv-cmd':
+        if (IS_TV) window.Tv?.command(this, msg);
+        break;
+      case 'tv-hi':
+      case 'tv-state':
+        if (!IS_TV) onTvState(this, msg.state);
         break;
       case 'ring-ok':
         toast(msg.sound ? t('{name} is ringing', { name: this.info.name })
@@ -1861,6 +1923,29 @@ class Peer {
       case 'ping':
         this.sendJson({ t: 'pong' });
         break;
+      // Share a folder / Browse files (browse.js)
+      case 'fs-ls':
+      case 'fs-get':
+      case 'fs-dir':
+      case 'fs-no':
+        loadBrowse().then(() => window.Browse.onMsg(this, msg)).catch(() => {});
+        break;
+      // Sync a folder between two computers (sync.js)
+      case 'sy-ls':
+      case 'sy-list':
+      case 'sy-get':
+      case 'sy-done':
+      case 'sy-poke':
+      case 'sy-no':
+      case 'sy-busy':
+        loadSync().then(() => window.Sync.onMsg(this, msg)).catch(() => {});
+        break;
+      // Photo backup that skips repeats (pbackup.js)
+      case 'bk-check':
+      case 'bk-need':
+      case 'bk-no':
+        loadPBackup().then(() => window.PhotoBackup.onMsg(this, msg)).catch(() => {});
+        break;
       case 'pong':
         if (this.pongWaiter) this.pongWaiter();
         break;
@@ -1883,10 +1968,16 @@ class Peer {
         const xid = /^[0-9a-f]{32}$/.test(msg.xid) ? msg.xid : null;
         // The rest of a transfer this device already accepted, after the connection dropped: no need to ask again
         const resuming = Interrupted.take(xid);
+        // Files for a synced folder this computer asked for (sync.js): saved into the folder, not shown
+        const syncWant = !resuming && window.Sync?.wanted(this.info.id, msg.want) ? msg.want : null;
         (async () => {
-          const auto = resuming || (await autoAcceptFrom(this.info.id, msg.proofs));
+          // Files this device asked for itself (Browse files): no need to ask again
+          // Photos this computer said it doesn't have yet (Photo backup): saved into the backup folder
+          const backup = (!resuming && window.PhotoBackup?.wanted(this.info.id, msg.want, msg.files)) || null;
+          const asked = !resuming && (!!syncWant || !!backup || !!window.Browse?.wanted(this.info.id, msg.want));
+          const auto = resuming || asked || (await autoAcceptFrom(this.info.id, msg.proofs));
           if (resuming) toast(t('Continuing the transfer from {name}', { name: this.info.name }));
-          else if (auto) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
+          else if (auto && !syncWant) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
           // A TV with a PIN takes files only from phones that paired with the PIN
           const ok = auto || (IS_TV && tvPin() ? (toast(t('{name} is not paired with this TV. Scan the QR code and type the PIN first.', { name: this.info.name }), 6000), false) : await askAccept(this, msg.files));
           if (!ok) return this.sendJson({ t: 'decline' });
@@ -1919,7 +2010,7 @@ class Peer {
           const skipped = Object.values(have).reduce((s, n) => s + n, 0);
           if (skipped) console.info(`Continuing a transfer from ${this.info.name}: ${formatSize(skipped)} already here`);
           // chain: every storage step of this transfer runs in order (creating files, writing chunks, closing)
-          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid };
+          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup, sync: syncWant };
           this.check = xid ? { xid, sums: {}, files: null } : null;
           // Noted at once, not only when it breaks: if this page is thrown away (a phone's screen turned off), the
           // sender can still continue it here after a reload
@@ -1933,6 +2024,7 @@ class Peer {
           // seg: this device checks big files piece by piece (big-file mode), with pieces of this size
           this.sendJson({ t: 'accept', have, ...(window.More ? { seg: BIG_SEG } : {}) });
         })().catch((err) => console.warn('Request failed', err));
+        if (syncWant) break;
         chime();
         notify(t('{name} wants to send you files', { name: this.info.name }), msg.files.slice(0, 10).map((f) => f.name).join(', '));
         break;
@@ -2002,15 +2094,32 @@ class Peer {
         if (!inc || inc.discard) return;
         this.setStatus('Saving…');
         // Finish writing everything to storage first
-        inc.chain.then(() => {
+        inc.chain.then(async () => {
           if (this.incoming !== inc) return;
           this.sendJson({ t: 'received' });
           Partials.forget(inc.files.map((f) => f.id).filter(Boolean));
           if (inc.xid) Interrupted.take(inc.xid);
-          if (!chatShowing(this)) showReceived(this, inc.files);
-          else messageSound();
-          inc.files.forEach((f) => History.add(f, this.info.name, this.pairSecret));
-          if (this.check && this.check.xid === inc.xid) this.verifyFiles(this.check, inc.files);
+          if (inc.sync) {
+            // Into the synced folder (sync.js), not into History
+            window.Sync.received(this, inc.files, inc.sync).catch((err) => console.warn('Folder sync', err));
+            if (this.check?.xid === inc.xid) this.check = null;
+          } else {
+            // Photo backup: written into the backup folder; only what couldn't be is shown like any received file.
+            // The browser's own copies go once the intact check has read them.
+            let shown = inc.files;
+            if (inc.backup && window.PhotoBackup) {
+              shown = await window.PhotoBackup.store(this, inc.files, inc.backup).catch(() => inc.files);
+              const done = inc.files.filter((f) => !shown.includes(f));
+              setTimeout(() => done.forEach((f) => f.id && Store.remove(f.id)), 60000);
+            }
+            if (this.incoming !== inc) return;
+            if (shown.length) {
+              if (!chatShowing(this)) showReceived(this, shown);
+              else messageSound();
+              shown.forEach((f) => History.add(f, this.info.name, this.pairSecret));
+            }
+            if (this.check && this.check.xid === inc.xid) this.verifyFiles(this.check, inc.files);
+          }
           this.incoming = null;
           this.busy = false;
           this.setStatus('');
@@ -3359,7 +3468,10 @@ function undoToast(text, undo) {
 navigator.serviceWorker?.addEventListener('message', (e) => {
   const m = e.data || {};
   if (m.type === 'open-chat') openChatByKey(m.chat, !!m.focus);
-  else if (m.type === 'notif-reply') replyFromNotification(m.chat, m.text);
+  else if (m.type === 'notif-reply') {
+    e.ports?.[0]?.postMessage('ok'); // sw.js: the reply arrived here (else it brings this tab to the front)
+    replyFromNotification(m.chat, m.text);
+  }
   else if (m.type === 'ring-stop') Ringer.stop(null, true);
   else if (m.type === 'save-files') {
     const files = lastReceived.get(m.chat);
@@ -4214,7 +4326,10 @@ function showIntact(f) {
   el.title = f.intact === true ? t('Checked: every byte matches the original') : '';
 }
 function showReceived(peer, files) {
-  if (IS_TV) return Tv.received(peer, files);
+  if (IS_TV) {
+    if (window.Tv) return window.Tv.received(peer, files);
+    return void loadTv().then(() => window.Tv.received(peer, files), () => {});
+  }
   const dlg = $('#dlg-received');
   $('.who', dlg).textContent = peer.info.name;
   const box = $('.received', dlg);
@@ -4379,7 +4494,7 @@ function sendShared(peer) {
   else if (text) peer.sendText(text);
 }
 
-// Everything that can be sent to a device, from the card's "More…" button or a long press on a phone
+// Everything that can be sent to a device, from the card's ⋯ or "More…" button or a long press on a phone
 function openActions(peer) {
   const dlg = $('#dlg-actions');
   $('.who', dlg).textContent = peer.info.name;
@@ -4387,6 +4502,14 @@ function openActions(peer) {
   $('[data-act=voice]', dlg).hidden = !window.MediaRecorder || !navigator.mediaDevices?.getUserMedia;
   // Phones and tablets can't share their screen from a browser; they can still watch one
   $('[data-act=screen]', dlg).hidden = !navigator.mediaDevices?.getDisplayMedia || isPhone;
+  // A phone as a webcam or mic: on the phone ("Be its webcam or mic"), or on a computer for a phone's card
+  const camBtn = $('[data-act=webcam]', dlg);
+  camBtn.hidden = !window.RTCPeerConnection || (isPhone ? !navigator.mediaDevices?.getUserMedia : deviceType(peer.info.device) !== 'mobile');
+  $('span', camBtn).textContent = isPhone ? t('Be its webcam or mic') : t('Use as webcam or mic');
+  // Looking in a folder another device shares: only between paired devices
+  $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
+  $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
+  $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
   updateShrinkUi();
   dlg.onclick = (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
@@ -4400,13 +4523,38 @@ function openActions(peer) {
     else if (act === 'photo') media('snapPhoto')(peer);
     else if (act === 'voice') media('recordVoice')(peer);
     else if (act === 'screen') media('shareScreen')(peer);
+    else if (act === 'webcam') webcam(isPhone ? 'sendCamera' : 'useAsWebcam')(peer);
     else if (act === 'secret') media('secretNote')(peer);
     else if (act === 'speed') checkSpeedWith(peer.info.id);
     else if (act === 'scan') openScan(peer);
     else if (act === 'chat') openChat(peer);
     else if (act === 'ring') ringDevice(peer);
+    else if (act === 'browse') loadBrowse().then(() => window.Browse.look(peer), (err) => toast(err.message));
+    else if (act === 'pbackup') loadPBackup().then(() => window.PhotoBackup.look(peer), (err) => toast(err.message));
+    else if (act === 'tv-remote') openTvRemote(peer);
   };
   if (!dlg.open) dlg.showModal();
+}
+
+// A TV in TV mode said so (tv.js): its card gets a Remote button, and the remote (if open) shows what the TV shows
+function onTvState(peer, state) {
+  if (!peer.isTv) {
+    peer.isTv = true;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tv-remote-chip';
+    btn.dataset.act = 'tv-remote';
+    btn.textContent = `📺 ${t('Remote')}`;
+    btn.setAttribute('aria-label', t('TV remote · {name}', { name: peer.info.name }));
+    peer.el.querySelector('.status').before(btn);
+  }
+  if (state && typeof state === 'object') {
+    peer.tvState = state;
+    window.TvRemote?.state(peer, state);
+  }
+}
+function openTvRemote(peer) {
+  loadTv().then(() => window.TvRemote.open(peer), (err) => toast(err.message));
 }
 
 function showText(peer, text) {
@@ -4434,6 +4582,12 @@ let screenQueue = Promise.resolve();
 function onScreenSignal(from, data) {
   if (!data || typeof data !== 'object') return;
   screenQueue = screenQueue.then(() => media('onScreenSignal')(from, data)).catch(() => {});
+}
+// Phone as a webcam or mic (webcam.js), in the same way
+let camQueue = Promise.resolve();
+function onCamSignal(from, data) {
+  if (!data || typeof data !== 'object') return;
+  camQueue = camQueue.then(() => webcam('onSignal')(from, data)).catch(() => {});
 }
 
 // Pairing with a 6-digit code
@@ -4801,7 +4955,7 @@ function renderOffline() {
 function renderPairQr() {
   const box = $('#pair-qr');
   box.innerHTML = '';
-  if (!qrPair) { if (IS_TV) Tv.drawQr(); return; }
+  if (!qrPair) { if (IS_TV) window.Tv?.drawQr(); return; }
   if (typeof qrcode !== 'function') { loadQr().then(renderPairQr, () => {}); return; }
   try {
     const qr = qrcode(0, 'M');
@@ -4809,7 +4963,7 @@ function renderPairQr() {
     qr.make();
     box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
   } catch {}
-  if (IS_TV) Tv.drawQr();
+  if (IS_TV) window.Tv?.drawQr();
 }
 function randomSecret() {
   const b = new Uint8Array(32);
@@ -5064,6 +5218,25 @@ async function openInvite() {
   window.Invite.open(FRIEND_URL().replace('utm_source=friend', 'utm_source=invite'));
 }
 $('#menu-invite').onclick = () => openInvite();
+// Event photo album (album.js) and Share a folder / Browse files (browse.js), loaded on first use
+const loadAlbum = () => loadScript('/album.js?v=1');
+const loadBrowse = () => loadScript('/browse.js?v=1');
+const loadSync = () => loadScript('/sync.js?v=1');
+const loadPBackup = () => loadScript('/pbackup.js?v=1');
+let albumCfg = null;
+$('#btn-album').onclick = () => loadAlbum().then(() => window.Album.open(albumCfg), (err) => toast(err.message));
+$('#btn-fshare').hidden = isPhone || !(typeof window.showDirectoryPicker === 'function' || CAN_PICK_FOLDER);
+$('#btn-fshare').onclick = () => loadBrowse().then(() => window.Browse.open(), (err) => toast(err.message));
+// Sync a folder between two computers: Chrome and Edge on a computer (it needs to write to the folder)
+$('#btn-fsync').hidden = isPhone || typeof window.showDirectoryPicker !== 'function';
+$('#btn-fsync').onclick = () => loadSync().then(() => window.Sync.open(), (err) => toast(err.message));
+try { if (JSON.parse(localStorage.getItem('omnibeam-fsync') || 'null')?.on) setTimeout(() => loadSync().then(() => window.Sync.restore()).catch(() => {}), 1500); } catch {}
+// A folder shared before: pick it up again (Chrome and Edge keep it)
+try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
+// Photo backup (pbackup.js): on computers; picked up again at the start when it was set up before
+$('#btn-pbackup').hidden = isPhone || !window.crypto?.subtle;
+$('#btn-pbackup').onclick = () => loadPBackup().then(() => window.PhotoBackup.open(), (err) => toast(err.message));
+try { if (localStorage.getItem('omnibeam-pbackup')) setTimeout(() => loadPBackup().then(() => window.PhotoBackup.restore()).catch(() => {}), 1500); } catch {}
 if ($('#share-card')) $('#share-card').onclick = () => openInvite();
 
 // ---------- Signaling ----------
@@ -5180,7 +5353,7 @@ function removePeer(id) {
   p.destroy();
   peers.delete(id);
   announce(t('{name} left', { name: p.info.name }));
-  window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing with it (media.js)
+  window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing (media.js) and webcam (webcam.js) with it
   updateSendAll();
   tellExtension();
   if (p.pairSecret) {
@@ -5421,6 +5594,7 @@ function connectSocket() {
         else if (msg.data && typeof msg.data.qrOk === 'string') onQrOk(msg.from, msg.data);
         else if (msg.data && typeof msg.data.pairForget === 'string') onPairForget(msg.from, msg.data.pairForget);
         else if (msg.data && msg.data.screen) onScreenSignal(msg.from, msg.data.screen);
+        else if (msg.data && msg.data.cam) onCamSignal(msg.from, msg.data.cam);
         else if (msg.data && msg.data.e2e) peers.get(msg.from)?.onE2E(msg.data);
         else if (msg.data && msg.data.resume) peers.get(msg.from)?.onResume(msg.data.resume);
         else if (msg.data && msg.data.resumeOffer) AutoResume.onOffer(msg.from, msg.data.resumeOffer).catch(() => {});
@@ -5913,161 +6087,11 @@ function scanFromLink(secret, name, needPin) {
 // For a smart TV's browser: no sending, just a big QR code. A phone scans it with its camera, which opens OmniBeam
 // there and pairs it with the TV (the one-tap QR pairing above); then the phone taps the TV and picks photos.
 // Phones on the same Wi-Fi see the TV without scanning. Paired devices' files are accepted by themselves. Photos and
-// videos play as a full-screen slideshow (newest first in line); a TV remote works it: ◀ ▶ browse, OK pauses,
-// Back returns to the QR code. Each QR code pairs one phone, so a new one appears right after each pairing.
-const TV_PHOTO_MS = 8000;
+// videos play as a slideshow, with a photo wall, music and messages on screen, and a phone can be the remote (tv.js).
 const TV_PIN_KEY = 'omnibeam-tv-pin';
 function tvPin() { try { return localStorage.getItem(TV_PIN_KEY) || ''; } catch { return ''; } }
-const TV_MAX_SLIDES = 60; // TVs have little memory: older slides are let go
-const Tv = {
-  slides: [], at: 0, timer: null, paused: false, open: false,
-  start() {
-    document.title = `${t('TV mode')} · OmniBeam`;
-    $('#tv').hidden = false;
-    keepAwake('tv', true);
-    startQrPair();
-    $('#tv-host').textContent = location.host;
-    $('#tv-name').onclick = openMeDialog;
-    $('#tv-full').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())?.catch?.(() => {});
-    $('#tv-photos').onclick = () => this.show(this.at);
-    $('#tv-pin').onclick = () => this.setPin();
-    this.pinNote();
-    $('#tv-shut').onclick = () => this.close();
-    setInterval(() => this.status(), 500);
-    document.addEventListener('keydown', (e) => this.key(e));
-    // The remote's first press should land on something
-    setTimeout(() => { if (!document.querySelector('dialog[open]')) $('#tv-photos').hidden ? $('#tv-full').focus() : $('#tv-photos').focus(); }, 500);
-  },
-  drawQr() {
-    if (!qrPair) { startQrPair(); return; } // a phone just used it, or it ran out: show a new one
-    const box = $('#tv-qr');
-    if (!box || typeof qrcode !== 'function') return;
-    const link = qrPairLink();
-    if (box.dataset.link === link) return;
-    try {
-      const qr = qrcode(0, 'M');
-      qr.addData(link);
-      qr.make();
-      box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
-      box.dataset.link = link;
-    } catch {}
-  },
-  // Who is here, and what is arriving
-  status() {
-    $('#tv-name b').textContent = me.name || 'TV';
-    this.drawQr(); // again once the name is known (it is in the code's link)
-    const names = [...peers.values()].map((p) => p.info.name);
-    $('#tv-peers').textContent = names.length ? t('Connected: {names}', { names: names.join(', ') }) : t('No phone connected yet');
-    const p = [...peers.values()].find((x) => x.prog && !x.prog.sending);
-    const text = p ? t('Receiving from {name}… {pct}%', { name: p.info.name, pct: Math.floor((Math.min(p.prog.done, p.prog.total) / (p.prog.total || 1)) * 100) }) : '';
-    for (const el of [$('#tv-status'), $('#tv-show-status')]) { el.textContent = text; el.hidden = !text; }
-    $('#tv-photos').hidden = !this.slides.length;
-    $('#tv-photos span').textContent = t('Show photos ({n})', { n: this.slides.length });
-  },
-  // Optional PIN: phones must type it after scanning. Setting or changing it unpairs every phone.
-  setPin() {
-    const v = prompt(t('Choose a PIN of 4 to 8 digits for this TV. Phones must type it to pair. Leave it empty to turn the PIN off.'), '');
-    if (v === null) return;
-    const pin = v.trim();
-    if (pin && !/^\d{4,8}$/.test(pin)) return toast(t('The PIN must be 4 to 8 digits.'));
-    try { pin ? localStorage.setItem(TV_PIN_KEY, pin) : localStorage.removeItem(TV_PIN_KEY); } catch {}
-    for (const p of loadPaired()) forgetPairing(p.secret);
-    if (qrPair) wsSend({ type: 'leave-secret', secret: qrPair.secret });
-    qrPair = null;
-    startQrPair();
-    this.pinNote();
-    toast(pin ? t('PIN set. Phones paired before must scan the code again and type the PIN.') : t('PIN turned off.'), 6000);
-  },
-  pinNote() {
-    const on = !!tvPin();
-    $('#tv-pin-note').hidden = !on;
-    $('#tv-pin').textContent = on ? t('Change PIN') : t('Set a PIN');
-    $('#tv-alt').hidden = on; // with a PIN, phones on the same Wi-Fi must pair first too
-  },
-  received(peer, files) {
-    chime();
-    const media = files.filter((f) => /^(image|video)\//.test(f.mime || mediaType(f) || '') && f.blob && !/hei[cf]/i.test(f.mime || ''));
-    const other = files.length - media.length;
-    if (other) toast(t('Other files received: {n}. TV mode shows photos and videos only; they are kept in Received files.', { n: other }), 6000);
-    if (!media.length) return;
-    const first = this.slides.length;
-    for (const f of media) {
-      this.slides.push({ url: URL.createObjectURL(f.blob), video: /^video\//.test(f.mime || mediaType(f) || ''), from: peer.info.name });
-    }
-    let start = first;
-    while (this.slides.length > TV_MAX_SLIDES) {
-      URL.revokeObjectURL(this.slides.shift().url);
-      start--;
-      if (this.at > 0) this.at--;
-    }
-    this.show(Math.max(0, start)); // new photos show at once
-  },
-  show(i) {
-    if (!this.slides.length) return;
-    this.at = (i + this.slides.length) % this.slides.length;
-    this.open = true;
-    const box = $('#tv-show');
-    box.hidden = false;
-    clearTimeout(this.timer);
-    const s = this.slides[this.at];
-    const stage = $('#tv-stage');
-    stage.querySelectorAll('video').forEach((v) => v.pause());
-    stage.innerHTML = '';
-    const el = document.createElement(s.video ? 'video' : 'img');
-    el.src = s.url;
-    el.alt = '';
-    if (s.video) {
-      el.playsInline = true;
-      el.onended = () => this.next();
-      el.onerror = () => this.next();
-      // With sound if the TV allows it, otherwise muted
-      el.play().catch(() => { el.muted = true; el.play().catch(() => {}); });
-    } else {
-      el.onerror = () => this.schedule();
-      this.schedule();
-    }
-    stage.appendChild(el);
-    $('#tv-caption').textContent = `${this.at + 1} / ${this.slides.length} · ${t('from {name}', { name: s.from })}${this.paused ? ` · ${t('Paused')}` : ''}`;
-    box.classList.remove('idle');
-    clearTimeout(this.idleTimer);
-    this.idleTimer = setTimeout(() => box.classList.add('idle'), 4000);
-  },
-  schedule() {
-    clearTimeout(this.timer);
-    if (!this.paused && this.slides.length > 1) this.timer = setTimeout(() => this.next(), TV_PHOTO_MS);
-  },
-  next() { if (this.open) this.show(this.at + 1); },
-  close() {
-    this.open = false;
-    clearTimeout(this.timer);
-    $('#tv-stage').querySelectorAll('video').forEach((v) => v.pause());
-    $('#tv-show').hidden = true;
-    $('#tv-photos').focus();
-  },
-  togglePause() {
-    this.paused = !this.paused;
-    const v = $('#tv-stage video');
-    if (v) this.paused ? v.pause() : v.play().catch(() => {});
-    this.show(this.at);
-  },
-  key(e) {
-    if (!this.open || document.querySelector('dialog[open]')) return;
-    // Back on TV remotes: Escape, Backspace, Samsung (10009), LG (461)
-    const back = ['Escape', 'Backspace', 'BrowserBack', 'GoBack'].includes(e.key) || [10009, 461].includes(e.keyCode);
-    if (back) { e.preventDefault(); return this.close(); }
-    if (e.key === 'ArrowRight' || e.key === 'MediaTrackNext') { e.preventDefault(); return this.show(this.at + 1); }
-    if (e.key === 'ArrowLeft' || e.key === 'MediaTrackPrevious') { e.preventDefault(); return this.show(this.at - 1); }
-    if (['Enter', ' ', 'MediaPlayPause', 'MediaPlay', 'MediaPause'].includes(e.key)) { e.preventDefault(); return this.togglePause(); }
-    this.show(this.at); // any other key: show the caption again
-  },
-};
-$('#tv-show').addEventListener('click', (e) => {
-  if (e.target.closest('#tv-shut')) return;
-  const x = e.clientX / innerWidth;
-  if (x < 0.25) Tv.show(Tv.at - 1);
-  else if (x > 0.75) Tv.show(Tv.at + 1);
-  else Tv.togglePause();
-});
+// The TV screen itself is in tv.js (the TV page loads it after this script; see server.js tvPage)
+const loadTv = () => loadScript('/tv.js?v=2');
 
 // ---------- First-visit walkthrough ----------
 // Three short steps for new visitors: open it on the other device, pair if it doesn't show up, tap to send.
@@ -6796,7 +6820,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=4`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=7`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');
@@ -6833,6 +6857,30 @@ document.addEventListener('click', (e) => {
   const close = e.target.closest('[data-close]');
   if (close) close.closest('dialog')?.close();
 });
+// Search in the How to Use window: only the tips with every typed word stay, and their topics open. An empty box
+// shows all topics again, closed.
+const howFold = (s) => s.toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+document.addEventListener('input', (e) => {
+  const box = e.target.closest?.('#dlg-how .how-search');
+  if (!box) return;
+  const dlg = box.closest('dialog');
+  const words = howFold(box.value).split(/\s+/).filter(Boolean);
+  let found = 0;
+  dlg.querySelectorAll('.how-group').forEach((group) => {
+    let n = 0;
+    group.querySelectorAll('li').forEach((li) => {
+      const text = howFold(li.textContent);
+      const hit = words.every((w) => text.includes(w));
+      li.hidden = !hit;
+      if (hit) n++;
+    });
+    group.hidden = !n;
+    group.open = words.length > 0 && n > 0;
+    group.querySelector('summary small').textContent = n; // how many tips of this topic are shown
+    found += n;
+  });
+  dlg.querySelector('.how-none').hidden = found > 0;
+});
 
 // Connect to the server right away; the ICE settings arrive in parallel (devices take a moment to show up anyway)
 // ---------- Support OmniBeam ----------
@@ -6857,7 +6905,8 @@ function showSupport(url) {
 $('#menu-tv').href = appPath() + 'tv'; // TV mode in this page's language
 $('#bar-tv').setAttribute('href', $('#menu-tv').getAttribute('href'));
 $('#bar-settings').onclick = () => $('#btn-settings').onclick();
-if (IS_TV) Tv.start();
+// tv.js normally comes with the TV page; if the TV's browser couldn't get it, try again until it can
+if (IS_TV) addEventListener('load', function tvRetry() { if (!window.Tv) loadTv().catch(() => setTimeout(tvRetry, 5000)); });
 connectSocket();
 Outgoing.show();
 fetch('/config.json', { cache: 'no-store' })
@@ -6870,6 +6919,8 @@ fetch('/config.json', { cache: 'no-store' })
     RELAY_ENABLED = cfg.relay !== false;
     showSupport(cfg.support);
     $('#supporter-section').hidden = !cfg.supporter && !Supporter.on();
+    albumCfg = cfg.album || null;
+    $('#btn-album').hidden = !albumCfg || !window.crypto?.subtle;
     window.dispatchEvent(new CustomEvent('omnibeam-config', { detail: cfg })); // for drop.js (share by link)
   })
   .catch(() => {});

@@ -273,6 +273,24 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
 /* Reached with the Tab key on a touch screen with a keyboard: show them too */
 .peer:has(.peer-actions :focus-visible) .peer-actions { opacity: 1; pointer-events: auto; }
 .peer.xferring .peer-actions, .peer.drag .peer-actions, .peer.busy .peer-actions { display: none; }
+/* ⋯ in the card's corner: opens the same list as a long press, with one tap (phones don't show the hover buttons) */
+.peer { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.peer-more-btn {
+  position: absolute; top: 6px; inset-inline-end: 6px; z-index: 1; display: grid; place-items: center;
+  width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  color: var(--fg); background: var(--bg); box-shadow: var(--raise-sm); transition: color 0.15s, box-shadow 0.15s;
+}
+/* A bigger area to tap than the button looks */
+.peer-more-btn::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.peer-more-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; }
+.peer-more-btn:hover { color: var(--accent); box-shadow: var(--raise); }
+/* The unread-messages number takes the corner: the ⋯ moves down under it */
+.peer:has(> .chat-badge) .peer-more-btn { top: 38px; }
+.peer-more-btn:active { box-shadow: var(--inset-sm); }
+.peer-more-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.peer.busy .peer-more-btn, .peer.xferring .peer-more-btn { display: none; }
+/* With a mouse the hover buttons already have "More…" */
+@media (hover: hover) and (pointer: fine) { .peer:hover .peer-more-btn { opacity: 0; pointer-events: none; } }
 /* Cancel button on a card while it sends or receives */
 .xfer-cancel {
   position: absolute; top: 8px; inset-inline-end: 8px; z-index: 2; display: none;
@@ -465,6 +483,26 @@ dialog h3 { margin: 0 0 12px; font-size: 1.2rem; font-weight: 800; }
   font-weight: 700;
   color: var(--fg);
 }
+/* How to Use window: a search box, then the tips in topics that open and close (<details>) */
+.how-search {
+  width: 100%; margin: 0 0 12px; padding: 11px 18px; border: 0; border-radius: 999px;
+  background: var(--bg); color: var(--fg); font: inherit; font-size: 0.95rem; box-shadow: var(--inset-sm);
+}
+.how-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.how-groups { max-height: min(56vh, 520px); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 6px; margin: 0 -6px; }
+.how-groups:focus { outline: none; }
+.how-group { flex: none; border-radius: 18px; padding: 0 14px; box-shadow: 4px 4px 10px var(--sd), -4px -4px 10px var(--sl); }
+.how-group summary { display: flex; align-items: center; gap: 10px; min-height: 48px; cursor: pointer; list-style: none; font-size: 0.95rem; }
+.how-group summary::-webkit-details-marker { display: none; }
+.how-group summary span { font-size: 1.2rem; }
+.how-group summary b { font-weight: 800; }
+.how-group summary small { margin-inline-start: auto; color: var(--muted); font-weight: 700; }
+.how-group summary::after { content: "+"; color: var(--accent); font-size: 1.3rem; font-weight: 700; line-height: 1; width: 1ch; text-align: center; }
+.how-group[open] summary::after { content: "−"; }
+.how-group .guide-steps { max-height: none; overflow: visible; box-shadow: none; padding: 2px 0 14px; padding-inline-start: 18px; list-style: disc; }
+.how-none { margin: 8px 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+.how-full { margin: 12px 0 0; text-align: center; font-size: 0.9rem; }
+.how-full a { color: var(--accent); font-weight: 700; text-decoration: none; }
 
 /* Buttons: raised pills that press in */
 .btn {
@@ -1013,6 +1051,41 @@ dialog.screen-dialog { width: min(1200px, calc(100vw - 16px)); max-height: calc(
 .screen-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .share-bar { position: fixed; z-index: 50; inset-inline: 0; bottom: 16px; margin: 0 auto; width: max-content; max-width: calc(100vw - 32px); display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 18px; border-radius: 999px; background: var(--bg); box-shadow: var(--raise-lg); font-weight: 600; font-size: 0.9rem; }
 .share-bar .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: #e5484d; }
+/* Phone as a webcam or mic (webcam.js): the phone's window, and the computer's view of it */
+.webcam-stage { position: relative; }
+.webcam-stage .camera-msg { margin: 0; padding: 24px; color: #ddd; text-align: center; }
+video.mirror { transform: scaleX(-1); }
+.webcam-live-badge { position: absolute; top: 10px; inset-inline-start: 10px; padding: 3px 10px; border-radius: 999px; background: #e5484d; color: #fff; font-size: 0.8rem; font-weight: 700; }
+.webcam-live-badge[hidden] { display: none; }
+.webcam-flip { position: absolute; top: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.55); color: #fff; cursor: pointer; }
+.webcam-flip svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.webcam-flip[hidden] { display: none; }
+.webcam-flip:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.webcam-asked { margin: 0 0 10px; font-weight: 600; }
+.webcam-options { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; font-size: 0.85rem; }
+.webcam-modes { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.webcam-modes button { padding: 6px 12px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; font-weight: 600; cursor: pointer; }
+.webcam-modes button[aria-pressed="true"] { box-shadow: var(--inset-sm); color: var(--accent); }
+.webcam-modes button:disabled { cursor: default; opacity: 0.6; }
+.webcam-quality { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.webcam-quality[hidden] { display: none; }
+.webcam-status { margin: 10px 0 0; text-align: center; }
+.webcam-buttons { flex-wrap: wrap; }
+.webcam-buttons [hidden] { display: none; }
+dialog.webcam-view { overflow: auto; }
+.webcam-view .screen-stage video { max-height: calc(100vh - 170px); }
+.webcam-view .screen-bar { flex-wrap: wrap; }
+.webcam-view .screen-bar [hidden] { display: none; }
+.webcam-meter { position: absolute; bottom: 18%; width: min(320px, 70%); height: 10px; border-radius: 999px; background: #333; overflow: hidden; }
+.webcam-meter[hidden] { display: none; }
+.webcam-meter span { display: block; width: 0; height: 100%; background: #46a758; transition: width 80ms linear; }
+.webcam-help { margin-top: 10px; font-size: 0.9rem; }
+.webcam-help summary { cursor: pointer; font-weight: 600; }
+.webcam-help ol { margin: 8px 0; padding-inline-start: 22px; }
+.webcam-help li { margin: 4px 0; }
+.webcam-sink { align-items: center; flex-wrap: wrap; justify-content: flex-start; }
+.webcam-sink[hidden] { display: none; }
+.webcam-sink select { max-width: 100%; }
 .share-who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Secret notes */
 .secret-dialog textarea { width: 100%; margin-top: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -1079,12 +1152,15 @@ pre.code { margin: 0; max-height: 68vh; overflow: auto; padding: 14px; border-ra
 html.tv header .actions, html.tv .stage, html.tv .learn, html.tv footer, html.tv #install-bar, html.tv .ob-consent { display: none !important; }
 html.tv header { justify-content: center; }
 html.tv body { min-height: 100vh; }
-.tv-screen { display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); padding: clamp(16px, 4vh, 48px) clamp(16px, 5vw, 64px); min-height: calc(100vh - 90px); box-sizing: border-box; }
+/* The screen fills the space under the top bar and its text scales with the height too, so on a short TV browser
+   window (big toolbar, zoomed page) everything still fits and the title isn't scrolled up under the top bar */
+html.tv main { padding: 0; }
+.tv-screen { display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); padding: clamp(12px, 3vh, 48px) clamp(16px, 5vw, 64px); flex: 1 0 auto; box-sizing: border-box; }
 .tv-screen[hidden] { display: none; }
 .tv-qr { flex: none; width: min(42vw, 62vh); aspect-ratio: 1; background: #fff; border-radius: 24px; padding: 12px; box-shadow: 0 10px 40px rgba(20, 20, 60, .18); }
 .tv-qr svg { width: 100%; height: 100%; display: block; }
-.tv-text { max-width: 40rem; font-size: clamp(16px, 2.2vw, 30px); line-height: 1.4; }
-.tv-text h1, .tv-text .tv-heading { font-size: clamp(26px, 4vw, 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
+.tv-text { max-width: 40rem; font-size: clamp(16px, 2.2vw, 30px); font-size: clamp(14px, min(2.2vw, 3.3vh), 30px); line-height: 1.4; }
+.tv-text h1, .tv-text .tv-heading { font-size: clamp(26px, 4vw, 58px); font-size: clamp(22px, min(4vw, 6vh), 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
 .tv-steps { margin: 0 0 .8em; padding-inline-start: 1.3em; }
 .tv-steps li { margin: .25em 0; }
 .tv-alt, .tv-keys { opacity: .75; }
@@ -1105,6 +1181,98 @@ html.tv body { min-height: 100vh; }
 .tv-shut { position: absolute; top: 16px; inset-inline-end: 16px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 26px; cursor: pointer; transition: opacity .6s; }
 .tv-show.idle .tv-caption:not(.tv-show-status), .tv-show.idle .tv-shut { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .tv-stage img, .tv-stage video { animation: none; } }
+/* TV mode upgrades (tv.js): a clear focus for the remote, photo wall, video bar, slideshow fades and zoom, music,
+   messages, settings, clock screen saver; and the phone remote */
+html.tv .btn:focus-visible, html.tv .tv-tile:focus-visible, html.tv .tv-set button:focus-visible { outline: 5px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 9px rgba(255, 255, 255, .35); transform: scale(1.06); transition: transform .12s; }
+html.tv .btn:focus { outline: 5px solid var(--accent); outline-offset: 4px; }
+html.tv .btn:focus:not(:focus-visible) { outline-width: 3px; }
+.tv-remote-tip { font-size: .62em; opacity: .65; margin-top: .6em; }
+/* More buttons now: the home screen stays within one TV screen (smaller QR code and buttons) */
+html.tv .tv-qr { width: min(36vw, 54vh); }
+html.tv .tv-text { font-size: clamp(13px, min(2vw, 2.9vh), 28px); max-width: 46rem; }
+html.tv .tv-text .tv-heading { font-size: clamp(20px, min(3.6vw, 5.4vh), 54px); }
+html.tv .tv-buttons { gap: 10px; margin-top: .7em; }
+html.tv .tv-buttons .btn { font-size: .74em; padding: .5em 1em; }
+html.tv .tv-keys { margin-top: .8em; }
+@media (max-aspect-ratio: 1/1) { html.tv .tv-qr { width: min(80vw, 44vh); } html.tv .tv-music { justify-content: center; } }
+.tv-music { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: .9em; padding: .5em .8em; border-radius: 16px; background: var(--accent-soft); font-size: .8em; }
+.tv-music[hidden] { display: none; }
+.tv-music-title { flex: 1 1 12em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tv-music-title span { opacity: .7; font-size: .85em; }
+.tv-music .btn { font-size: .85em; }
+.tv-stage.tv-prev { z-index: 0; pointer-events: none; }
+.tv-stage:not(.tv-prev) { z-index: 1; }
+.tv-stage:not(.fade) img, .tv-stage:not(.fade) video { animation: none; }
+.tv-stage.fade img { animation: tv-in .9s ease; }
+.tv-prev img.out { animation: tv-out .9s ease forwards; }
+@keyframes tv-out { from { opacity: 1; } to { opacity: 0; } }
+.tv-stage img.kb { animation: tv-in .9s ease, tv-kb var(--kb-time, 10s) linear forwards; }
+.tv-stage:not(.fade) img.kb { animation: tv-kb var(--kb-time, 10s) linear forwards; }
+@keyframes tv-kb { from { transform: scale(1); } to { transform: scale(1.14); } }
+.tv-caption, .tv-shut, .tv-bar { z-index: 2; }
+.tv-hint { bottom: auto; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: clamp(12px, 1.3vw, 20px); }
+.tv-show-status { left: 24px; top: 64px; }
+.tv-song { left: auto; inset-inline-end: 24px; right: 24px; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[dir=rtl] .tv-song { right: auto; left: 24px; }
+.tv-show.idle .tv-hint, .tv-show.idle .tv-song { opacity: 0; }
+.tv-bar { position: absolute; left: 24px; right: 24px; bottom: 64px; display: flex; align-items: center; gap: 14px; transition: opacity .6s; }
+.tv-bar[hidden] { display: none; }
+.tv-bar-track { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+.tv-bar-track span { display: block; height: 100%; width: 0; background: var(--accent); }
+.tv-bar-time { font-size: clamp(14px, 1.5vw, 22px); text-shadow: 0 1px 3px #000; font-variant-numeric: tabular-nums; }
+.tv-show.idle .tv-bar { opacity: 0; }
+.tv-heic { max-width: 40rem; padding: 2em; text-align: center; font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
+.tv-heic .muted { opacity: .7; font-size: .7em; }
+.tv-wall { position: fixed; inset: 0; z-index: 45; background: var(--bg); color: var(--fg); overflow-y: auto; padding: clamp(14px, 3vh, 40px) clamp(16px, 4vw, 56px); box-sizing: border-box; }
+.tv-wall[hidden] { display: none; }
+.tv-wall-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; font-size: clamp(14px, 1.8vw, 24px); }
+.tv-wall-title { flex: 1; margin: 0; font-size: 1.4em; }
+.tv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 18vw, 300px), 1fr)); gap: clamp(10px, 1.5vw, 22px); }
+.tv-tile { position: relative; aspect-ratio: 16 / 10; border: 0; padding: 0; border-radius: 14px; overflow: hidden; background: #222 center / 40% no-repeat; cursor: pointer; color: #fff; }
+.tv-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tv-tile.is-video::after { content: '▶'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 3vw, 48px); text-shadow: 0 2px 8px #000; }
+.tv-tile.is-heic::before { content: '📷 HEIC'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1em; opacity: .8; }
+.tv-tile-from { position: absolute; left: 8px; bottom: 8px; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: clamp(11px, 1vw, 16px); max-width: calc(100% - 16px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[dir=rtl] .tv-tile-from { left: auto; right: 8px; }
+.tv-tile:focus-visible { transform: scale(1.05); z-index: 1; }
+.tv-note { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .72); padding: 4vh 4vw; box-sizing: border-box; }
+.tv-note[hidden] { display: none; }
+.tv-note-card { max-width: min(90vw, 70rem); max-height: 90vh; overflow: auto; padding: clamp(18px, 4vh, 48px) clamp(20px, 4vw, 64px); border-radius: 28px; background: var(--bg); color: var(--fg); text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.tv-note-from { margin: 0 0 .6em; font-size: clamp(16px, 2vw, 28px); opacity: .75; }
+.tv-note-text { margin: 0; font-size: clamp(28px, min(5vw, 8vh), 80px); font-weight: 700; line-height: 1.25; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tv-note-text.long { font-size: clamp(20px, min(3vw, 4.5vh), 44px); font-weight: 600; text-align: start; }
+.tv-note-qr { width: min(36vw, 46vh); aspect-ratio: 1; margin: 0 auto; background: #fff; border-radius: 18px; padding: 10px; }
+.tv-note-qr[hidden] { display: none; }
+.tv-note-qr svg { width: 100%; height: 100%; display: block; }
+.tv-note-link { margin: .7em 0 0; font-size: clamp(14px, 1.8vw, 26px); overflow-wrap: anywhere; opacity: .8; }
+.tv-note-hint { margin: 1em 0 0; font-size: clamp(12px, 1.3vw, 18px); opacity: .55; }
+.tv-saver { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; cursor: none; overflow: hidden; }
+.tv-saver[hidden] { display: none; }
+.tv-saver-box { position: absolute; left: 0; top: 0; padding: 3vh 3vw; text-align: center; transition: transform 3s ease-in-out; opacity: .85; }
+.tv-saver-time { margin: 0; font-size: clamp(60px, min(12vw, 20vh), 220px); font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; }
+.tv-saver-date { margin: .3em 0 0; font-size: clamp(18px, min(2.4vw, 4vh), 40px); opacity: .7; }
+.tv-saver-song { margin: .5em 0 0; font-size: clamp(14px, 1.8vw, 28px); opacity: .7; }
+.tv-saver-qr { width: min(16vw, 22vh); aspect-ratio: 1; margin: 2.5vh auto 0; background: #fff; border-radius: 12px; padding: 6px; opacity: .8; }
+.tv-saver-qr svg { width: 100%; height: 100%; display: block; }
+.tv-saver-tip { margin: .6em 0 0; font-size: clamp(12px, 1.4vw, 20px); opacity: .6; }
+.tv-set { max-width: min(92vw, 46rem); font-size: clamp(15px, 1.8vw, 24px); }
+.tv-set h2 { margin-top: 0; }
+.tv-set-row { margin: 0 0 1em; }
+.tv-set-row p { margin: 0 0 .4em; font-weight: 600; }
+.tv-set-opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.tv-set-opts .btn { font-size: .85em; }
+.tv-set-opts .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .tv-stage img.kb, .tv-prev img.out { animation: none; } .tv-saver-box { transition: none; } }
+/* The phone remote */
+.tv-remote-chip { display: inline-block; margin: 4px auto 0; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; position: relative; z-index: 2; }
+.tv-remote { width: min(92vw, 24rem); text-align: center; }
+.tv-remote h2 { margin-top: 0; font-size: 1.15rem; }
+.tv-remote-now { min-height: 1.4em; }
+.tv-remote-pad, .tv-remote-row { display: flex; gap: 10px; justify-content: center; margin: 12px 0; flex-wrap: wrap; }
+.tv-remote-pad[hidden], .tv-remote-row[hidden] { display: none; }
+.tv-remote-pad .btn { flex: 1; min-height: 56px; font-size: 1.15rem; white-space: nowrap; padding-inline: 10px; }
+.tv-remote-row .btn { font-size: .9rem; }
+.tv-remote-song { width: 100%; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Lists of files and messages (History, Received files, your links): on a narrow screen the buttons go on their own
    line under the name, so nothing is cut off and there is no sideways scrolling. On a wide screen they stay beside it. */
@@ -1476,4 +1644,49 @@ main:focus { outline: none; }
   :focus-visible { outline: 3px solid Highlight !important; outline-offset: 2px; }
   dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
   .skip-link { border: 2px solid ButtonText; }
+}
+
+/* Share a folder (this computer) and Browse files (the other device): browse.js */
+.fs-state { font-weight: 700; margin: 10px 0; overflow-wrap: anywhere; }
+.fs-row { justify-content: flex-start; flex-wrap: wrap; }
+.fs-who { display: grid; gap: 8px; margin: 8px 0 14px; }
+/* Sync a folder between two computers: sync.js */
+#dlg-fsync select { width: 100%; }
+#dlg-fsync h4 { margin: 14px 0 6px; }
+.fsync-folder { font-weight: 600; overflow-wrap: anywhere; margin-inline-end: auto; }
+.fs-dev span { overflow-wrap: anywhere; }
+.browse-dialog { width: min(96vw, 640px); }
+.fs-path { display: flex; align-items: center; gap: 10px; min-height: 36px; margin-bottom: 8px; }
+.fs-crumb { font-weight: 700; overflow-wrap: anywhere; }
+.fs-search { width: 100%; padding: 10px 16px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); font: inherit; box-shadow: var(--inset-sm, inset 2px 2px 5px rgba(0,0,0,.15)); }
+.fs-msg:empty { display: none; }
+.fs-list { list-style: none; margin: 10px 0; padding: 4px; display: grid; gap: 6px; max-height: 52vh; overflow: auto; }
+.fs-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: 14px; background: var(--bg); color: var(--fg); font: inherit; text-align: start; cursor: pointer; box-shadow: var(--raise-sm); }
+.fs-item svg { flex: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fs-item input { flex: none; width: 20px; height: 20px; accent-color: var(--accent); }
+.fs-n { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.fs-dir .fs-n { font-weight: 700; }
+.fs-s { flex: none; color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.fs-dev { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+/* Event photo album (album.js): the same fields as Request files */
+#dlg-album select { padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
+#dlg-album .field input { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--inset-sm); font: inherit; font-weight: 400; }
+#dlg-album .link-opts { display: grid; grid-template-columns: 1fr; }
+#dlg-album .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
+#dlg-album h4 { margin: 18px 0 8px; }
+#dlg-album #album-url { overflow-wrap: anywhere; }
+
+/* Dialogs sit at the top, just under the header bar, instead of the middle of the screen,
+   so a dialog whose content changes height (Pair devices: Scan / Code / Rooms) no longer jumps.
+   Big media views (photo viewer, screen, preview) and the app lock screen stay centred. */
+dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) {
+  --dlg-top: calc(92px + env(safe-area-inset-top, 0px));
+  margin-top: var(--dlg-top); margin-bottom: auto;
+  max-height: calc(100vh - var(--dlg-top) - 16px);
+  max-height: calc(100dvh - var(--dlg-top) - 16px);
+  transform-origin: 50% 0;
+}
+/* Short screens (phone turned sideways): no room to spare, so only a small gap */
+@media (max-height: 520px) {
+  dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) { --dlg-top: 12px; }
 }

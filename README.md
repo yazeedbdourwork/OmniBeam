@@ -77,7 +77,10 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 - **Scan to PDF**: camera scan with edge detection, corner adjust, black and white, page reorder; the PDF is made in the browser.
 - **Gallery** view for received photos, with Save all.
 - **Send to Telegram** and a Telegram bot (@OmniBeamsend_bot) for sending and receiving files.
-- **TV mode** at `/tv`: receive‑only screen with a big QR code and a photo slideshow.
+- **TV mode** at `/tv`: receive‑only screen with a big QR code, a photo slideshow (speed, shuffle, fade, slow zoom), a photo wall, video controls, background music, messages and links shown big, a clock screen saver, remote‑control (D‑pad) navigation, and a paired phone as the remote. Photos stay after a reload until Clear photos (`public/tv.js`).
+- **Phone as a webcam or mic**: a phone streams its camera and/or microphone live to a computer (front/back camera, 720p/1080p, mic only). The computer can mirror it, pop it out into an "OmniBeam camera" window for OBS Window Capture (then OBS Virtual Camera for Zoom, Meet or Teams), and send the sound to any output such as a virtual audio cable. Encrypted WebRTC, nothing recorded (`public/webcam.js`, guide at `/use-phone-as-webcam`).
+- **Event photo album**: one QR code for a wedding, a party or a class. Guests scan it (`/e/…`), add photos and videos with no app and see everyone's; the person who made it can print a poster with the QR code, stop new photos, delete any photo or the whole album, and Save all (ZIP on computers, the Photos share sheet 20 at a time on phones). Photos are made smaller (2048 px) unless the album is set to Original. Everything is encrypted in the browser with the key after `#`: the server stores only encrypted bytes. Albums last 1, 3, 7 or 30 days.
+- **Share a folder / Browse files**: on a computer, pick a folder (⋯ menu → Share a folder) and tick which paired devices may look in it. On those devices, More… → Browse files shows the folder and its subfolders, with search; the files you pick come straight from the computer like any transfer (accepted without asking because you asked for them). Nothing is uploaded, the tab must stay open, names starting with "." are never shown. Chrome and Edge remember the folder (and ask again after a restart); other browsers keep it until the tab closes.
 
 ### Personal touches
 - Rename each device and pick its picture.
@@ -119,6 +122,7 @@ The browser's language is picked automatically on the first visit and can be cha
 | `/tv` | TV mode |
 | `/d/…` | Download page for a shared link |
 | `/r/…` | Request files (upload) page |
+| `/e/…` | Event photo album (`?poster=1` prints its QR poster) |
 | `/embed` | How to put a "Send me files" box on your website |
 | `/status` | Sends to the admin panel's Status tab (the status page is owner‑only since 2026‑11‑12) |
 | `/admin` | Owner‑only admin panel: stats and status in tabs (needs `STATS_KEY`; `/stats` opens it too) |
@@ -147,6 +151,17 @@ Downloads served by the site (`public/tools/`):
 - `omnibeam-chrome.zip`: the browser extension, to install by hand.
 - `omnibeam-wordpress.zip`: WordPress plugin with a shortcode and a block for the "Send me files" box.
 
+Command line for developers (`cli/`, the npm package `omnibeam`, Node.js 22+, no dependencies):
+
+```sh
+npx omnibeam send build.zip      # to a phone or computer with OmniBeam open (or scan the QR code it prints)
+npx omnibeam receive             # wait for files from another device
+npx omnibeam link report.pdf     # an encrypted share link
+npx omnibeam get <link>          # download a share link
+```
+
+Details in [cli/README.md](cli/README.md). It is not part of the website: the deploy only sends `server.js` and `public/`.
+
 ## Privacy and security
 
 - Files are encrypted end to end on the sending device; only the receiving device can decrypt them.
@@ -172,6 +187,7 @@ OmniBeam/
 ├── package.json          Scripts (start, test, deploy); no runtime dependencies
 ├── .htaccess             cPanel/Passenger setup + blocks everything outside public/
 ├── vendor/               Bundled ws (WebSocket) and terser (minifier), so no npm install is needed
+├── cli/                  The command-line tool (npm package "omnibeam"): send, receive, link, get
 ├── public/               Everything the browser loads
 │   ├── index.html        The app
 │   ├── app.js            Main app logic (WebRTC, pairing, transfers, UI)
@@ -238,6 +254,10 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 | `DROP_MAX_HOURS` | 168 | Longest a link lives (720 adds a 30‑day option) |
 | `REQUESTS` | on | `false` turns off Request files |
 | `REQUEST_MAX_HOURS`, `REQUEST_UPLOADS_PER_LINK_DAY` | | Request limits |
+| `ALBUMS` | on | `false` turns off event photo albums |
+| `ALBUM_MAX_MB` | 1024 | All the photos of one album together |
+| `ALBUM_TOTAL_MB` | 4096 | Disk all albums may use together |
+| `ALBUM_ITEM_MB` | 60 | Largest single photo or video in an album |
 | `RESEND_API_KEY` | | Resend.com key for emailing links (secret) |
 | `EMAIL_FROM` | `OmniBeam <no-reply@omnibeam.site>` | Sender address |
 | `EMAIL_PER_DAY`, `EMAIL_PER_IP_DAY` | | Email limits |
@@ -303,4 +323,4 @@ Facebook: https://www.facebook.com/omnibeamsite
 
 ## License
 
-OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
+OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js` and `cli/lib/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).

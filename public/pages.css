@@ -188,3 +188,32 @@ main.stats { max-width: 980px; }
   .drop-bar span, .status-bars span { forced-color-adjust: none; }
   :focus-visible { outline: 3px solid Highlight; outline-offset: 2px; }
 }
+/* How to Use (/how-to-use): a quick start, topic buttons, and each feature as a title that opens (<details>) */
+.howto-hint { color: var(--muted); font-size: 0.92rem; margin: 22px 0 0; }
+.howto-quick { margin: 18px 0; padding: 16px 20px; border-radius: 20px; box-shadow: var(--inset-sm); }
+.howto-quick h2 { margin: 0 0 6px; font-size: 1.05rem; }
+.howto-quick ol { margin: 0 0 6px; padding-inline-start: 22px; }
+.howto-quick p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.howto-toc { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 20px 0 8px; padding: 4px; }
+.howto-toc a {
+  display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 10px 14px; border-radius: 16px;
+  box-shadow: 5px 5px 12px var(--sd), -5px -5px 12px var(--sl); text-decoration: none; color: var(--fg); font-weight: 700; font-size: 0.95rem; line-height: 1.3;
+}
+.howto-toc a:hover, .howto-toc a:focus-visible { color: var(--accent); }
+.howto-toc span { font-size: 1.3rem; }
+.howto-toc small { margin-inline-start: auto; color: var(--muted); font-weight: 600; }
+.howto-topic { scroll-margin-top: 12px; }
+.howto-topic h2 { display: flex; gap: 10px; align-items: center; font-size: 1.3rem; margin: 34px 0 10px; }
+.howto-topic details { margin: 8px 0; padding: 0 16px; border-radius: 16px; box-shadow: var(--inset-sm); scroll-margin-top: 12px; }
+.howto-topic summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 10px 0;
+  cursor: pointer; font-weight: 700; list-style: none;
+}
+.howto-topic summary::-webkit-details-marker { display: none; }
+.howto-topic summary::after { content: "+"; flex: none; color: var(--accent); font-size: 1.35rem; font-weight: 600; line-height: 1; }
+.howto-topic details[open] { padding-bottom: 8px; }
+.howto-topic details[open] summary::after { content: "−"; }
+.howto-topic details:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+.howto-topic details > p:first-of-type, .howto-topic details > ol, .howto-topic details > ul { margin-top: 0; }
+.howto-top { text-align: end; font-size: 0.85rem; margin: 8px 0 0; }
+.howto-top a { text-decoration: none; font-weight: 600; }
