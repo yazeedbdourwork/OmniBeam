@@ -1675,3 +1675,18 @@ main:focus { outline: none; }
 #dlg-album .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
 #dlg-album h4 { margin: 18px 0 8px; }
 #dlg-album #album-url { overflow-wrap: anywhere; }
+
+/* Dialogs sit at the top, just under the header bar, instead of the middle of the screen,
+   so a dialog whose content changes height (Pair devices: Scan / Code / Rooms) no longer jumps.
+   Big media views (photo viewer, screen, preview) and the app lock screen stay centred. */
+dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) {
+  --dlg-top: calc(92px + env(safe-area-inset-top, 0px));
+  margin-top: var(--dlg-top); margin-bottom: auto;
+  max-height: calc(100vh - var(--dlg-top) - 16px);
+  max-height: calc(100dvh - var(--dlg-top) - 16px);
+  transform-origin: 50% 0;
+}
+/* Short screens (phone turned sideways): no room to spare, so only a small gap */
+@media (max-height: 520px) {
+  dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) { --dlg-top: 12px; }
+}
