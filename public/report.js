@@ -52,11 +52,35 @@
   const CRASH_GAP = 2 * 60e3; // "seen" is refreshed every 15 s while on screen
   const id = Math.random().toString(36).slice(2, 10);
   const read = () => { try { return JSON.parse(sessionStorage.getItem(CK) || 'null'); } catch { return null; } };
+  // What the page was doing, so a crash report says more than "no transfer running": the file or photo picker
+  // was open (iPhones often close a tab to free memory while the camera or photo picker is up) and which window
+  let picking = 0;
+  const doing = () => {
+    const parts = [];
+    if (picking && Date.now() - picking < 5 * 60e3) parts.push('choosing files');
+    try {
+      const open = [...document.querySelectorAll('dialog[open]')].map((d) => d.id).filter(Boolean);
+      if (open.length) parts.push('window: ' + open.slice(-2).join(', '));
+    } catch {}
+    return parts.join(', ');
+  };
   const note = (state) => {
     let busy = false;
     try { busy = !!(window.omniBusy && window.omniBusy()); } catch {}
-    try { sessionStorage.setItem(CK, JSON.stringify({ state, at: started, seen: Date.now(), busy, page, v: version, id })); } catch {}
+    try { sessionStorage.setItem(CK, JSON.stringify({ state, at: started, seen: Date.now(), busy, page, v: version, id, d: doing() })); } catch {}
   };
+  addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.tagName === 'INPUT' && t.type === 'file') picking = Date.now();
+    // After the tap has opened or closed a window
+    setTimeout(() => { if (!document.hidden) note('visible'); }, 0);
+  }, true);
+  for (const ev of ['change', 'cancel']) {
+    addEventListener(ev, (e) => {
+      const t = e.target;
+      if (t && t.tagName === 'INPUT' && t.type === 'file' && picking) { picking = 0; note(document.hidden ? 'hidden' : 'visible'); }
+    }, true);
+  }
   // Answers "is the page that wrote this note still open?" (closed while the page sits in the back/forward cache)
   let bc = null;
   const listen = () => {
@@ -70,6 +94,7 @@
   if (prev && prev.state === 'visible' && Date.now() - (prev.seen || 0) < CRASH_GAP && !document.wasDiscarded) {
     const send = () => report('crash', 'The page stopped without closing (browser crash or out of memory)', {
       busy: !!prev.busy, up: Math.round(((prev.seen || prev.at) - prev.at) / 60000), page: prev.page, v: prev.v || version,
+      ...(prev.d ? { d: String(prev.d).slice(0, 120) } : {}),
     });
     let ask = null;
     try { ask = prev.id && new BroadcastChannel(CK); } catch {}

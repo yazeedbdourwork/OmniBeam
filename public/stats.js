@@ -699,7 +699,7 @@
       .map((e) => `<tr><td>${esc(when(e.t))}</td><td>${esc(KINDS[e.k])}</td><td>${esc(`${e.os} · ${e.browser}`)}</td><td>${esc((e.k === 'stuck'
         ? [e.role === 'receive' ? 'receiving' : 'sending', e.pct != null ? `at ${e.pct}%` : '', e.secs ? `${e.secs} s without progress` : '',
           e.r ? ROUTE_NAMES[e.r] || e.r : '', e.same ? 'same Wi‑Fi' : '', e.size ? size(e.size) : '']
-        : [e.busy ? 'during a transfer' : 'no transfer running', e.up ? `open ${e.up} min` : '', e.page && e.page !== 'app' ? `page: ${e.page}` : ''])
+        : [e.busy ? 'during a transfer' : 'no transfer running', e.up ? `open ${e.up} min` : '', e.d || '', e.page && e.page !== 'app' ? `page: ${e.page}` : ''])
         .concat(e.v ? ['v' + e.v] : []).filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody>` : '';
     $('#crash-empty').hidden = rows.length > 0;
   }
