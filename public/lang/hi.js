@@ -749,6 +749,7 @@
     "You got this email because someone typed your address in OmniBeam. Nothing is attached: the files stay encrypted until you open the link.": "आपको यह ईमेल इसलिए मिला क्योंकि किसी ने OmniBeam में आपका पता लिखा। कुछ भी अटैच नहीं है: लिंक खोलने तक फ़ाइलें एन्क्रिप्टेड रहती हैं।",
     "Download the files": "फ़ाइलें डाउनलोड करें",
     "More…": "और…",
+    "More options for {name}": "{name} के लिए और विकल्प",
     "{name} is no longer available": "{name} अब उपलब्ध नहीं है",
     "Secret note sent to {name}": "गुप्त नोट {name} को भेजा गया",
     "Secret note from {name}": "{name} से गुप्त नोट",

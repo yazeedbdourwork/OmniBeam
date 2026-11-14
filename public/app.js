@@ -923,38 +923,69 @@ class Peer {
           ${t('More…')}
         </button>
       </div>
+      <button type="button" class="peer-more-btn" data-act="menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+      </button>
       <button type="button" class="xfer-cancel" data-act="cancel" title="${t('Cancel transfer')}" aria-label="${t('Cancel transfer')}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>`;
     $('.name', el).textContent = this.info.name;
     $('.device', el).textContent = this.info.device;
     $('.peer-main', el).setAttribute('aria-label', t('Send to {name}', { name: this.info.name }));
+    const moreLabel = t('More options for {name}', { name: this.info.name });
+    $('.peer-more-btn', el).setAttribute('aria-label', moreLabel);
+    $('.peer-more-btn', el).title = moreLabel;
     $('.xfer-bar', el).setAttribute('aria-label', t('Transfer with {name}', { name: this.info.name }));
     this.paintSupporter(el);
     this.markTab(el); // this.el isn't set yet: the constructor assigns it when render() returns
 
     const pickFiles = () => { this.warmUp(); pickAndSend(fileInput, [this]); };
+    // A long press on a phone opens the list of everything that can be sent (message, photo, voice note…).
+    // The ⋯ button in the corner opens the same list with one tap, since few people know to long-press.
+    let pressTimer, touching = false, longPressed = false;
+    const longPress = () => {
+      clearTimeout(pressTimer);
+      if (longPressed) return;
+      longPressed = true;
+      navigator.vibrate?.(15);
+      openActions(this);
+    };
+    el.addEventListener('touchstart', (e) => {
+      touching = true; longPressed = false;
+      clearTimeout(pressTimer);
+      if (e.target.closest('[data-act]')) return; // a button is a plain tap
+      pressTimer = setTimeout(longPress, 550);
+    }, { passive: true });
+    const endTouch = () => { touching = false; clearTimeout(pressTimer); };
+    // Lifting the finger after a long press must not also "click" (the list just opened would close)
+    el.addEventListener('touchend', (e) => {
+      endTouch();
+      if (!longPressed) return;
+      if (e.cancelable) e.preventDefault();
+      setTimeout(() => { longPressed = false; }, 400);
+    });
+    el.addEventListener('touchcancel', endTouch);
+    el.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
     // Clicking the card sends files; the hover buttons pick files, a folder or a message explicitly
     el.addEventListener('click', (e) => {
+      // The finger lifted after a long press: the list is open, don't also pick files
+      if (longPressed) { longPressed = false; e.preventDefault(); return; }
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'cancel') this.cancelTransfer();
       else if (act === 'message') { this.warmUp(); openChat(this); }
       else if (act === 'folder') { this.warmUp(); pickAndSend(folderInput, [this]); }
-      else if (act === 'more') openActions(this);
+      else if (act === 'more' || act === 'menu') openActions(this);
       else if (act === 'chat') openChat(this);
       else if (act === 'tv-remote') openTvRemote(this);
       else if (shared) sendShared(this);
       else pickFiles();
     });
+    // Right-click opens the chat; on a phone the browser's long-press menu is replaced by the list above
     el.addEventListener('contextmenu', (e) => {
       e.preventDefault();
-      openChat(this);
+      if (touching) { if (!e.target.closest('[data-act]')) longPress(); }
+      else openChat(this);
     });
-    let pressTimer;
-    // A long press on a phone opens the list of everything that can be sent (message, photo, voice note…)
-    el.addEventListener('touchstart', () => { pressTimer = setTimeout(() => openActions(this), 600); }, { passive: true });
-    el.addEventListener('touchend', () => clearTimeout(pressTimer));
-    el.addEventListener('touchmove', () => clearTimeout(pressTimer));
 
     el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag'); });
     el.addEventListener('dragleave', () => el.classList.remove('drag'));
@@ -4413,7 +4444,7 @@ function sendShared(peer) {
   else if (text) peer.sendText(text);
 }
 
-// Everything that can be sent to a device, from the card's "More…" button or a long press on a phone
+// Everything that can be sent to a device, from the card's ⋯ or "More…" button or a long press on a phone
 function openActions(peer) {
   const dlg = $('#dlg-actions');
   $('.who', dlg).textContent = peer.info.name;

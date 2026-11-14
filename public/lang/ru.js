@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "Ещё…",
+    "More options for {name}": "Другие действия для {name}",
     "{name} is no longer available": "{name} больше недоступно",
     "Secret note sent to {name}": "Секретная заметка отправлена на {name}",
     "Secret note from {name}": "Секретная заметка от {name}",
