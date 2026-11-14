@@ -58,7 +58,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=83" as="script">
+  <link rel="preload" href="/app.js?v=84" as="script">
   <script src="/look.js?v=3"></script>
   <link rel="stylesheet" href="/style.css?v=73">
 </head>
@@ -121,6 +121,7 @@
           <button type="button" class="menu-item" role="menuitem" id="btn-request" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 0 1-.5-9.97A6 6 0 0 1 18 7a4.5 4.5 0 0 1-.5 11"/><path d="M12 21v-9"/><path d="M8.5 17.5 12 21l3.5-3.5"/></svg><span>Request files</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-album" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>Event photo album</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-fshare" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14l3-3 3 3"/></svg><span>Share a folder</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="btn-pbackup" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M15 3v4h4"/></svg><span>Photo backup</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-tg" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.5 3.5-19 7.3 6.2 2.2 2.3 6.5 3.4-4.4 4.9 3.6z"/><path d="m8.7 13 12.8-9.5"/></svg><span>Send to Telegram</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-sendto" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Send to email or phone</span></button>
           <a class="menu-item bar-twin bar-twin-wide" role="menuitem" id="menu-tv" href="/tv"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>TV mode</span></a>
@@ -1125,6 +1126,7 @@
       <button type="button" data-act="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Chat</span></button>
       <button type="button" data-act="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Ring this device</span></button>
       <button type="button" data-act="browse" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><circle cx="11.5" cy="13.5" r="2.5"/><path d="m13.5 15.5 2 2"/></svg><span>Browse files</span></button>
+      <button type="button" data-act="pbackup" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M16 3v6M13 6l3 3 3-3"/></svg><span>Back up photos</span></button>
     </div>
     <div class="shrink-toggle" role="group" aria-labelledby="shrink-toggle-label">
       <span id="shrink-toggle-label">Photos</span>
@@ -1178,7 +1180,7 @@
 
   <script src="/report.js?v=3" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=83" defer></script>
+  <script src="/app.js?v=84" defer></script>
   <script src="/drop.js?v=8" defer></script>
   <script src="/request.js?v=2" defer></script>
   <script src="/install.js?v=2" defer></script>
