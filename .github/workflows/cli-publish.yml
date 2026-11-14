@@ -1,0 +1,35 @@
+# Publish the command-line tool (cli/) to npm as "omnibeam", so anyone can run `npx omnibeam`.
+# Only by hand: Actions -> Publish CLI to npm -> Run workflow. It never runs on a push, and it doesn't touch the site.
+# Needs the repository secret NPM_TOKEN: on npmjs.com, Access Tokens -> Generate New Token -> Granular, with
+# read and write for packages (for the very first publish, "All packages"). Bump "version" in cli/package.json first:
+# npm refuses a version that is already published.
+name: Publish CLI to npm
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance: the package page shows it was built from this repository
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Check the package
+        working-directory: cli
+        run: |
+          node bin/omnibeam.js --version
+          node bin/omnibeam.js --help > /dev/null
+          npm pack --dry-run
+      - name: Publish
+        working-directory: cli
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
