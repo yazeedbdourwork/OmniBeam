@@ -169,6 +169,30 @@ test('a tab that crashed and a stuck transfer are reported to /stats and Telegra
   await dup.waitForTimeout(2500);
   expect((await stats(request)).errors.filter((e) => e.k === 'crash' && e.page === 'tv').length).toBe(1);
   await dup.close();
+  // A crash while the photo picker and a window were open says so (iPhones close tabs to free memory there)
+  await b.context.addInitScript(() => {
+    for (const ev of ['pagehide', 'visibilitychange']) {
+      addEventListener(ev, (e) => { if (sessionStorage.getItem('sim-crash')) e.stopImmediatePropagation(); }, true);
+    }
+  });
+  await b.page.reload();
+  const chooser = b.page.waitForEvent('filechooser'); // (keeps the picker "open": nothing is chosen or cancelled)
+  await b.page.evaluate(() => {
+    document.querySelector('dialog').id ||= 'dlg-test';
+    document.querySelector('dialog').show();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.style.display = 'none';
+    document.body.append(input);
+    input.click();
+  });
+  await chooser;
+  await expect.poll(() => b.page.evaluate(() => JSON.parse(sessionStorage.getItem('omnibeam-alive')).d)).toMatch(/^choosing files, window: /);
+  await b.page.evaluate(() => sessionStorage.setItem('sim-crash', '1'));
+  await b.page.reload();
+  await b.page.evaluate(() => sessionStorage.removeItem('sim-crash'));
+  await expect.poll(async () => (await stats(request)).errors.filter((e) => e.k === 'crash' && e.page === 'app').map((e) => e.d)[0])
+    .toMatch(/^choosing files, window: /);
   // Telegram: gathered into one message
   await expect.poll(instant).toMatch(/stuck transfer|tab crash/);
   const msgs = instant().trim().split('\n').map((l) => JSON.parse(l));

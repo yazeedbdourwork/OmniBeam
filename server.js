@@ -3175,7 +3175,7 @@ function describeReport(e) {
   const size = e.size ? (e.size >= 1048576 ? `${Math.round(e.size / 1048576)} MB` : `${Math.max(1, Math.round(e.size / 1024))} KB`) : '';
   const parts = [
     e.k === 'stuck' ? `${e.role === 'receive' ? 'receiving' : 'sending'}${e.pct != null ? ` at ${e.pct}%` : ''}${e.secs ? `, nothing moved for ${e.secs} s` : ''}`
-      : e.k === 'crash' ? `${e.busy ? 'during a transfer' : 'no transfer running'}${e.up ? `, open ${e.up} min` : ''}` : e.m,
+      : e.k === 'crash' ? `${e.busy ? 'during a transfer' : 'no transfer running'}${e.up ? `, open ${e.up} min` : ''}${e.d ? `, ${e.d}` : ''}` : e.m,
     route, size, e.page && e.page !== 'app' ? `page: ${e.page}` : '', `${e.browser} on ${e.os}`, e.src || '', e.v ? `v${e.v}` : '',
   ].filter(Boolean);
   return `• ${INSTANT_NAMES[e.k] || e.k}: ${parts.join(' · ')}`;
