@@ -3946,7 +3946,7 @@ function onConnection(ws, req) {
         // 'none' only for a failed send that never connected.
         // Small counts with no transfer attached: the rating/share prompt after sends (shown / rate / share / no),
         // the rest of a dropped send going to another device, a link sent on to an email address or phone
-        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply', 'fshare', 'fbrowse', 'fget'].includes(msg.kind)) {
+        if (['ask', 'handoff', 'sendto', 'again', 'export', 'gallery', 'team', 'cliphist', 'autosend', 'bigfile', 'photo', 'voice', 'screen', 'preview', 'scan', 'chat', 'ring', 'link', 'sendall', 'invite', 'pin', 'video', 'lock', 'clean', 'backup', 'restore', 'nreply', 'fshare', 'fbrowse', 'fget', 'pbk', 'pbkrun', 'pbksave'].includes(msg.kind)) {
           client.extraStats = (client.extraStats || 0) + 1;
           if (client.extraStats > 30) return;
           if (msg.kind === 'handoff') count('thandoff');
@@ -3984,6 +3984,10 @@ function onConnection(ws, req) {
           else if (msg.kind === 'fshare') count('folderShares');
           else if (msg.kind === 'fbrowse') count('folderBrowse');
           else if (msg.kind === 'fget') count('folderGets', Math.min(100, Math.max(1, Math.floor(Number(msg.n)) || 1)));
+          // Photo backup: a backup folder set up, a backup run (photos sent / skipped as already there), photos saved
+          else if (msg.kind === 'pbk') count('photoBackupOn');
+          else if (msg.kind === 'pbkrun') { count('photoBackups'); count('photoBackupSkipped', Math.min(2000, Math.max(0, Math.floor(Number(msg.skip)) || 0))); }
+          else if (msg.kind === 'pbksave') count('photoBackupSaved', Math.min(2000, Math.max(1, Math.floor(Number(msg.n)) || 1)));
           else if (['shown', 'rate', 'share', 'no'].includes(msg.act)) count('ask_' + msg.act);
           break;
         }

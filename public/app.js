@@ -1918,6 +1918,12 @@ class Peer {
       case 'fs-no':
         loadBrowse().then(() => window.Browse.onMsg(this, msg)).catch(() => {});
         break;
+      // Photo backup that skips repeats (pbackup.js)
+      case 'bk-check':
+      case 'bk-need':
+      case 'bk-no':
+        loadPBackup().then(() => window.PhotoBackup.onMsg(this, msg)).catch(() => {});
+        break;
       case 'pong':
         if (this.pongWaiter) this.pongWaiter();
         break;
@@ -1942,7 +1948,9 @@ class Peer {
         const resuming = Interrupted.take(xid);
         (async () => {
           // Files this device asked for itself (Browse files): no need to ask again
-          const asked = !resuming && !!window.Browse?.wanted(this.info.id, msg.want);
+          // Photos this computer said it doesn't have yet (Photo backup): saved into the backup folder
+          const backup = (!resuming && window.PhotoBackup?.wanted(this.info.id, msg.want, msg.files)) || null;
+          const asked = !resuming && (!!backup || !!window.Browse?.wanted(this.info.id, msg.want));
           const auto = resuming || asked || (await autoAcceptFrom(this.info.id, msg.proofs));
           if (resuming) toast(t('Continuing the transfer from {name}', { name: this.info.name }));
           else if (auto) toast(t('Receiving from {name} (auto-accept)', { name: this.info.name }));
@@ -1978,7 +1986,7 @@ class Peer {
           const skipped = Object.values(have).reduce((s, n) => s + n, 0);
           if (skipped) console.info(`Continuing a transfer from ${this.info.name}: ${formatSize(skipped)} already here`);
           // chain: every storage step of this transfer runs in order (creating files, writing chunks, closing)
-          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid };
+          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup };
           this.check = xid ? { xid, sums: {}, files: null } : null;
           // Noted at once, not only when it breaks: if this page is thrown away (a phone's screen turned off), the
           // sender can still continue it here after a reload
@@ -2061,14 +2069,25 @@ class Peer {
         if (!inc || inc.discard) return;
         this.setStatus('Saving…');
         // Finish writing everything to storage first
-        inc.chain.then(() => {
+        inc.chain.then(async () => {
           if (this.incoming !== inc) return;
           this.sendJson({ t: 'received' });
           Partials.forget(inc.files.map((f) => f.id).filter(Boolean));
           if (inc.xid) Interrupted.take(inc.xid);
-          if (!chatShowing(this)) showReceived(this, inc.files);
-          else messageSound();
-          inc.files.forEach((f) => History.add(f, this.info.name, this.pairSecret));
+          // Photo backup: written into the backup folder; only what couldn't be is shown like any received file.
+          // The browser's own copies go once the intact check has read them.
+          let shown = inc.files;
+          if (inc.backup && window.PhotoBackup) {
+            shown = await window.PhotoBackup.store(this, inc.files, inc.backup).catch(() => inc.files);
+            const done = inc.files.filter((f) => !shown.includes(f));
+            setTimeout(() => done.forEach((f) => f.id && Store.remove(f.id)), 60000);
+          }
+          if (this.incoming !== inc) return;
+          if (shown.length) {
+            if (!chatShowing(this)) showReceived(this, shown);
+            else messageSound();
+            shown.forEach((f) => History.add(f, this.info.name, this.pairSecret));
+          }
           if (this.check && this.check.xid === inc.xid) this.verifyFiles(this.check, inc.files);
           this.incoming = null;
           this.busy = false;
@@ -4454,6 +4473,7 @@ function openActions(peer) {
   $('[data-act=screen]', dlg).hidden = !navigator.mediaDevices?.getDisplayMedia || isPhone;
   // Looking in a folder another device shares: only between paired devices
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
+  $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
   $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
   updateShrinkUi();
   dlg.onclick = (e) => {
@@ -4474,6 +4494,7 @@ function openActions(peer) {
     else if (act === 'chat') openChat(peer);
     else if (act === 'ring') ringDevice(peer);
     else if (act === 'browse') loadBrowse().then(() => window.Browse.look(peer), (err) => toast(err.message));
+    else if (act === 'pbackup') loadPBackup().then(() => window.PhotoBackup.look(peer), (err) => toast(err.message));
     else if (act === 'tv-remote') openTvRemote(peer);
   };
   if (!dlg.open) dlg.showModal();
@@ -5158,12 +5179,17 @@ $('#menu-invite').onclick = () => openInvite();
 // Event photo album (album.js) and Share a folder / Browse files (browse.js), loaded on first use
 const loadAlbum = () => loadScript('/album.js?v=1');
 const loadBrowse = () => loadScript('/browse.js?v=1');
+const loadPBackup = () => loadScript('/pbackup.js?v=1');
 let albumCfg = null;
 $('#btn-album').onclick = () => loadAlbum().then(() => window.Album.open(albumCfg), (err) => toast(err.message));
 $('#btn-fshare').hidden = isPhone || !(typeof window.showDirectoryPicker === 'function' || CAN_PICK_FOLDER);
 $('#btn-fshare').onclick = () => loadBrowse().then(() => window.Browse.open(), (err) => toast(err.message));
 // A folder shared before: pick it up again (Chrome and Edge keep it)
 try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
+// Photo backup (pbackup.js): on computers; picked up again at the start when it was set up before
+$('#btn-pbackup').hidden = isPhone || !window.crypto?.subtle;
+$('#btn-pbackup').onclick = () => loadPBackup().then(() => window.PhotoBackup.open(), (err) => toast(err.message));
+try { if (localStorage.getItem('omnibeam-pbackup')) setTimeout(() => loadPBackup().then(() => window.PhotoBackup.restore()).catch(() => {}), 1500); } catch {}
 if ($('#share-card')) $('#share-card').onclick = () => openInvite();
 
 // ---------- Signaling ----------
