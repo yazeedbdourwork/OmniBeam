@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "Daha fazla…",
+    "More options for {name}": "{name} için diğer seçenekler",
     "{name} is no longer available": "{name} artık kullanılamıyor",
     "Secret note sent to {name}": "Gizli not {name} cihazına gönderildi",
     "Secret note from {name}": "{name} cihazından gizli not",

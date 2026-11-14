@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "その他…",
+    "More options for {name}": "{name} のその他のオプション",
     "{name} is no longer available": "{name} は利用できなくなりました",
     "Secret note sent to {name}": "{name} にシークレットメモを送りました",
     "Secret note from {name}": "{name} からのシークレットメモ",

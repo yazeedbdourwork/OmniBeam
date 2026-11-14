@@ -749,6 +749,7 @@
     "You got this email because someone typed your address in OmniBeam. Nothing is attached: the files stay encrypted until you open the link.": "Anda menerima email ini karena seseorang mengetik alamat Anda di OmniBeam. Tidak ada lampiran: file tetap terenkripsi sampai Anda membuka tautan.",
     "Download the files": "Unduh file",
     "More…": "Lainnya…",
+    "More options for {name}": "Opsi lainnya untuk {name}",
     "{name} is no longer available": "{name} sudah tidak tersedia",
     "Secret note sent to {name}": "Catatan rahasia terkirim ke {name}",
     "Secret note from {name}": "Catatan rahasia dari {name}",

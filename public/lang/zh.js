@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "更多…",
+    "More options for {name}": "{name} 的更多选项",
     "{name} is no longer available": "{name} 已不可用",
     "Secret note sent to {name}": "秘密便签已发送给 {name}",
     "Secret note from {name}": "来自 {name} 的秘密便签",

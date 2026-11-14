@@ -273,6 +273,24 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
 /* Reached with the Tab key on a touch screen with a keyboard: show them too */
 .peer:has(.peer-actions :focus-visible) .peer-actions { opacity: 1; pointer-events: auto; }
 .peer.xferring .peer-actions, .peer.drag .peer-actions, .peer.busy .peer-actions { display: none; }
+/* ⋯ in the card's corner: opens the same list as a long press, with one tap (phones don't show the hover buttons) */
+.peer { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.peer-more-btn {
+  position: absolute; top: 6px; inset-inline-end: 6px; z-index: 1; display: grid; place-items: center;
+  width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  color: var(--fg); background: var(--bg); box-shadow: var(--raise-sm); transition: color 0.15s, box-shadow 0.15s;
+}
+/* A bigger area to tap than the button looks */
+.peer-more-btn::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.peer-more-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; }
+.peer-more-btn:hover { color: var(--accent); box-shadow: var(--raise); }
+/* The unread-messages number takes the corner: the ⋯ moves down under it */
+.peer:has(> .chat-badge) .peer-more-btn { top: 38px; }
+.peer-more-btn:active { box-shadow: var(--inset-sm); }
+.peer-more-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.peer.busy .peer-more-btn, .peer.xferring .peer-more-btn { display: none; }
+/* With a mouse the hover buttons already have "More…" */
+@media (hover: hover) and (pointer: fine) { .peer:hover .peer-more-btn { opacity: 0; pointer-events: none; } }
 /* Cancel button on a card while it sends or receives */
 .xfer-cancel {
   position: absolute; top: 8px; inset-inline-end: 8px; z-index: 2; display: none;

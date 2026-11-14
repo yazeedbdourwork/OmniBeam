@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "المزيد…",
+    "More options for {name}": "المزيد من الخيارات لـ {name}",
     "{name} is no longer available": "{name} لم يعد متاحًا",
     "Secret note sent to {name}": "تم إرسال الملاحظة السرية إلى {name}",
     "Secret note from {name}": "ملاحظة سرية من {name}",

@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "더 보기…",
+    "More options for {name}": "{name} 추가 옵션",
     "{name} is no longer available": "{name}을(를) 더 이상 사용할 수 없습니다",
     "Secret note sent to {name}": "{name}에 비밀 메모를 보냈습니다",
     "Secret note from {name}": "{name}의 비밀 메모",

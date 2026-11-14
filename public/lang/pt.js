@@ -749,6 +749,7 @@
     "You got this email because someone typed your address in OmniBeam. Nothing is attached: the files stay encrypted until you open the link.": "Você recebeu este e-mail porque alguém digitou seu endereço no OmniBeam. Nada vai anexado: os arquivos ficam criptografados até você abrir o link.",
     "Download the files": "Baixar os arquivos",
     "More…": "Mais…",
+    "More options for {name}": "Mais opções para {name}",
     "{name} is no longer available": "{name} já não está disponível",
     "Secret note sent to {name}": "Nota secreta enviada para {name}",
     "Secret note from {name}": "Nota secreta de {name}",

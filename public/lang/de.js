@@ -749,6 +749,7 @@
 
     // More… on a device: photo, voice note, screen sharing, secret notes, previews (media.js), and more (2026-11-02)
     "More…": "Mehr…",
+    "More options for {name}": "Weitere Optionen für {name}",
     "{name} is no longer available": "{name} ist nicht mehr verfügbar",
     "Secret note sent to {name}": "Geheime Notiz an {name} gesendet",
     "Secret note from {name}": "Geheime Notiz von {name}",
