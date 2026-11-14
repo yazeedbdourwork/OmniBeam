@@ -1455,5 +1455,17 @@
     "Back up photos": "Sauvegarder les photos",
     "Photo backup:": "Sauvegarde photo :",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "Sur un ordinateur, touchez Sauvegarde photo dans le menu ⋯ et choisissez un dossier. Sur votre téléphone associé, touchez l'ordinateur, puis Plus… et Sauvegarder les photos, et choisissez vos photos. Seules celles que l'ordinateur n'a pas encore sont envoyées, en qualité d'origine.",
+    // How to Use window: topics and search
+    "Get started": "Premiers pas",
+    "Send files and messages": "Envoyer des fichiers et des messages",
+    "Share with other people": "Partager avec d’autres personnes",
+    "Received files and history": "Fichiers reçus et historique",
+    "Phone and computer together": "Téléphone et ordinateur ensemble",
+    "Settings and privacy": "Réglages et confidentialité",
+    "Apps and add-ons": "Applis et extensions",
+    "Troubleshooting": "Dépannage",
+    "Search the guide": "Chercher dans le guide",
+    "Nothing found. Try another word.": "Rien trouvé. Essayez un autre mot.",
+    "Open the full guide": "Ouvrir le guide complet",
   },
 });

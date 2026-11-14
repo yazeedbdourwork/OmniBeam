@@ -680,7 +680,7 @@ function renderPage(page) {
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/pages.css?v=12">
+  <link rel="stylesheet" href="/pages.css?v=13">
 </head>
 <body>
   <header class="page-header">

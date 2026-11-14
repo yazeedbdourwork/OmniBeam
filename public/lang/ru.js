@@ -1455,5 +1455,17 @@
     "Back up photos": "Сохранить фото",
     "Photo backup:": "Резервная копия фото:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "На компьютере нажмите «Резервная копия фото» в меню ⋯ и выберите папку. На сопряжённом телефоне нажмите на компьютер, затем «Ещё…» и «Сохранить фото» и выберите фото. Отправляются только те, которых на компьютере ещё нет, в исходном качестве.",
+    // How to Use window: topics and search
+    "Get started": "С чего начать",
+    "Send files and messages": "Отправка файлов и сообщений",
+    "Share with other people": "Поделиться с другими",
+    "Received files and history": "Полученные файлы и история",
+    "Phone and computer together": "Телефон и компьютер вместе",
+    "Settings and privacy": "Настройки и конфиденциальность",
+    "Apps and add-ons": "Приложения и расширения",
+    "Troubleshooting": "Решение проблем",
+    "Search the guide": "Поиск по руководству",
+    "Nothing found. Try another word.": "Ничего не найдено. Попробуйте другое слово.",
+    "Open the full guide": "Открыть полное руководство",
   },
 });

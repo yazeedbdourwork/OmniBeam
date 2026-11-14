@@ -168,7 +168,7 @@ test('photo backup: shown in the menu and device window, and every new text is t
   // The How to Use page has it in every language
   for (const code of ['en', 'ar', 'de', 'es', 'fr', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'ru', 'tr', 'ur', 'zh']) {
     const p = fs.readFileSync(path.join(__dirname, '..', 'public', 'pages', code, 'how-to-use.html'), 'utf8');
-    expect(p, code).toContain('<h2>38. ');
+    expect(p, code).toContain('<details id="photo-backup">');
   }
   // The menu item is there on a computer
   await page.goto('/');

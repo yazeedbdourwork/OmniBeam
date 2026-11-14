@@ -1455,5 +1455,17 @@
     "Back up photos": "Fotos sichern",
     "Photo backup:": "Foto-Backup:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "Tippe am Computer im ⋯-Menü auf Foto-Backup und wähle einen Ordner. Tippe auf deinem gekoppelten Handy auf den Computer, dann auf Mehr… und Fotos sichern, und wähle deine Fotos. Nur die, die der Computer noch nicht hat, werden gesendet, in voller Qualität.",
+    // How to Use window: topics and search
+    "Get started": "Erste Schritte",
+    "Send files and messages": "Dateien und Nachrichten senden",
+    "Share with other people": "Mit anderen teilen",
+    "Received files and history": "Empfangene Dateien und Verlauf",
+    "Phone and computer together": "Handy und Computer zusammen",
+    "Settings and privacy": "Einstellungen und Datenschutz",
+    "Apps and add-ons": "Apps und Erweiterungen",
+    "Troubleshooting": "Fehlerbehebung",
+    "Search the guide": "Anleitung durchsuchen",
+    "Nothing found. Try another word.": "Nichts gefunden. Versuche ein anderes Wort.",
+    "Open the full guide": "Ganze Anleitung öffnen",
   },
 });

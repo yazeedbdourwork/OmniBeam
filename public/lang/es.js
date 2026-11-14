@@ -1455,5 +1455,17 @@
     "Back up photos": "Copiar fotos",
     "Photo backup:": "Copia de fotos:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "En un ordenador, toca Copia de fotos en el menú ⋯ y elige una carpeta. En tu teléfono vinculado, toca el ordenador, luego Más… y Copiar fotos, y elige tus fotos. Solo se envían las que el ordenador aún no tiene, con toda su calidad.",
+    // How to Use window: topics and search
+    "Get started": "Primeros pasos",
+    "Send files and messages": "Enviar archivos y mensajes",
+    "Share with other people": "Compartir con otras personas",
+    "Received files and history": "Archivos recibidos e historial",
+    "Phone and computer together": "Móvil y ordenador juntos",
+    "Settings and privacy": "Ajustes y privacidad",
+    "Apps and add-ons": "Apps y extensiones",
+    "Troubleshooting": "Solución de problemas",
+    "Search the guide": "Buscar en la guía",
+    "Nothing found. Try another word.": "No se encontró nada. Prueba otra palabra.",
+    "Open the full guide": "Abrir la guía completa",
   },
 });

@@ -1455,5 +1455,17 @@
     "Back up photos": "نسخ الصور احتياطيًا",
     "Photo backup:": "نسخ احتياطي للصور:",
     "On a computer, tap Photo backup in the ⋯ menu and choose a folder. On your paired phone, tap the computer, then More… and Back up photos, and choose your photos. Only the ones the computer doesn't have yet are sent, at full quality.": "على الكمبيوتر، اضغط على نسخ احتياطي للصور في قائمة ⋯ واختر مجلدًا. على هاتفك المقترن، اضغط على الكمبيوتر ثم المزيد… ثم نسخ الصور احتياطيًا، واختر صورك. لا يُرسل إلا ما ليس على الكمبيوتر بعد، وبالجودة الكاملة.",
+    // How to Use window: topics and search
+    "Get started": "ابدأ هنا",
+    "Send files and messages": "إرسال الملفات والرسائل",
+    "Share with other people": "المشاركة مع الآخرين",
+    "Received files and history": "الملفات المستلمة والسجل",
+    "Phone and computer together": "الهاتف والكمبيوتر معًا",
+    "Settings and privacy": "الإعدادات والخصوصية",
+    "Apps and add-ons": "التطبيقات والإضافات",
+    "Troubleshooting": "حل المشكلات",
+    "Search the guide": "ابحث في الدليل",
+    "Nothing found. Try another word.": "لم يُعثر على شيء. جرّب كلمة أخرى.",
+    "Open the full guide": "افتح الدليل الكامل",
   },
 });
