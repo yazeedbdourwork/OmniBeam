@@ -457,6 +457,7 @@
       ['Camera and voice', 'photosTaken', `photos taken and sent · ${num(sum('voiceNotes'))} voice notes`],
       ['Request links', 'requests', `made · ${num(sum('requestFiles'))} uploads received (${size(sum('requestBytes'))})`],
       ['Screen sharing', 'screenShares', `screens shown to a device · ${num(sum('previews'))} file previews opened`],
+      ['Phone as webcam', 'webcamShares', 'times a phone sent its camera or mic to a computer'],
       ['Ring my device', 'rings', 'times a device was rung to find it'],
       ['Links opened', 'linksOpened', 'links that opened by themselves on the other device'],
       ['Send to all my devices', 'sendAll', 'sends to several of your devices at once'],
