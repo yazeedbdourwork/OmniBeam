@@ -13,7 +13,9 @@ test.afterEach(async () => {
 });
 const open = async (...args) => { const d = await openDevice(...args); devices.push(d); return d; };
 const sendFrom = (page, to, text) => page.evaluate(([n, s]) => [...peers.values()].find((p) => p.info.name === n).sendText(s), [to, text]);
-const busyInSettings = (page) => page.evaluate(() => document.getElementById('dlg-settings').showModal());
+// Waits for the opening animation: while it runs, the dialog's transform holds the banner, which then shows
+// lower (under the header, where dialogs open) for a moment
+const busyInSettings = (page) => page.evaluate(() => { const d = document.getElementById('dlg-settings'); d.showModal(); return Promise.all(d.getAnimations().map((a) => a.finished)); });
 const closeSettings = (page) => page.evaluate(() => document.getElementById('dlg-settings').close());
 // Counts the chimes: a fake AudioContext whose oscillators are counted (the real one makes no sound in tests anyway)
 const countChimes = (page) => page.evaluate(() => {

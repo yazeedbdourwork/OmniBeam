@@ -1678,8 +1678,8 @@ main:focus { outline: none; }
 
 /* Dialogs sit at the top, just under the header bar, instead of the middle of the screen,
    so a dialog whose content changes height (Pair devices: Scan / Code / Rooms) no longer jumps.
-   Big media views (photo viewer, screen, preview) and the app lock screen stay centred. */
-dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) {
+   Big media views (photo viewer, screen, preview), the app lock screen and the chat (full screen on phones) keep their own place. */
+dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog):not(.chat-dialog) {
   --dlg-top: calc(92px + env(safe-area-inset-top, 0px));
   margin-top: var(--dlg-top); margin-bottom: auto;
   max-height: calc(100vh - var(--dlg-top) - 16px);
@@ -1688,5 +1688,7 @@ dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-v
 }
 /* Short screens (phone turned sideways): no room to spare, so only a small gap */
 @media (max-height: 520px) {
-  dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog) { --dlg-top: 12px; }
+  dialog:modal:not(.viewer):not(.screen-dialog):not(.preview-dialog):not(.webcam-view):not(.lock-dialog):not(.chat-dialog) { --dlg-top: 12px; }
 }
+/* Settings has a fixed height (its groups scroll inside): it ends above the bottom of the screen, so Close stays visible */
+#dlg-settings[open] { height: min(680px, calc(100dvh - var(--dlg-top, 12px) - 16px)); }
