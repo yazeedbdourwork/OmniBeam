@@ -1595,6 +1595,10 @@ main:focus { outline: none; }
 .fs-state { font-weight: 700; margin: 10px 0; overflow-wrap: anywhere; }
 .fs-row { justify-content: flex-start; flex-wrap: wrap; }
 .fs-who { display: grid; gap: 8px; margin: 8px 0 14px; }
+/* Sync a folder between two computers: sync.js */
+#dlg-fsync select { width: 100%; }
+#dlg-fsync h4 { margin: 14px 0 6px; }
+.fsync-folder { font-weight: 600; overflow-wrap: anywhere; margin-inline-end: auto; }
 .fs-dev span { overflow-wrap: anywhere; }
 .browse-dialog { width: min(96vw, 640px); }
 .fs-path { display: flex; align-items: center; gap: 10px; min-height: 36px; margin-bottom: 8px; }
