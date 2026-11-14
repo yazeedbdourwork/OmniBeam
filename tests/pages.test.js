@@ -57,7 +57,7 @@ test('the new how-to guides exist in all nine languages', async ({ request }) =>
 });
 
 // The landing pages for top searches added 2026-11-02: in every language, with a Q&A section and enough text
-const LANDING = ['send-files-iphone-to-android', 'quick-share-alternative', 'wetransfer-alternative', 'share-files-mac-and-windows', 'shareit-alternative'];
+const LANDING = ['send-files-iphone-to-android', 'quick-share-alternative', 'wetransfer-alternative', 'share-files-mac-and-windows', 'shareit-alternative', 'use-phone-as-webcam'];
 test('the landing pages for top searches exist in all nine languages', async ({ page, request }) => {
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const l of LANGS) {
