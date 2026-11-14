@@ -51,7 +51,7 @@ for (const [look, storage] of looks) {
   });
 }
 
-test('the photo viewer and other small dialogs: viewer stays centred, a short dialog is at the top', async ({ browser }) => {
+test('the photo viewer and other small dialogs: viewer, lock screen and chat keep their own place, a short dialog is at the top', async ({ browser }) => {
   const { context, page } = await phone(browser, { 'omnibeam-lang': 'en' });
   const r = await page.evaluate(() => {
     const top = (cls) => {
@@ -59,10 +59,12 @@ test('the photo viewer and other small dialogs: viewer stays centred, a short di
       d.style.height = '200px'; document.body.append(d); d.showModal();
       const y = d.getBoundingClientRect().top; d.close(); d.remove(); return y;
     };
-    return { plain: top(''), viewer: top('viewer'), lock: top('lock-dialog') };
+    return { plain: top(''), viewer: top('viewer'), lock: top('lock-dialog'), chat: top('chat-dialog') };
   });
   expect(r.plain).toBeLessThan(140);
   expect(r.viewer).toBeGreaterThan(250);
   expect(r.lock).toBeGreaterThan(250);
+  // The chat places itself (full screen on phones, chat.js), so the top rule leaves it alone
+  expect(r.chat).toBeGreaterThan(250);
   await context.close();
 });
