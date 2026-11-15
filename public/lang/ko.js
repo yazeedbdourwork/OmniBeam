@@ -894,6 +894,7 @@
     "Remove every photo, video and song from this TV?": "이 TV에서 모든 사진, 동영상, 노래를 삭제할까요?",
     "Cleared.": "지웠어요.",
     "An iPhone photo (HEIC) this TV can't show.": "이 TV에서 보여 줄 수 없는 iPhone 사진(HEIC)이에요.",
+    "Opening the iPhone photo…": "iPhone 사진을 여는 중…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "iPhone에서 OmniBeam으로 보내거나(JPG로 바뀌어요), iPhone 카메라를 \"높은 호환성\"으로 설정하세요.",
     "OK: sound on": "OK: 소리 켜기",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ 10초 이동 · OK 일시 정지 · ▲ ▼ 이전 / 다음 · 뒤로: 사진 벽",

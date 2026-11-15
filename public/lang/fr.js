@@ -894,6 +894,7 @@
     "Remove every photo, video and song from this TV?": "Supprimer toutes les photos, vidéos et chansons de cette TV ?",
     "Cleared.": "Effacé.",
     "An iPhone photo (HEIC) this TV can't show.": "Une photo d’iPhone (HEIC) que cette TV ne peut pas afficher.",
+    "Opening the iPhone photo…": "Ouverture de la photo d’iPhone…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "Envoyez-la depuis l’iPhone avec OmniBeam (elle devient un JPG), ou réglez l’appareil photo de l’iPhone sur « Le plus compatible ».",
     "OK: sound on": "OK : activer le son",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ sauter 10 s · OK pause · ▲ ▼ précédent / suivant · Retour : mur de photos",

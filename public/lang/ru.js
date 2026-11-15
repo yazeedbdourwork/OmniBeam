@@ -894,6 +894,7 @@
     "Remove every photo, video and song from this TV?": "Удалить все фото, видео и песни с этого телевизора?",
     "Cleared.": "Удалено.",
     "An iPhone photo (HEIC) this TV can't show.": "Фото с iPhone (HEIC), которое этот телевизор не может показать.",
+    "Opening the iPhone photo…": "Открываем фото с iPhone…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "Отправьте его с самого iPhone через OmniBeam (оно станет JPG) или включите в камере iPhone режим «Наиболее совместимый».",
     "OK: sound on": "OK: включить звук",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ перемотка на 10 с · OK пауза · ▲ ▼ назад / вперёд · «Назад»: стена фото",
