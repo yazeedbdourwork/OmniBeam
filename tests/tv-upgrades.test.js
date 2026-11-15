@@ -72,9 +72,15 @@ test('TV: photo wall, remote keys, video controls, music, HEIC card, settings, k
   await expect(p.locator('.tv-bar-time')).toContainText('0:1');
   await p.keyboard.press('ArrowLeft');
   await expect.poll(() => p.locator('#tv-stage video').evaluate((v) => v.currentTime)).toBeLessThan(2);
-  // The HEIC photo: this browser can't read it, so the slide says how to send it
+  // The HEIC photo: this browser can't read it, so the TV turns it into a JPG (heic2any.js, loaded only now) and shows it
   await p.keyboard.press('ArrowDown');
-  await expect(p.locator('#tv-stage .tv-heic')).toContainText('HEIC');
+  await expect(p.locator('#tv-caption')).toContainText('4 / 4');
+  await expect(p.locator('#tv-stage img')).toBeVisible({ timeout: 30000 });
+  expect(await p.locator('#tv-stage img').evaluate((img) => [img.naturalWidth, img.naturalHeight])).toEqual([64, 48]);
+  // heic2any needs eval: it runs in a sandboxed frame with its own rules, never on the TV page itself
+  expect(await p.evaluate(() => typeof heic2any)).toBe('undefined');
+  await expect(p.locator('iframe[src^="/heic-frame.html"]')).toHaveAttribute('sandbox', 'allow-scripts');
+  await expect(p.locator('#tv-grid [data-i="3"] img')).toHaveCount(0); // (the wall isn't open yet)
 
   // Back: the photo wall; arrows move between the tiles, OK opens one
   await p.keyboard.press('Escape');
@@ -84,6 +90,7 @@ test('TV: photo wall, remote keys, video controls, music, HEIC card, settings, k
   await p.keyboard.press('ArrowLeft');
   await expect(p.locator('#tv-grid [data-i="2"]')).toBeFocused();
   await expect(p.locator('#tv-grid [data-i="0"] img')).toHaveCount(1); // a small picture of the photo
+  await expect(p.locator('#tv-grid [data-i="3"] img')).toHaveCount(1); // and of the iPhone photo, now a JPG
   await p.keyboard.press('ArrowLeft');
   await p.keyboard.press('Enter');
   await expect(p.locator('#tv-caption')).toContainText('2 / 4');
@@ -182,6 +189,17 @@ test('TV: the phone is the remote, messages and links show big, the clock screen
   await expect(p.locator('#tv-show')).toBeHidden(); // the key didn't also press a button
   expect(tv.errors).toEqual([]);
   expect(phone.errors).toEqual([]);
+});
+
+test('TV: the HEIC frame has its own strict rules and only this site may show it', async ({ request }) => {
+  const r = await request.get('/heic-frame.html');
+  expect(r.status()).toBe(200);
+  const csp = r.headers()['content-security-policy'];
+  expect(csp).toContain("default-src 'none'");
+  expect(csp).toContain("frame-ancestors 'self'");
+  expect(r.headers()['x-frame-options']).toBe('SAMEORIGIN');
+  // Every other page keeps eval off
+  expect((await request.get('/tv')).headers()['content-security-policy']).not.toContain('unsafe-eval');
 });
 
 test('TV: phones that are not paired and sent nothing can\'t work the remote', async ({ browser }) => {

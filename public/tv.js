@@ -10,7 +10,8 @@
 //
 // What the TV does with what arrives:
 // - Photos and videos: a full-screen slideshow (new ones show at once), and a photo wall (a grid of everything).
-// - iPhone photos (HEIC): shown when the TV's browser can read them, else a card that says how to send them.
+// - iPhone photos (HEIC): shown as they are when the TV's browser can read them, else turned into JPG on the TV with
+//   heic2any.js (1.3 MB, loaded only then); a card says how to send them if even that fails.
 // - Music: plays in the background, with a "now playing" bar on the home screen and in the slideshow.
 // - Messages: shown big on screen; a link also as a QR code, so people in the room can open it on their phones.
 // Received files are in the TV's received-files history (Keep history), so a reload brings the slideshow back.
@@ -329,7 +330,7 @@
       for (const { f, kind } of media) {
         const s = { url: URL.createObjectURL(f.blob), kind, from, hid: f.id || null };
         this.slides.push(s);
-        if (kind === 'heic') this.checkHeic(s);
+        if (kind === 'heic') this.checkHeic(s, f.blob);
       }
       let start = first;
       while (this.slides.length > MAX_SLIDES) {
@@ -381,13 +382,66 @@
       this.tell();
     },
 
-    // iPhone photos: most TV browsers can't read HEIC. Try; if not, the slide says how to send them instead.
+    // iPhone photos: most TV browsers can't read HEIC. Try; if not, turn it into a JPG with heic2any.js (loaded only
+    // now, once), one photo at a time; if that fails too, the slide says how to send it instead. heic2any needs eval,
+    // so it runs in a hidden sandboxed frame (/heic-frame.html) instead of on this page.
     // (iPhones sending with OmniBeam turn them into JPG first; HEIC files only come as is from other devices.)
-    checkHeic(s) {
+    checkHeic(s, blob) {
       const img = new Image();
-      img.onload = () => { s.kind = 'image'; if (this.view === 'show' && this.slides[this.at] === s) this.show(this.at); };
-      img.onerror = () => { s.kind = 'heic-no'; if (this.view === 'show' && this.slides[this.at] === s) this.show(this.at); if (this.view === 'wall') this.paintWall(); };
+      img.onload = () => this.heicDone(s, 'image');
+      img.onerror = () => { this.heicQueue = (this.heicQueue || Promise.resolve()).then(() => this.convertHeic(s, blob)); };
       img.src = s.url;
+    },
+    async convertHeic(s, blob) {
+      if (!this.slides.includes(s)) return; // let go meanwhile (Clear photos, or more than 60)
+      try {
+        const jpg = await this.heicToJpg(blob);
+        if (!(jpg instanceof Blob) || !this.slides.includes(s)) return;
+        URL.revokeObjectURL(s.url);
+        s.url = URL.createObjectURL(jpg);
+        this.heicDone(s, 'image');
+        this.makeThumbs();
+      } catch {
+        this.heicDone(s, 'heic-no');
+      }
+    },
+    // The frame is made on the first HEIC photo and kept; each photo gets an answer within 60 s or counts as failed
+    heicFrame() {
+      if (!this.heicReady) {
+        this.heicReady = new Promise((resolve, reject) => {
+          const frame = document.createElement('iframe');
+          frame.hidden = true;
+          frame.setAttribute('sandbox', 'allow-scripts');
+          frame.setAttribute('aria-hidden', 'true');
+          frame.src = '/heic-frame.html?v=1';
+          const fail = setTimeout(() => { this.heicReady = null; frame.remove(); reject(new Error('heic frame')); }, 30000);
+          addEventListener('message', (e) => {
+            if (e.source !== frame.contentWindow || !e.data) return;
+            if (e.data.heicReady) { clearTimeout(fail); resolve(frame); }
+            const wait = this.heicWaits && this.heicWaits.get(e.data.id);
+            if (wait) { this.heicWaits.delete(e.data.id); wait(e.data); }
+          });
+          document.body.appendChild(frame);
+        });
+      }
+      return this.heicReady;
+    },
+    async heicToJpg(blob) {
+      const frame = await this.heicFrame();
+      this.heicWaits = this.heicWaits || new Map();
+      const id = (this.heicId = (this.heicId || 0) + 1);
+      const answer = await new Promise((resolve) => {
+        this.heicWaits.set(id, resolve);
+        setTimeout(() => { if (this.heicWaits.delete(id)) resolve({ error: 'timeout' }); }, 60000);
+        frame.contentWindow.postMessage({ id, blob }, '*');
+      });
+      if (answer.error) throw new Error(answer.error);
+      return answer.jpg;
+    },
+    heicDone(s, kind) {
+      s.kind = kind;
+      if (this.view === 'show' && this.slides[this.at] === s) this.show(this.at);
+      if (this.view === 'wall') this.paintWall();
     },
 
     // Small pictures for the photo wall, one at a time (a TV has little memory for 60 full-size photos)
@@ -464,7 +518,8 @@
       if (s.kind === 'heic' || s.kind === 'heic-no') {
         el = document.createElement('div');
         el.className = 'tv-heic';
-        el.innerHTML = `<p>📷 ${esc(t('An iPhone photo (HEIC) this TV can\'t show.'))}</p><p class="muted">${esc(t('Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.'))}</p>`;
+        el.innerHTML = s.kind === 'heic' ? `<p>📷 ${esc(t('Opening the iPhone photo…'))}</p>`
+          : `<p>📷 ${esc(t('An iPhone photo (HEIC) this TV can\'t show.'))}</p><p class="muted">${esc(t('Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.'))}</p>`;
         if (s.kind === 'heic-no' && !this.paused && this.slides.length > 1) this.timer = setTimeout(() => this.next(), 4000);
       } else if (s.kind === 'video') {
         el = document.createElement('video');

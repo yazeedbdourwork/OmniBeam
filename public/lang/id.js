@@ -904,6 +904,7 @@
     "Remove every photo, video and song from this TV?": "Hapus semua foto, video, dan lagu dari TV ini?",
     "Cleared.": "Dihapus.",
     "An iPhone photo (HEIC) this TV can't show.": "Foto iPhone (HEIC) yang tidak bisa ditampilkan TV ini.",
+    "Opening the iPhone photo…": "Membuka foto iPhone…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "Kirim dari iPhone dengan OmniBeam (menjadi JPG), atau atur kamera iPhone ke Paling Kompatibel.",
     "OK: sound on": "OK: nyalakan suara",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ lompat 10 dtk · OK jeda · ▲ ▼ sebelumnya / berikutnya · Kembali: dinding foto",

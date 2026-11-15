@@ -894,6 +894,7 @@
     "Remove every photo, video and song from this TV?": "要删除这台电视上的所有照片、视频和歌曲吗？",
     "Cleared.": "已清除。",
     "An iPhone photo (HEIC) this TV can't show.": "这台电视无法显示的 iPhone 照片（HEIC）。",
+    "Opening the iPhone photo…": "正在打开 iPhone 照片…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "请在 iPhone 上用 OmniBeam 发送（会变成 JPG），或把 iPhone 相机格式设为“兼容性最佳”。",
     "OK: sound on": "OK：打开声音",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ 快退/快进 10 秒 · OK 暂停 · ▲ ▼ 上一个 / 下一个 · 返回：照片墙",

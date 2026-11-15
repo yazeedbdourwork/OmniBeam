@@ -904,6 +904,7 @@
     "Remove every photo, video and song from this TV?": "इस टीवी से सभी फ़ोटो, वीडियो और गाने हटाएँ?",
     "Cleared.": "हटा दिया।",
     "An iPhone photo (HEIC) this TV can't show.": "एक iPhone फ़ोटो (HEIC) जिसे यह टीवी नहीं दिखा सकता।",
+    "Opening the iPhone photo…": "iPhone फ़ोटो खुल रही है…",
     "Send it from the iPhone with OmniBeam (it becomes a JPG), or set the iPhone camera to Most Compatible.": "इसे iPhone से OmniBeam के ज़रिए भेजें (यह JPG बन जाती है), या iPhone कैमरा को Most Compatible पर रखें।",
     "OK: sound on": "OK: आवाज़ चालू",
     "◀ ▶ skip 10 s · OK pause · ▲ ▼ previous / next · Back: photo wall": "◀ ▶ 10 से. आगे-पीछे · OK रोकें · ▲ ▼ पिछला / अगला · Back: फ़ोटो वॉल",

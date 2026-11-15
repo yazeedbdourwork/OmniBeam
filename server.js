@@ -187,7 +187,8 @@ function minifyAll() {
       if (e.isDirectory()) { if (!['tools', 'media', 'pages', 'store'].includes(e.name)) walk(p); continue; }
       const ext = path.extname(e.name);
       if (ext !== '.js' && ext !== '.css') continue;
-      if (e.name === 'mediabunny.js') continue; // already minified, keeps its licence notice (MPL-2.0)
+      // Already minified, keep their licence notices: mediabunny.js (MPL-2.0), heic2any.js (MIT, LGPL-3.0 libheif)
+      if (e.name === 'mediabunny.js' || e.name === 'heic2any.js') continue;
       const src = fs.readFileSync(p);
       const key = sha1(src);
       wanted.add(key + ext);
@@ -535,7 +536,7 @@ function tvPage(lang) {
     .replace(/<title>[^<]*<\/title>/, `<title>${(LANGS[lang] && LANGS[lang].strings['TV mode']) || 'TV mode'} · OmniBeam</title>`)
     .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="robots" content="noindex">')
     // The TV screen's own script (slideshow, photo wall, music, the remote), right after app.js
-    .replace(/(\s*)(<script src="\/app\.js\?v=\d+" defer><\/script>)/, '$1$2$1<script src="/tv.js?v=2" defer></script>');
+    .replace(/(\s*)(<script src="\/app\.js\?v=\d+" defer><\/script>)/, '$1$2$1<script src="/tv.js?v=3" defer></script>');
   const out = Buffer.from(html);
   tvCache.set(lang, out);
   return out;
@@ -1150,6 +1151,17 @@ const server = http.createServer((req, res) => {
       res.setHeader('Content-Security-Policy', String(res.getHeader('Content-Security-Policy')).replace("frame-ancestors 'none'", 'frame-ancestors *'));
       res.removeHeader('X-Frame-Options');
       sendFile(req, res, 200, 'embed-box.html', data, { 'X-Robots-Tag': 'noindex, nofollow' });
+    });
+  }
+  // TV mode turns iPhone photos (HEIC) into JPG with heic2any.js, which needs eval (its libheif is compiled with
+  // Emscripten). Rather than allow eval on the TV page, it runs only in this small page, in a sandboxed hidden frame
+  // of the TV page (tv.js): its own strict rules, eval allowed only here, framed only by this site, nothing to read.
+  if (urlPath === '/heic-frame.html') {
+    return fs.readFile(path.join(PUBLIC_DIR, 'heic-frame.html'), (err, data) => {
+      if (err) return notFound(req, res);
+      res.setHeader('Content-Security-Policy', "default-src 'none'; script-src 'self' 'unsafe-eval' blob:; worker-src blob:; frame-ancestors 'self'; base-uri 'none'; form-action 'none'");
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+      sendFile(req, res, 200, 'heic-frame.html', data, { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
   // An event photo album (the key is after #, like /d/)
