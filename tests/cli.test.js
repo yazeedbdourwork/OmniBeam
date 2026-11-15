@@ -125,6 +125,48 @@ test('npx omnibeam receive: a room link brings in a device from anywhere', async
   await recv.done;
 });
 
+test('npx omnibeam send --password: only a device that types the password gets the file', async ({ browser }) => {
+  const home = tmp();
+  fs.writeFileSync(path.join(home, 'plan.txt'), 'top secret plan\n');
+  const sent = run(['send', 'plan.txt', '--password', 'tulip42', '--name', 'Test Terminal'], { home });
+  await expect.poll(() => sent.err, { timeout: 15000 }).toMatch(/#room=[a-z]{5}/);
+  const code = sent.err.match(/#room=([a-z]{5})/)[1];
+  // A phone on the same network (it sees the terminal anyway) opening the room link: asked for the password, and
+  // no file offer until it types it
+  const phone = await openDevice(browser, 'Test Phone', { path: `/#room=${code}` });
+  devices.push(phone);
+  await expect(phone.page.locator('#public-pass')).toBeVisible();
+  await expect(phone.page.locator('#toast')).toContainText('This room needs a password');
+  await phone.page.waitForTimeout(3000);
+  await expect(phone.page.locator('#dlg-request')).toBeHidden();
+  await phone.page.fill('#public-pass', 'tulip42');
+  await phone.page.locator('#public-pass').press('Enter');
+  const ask = phone.page.locator('#dlg-request');
+  await expect(ask).toBeVisible({ timeout: 20000 });
+  await ask.locator('[data-act=accept]').click();
+  await expect(phone.page.locator('#dlg-received')).toBeVisible({ timeout: 30000 });
+  const r = await sent.done;
+  expect(r.code).toBe(0);
+  expect(r.err).toContain('Sent 1 file to Test Phone');
+});
+
+test('npx omnibeam receive --password: a device on the same network without it is declined', async () => {
+  const home = tmp();
+  fs.writeFileSync(path.join(home, 'note.txt'), 'hello\n');
+  const recv = run(['receive', '--password', 'tulip42', '--yes', '-o', 'in', '--name', 'Test Inbox'], { home });
+  await expect.poll(() => recv.err, { timeout: 15000 }).toMatch(/#room=[a-z]{5}/);
+  const code = recv.err.match(/#room=([a-z]{5})/)[1];
+  const nosy = await run(['send', 'note.txt', '--to', 'Test Inbox', '--name', 'Test Neighbour'], { home: tmp(), cwd: home }).done;
+  expect(nosy.code).toBe(1);
+  expect(nosy.err).toContain('Test Inbox declined');
+  expect(fs.existsSync(path.join(home, 'in', 'note.txt'))).toBe(false);
+  const friend = await run(['send', 'note.txt', '--room', code, '--password', 'tulip42', '--to', 'Test Inbox', '--name', 'Test Friend'], { home: tmp(), cwd: home }).done;
+  expect(friend.code).toBe(0);
+  const r = await recv.done;
+  expect(r.code).toBe(0);
+  expect(fs.readFileSync(path.join(home, 'in', 'note.txt'), 'utf8')).toBe('hello\n');
+});
+
 test('npx omnibeam link and get: work with the browser pages both ways', async ({ browser }) => {
   const home = tmp();
   const data = makeFile('dump.sql', 5 * 1024 * 1024 + 5); // two parts

@@ -14,7 +14,7 @@ async function openHub(opts, onPeer) {
     log('OmniBeam: the connection to the server closed');
     process.exit(1);
   });
-  if (opts.room) await enterRoom(hub, opts.room, opts.password);
+  if (opts.room) hub.room = await enterRoom(hub, opts.room, opts.password);
   return hub;
 }
 
@@ -39,6 +39,7 @@ async function waitInNewRoom(hub, opts, why) {
     else if (res.reason !== 'full') fail('Could not open a room. Wait a few minutes and try again.');
   }
   if (!code) fail('Could not open a room. Try again.');
+  hub.room = code;
   const url = `${opts.server.replace(/\/$/, '')}/#room=${code}`;
   log(why);
   log(`On the other device, open ${url}`);
@@ -57,22 +58,40 @@ function match(list, want) {
     : `No device called "${want}". Found: ${list.map((p) => p.name).join(', ') || 'none'}`);
 }
 
+// With a room password, only a device that joined the room counts: the server says so (info.room). Devices on the
+// same network or paired ones are seen too, but they didn't type the password.
+const inRoom = (hub, p) => !!hub.room && p.info.room === hub.room;
+const allowed = (hub, opts, p) => !opts.password || inRoom(hub, p);
+
 // One device to send to
 async function pickTarget(hub, opts) {
   await hub.settle(opts.room ? 1200 : 1500);
   // Remembered devices can take a moment longer to show up
   for (let i = 0; i < 8 && !hub.peers.size; i++) await sleep(250);
-  let list = [...hub.peers.values()];
+  const visible = () => [...hub.peers.values()].filter((p) => allowed(hub, opts, p));
+  let list = visible();
   if (opts.to) {
-    if (!list.length) for (let i = 0; i < 20 && !list.length; i++) { await sleep(250); list = [...hub.peers.values()]; }
+    if (!list.length) for (let i = 0; i < 20 && !list.length; i++) { await sleep(250); list = visible(); }
     return match(list, opts.to);
   }
   if (list.length === 1) return list[0];
   if (!list.length) {
     if (opts.room) fail('Nobody is in that room yet');
-    await waitInNewRoom(hub, opts, 'No devices with OmniBeam open on this network.');
+    await waitInNewRoom(hub, opts, opts.password ? 'Opening a room with a password: only a device that types it gets the file.'
+      : 'No devices with OmniBeam open on this network.');
     log('Waiting for a device to join… (Ctrl+C to stop)');
-    return new Promise((resolve) => hub.once('peer', (p) => resolve(p)));
+    // Any device that shows up, or with a password, one that joins the room (a device already seen on the same
+    // network joins it as an update, not as a new device)
+    return new Promise((resolve) => {
+      const check = (p) => {
+        if (!allowed(hub, opts, p)) return;
+        hub.off('peer', check);
+        hub.off('peer-updated', check);
+        resolve(p);
+      };
+      hub.on('peer', check);
+      if (opts.password) hub.on('peer-updated', check);
+    });
   }
   if (!process.stdin.isTTY) fail(`Several devices are here; pick one with --to: ${list.map((p) => p.name).join(', ')}`);
   list.forEach((p, i) => log(`  ${i + 1}. ${p.label}`));
@@ -82,4 +101,4 @@ async function pickTarget(hub, opts) {
   return target;
 }
 
-module.exports = { openHub, enterRoom, waitInNewRoom, pickTarget, match };
+module.exports = { openHub, enterRoom, waitInNewRoom, pickTarget, match, inRoom };

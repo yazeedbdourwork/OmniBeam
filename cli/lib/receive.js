@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const { fail, log, formatSize, plural, progressLine, progressDone, safePath, freeName, askYes, closeAsk, crc32, showQr, setInterrupt } = require('./util');
-const { openHub, waitInNewRoom } = require('./find');
+const { openHub, waitInNewRoom, inRoom } = require('./find');
 
 async function receive(opts) {
   const dir = path.resolve(opts.out || '.');
@@ -48,7 +48,9 @@ async function receive(opts) {
     log(`In room ${opts.room.toUpperCase()}: ${url}`);
     showQr(url, opts);
   } else if (opts.newRoom !== false) {
-    await waitInNewRoom(hub, opts, `Ready to receive as "${name}". Devices on this network and paired devices see it already.`);
+    await waitInNewRoom(hub, opts, opts.password
+      ? `Ready to receive as "${name}" from a device that joins this room with the password (and paired devices).`
+      : `Ready to receive as "${name}". Devices on this network and paired devices see it already.`);
   } else {
     log(`Ready to receive as "${name}" from devices on this network and paired devices.`);
   }
@@ -68,6 +70,11 @@ async function receive(opts) {
         const total = files.reduce((s, f) => s + f.size, 0);
         const what = `${plural(files.length, 'file')} (${formatSize(total)})`;
         const trusted = p.provesPairing(m.proofs);
+        // With a room password: only from a device that joined the room with it (or a paired one)
+        if (opts.password && !trusted && !inRoom(p.hub, p)) {
+          log(`\n${p.label} tried to send files without the room password: declined.`);
+          return p.sendJson({ t: 'decline' });
+        }
         const ok = await (prompting = prompting.then(async () => {
           log(`\n${p.label} wants to send ${what}:`);
           files.slice(0, 8).forEach((f) => log(`  ${f.name}  ${formatSize(f.size)}`));

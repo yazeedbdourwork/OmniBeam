@@ -3687,12 +3687,16 @@ function peerInfo(c, viewer) {
   if (viewer) {
     const teams = [...c.rooms].filter((r) => r.startsWith('team:') && viewer.rooms.has(r)).map((r) => r.slice(5, 21));
     if (teams.length) info.teams = teams;
+    // The public room both are in (a device can be in one at a time): the command line, waiting in a room with a
+    // password, sends only to a device that joined it, not to one it also sees on the same network
+    const pub = [...c.rooms].find((r) => r.startsWith('public:') && viewer.rooms.has(r));
+    if (pub) info.room = pub.slice(7);
   }
   return info;
 }
-// Devices that already saw each other and now share a team room too (or no longer do): update their cards
+// Devices that already saw each other and now share a team or public room too (or no longer do): update their cards
 function teamChanged(client, room, ids) {
-  if (!room.startsWith('team:')) return;
+  if (!room.startsWith('team:') && !room.startsWith('public:')) return;
   for (const id of ids) {
     const other = clients.get(id);
     if (!other) continue;

@@ -96,6 +96,7 @@ server.
 | --- | --- |
 | `--to <name>` | the device to send to |
 | `--room <code>` | use this public room (5 letters), `--password` if it has one |
+| `--password <p>` | send, receive: open the room with this password; only a device that joins with it can get or send files (devices on the same Wi-Fi don't count; paired devices still can send to you) |
 | `-o, --out <folder>` | where received or downloaded files go (`get -o -` writes to standard output) |
 | `-y, --yes` | receive: accept without asking |
 | `--keep` | receive: keep running after the first transfer |
