@@ -1372,6 +1372,10 @@
     "With Clipboard sync on, OmniBeam can keep the last 20 texts in History, so you can copy one again later.": "Com a sincronização da área de transferência ligada, o OmniBeam pode guardar os últimos 20 textos no Histórico, para você copiar um de novo depois.",
     "Firefox add-on:": "Complemento para Firefox:",
     "The same one-click extension is also made for Firefox.": "A mesma extensão de um clique também existe para o Firefox.",
+    // Command-line tool (npx omnibeam, 2026-11-15)
+    "Command line:": "Linha de comando:",
+    "Developers can send, receive and share by link from a terminal with Node.js:": "Desenvolvedores podem enviar, receber e compartilhar por link no terminal com Node.js:",
+    "Get it on npm": "Baixar no npm",
     // Phone as a webcam or mic (webcam.js, 2026-11-14)
     "Phone as a webcam or mic:": "O celular como webcam ou microfone:",
     "On a phone, choose More… on a computer, then Be its webcam or mic. The computer sees and hears it live, and Pop out makes a window that OBS can capture for Zoom, Meet or Teams.": "No celular, escolha Mais… em um computador e depois Ser a webcam ou o microfone dele. O computador vê e ouve ao vivo, e Abrir em janela cria uma janela que o OBS pode capturar para o Zoom, Meet ou Teams.",

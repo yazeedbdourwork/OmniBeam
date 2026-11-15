@@ -2,7 +2,7 @@
 title: Как пользоваться OmniBeam: отправка файлов между любыми устройствами
 description: Как отправлять файлы и текст между iPhone, Android, Windows и Mac с OmniBeam: одна сеть Wi-Fi, коды связывания, ссылки и многое другое.
 short: Как пользоваться OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>Как пользоваться OmniBeam, шаг за шагом</h1>
 <p class="lead">OmniBeam отправляет файлы и текст между вашими устройствами прямо из браузера. Вот всё, что он умеет, шаг за шагом.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Полученные файлы и история<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Телефон и компьютер вместе<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Настройки и конфиденциальность<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Приложения и расширения<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Приложения и расширения<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Решение проблем<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>Расширение OmniBeam есть и в <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">дополнениях Firefox</a>, рядом с версией в Интернет-магазине Chrome.</p>
+</details>
+<details id="command-line">
+<summary>Командная строка для разработчиков</summary>
+<p>С Node.js 22 или новее команда <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> работает в терминале без установки. <code>npx omnibeam send file.zip</code> отправляет на устройство, где открыт OmniBeam (или показывает QR-код для сканирования), <code>npx omnibeam receive</code> ждёт файлы с телефона, а <code>npx omnibeam link file.zip</code> создаёт зашифрованную ссылку. <code>npx omnibeam --help</code> показывает все команды.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Назад к темам</a></p>
 </section>

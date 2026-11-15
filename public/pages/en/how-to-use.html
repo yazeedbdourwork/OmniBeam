@@ -2,7 +2,7 @@
 title: How to Use OmniBeam: Send Files Between Any Devices
 description: How to send files and text between iPhone, Android, Windows and Mac with OmniBeam: same Wi-Fi, pairing codes, links and more.
 short: How to use OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>How to use OmniBeam, step by step</h1>
 <p class="lead">OmniBeam sends files and text between your devices straight from the browser. Here is everything it can do, step by step.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Received files and history<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Phone and computer together<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Settings and privacy<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Apps and add-ons<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Apps and add-ons<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Troubleshooting<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>The OmniBeam extension is also on <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox Add-ons</a>, next to the Chrome Web Store version.</p>
+</details>
+<details id="command-line">
+<summary>Command line for developers</summary>
+<p>With Node.js 22 or newer, the <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> command works from a terminal with nothing to install. <code>npx omnibeam send file.zip</code> sends to a device that has OmniBeam open (or shows a QR code to scan), <code>npx omnibeam receive</code> waits for files from your phone, and <code>npx omnibeam link file.zip</code> makes an encrypted share link. <code>npx omnibeam --help</code> lists everything.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Back to topics</a></p>
 </section>

@@ -2,7 +2,7 @@
 title: OmniBeam nasıl kullanılır: her cihaz arasında dosya gönderin
 description: OmniBeam ile iPhone, Android, Windows ve Mac arasında dosya ve metin gönderme: aynı Wi-Fi, eşleştirme kodu, bağlantı. Ücretsiz, hesap gerekmez.
 short: OmniBeam nasıl kullanılır
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>OmniBeam nasıl kullanılır, adım adım</h1>
 <p class="lead">OmniBeam, cihazlarınız arasında dosya ve metni doğrudan tarayıcıdan gönderir. Yapabildiği her şey, adım adım.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Alınan dosyalar ve geçmiş<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Telefon ve bilgisayar birlikte<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Ayarlar ve gizlilik<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Uygulamalar ve eklentiler<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Uygulamalar ve eklentiler<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Sorun giderme<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>OmniBeam eklentisi, Chrome Web Mağazası sürümünün yanında <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox Eklentileri</a>'nde de var.</p>
+</details>
+<details id="command-line">
+<summary>Geliştiriciler için komut satırı</summary>
+<p>Node.js 22 veya daha yenisiyle <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> komutu hiçbir şey kurmadan terminalden çalışır. <code>npx omnibeam send file.zip</code> OmniBeam’i açık olan bir cihaza gönderir (ya da taranacak bir QR kodu gösterir), <code>npx omnibeam receive</code> telefonunuzdan gelecek dosyaları bekler ve <code>npx omnibeam link file.zip</code> şifreli bir paylaşım bağlantısı oluşturur. <code>npx omnibeam --help</code> her şeyi listeler.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Konulara dön</a></p>
 </section>

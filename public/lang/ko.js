@@ -1370,6 +1370,10 @@
     "With Clipboard sync on, OmniBeam can keep the last 20 texts in History, so you can copy one again later.": "클립보드 동기화를 켜면 OmniBeam이 최근 텍스트 20개를 기록에 보관해 나중에 다시 복사할 수 있습니다.",
     "Firefox add-on:": "Firefox 부가 기능:",
     "The same one-click extension is also made for Firefox.": "같은 원클릭 확장 프로그램이 Firefox용으로도 있습니다.",
+    // Command-line tool (npx omnibeam, 2026-11-15)
+    "Command line:": "명령줄:",
+    "Developers can send, receive and share by link from a terminal with Node.js:": "개발자는 Node.js로 터미널에서 보내기, 받기, 링크 공유를 할 수 있습니다:",
+    "Get it on npm": "npm에서 받기",
     // Phone as a webcam or mic (webcam.js, 2026-11-14)
     "Phone as a webcam or mic:": "휴대폰을 웹캠·마이크로:",
     "On a phone, choose More… on a computer, then Be its webcam or mic. The computer sees and hears it live, and Pop out makes a window that OBS can capture for Zoom, Meet or Teams.": "휴대폰에서 컴퓨터의 더 보기…를 고른 뒤 웹캠·마이크 되기를 누르세요. 컴퓨터에서 실시간으로 보고 들을 수 있고, 새 창으로 열기로 OBS가 Zoom, Meet, Teams용으로 캡처할 수 있는 창이 열립니다.",

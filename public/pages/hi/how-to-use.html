@@ -2,7 +2,7 @@
 title: OmniBeam कैसे इस्तेमाल करें: फ़ाइलें भेजें
 description: OmniBeam से iPhone, Android, Windows और Mac के बीच फ़ाइलें और टेक्स्ट भेजने की गाइड: Wi-Fi, कोड और लिंक।
 short: OmniBeam कैसे इस्तेमाल करें
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>OmniBeam कैसे इस्तेमाल करें, कदम-दर-कदम</h1>
 <p class="lead">OmniBeam आपके डिवाइसों के बीच सीधे ब्राउज़र से फ़ाइलें और टेक्स्ट भेजता है। यहाँ इसकी हर सुविधा कदम-दर-कदम दी गई है।</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>मिली फ़ाइलें और इतिहास<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>फ़ोन और कंप्यूटर साथ में<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>सेटिंग और प्राइवेसी<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>ऐप और एक्सटेंशन<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>ऐप और एक्सटेंशन<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>समस्या का हल<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>OmniBeam एक्सटेंशन Chrome वेब स्टोर वाले वर्ज़न के साथ-साथ <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox ऐड-ऑन</a> पर भी है।</p>
+</details>
+<details id="command-line">
+<summary>डेवलपर्स के लिए कमांड लाइन</summary>
+<p>Node.js 22 या नए के साथ, <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> कमांड बिना कुछ इंस्टॉल किए टर्मिनल से चलती है। <code>npx omnibeam send file.zip</code> उस डिवाइस को भेजती है जिस पर OmniBeam खुला है (या स्कैन करने के लिए QR कोड दिखाती है), <code>npx omnibeam receive</code> आपके फ़ोन से फ़ाइलों का इंतज़ार करती है, और <code>npx omnibeam link file.zip</code> एक एन्क्रिप्टेड शेयर लिंक बनाती है। <code>npx omnibeam --help</code> सब कुछ दिखाती है।</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ विषयों पर वापस जाएँ</a></p>
 </section>
