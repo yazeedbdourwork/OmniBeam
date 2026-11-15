@@ -2,7 +2,7 @@
 title: Come usare OmniBeam: inviare file tra qualsiasi dispositivo
 description: Come inviare file e testo tra iPhone, Android, Windows e Mac con OmniBeam: stesso Wi-Fi, codici di associazione, link e altro.
 short: Come usare OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>Come usare OmniBeam, passo dopo passo</h1>
 <p class="lead">OmniBeam invia file e testo tra i tuoi dispositivi direttamente dal browser. Ecco tutto quello che sa fare, passo dopo passo.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>File ricevuti e cronologia<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Telefono e computer insieme<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Impostazioni e privacy<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>App ed estensioni<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>App ed estensioni<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Risoluzione dei problemi<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>L'estensione di OmniBeam è anche sui <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">componenti aggiuntivi di Firefox</a>, accanto alla versione del Chrome Web Store.</p>
+</details>
+<details id="command-line">
+<summary>Riga di comando per sviluppatori</summary>
+<p>Con Node.js 22 o più recente, il comando <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> funziona da un terminale senza installare nulla. <code>npx omnibeam send file.zip</code> invia a un dispositivo con OmniBeam aperto (o mostra un codice QR da scansionare), <code>npx omnibeam receive</code> aspetta i file dal telefono e <code>npx omnibeam link file.zip</code> crea un link di condivisione cifrato. <code>npx omnibeam --help</code> mostra tutto.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Torna agli argomenti</a></p>
 </section>

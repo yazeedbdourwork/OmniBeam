@@ -1370,6 +1370,10 @@
     "With Clipboard sync on, OmniBeam can keep the last 20 texts in History, so you can copy one again later.": "开启剪贴板同步后，OmniBeam 可以在历史记录中保留最近 20 条文本，方便你稍后再次复制。",
     "Firefox add-on:": "Firefox 附加组件：",
     "The same one-click extension is also made for Firefox.": "同样的一键扩展也有 Firefox 版本。",
+    // Command-line tool (npx omnibeam, 2026-11-15)
+    "Command line:": "命令行：",
+    "Developers can send, receive and share by link from a terminal with Node.js:": "开发者可以用 Node.js 在终端里发送、接收和通过链接分享：",
+    "Get it on npm": "在 npm 获取",
     // Phone as a webcam or mic (webcam.js, 2026-11-14)
     "Phone as a webcam or mic:": "把手机当摄像头或麦克风：",
     "On a phone, choose More… on a computer, then Be its webcam or mic. The computer sees and hears it live, and Pop out makes a window that OBS can capture for Zoom, Meet or Teams.": "在手机上点电脑的 更多…，再点 当它的摄像头或麦克风。电脑可以实时看到和听到；在新窗口打开 会打开一个 OBS 可以采集的窗口，用于 Zoom、Meet 或 Teams。",

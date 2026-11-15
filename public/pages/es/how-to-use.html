@@ -2,7 +2,7 @@
 title: Cómo usar OmniBeam para enviar archivos
 description: Cómo enviar archivos y texto entre iPhone, Android, Windows y Mac con OmniBeam: misma Wi-Fi, códigos y enlaces. Gratis, sin cuenta.
 short: Cómo usar OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>Cómo usar OmniBeam, paso a paso</h1>
 <p class="lead">OmniBeam envía archivos y texto entre tus dispositivos directamente desde el navegador. Esto es todo lo que puede hacer, paso a paso.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Archivos recibidos e historial<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Móvil y ordenador juntos<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Ajustes y privacidad<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Apps y extensiones<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Apps y extensiones<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Solución de problemas<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>La extensión de OmniBeam también está en <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Complementos de Firefox</a>, junto a la versión de Chrome Web Store.</p>
+</details>
+<details id="command-line">
+<summary>Línea de comandos para desarrolladores</summary>
+<p>Con Node.js 22 o posterior, el comando <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> funciona desde una terminal sin instalar nada. <code>npx omnibeam send file.zip</code> envía a un dispositivo que tenga OmniBeam abierto (o muestra un código QR para escanear), <code>npx omnibeam receive</code> espera archivos de tu teléfono y <code>npx omnibeam link file.zip</code> crea un enlace cifrado para compartir. <code>npx omnibeam --help</code> lo muestra todo.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Volver a los temas</a></p>
 </section>

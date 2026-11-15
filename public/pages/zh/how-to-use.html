@@ -2,7 +2,7 @@
 title: 如何使用 OmniBeam：在任意设备之间发送文件
 description: 如何用 OmniBeam 在 iPhone、Android、Windows 和 Mac 之间发送文件和文字：同一 Wi-Fi、配对代码、链接等等。
 short: 如何使用 OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>一步步教你使用 OmniBeam</h1>
 <p class="lead">OmniBeam 直接在浏览器中，在你的设备之间发送文件和文字。下面一步步介绍它能做的所有事情。</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>收到的文件和历史记录<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>手机和电脑一起用<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>设置和隐私<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>应用和扩展<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>应用和扩展<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>故障排除<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>除了 Chrome 网上应用店版本，OmniBeam 扩展也已上架 <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox 附加组件</a>。</p>
+</details>
+<details id="command-line">
+<summary>面向开发者的命令行</summary>
+<p>有 Node.js 22 或更新版本，就能在终端里直接使用 <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> 命令，无需安装。<code>npx omnibeam send file.zip</code> 发送到打开了 OmniBeam 的设备（或显示一个可扫描的二维码），<code>npx omnibeam receive</code> 等待手机发来的文件，<code>npx omnibeam link file.zip</code> 创建加密的分享链接。<code>npx omnibeam --help</code> 列出全部命令。</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ 返回主题</a></p>
 </section>

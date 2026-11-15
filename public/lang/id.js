@@ -1372,6 +1372,10 @@
     "With Clipboard sync on, OmniBeam can keep the last 20 texts in History, so you can copy one again later.": "Dengan sinkronisasi papan klip menyala, OmniBeam bisa menyimpan 20 teks terakhir di Riwayat, agar Anda bisa menyalinnya lagi nanti.",
     "Firefox add-on:": "Pengaya Firefox:",
     "The same one-click extension is also made for Firefox.": "Ekstensi sekali klik yang sama juga tersedia untuk Firefox.",
+    // Command-line tool (npx omnibeam, 2026-11-15)
+    "Command line:": "Baris perintah:",
+    "Developers can send, receive and share by link from a terminal with Node.js:": "Developer bisa mengirim, menerima, dan berbagi lewat tautan dari terminal dengan Node.js:",
+    "Get it on npm": "Dapatkan di npm",
     // Phone as a webcam or mic (webcam.js, 2026-11-14)
     "Phone as a webcam or mic:": "Ponsel sebagai webcam atau mikrofon:",
     "On a phone, choose More… on a computer, then Be its webcam or mic. The computer sees and hears it live, and Pop out makes a window that OBS can capture for Zoom, Meet or Teams.": "Di ponsel, pilih Lainnya… pada komputer, lalu Jadi webcam atau mikrofonnya. Komputer melihat dan mendengarnya secara langsung, dan Buka di jendela membuat jendela yang bisa direkam OBS untuk Zoom, Meet, atau Teams.",

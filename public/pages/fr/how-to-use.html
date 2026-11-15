@@ -2,7 +2,7 @@
 title: Mode d'emploi d'OmniBeam : envoyer des fichiers
 description: Envoyer fichiers et textes entre iPhone, Android, Windows et Mac avec OmniBeam : même Wi-Fi, codes d'appairage, liens. Gratuit, sans compte.
 short: Mode d'emploi d'OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>Mode d'emploi d'OmniBeam, étape par étape</h1>
 <p class="lead">OmniBeam envoie fichiers et textes entre vos appareils, directement depuis le navigateur. Voici tout ce qu'il sait faire, étape par étape.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Fichiers reçus et historique<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Téléphone et ordinateur ensemble<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Réglages et confidentialité<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Applis et extensions<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Applis et extensions<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Dépannage<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>L'extension OmniBeam est aussi sur <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">les modules Firefox</a>, à côté de la version du Chrome Web Store.</p>
+</details>
+<details id="command-line">
+<summary>Ligne de commande pour les développeurs</summary>
+<p>Avec Node.js 22 ou plus récent, la commande <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> fonctionne dans un terminal sans rien installer. <code>npx omnibeam send file.zip</code> envoie à un appareil où OmniBeam est ouvert (ou affiche un QR code à scanner), <code>npx omnibeam receive</code> attend les fichiers de votre téléphone et <code>npx omnibeam link file.zip</code> crée un lien de partage chiffré. <code>npx omnibeam --help</code> liste tout.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Retour aux sujets</a></p>
 </section>

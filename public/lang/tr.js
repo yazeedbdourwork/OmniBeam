@@ -1370,6 +1370,10 @@
     "With Clipboard sync on, OmniBeam can keep the last 20 texts in History, so you can copy one again later.": "Pano eşitleme açıkken OmniBeam son 20 metni Geçmiş'te tutabilir, böylece birini daha sonra yeniden kopyalayabilirsin.",
     "Firefox add-on:": "Firefox eklentisi:",
     "The same one-click extension is also made for Firefox.": "Aynı tek tıklık eklenti Firefox için de var.",
+    // Command-line tool (npx omnibeam, 2026-11-15)
+    "Command line:": "Komut satırı:",
+    "Developers can send, receive and share by link from a terminal with Node.js:": "Geliştiriciler Node.js ile terminalden gönderebilir, alabilir ve bağlantıyla paylaşabilir:",
+    "Get it on npm": "npm’den al",
     // Phone as a webcam or mic (webcam.js, 2026-11-14)
     "Phone as a webcam or mic:": "Telefonu web kamerası veya mikrofon yapın:",
     "On a phone, choose More… on a computer, then Be its webcam or mic. The computer sees and hears it live, and Pop out makes a window that OBS can capture for Zoom, Meet or Teams.": "Telefonda bilgisayarda Daha fazla… seçin, ardından Web kamerası veya mikrofonu ol. Bilgisayar onu canlı görür ve duyar; Ayrı pencerede aç, OBS'nin Zoom, Meet veya Teams için yakalayabileceği bir pencere açar.",

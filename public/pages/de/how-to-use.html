@@ -2,7 +2,7 @@
 title: So nutzt du OmniBeam: Dateien senden
 description: So sendest du mit OmniBeam Dateien und Text zwischen iPhone, Android, Windows und Mac: WLAN, Kopplungscodes, Links. Kostenlos, ohne Konto.
 short: So nutzt du OmniBeam
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>So nutzt du OmniBeam, Schritt für Schritt</h1>
 <p class="lead">OmniBeam sendet Dateien und Text zwischen deinen Geräten direkt aus dem Browser. Hier ist alles, was es kann, Schritt für Schritt.</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>Empfangene Dateien und Verlauf<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>Handy und Computer zusammen<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>Einstellungen und Datenschutz<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>Apps und Erweiterungen<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>Apps und Erweiterungen<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>Fehlerbehebung<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>Die OmniBeam-Erweiterung gibt es auch bei den <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox-Add-ons</a>, neben der Version im Chrome Web Store.</p>
+</details>
+<details id="command-line">
+<summary>Befehlszeile für Entwickler</summary>
+<p>Mit Node.js 22 oder neuer funktioniert der Befehl <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> im Terminal, ohne etwas zu installieren. <code>npx omnibeam send file.zip</code> sendet an ein Gerät, auf dem OmniBeam offen ist (oder zeigt einen QR-Code zum Scannen), <code>npx omnibeam receive</code> wartet auf Dateien von deinem Handy, und <code>npx omnibeam link file.zip</code> erstellt einen verschlüsselten Freigabelink. <code>npx omnibeam --help</code> zeigt alles.</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ Zurück zu den Themen</a></p>
 </section>

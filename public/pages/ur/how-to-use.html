@@ -2,7 +2,7 @@
 title: OmniBeam کیسے استعمال کریں: کسی بھی ڈیوائسز کے درمیان فائلیں بھیجیں
 description: OmniBeam سے iPhone، Android، Windows اور Mac کے درمیان فائلیں اور متن کیسے بھیجیں: ایک ہی Wi-Fi، جوڑنے کے کوڈز، لنکس اور مزید۔
 short: OmniBeam کیسے استعمال کریں
-updated: 2026-11-14
+updated: 2026-11-15
 -->
 <h1>OmniBeam کیسے استعمال کریں، قدم بہ قدم</h1>
 <p class="lead">OmniBeam سیدھا براؤزر سے آپ کی ڈیوائسز کے درمیان فائلیں اور متن بھیجتا ہے۔ یہ رہا وہ سب کچھ جو یہ کر سکتا ہے، قدم بہ قدم۔</p>
@@ -24,7 +24,7 @@ updated: 2026-11-14
   <a href="#history"><span aria-hidden="true">🗂️</span>موصول شدہ فائلیں اور ہسٹری<small>4</small></a>
   <a href="#together"><span aria-hidden="true">💻</span>فون اور کمپیوٹر ساتھ ساتھ<small>9</small></a>
   <a href="#settings"><span aria-hidden="true">⚙️</span>سیٹنگز اور پرائیویسی<small>8</small></a>
-  <a href="#apps"><span aria-hidden="true">🧩</span>ایپس اور ایکسٹینشنز<small>3</small></a>
+  <a href="#apps"><span aria-hidden="true">🧩</span>ایپس اور ایکسٹینشنز<small>4</small></a>
   <a href="#help"><span aria-hidden="true">🛟</span>مسائل کا حل<small>5</small></a>
 </nav>
 
@@ -306,6 +306,10 @@ updated: 2026-11-14
 <details id="firefox">
 <summary>Firefox</summary>
 <p>OmniBeam ایکسٹینشن Chrome ویب اسٹور والے ورژن کے ساتھ <a href="https://addons.mozilla.org/firefox/addon/omnibeam-send-to-your-devices/" rel="noopener">Firefox ایڈ آنز</a> پر بھی موجود ہے۔</p>
+</details>
+<details id="command-line">
+<summary>ڈیولپرز کے لیے کمانڈ لائن</summary>
+<p>Node.js 22 یا نئے کے ساتھ، <a href="https://www.npmjs.com/package/omnibeam" rel="noopener">omnibeam</a> کمانڈ کچھ انسٹال کیے بغیر ٹرمینل سے چلتی ہے۔ <code>npx omnibeam send file.zip</code> اس ڈیوائس کو بھیجتی ہے جس پر OmniBeam کھلا ہو (یا اسکین کرنے کے لیے QR کوڈ دکھاتی ہے)، <code>npx omnibeam receive</code> آپ کے فون سے فائلوں کا انتظار کرتی ہے، اور <code>npx omnibeam link file.zip</code> ایک خفیہ کردہ شیئر لنک بناتی ہے۔ <code>npx omnibeam --help</code> سب کچھ دکھاتی ہے۔</p>
 </details>
 <p class="howto-top"><a href="#topics">↑ موضوعات پر واپس</a></p>
 </section>
