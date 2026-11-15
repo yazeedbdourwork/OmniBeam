@@ -6055,11 +6055,12 @@ async function onQrPair(from, proof) {
 // On the phone: the device that showed the code proved it did, and sent the pairing secret to keep
 async function onQrOk(from, data) {
   if (!qrScan || !crypto.subtle || !peers.get(from) || typeof data.qrOk !== 'string' || !/^[0-9a-f]{64}$/.test(data.newSecret || '')) return;
+  const name = peers.get(from).info.name || t('Paired device'); // read before the wait: the other device may drop off meanwhile
   if (data.qrOk !== await qrProof(qrScan.secret, from, me.id, 'ok', qrScan.pin)) return;
+  if (!qrScan) return; // pairing ended (timed out or cancelled) while the check ran
   const once = qrScan.secret;
   qrScan = null;
   wsSend({ type: 'leave-secret', secret: once });
-  const name = peers.get(from).info.name;
   rememberPairing(data.newSecret, name);
   toast(t('Paired with {name} – you\'ll find each other automatically from now on', { name }));
 }
