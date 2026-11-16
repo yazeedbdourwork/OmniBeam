@@ -44,6 +44,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const report = (kind, message, extra) => { try { window.omniReport?.(kind, message, extra); } catch {} };
 // A transfer that shows no progress for this long (with the page on screen) is reported as stuck
 const STUCK_MS = testNumber('omnibeam-stuck-ms') || 30000;
+// Heartbeat during direct transfers: both devices send a tiny {t:'hb'} over the data channel every HB_EVERY. If
+// nothing at all arrives from the other device for HB_STALL (file data counts too), the link went silent without
+// closing (a Wi-Fi that hangs, a router that drops the route): the browser's own check can take 30 s or more to
+// notice. The transfer then moves to the server and continues from where it got to, like for a dropped link.
+// Armed only once the other device sent a heartbeat on this channel, so older versions never trigger it.
+const HB_EVERY = testNumber('omnibeam-hb-every') || 5000;
+const HB_STALL = testNumber('omnibeam-hb-stall') || 15000;
 // TV mode (omnibeam.site/tv): the server marks the page with class="tv". Receive-only, a big QR code, and received
 // photos and videos play as a full-screen slideshow (see the TV section near the end).
 const IS_TV = document.documentElement.classList.contains('tv');
@@ -1062,6 +1069,7 @@ class Peer {
     this.prog = { total: total || 1, done: 0, sending, samples: [[now, 0]] };
     this.el.classList.add('xferring');
     $('.xfer', this.el).hidden = false;
+    this.hbTickAt = 0;
     this.renderProgress();
     // Redraw on a timer instead of on every chunk: cheaper, and keeps updating while the send buffer drains
     this.progTimer = setInterval(() => this.renderProgress(), 250);
@@ -1070,9 +1078,32 @@ class Peer {
   addProgress(bytes) {
     if (this.prog) this.prog.done += bytes;
   }
+  sendHeartbeat() {
+    this.hbSentAt = Date.now();
+    try { if (this.direct) this.dc.send('{"t":"hb"}'); } catch {}
+  }
+  // Runs with the progress timer (every 250 ms) while a transfer is going
+  heartbeat() {
+    if (!this.direct || !this.busy || !this.prog) return;
+    const now = Date.now();
+    // The first tick, or the timer ran late (this page was paused): count from now, not from before the pause
+    if (!this.hbTickAt || now - this.hbTickAt > HB_EVERY) this.dcRxAt = Math.max(this.dcRxAt || 0, now);
+    this.hbTickAt = now;
+    if (now - (this.hbSentAt || 0) >= HB_EVERY) this.sendHeartbeat();
+    if (!this.hbArmed || now - this.dcRxAt < HB_STALL) return;
+    // Its screen turned off: that has its own pause and resume
+    if (this.asleepAt && now - this.asleepAt < 10 * 60000) return;
+    const secs = Math.round((now - this.dcRxAt) / 1000);
+    console.info(`Nothing from ${this.info.name} for ${secs} s; continuing via server`);
+    report('direct', 'Direct connection went silent, switched to the server', { d: `silent ${secs} s`, r: this.routeKind, same: !!this.info.sameNet });
+    this.hbArmed = false;
+    this.directFailedAt = Date.now(); // the next sends go straight to the server for a while too
+    this.onDirectLost('No answer from the other device');
+  }
   renderProgress() {
     const p = this.prog;
     if (!p) return;
+    this.heartbeat();
     let done = p.done;
     if (p.sending) {
       // Show what the receiver says it has, so both bars match. (Older versions don't report it: estimate
@@ -1173,6 +1204,7 @@ class Peer {
     this.dc = dc;
     dc.binaryType = 'arraybuffer';
     dc.bufferedAmountLowThreshold = LOW_BUFFERED;
+    this.hbArmed = false; // until the other device's first heartbeat on this channel
     dc.onopen = () => {
       this.directFailInfo = null;
       this.detectRoute();
@@ -1180,7 +1212,13 @@ class Peer {
       this.openWaiters = [];
     };
     // Ignore messages still queued on a channel we already dropped (we may have resumed via the server)
-    dc.onmessage = (e) => { if (this.dc === dc) this.onData(e.data); };
+    dc.onmessage = (e) => {
+      if (this.dc !== dc) return;
+      this.dcRxAt = Date.now();
+      // Answer from here too, not only from the timer: a page in the background can have its timers slowed down
+      if (this.busy && this.dcRxAt - (this.hbSentAt || 0) >= HB_EVERY) this.sendHeartbeat();
+      this.onData(e.data);
+    };
     dc.onclose = () => {
       if (this.dc === dc) this.onDirectLost('Connection closed');
     };
@@ -1645,7 +1683,9 @@ class Peer {
         if (await this.sendFrom(files, from, gen, have)) {
           if (!job.sumsRest) job.sumsRest = this.sendChecksums(files, job);
           // Wait for the receiver to confirm it got everything (or to ask us to resend the end via the server)
+          job.allSent = true;
           const res = await new Promise((resolve) => { this.acceptWaiter = resolve; this.resumeWaiter = resolve; });
+          job.allSent = false;
           this.acceptWaiter = this.resumeWaiter = null;
           if (res === false || gone()) return;
           if (res === true) break;
@@ -1923,6 +1963,9 @@ class Peer {
       case 'ping':
         this.sendJson({ t: 'pong' });
         break;
+      case 'hb':
+        this.hbArmed = true;
+        break;
       // Share a folder / Browse files (browse.js)
       case 'fs-ls':
       case 'fs-get':
@@ -2097,6 +2140,7 @@ class Peer {
         inc.chain.then(async () => {
           if (this.incoming !== inc) return;
           this.sendJson({ t: 'received' });
+          this.receivedAt = Date.now(); // (if this 'received' gets lost with the direct link, see resumeAsk)
           Partials.forget(inc.files.map((f) => f.id).filter(Boolean));
           if (inc.xid) Interrupted.take(inc.xid);
           if (inc.sync) {
@@ -5618,6 +5662,12 @@ function connectSocket() {
         else if (msg.data && msg.data.resumeAsk) {
           const p = peers.get(msg.from);
           if (p && p.incoming) p.sendResumePoint();
+          // It already has everything: its 'received' was lost with the direct link, so say it again via the server
+          else if (p && Date.now() - (p.receivedAt || 0) < 120000) wsSend({ type: 'signal', to: p.info.id, data: { received: true } });
+        }
+        else if (msg.data && msg.data.received) {
+          const p = peers.get(msg.from);
+          if (p && p.job?.allSent && p.acceptWaiter) p.acceptWaiter(true);
         }
         else if (msg.data && msg.data.abort) {
           const p = peers.get(msg.from);
