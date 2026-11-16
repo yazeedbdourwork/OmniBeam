@@ -1472,5 +1472,10 @@
     "Search the guide": "Kılavuzda ara",
     "Nothing found. Try another word.": "Bir şey bulunamadı. Başka bir kelime deneyin.",
     "Open the full guide": "Kılavuzun tamamını aç",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "Paylaşmadan önce",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "Bu dosyayı paylaşmak için yasal hakkım olduğunu ve telif hakkı yasalarını ihlal etmediğini onaylıyorum.",
+    "Terms apply": "Koşullar geçerlidir",
+    "Tick the box first to confirm you may share it.": "Paylaşabileceğinizi onaylamak için önce kutuyu işaretleyin.",
   },
 });

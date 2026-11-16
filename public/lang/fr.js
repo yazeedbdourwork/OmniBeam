@@ -1472,5 +1472,10 @@
     "Search the guide": "Chercher dans le guide",
     "Nothing found. Try another word.": "Rien trouvé. Essayez un autre mot.",
     "Open the full guide": "Ouvrir le guide complet",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "Avant de partager",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "Je confirme avoir le droit légal de partager ce fichier et qu’il ne viole pas les lois sur le droit d’auteur.",
+    "Terms apply": "Conditions applicables",
+    "Tick the box first to confirm you may share it.": "Cochez d’abord la case pour confirmer que vous pouvez le partager.",
   },
 });

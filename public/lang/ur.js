@@ -1472,5 +1472,10 @@
     "Search the guide": "گائیڈ میں تلاش کریں",
     "Nothing found. Try another word.": "کچھ نہیں ملا۔ کوئی اور لفظ آزمائیں۔",
     "Open the full guide": "پوری گائیڈ کھولیں",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "شیئر کرنے سے پہلے",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "میں تصدیق کرتا/کرتی ہوں کہ مجھے یہ فائل شیئر کرنے کا قانونی حق حاصل ہے اور یہ کاپی رائٹ قوانین کی خلاف ورزی نہیں کرتی۔",
+    "Terms apply": "شرائط لاگو ہیں",
+    "Tick the box first to confirm you may share it.": "پہلے خانے پر نشان لگائیں تاکہ تصدیق ہو کہ آپ اسے شیئر کر سکتے ہیں۔",
   },
 });

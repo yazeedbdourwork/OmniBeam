@@ -209,7 +209,7 @@ test('after the third good send it asks for a share (or a rating), and "Not now"
 test('on a phone, Send to also takes a phone number and opens Messages', async ({ browser }) => {
   const ctx = await browser.newContext({ userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36', viewport: { width: 400, height: 850 }, hasTouch: true });
   devices.push({ close: () => ctx.close() });
-  await ctx.addInitScript(() => { localStorage.setItem('omnibeam-name', 'Test Phone'); localStorage.setItem('omnibeam-lang', 'en'); localStorage.setItem('omnibeam-tour', 'done'); });
+  await ctx.addInitScript(() => { localStorage.setItem('omnibeam-name', 'Test Phone'); localStorage.setItem('omnibeam-lang', 'en'); localStorage.setItem('omnibeam-tour', 'done'); localStorage.setItem('omnibeam-rights', '1'); });
   await ctx.route(/^https?:\/\/(?!localhost[:/])/, (route) => route.abort());
   const page = await ctx.newPage();
   await page.goto('/');

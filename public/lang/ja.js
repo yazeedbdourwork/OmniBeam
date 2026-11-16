@@ -1472,5 +1472,10 @@
     "Search the guide": "ガイドを検索",
     "Nothing found. Try another word.": "見つかりませんでした。別の言葉で試してください。",
     "Open the full guide": "ガイド全体を開く",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "共有する前に",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "私はこのファイルを共有する法的な権利を持っており、著作権法に違反していないことを確認します。",
+    "Terms apply": "利用規約が適用されます",
+    "Tick the box first to confirm you may share it.": "共有してよいことを確認するため、先にチェックボックスにチェックを入れてください。",
   },
 });

@@ -1472,5 +1472,10 @@
     "Search the guide": "가이드 검색",
     "Nothing found. Try another word.": "찾을 수 없습니다. 다른 단어로 해 보세요.",
     "Open the full guide": "전체 가이드 열기",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "공유하기 전에",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "이 파일을 공유할 법적 권리가 있으며 저작권법을 위반하지 않음을 확인합니다.",
+    "Terms apply": "약관이 적용됩니다",
+    "Tick the box first to confirm you may share it.": "공유해도 된다는 것을 확인하려면 먼저 상자를 체크하세요.",
   },
 });
