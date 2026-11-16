@@ -81,9 +81,14 @@ class Hub extends EventEmitter {
       case 'peer-joined':
         this.addPeer(msg.peer, true);
         break;
-      case 'peer-updated':
-        if (this.peers.has(msg.peer?.id)) Object.assign(this.peers.get(msg.peer.id).info, msg.peer);
+      case 'peer-updated': {
+        const p = this.peers.get(msg.peer?.id);
+        if (!p) break;
+        // Fields the server leaves out are gone (e.g. room: the device left the room)
+        p.info = { ...msg.peer };
+        this.emit('peer-updated', p);
         break;
+      }
       case 'peer-left': {
         const p = this.peers.get(msg.id);
         if (p) { this.peers.delete(msg.id); p.emit('left'); this.emit('peer-left', p); }
@@ -133,7 +138,11 @@ class Hub extends EventEmitter {
 
   addPeer(info, joined = false) {
     if (!info || !info.id || info.id === this.myId) return;
-    if (this.peers.has(info.id)) return void Object.assign(this.peers.get(info.id).info, info);
+    if (this.peers.has(info.id)) {
+      const p = this.peers.get(info.id);
+      p.info = { ...info };
+      return void this.emit('peer-updated', p);
+    }
     const p = new Peer(this, info);
     this.peers.set(info.id, p);
     this.emit('peer', p, joined);

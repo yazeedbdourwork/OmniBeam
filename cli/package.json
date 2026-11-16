@@ -1,6 +1,6 @@
 {
   "name": "omnibeam",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Send files between your devices from the terminal: to a phone or computer with OmniBeam open, or by an encrypted share link. End-to-end encrypted.",
   "bin": {
     "omnibeam": "bin/omnibeam.js"

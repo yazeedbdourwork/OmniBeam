@@ -25,6 +25,7 @@ Use "-" as a file to read standard input (name it with --as <name>).
 Options:
   --to <name>          the device to send to (part of its name is enough)
   --room <code>        use this public room (5 letters); --password <p> if it has one
+  --password <p>       open the room with a password: only a device that joins with it gets (or sends) files
   -o, --out <folder>   where received or downloaded files go (default: this folder; get -o - writes to stdout)
   -y, --yes            receive: accept without asking
   --keep               receive: keep running after the first transfer
