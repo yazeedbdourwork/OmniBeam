@@ -405,7 +405,9 @@ function structuredData(html, lang, url) {
       email: 'yazeedbdourwork@gmail.com', areaServed: 'Worldwide', foundingDate: '2026',
       contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: 'yazeedbdourwork@gmail.com', availableLanguage: ['en', 'ar'] },
       founder: { '@type': 'Person', name: 'Yazeed Bdour' },
-      sameAs: [...SOCIAL.map(([, link]) => link), 'https://apps.microsoft.com/detail/9PLR2PMX3SQZ', 'https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki'] },
+      sameAs: [...SOCIAL.map(([, link]) => link), 'https://apps.microsoft.com/detail/9PLR2PMX3SQZ', 'https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki',
+        'https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/', 'https://github.com/yazeedbdourwork/OmniBeam',
+        'https://www.npmjs.com/package/omnibeam'] },
     { '@type': 'WebSite', '@id': `${SITE_URL}/#site`, name: 'OmniBeam', url: `${SITE_URL}/`, inLanguage: ['en', ...PAGE_LANGS], publisher: { '@id': `${SITE_URL}/#org` } },
     { '@type': 'WebApplication', name: 'OmniBeam', url, description, inLanguage: lang, applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Any (web browser): iOS, Android, Windows, macOS, Linux, ChromeOS', browserRequirements: 'Requires a modern browser with WebRTC',
@@ -872,13 +874,29 @@ ${list(['page', 'info', 'legal', undefined])}
 `.replace(/\n## [^\n]+\n\n(?=\n## |$)/g, '\n');
 }
 
+// When a home page last really changed: the newest commit that touched index.html or that language's text
+// (public/lang/<lang>.js). A file's own date is the day of the deploy (the deploy checks the files out fresh), so
+// every deploy would look like a change and search engines learn to ignore the dates. Without git (on the host,
+// which gets the sitemap built by the deploy), the file date is used.
+const homeDateCache = new Map();
+function homeDate(lang) {
+  if (homeDateCache.has(lang)) return homeDateCache.get(lang);
+  const files = [path.join(PUBLIC_DIR, 'index.html'), path.join(PUBLIC_DIR, 'lang', `${lang}.js`)].filter((f) => fs.existsSync(f));
+  let date = '';
+  try {
+    date = require('child_process').execFileSync('git', ['log', '-1', '--format=%cs', '--', ...files],
+      { cwd: __dirname, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 5000 }).trim();
+  } catch {}
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) date = fs.statSync(files[0]).mtime.toISOString().slice(0, 10);
+  homeDateCache.set(lang, date);
+  return date;
+}
 function sitemap() {
   const today = new Date().toISOString().slice(0, 10);
   const entry = (loc, lastmod, alts) => `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>${alts.map(([l, href]) =>
     `\n    <xhtml:link rel="alternate" hreflang="${l}" href="${href}"/>`).join('')}\n  </url>`;
   const homeAlts = [...ALL_LANGS.map((l) => [l, SITE_URL + langPath(l)]), ['x-default', SITE_URL + '/']];
-  const homeDate = fs.statSync(path.join(PUBLIC_DIR, 'index.html')).mtime.toISOString().slice(0, 10);
-  const urls = ALL_LANGS.map((l) => entry(SITE_URL + langPath(l), homeDate, homeAlts));
+  const urls = ALL_LANGS.map((l) => entry(SITE_URL + langPath(l), homeDate(l), homeAlts));
   for (const p of pages.values()) {
     if (p.kind === 'status') continue; // changes all the time and is not indexed
     const versions = ALL_LANGS.filter((l) => pages.has(`${l}/${p.slug}`));
