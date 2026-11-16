@@ -1015,6 +1015,16 @@ dialog.viewer { width: min(960px, calc(100vw - 24px)); padding: 16px; }
 .fast-points { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; }
 .fast-points li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: 16px; box-shadow: var(--inset-sm); font-size: 0.92rem; }
 .fast-points li span { flex: none; }
+/* "I have the legal right to share this" (asked once per device: #dlg-rights and in the link window) */
+.rights-dialog { max-width: 440px; }
+.rights-check { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 14px; padding: 14px 16px; border-radius: 16px;
+  border: 1px solid var(--accent-soft); box-shadow: var(--inset-sm); color: var(--muted); font-size: 0.92rem; line-height: 1.5;
+  text-align: start; cursor: pointer; }
+.rights-check input { flex: none; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); cursor: pointer; }
+.rights-check a { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.rights-check.need { border-color: var(--accent); box-shadow: var(--inset-sm), 0 0 0 3px var(--accent-soft); animation: rights-nudge 0.35s; }
+@keyframes rights-nudge { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .rights-check.need { animation: none; } }
 /* "More…" on a device: everything that can be sent to it */
 .action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
 .action-grid button { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 12px 14px; border: 0; border-radius: 18px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; font-weight: 600; font-size: 0.9rem; text-align: start; cursor: pointer; }

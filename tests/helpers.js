@@ -20,6 +20,8 @@ async function openDevice(browser, name, { relayOnly = false, clipboard = false,
     if (!localStorage.getItem('omnibeam-lang')) localStorage.setItem('omnibeam-lang', 'en');
     // The first-visit walkthrough would cover the page: seen already, unless a test sets it
     if (!('omnibeam-tour' in storage) && !localStorage.getItem('omnibeam-tour')) localStorage.setItem('omnibeam-tour', 'done');
+    // "I have the legal right to share this" (asked once per device): ticked already, unless a test sets it
+    if (!('omnibeam-rights' in storage) && !localStorage.getItem('omnibeam-rights')) localStorage.setItem('omnibeam-rights', '1');
     for (const [k, v] of Object.entries(storage)) if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v);
   }, { name, storage });
   if (relayOnly) {

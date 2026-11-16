@@ -1610,6 +1610,10 @@ class Peer {
   // opts.xid: continue an interrupted transfer (see AutoResume); the receiver accepts it without asking again.
   // opts.fps: the files' fingerprints when they were first sent (picked again after a reload, see Outgoing)
   async sendFiles(files, opts = {}) {
+    // The first time files are sent from this device, the person confirms they may share them (confirmRights).
+    // Not asked again for: a transfer that continues by itself (xid), files the other device asked for (want: a
+    // shared folder or a photo backup, set up by hand on this device) and a synced folder.
+    if (!opts.xid && !opts.want && !opts.sync && !rightsOk() && !(await confirmRights())) return;
     if (this.busy) {
       this.queue.push(files);
       toast(t('Queued: will send to {name} after the current transfer', { name: this.info.name }));
@@ -5264,7 +5268,7 @@ async function openInvite() {
 $('#menu-invite').onclick = () => openInvite();
 // Event photo album (album.js) and Share a folder / Browse files (browse.js), loaded on first use
 const loadAlbum = () => loadScript('/album.js?v=1');
-const loadBrowse = () => loadScript('/browse.js?v=1');
+const loadBrowse = () => loadScript('/browse.js?v=2');
 const loadSync = () => loadScript('/sync.js?v=1');
 const loadPBackup = () => loadScript('/pbackup.js?v=1');
 let albumCfg = null;
@@ -6029,6 +6033,55 @@ function askFastWifi() {
   });
 }
 window.askFastWifi = askFastWifi;
+
+// ---------- "I have the legal right to share this" ----------
+// Asked once per device: before the first send to a device (Peer.sendFiles), the first link (drop.js), the first
+// shared folder (browse.js). Ticked once, it is remembered in this browser and not asked again.
+const RIGHTS_KEY = 'omnibeam-rights';
+function rightsOk() {
+  try { return localStorage.getItem(RIGHTS_KEY) === '1'; } catch { return false; }
+}
+function setRights(on) {
+  try { if (on) localStorage.setItem(RIGHTS_KEY, '1'); else localStorage.removeItem(RIGHTS_KEY); } catch {}
+}
+// The box wasn't ticked: show where it is (a short nudge) and move the focus there
+function needRights(box) {
+  box.classList.remove('need');
+  void box.offsetWidth; // (so the nudge plays again)
+  box.classList.add('need');
+  box.querySelector('input').focus();
+  toast(t('Tick the box first to confirm you may share it.'));
+}
+// Resolves true once the box is ticked and Continue pressed (at once if it was ticked before), false on Cancel.
+// Sends that start together (Send to all) share one question.
+let rightsAsk = null;
+function confirmRights() {
+  if (rightsOk()) return Promise.resolve(true);
+  if (rightsAsk) return rightsAsk;
+  const dlg = $('#dlg-rights');
+  const box = $('#rights-box', dlg);
+  const check = $('input', box);
+  check.checked = false;
+  box.classList.remove('need');
+  rightsAsk = new Promise((resolve) => {
+    const done = (ok) => {
+      dlg.onclick = dlg.onclose = null;
+      if (dlg.open) dlg.close();
+      rightsAsk = null;
+      if (ok) setRights(true);
+      resolve(ok);
+    };
+    dlg.onclick = (e) => {
+      const act = e.target.closest('[data-act]')?.dataset.act;
+      if (act === 'no') done(false);
+      else if (act === 'go') { if (check.checked) done(true); else needRights(box); }
+    };
+    dlg.onclose = () => done(false);
+    dlg.showModal();
+  });
+  return rightsAsk;
+}
+Object.assign(window, { rightsOk, setRights, needRights, confirmRights });
 $('#btn-fast').onclick = () => askFastWifi();
 updateFastButton();
 enableFastWifi(false);

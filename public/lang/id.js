@@ -1474,5 +1474,10 @@
     "Search the guide": "Cari di panduan",
     "Nothing found. Try another word.": "Tidak ditemukan. Coba kata lain.",
     "Open the full guide": "Buka panduan lengkap",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "Sebelum berbagi",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "Saya menyatakan bahwa saya berhak secara hukum untuk membagikan file ini dan file ini tidak melanggar hukum hak cipta.",
+    "Terms apply": "Ketentuan berlaku",
+    "Tick the box first to confirm you may share it.": "Centang kotaknya dulu untuk menyatakan bahwa Anda boleh membagikannya.",
   },
 });

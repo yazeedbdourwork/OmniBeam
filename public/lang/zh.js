@@ -1472,5 +1472,10 @@
     "Search the guide": "搜索指南",
     "Nothing found. Try another word.": "没有找到。换个词试试。",
     "Open the full guide": "打开完整指南",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "分享之前",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "我确认我有合法权利分享此文件，且它不违反版权法。",
+    "Terms apply": "适用条款",
+    "Tick the box first to confirm you may share it.": "请先勾选此框，确认你有权分享。",
   },
 });

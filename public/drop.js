@@ -219,8 +219,14 @@
   }
   let pruneTimer = 0;
 
+  // "I have the legal right to share this": in this window until it is ticked once on this device (see confirmRights
+  // in app.js); unticking it again before the link is made takes it back
+  const rights = $('#link-rights');
+  $('input', rights).addEventListener('change', (e) => { window.setRights(e.target.checked); rights.classList.remove('need'); });
   function open(focusTo) {
     if (!job) show('new');
+    rights.hidden = window.rightsOk();
+    if (!rights.hidden) $('input', rights).checked = false;
     renderLinks();
     pruneLinks();
     dlg.showModal();
@@ -250,6 +256,7 @@
       }
       const pin = $('#link-pin').value;
       if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN needs 4 to 8 digits.')); }
+      if (!window.rightsOk()) return window.needRights(rights);
       input.click();
     }
     else if (act === 'note-open') {
@@ -270,6 +277,7 @@
       if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN needs 4 to 8 digits.')); }
       const text = $('#link-note-text').value;
       if (!text.trim()) return $('#link-note-text').focus();
+      if (!window.rightsOk()) return window.needRights(rights);
       upload([new File([text], 'secret-note.txt', { type: 'text/plain' })], { note: true });
     }
     else if (act === 'cancel' && job) job.cancelled = true;
@@ -314,6 +322,8 @@
     const size = files.reduce((s, f) => s + f.size, 0);
     if (!size) return toast(t('These files are empty.'));
     if (size > cfg.maxMb * 1048576) return toast(t('Too large: a link can hold up to {size}. Send it directly to a device instead.', { size: formatSize(cfg.maxMb * 1048576) }));
+    // (Scan to PDF and the chat view come here without the window's box: they ask in their own small window)
+    if (!(await window.confirmRights()) || job) return;
     const current = job = { cancelled: false };
     window.keepAwake?.('link', true); // a phone that locks its screen would stop the upload
     show('progress');

@@ -1472,5 +1472,10 @@
     "Search the guide": "Поиск по руководству",
     "Nothing found. Try another word.": "Ничего не найдено. Попробуйте другое слово.",
     "Open the full guide": "Открыть полное руководство",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "Прежде чем поделиться",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "Я подтверждаю, что имею законное право делиться этим файлом и он не нарушает законы об авторском праве.",
+    "Terms apply": "Действуют условия",
+    "Tick the box first to confirm you may share it.": "Сначала отметьте флажок, чтобы подтвердить, что вы можете этим поделиться.",
   },
 });

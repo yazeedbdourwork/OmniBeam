@@ -133,6 +133,7 @@
     return new Set((trusted.length ? trusted : paired).map((p) => p.secret));
   }
   async function pick() {
+    if (!(await window.confirmRights())) return; // asked once per device (app.js)
     const allowed = share?.allowed?.size ? share.allowed : defaultAllowed();
     if (CAN_HANDLE) {
       let h;

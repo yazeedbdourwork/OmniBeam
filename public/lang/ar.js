@@ -1472,5 +1472,10 @@
     "Search the guide": "ابحث في الدليل",
     "Nothing found. Try another word.": "لم يُعثر على شيء. جرّب كلمة أخرى.",
     "Open the full guide": "افتح الدليل الكامل",
+    // "I have the legal right to share this" (asked once per device)
+    "Before you share": "قبل أن تشارك",
+    "I confirm I have the legal right to share this file and it does not violate copyright laws.": "أؤكد أن لدي الحق القانوني في مشاركة هذا الملف وأنه لا ينتهك قوانين حقوق النشر.",
+    "Terms apply": "تطبق الشروط",
+    "Tick the box first to confirm you may share it.": "ضع علامة في المربع أولًا لتأكيد أنه يحق لك مشاركته.",
   },
 });

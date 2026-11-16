@@ -210,6 +210,7 @@ test('Chrome extension: right-click sending of text and an image to a device', a
     localStorage.setItem('omnibeam-name', 'Chrome Laptop');
     localStorage.setItem('omnibeam-lang', 'en');
     localStorage.setItem('omnibeam-tour', 'done');
+    localStorage.setItem('omnibeam-rights', '1'); // (asked once per device: ticked already)
   });
   await ctx.route(/^https?:\/\/(?!localhost[:/])/, (route) => route.abort());
   const page = await ctx.newPage();
