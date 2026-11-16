@@ -23,6 +23,7 @@ async function device(browser, name, { relayOnly = false, path = '/' } = {}) {
   await context.addInitScript((name) => {
     localStorage.setItem('omnibeam-name', name);
     localStorage.setItem('omnibeam-tour', 'done');
+    localStorage.setItem('omnibeam-rights', '1'); // "I have the legal right to share this": ticked already
     localStorage.setItem('omnibeam-analytics', 'off');
     if (!localStorage.getItem('omnibeam-lang')) localStorage.setItem('omnibeam-lang', 'en');
   }, name);
