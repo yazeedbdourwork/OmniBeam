@@ -6195,7 +6195,7 @@ function scanFromLink(secret, name, needPin) {
 const TV_PIN_KEY = 'omnibeam-tv-pin';
 function tvPin() { try { return localStorage.getItem(TV_PIN_KEY) || ''; } catch { return ''; } }
 // The TV screen itself is in tv.js (the TV page loads it after this script; see server.js tvPage)
-const loadTv = () => loadScript('/tv.js?v=3');
+const loadTv = () => loadScript('/tv.js?v=4');
 
 // ---------- First-visit walkthrough ----------
 // Three short steps for new visitors: open it on the other device, pair if it doesn't show up, tap to send.

@@ -186,7 +186,7 @@ OmniBeam/
 ├── service-worker.js     Service worker (served as /sw.js)
 ├── package.json          Scripts (start, test, deploy); no runtime dependencies
 ├── .htaccess             cPanel/Passenger setup + blocks everything outside public/
-├── vendor/               Bundled ws (WebSocket) and terser (minifier), so no npm install is needed
+├── vendor/               Bundled ws (WebSocket), terser (minifier) and Babel (rewrites new syntax for older browsers in the upload zip), so no npm install is needed
 ├── cli/                  The command-line tool (npm package "omnibeam"): send, receive, link, get
 ├── public/               Everything the browser loads
 │   ├── index.html        The app
@@ -323,4 +323,4 @@ Facebook: https://www.facebook.com/omnibeamsite
 
 ## License
 
-OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT) and terser (BSD-2-Clause) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js` and `cli/lib/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, heic2any 0.0.4 (MIT, unchanged, source at https://github.com/alexcorvi/heic2any; it includes libheif and libde265, LGPL-3.0) in `public/heic2any.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
+OmniBeam is free software under the [GNU General Public License v3.0](LICENSE) (GPL-3.0-or-later). You can use, change and share it, including running your own copy; if you share a changed version, share its source under the same license. Bundled third-party code keeps its own license: ws (MIT), terser (BSD-2-Clause) and Babel standalone 7.26.10 (MIT) in `vendor/`, qrcode-generator (MIT) in `public/qrcode.js` and `cli/lib/qrcode.js`, Mediabunny 1.63.0 (MPL-2.0, unchanged, source at https://github.com/Vanilagy/mediabunny) in `public/mediabunny.js`, heic2any 0.0.4 (MIT, unchanged, source at https://github.com/alexcorvi/heic2any; it includes libheif and libde265, LGPL-3.0) in `public/heic2any.js`, and the Plus Jakarta Sans font (SIL OFL 1.1, `public/fonts/OFL.txt`).
