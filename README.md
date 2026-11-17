@@ -127,7 +127,7 @@ The browser's language is picked automatically on the first visit and can be cha
 | `/status` | Sends to the admin panel's Status tab (the status page is owner‑only since 2026‑11‑12) |
 | `/admin` | Owner‑only admin panel: stats and status in tabs (needs `STATS_KEY`; `/stats` opens it too) |
 | `/amp/<lang>/<slug>` | AMP versions of the guide pages |
-| `/sitemap.xml`, `/robots.txt`, `/llms.txt` | For search engines and AI crawlers |
+| `/sitemap.xml`, `/robots.txt`, `/llms.txt`, `/llms-full.txt` | For search engines and AI crawlers (robots.txt welcomes GPTBot, ClaudeBot, PerplexityBot, Google-Extended and others by name; llms-full.txt is every English page as Markdown) |
 
 ### Guide pages (in every language, under `/pages/<lang>/` or `/<lang>/<slug>`)
 - **How to use**, About, Privacy, Terms
