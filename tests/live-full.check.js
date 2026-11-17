@@ -919,7 +919,7 @@ test('brotli: pages and scripts come with brotli, decode to the same bytes, and 
   const { shipped } = require('../tools/minify');
   const local = (f) => shipped(`public/${f}`, fs.readFileSync(path.join(__dirname, '..', 'public', f)));
   // Scripts and styles: brotli, smaller than gzip, and the same bytes as this PC's (minified) file
-  for (const [u, f] of [[app, 'app.js'], ['/style.css?v=57', 'style.css'], [deLang, 'lang/de.js'], ['/report.js?v=4', 'report.js'], ['/request.js?v=2', 'request.js'], ['/pages.css', 'pages.css']]) {
+  for (const [u, f] of [[app, 'app.js'], ['/style.css?v=57', 'style.css'], [deLang, 'lang/de.js'], ['/report.js?v=4', 'report.js'], ['/request.js?v=3', 'request.js'], ['/pages.css', 'pages.css']]) {
     const q = `${baseURL}${u}${u.includes('?') ? '&' : '?'}c=${run}`;
     const [br, gz] = [await rawGet(q, 'br'), await rawGet(q, 'gzip')];
     expect([u, br.status, br.ce]).toEqual([u, 200, 'br']);

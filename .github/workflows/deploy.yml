@@ -168,6 +168,13 @@ jobs:
             echo "The live site is on commit ${LAST}."
             echo "LAST=${LAST}" >> "$GITHUB_ENV"
             git diff --name-only "$LAST" HEAD > changed-all.txt
+            # A change to how scripts are built (tools/minify.js, the bundled terser or Babel) changes every shipped
+            # script, even the ones whose source didn't change: then every public/ script and style is sent too
+            if grep -qE '^(tools/minify\.js|vendor/(terser|babel)/)' changed-all.txt; then
+              echo "How scripts are built changed, so every script and style in public/ is sent again."
+              git ls-files 'public/*.js' 'public/*.css' >> changed-all.txt
+              sort -u -o changed-all.txt changed-all.txt
+            fi
             # Only files the site uses, and the sources of the downloads in public/tools
             grep -E '^(server\.js|service-worker\.js|public/|tools/omnibeam-|tools/install-|tools/README|vendor/ws/)' \
               changed-all.txt > changed.txt || true
