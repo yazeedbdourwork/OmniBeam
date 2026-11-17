@@ -28,11 +28,11 @@ for (const l of LANGS) {
       expect(r.status(), href).toBe(200);
     }
   });
-  test(`comparison pages /${l}compare load and link to all four`, async ({ page }) => {
+  test(`comparison pages /${l}compare load and link to all five`, async ({ page }) => {
     const res = await page.goto(`/${l}compare`);
     expect(res.status()).toBe(200);
     const links = await page.locator('main a[href*="omnibeam-vs-"]').evaluateAll((as) => [...new Set(as.map((a) => a.getAttribute('href')))]);
-    expect(links.sort()).toEqual(['airdrop', 'localsend', 'pairdrop', 'snapdrop'].map((n) => `/${l}omnibeam-vs-${n}`));
+    expect(links.sort()).toEqual(['airdrop', 'localsend', 'pairdrop', 'snapdrop', 'wetransfer'].map((n) => `/${l}omnibeam-vs-${n}`));
     await page.goto(links[0]);
     await expect(page.locator('table.compare tbody tr').first()).toBeVisible();
     if (l) await expect(page.locator('html')).toHaveAttribute('lang', l.slice(0, 2));
