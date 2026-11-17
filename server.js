@@ -642,11 +642,19 @@ function pageParts(page) {
   const faq = [...qa.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/g)]
     .map(([, q, a]) => ({ '@type': 'Question', name: text(q), acceptedAnswer: { '@type': 'Answer', text: text(a) } }));
   if (faq.length) ld['@graph'].push({ '@type': 'FAQPage', '@id': `${url}#faq`, inLanguage: lang, mainEntity: faq });
+  // A guide's numbered steps (its first <ol>) as a HowTo, so search engines and AI assistants can quote the steps
+  const steps = page.kind === 'guide' ? [...((page.body.match(/<ol>([\s\S]*?)<\/ol>/) || [])[1] || '').matchAll(/<li>([\s\S]*?)<\/li>/g)].map(([, s]) => text(s)).filter(Boolean) : [];
+  if (steps.length >= 2) {
+    ld['@graph'].push({ '@type': 'HowTo', '@id': `${url}#howto`, name: text((page.body.match(/<h1>([\s\S]*?)<\/h1>/) || [])[1] || page.short),
+      description: page.description, inLanguage: lang, totalTime: 'PT2M', estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: '0' },
+      tool: { '@type': 'HowToTool', name: 'A web browser' },
+      step: steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.length > 80 ? `${s.slice(0, 77).replace(/\s+\S*$/, '')}…` : s, text: s })) });
+  }
   const others = versions.filter((l) => l !== lang)
     .map((l) => `<a href="${langPath(l, slug)}" hreflang="${l}" lang="${l}">${LANGS[l].name}</a>`).join(' ');
   const articleHtml = `${dateLine ? page.body.replace('</h1>', `</h1>\n      ${dateLine.trim()}`) : page.body}${relatedHtml}
       <p class="cta"><a class="open-app" href="${homeUrl}">${ui(lang, 'start')}</a></p>`;
-  const footerHtml = `<p><a href="${homeUrl}">OmniBeam</a> <a href="${link('how-to-use')}">${ui(lang, 'howTo')}</a> <a href="${link('guides')}">${ui(lang, 'guides')}</a>${pages.has(`en/blog`) ? ` <a href="${link('blog')}">${ui(lang, 'blog')}</a>` : ''}${pages.has(`en/compare`) ? ` <a href="${link('compare')}">${ui(lang, 'compare')}</a>` : ''} <a href="${link('about')}">${ui(lang, 'about')}</a> <a href="${link('privacy')}">${ui(lang, 'privacy')}</a> <a href="${link('terms')}">${ui(lang, 'terms')}</a></p>${others ? `\n    <p class="page-langs">${others}</p>` : ''}
+  const footerHtml = `<p><a href="${homeUrl}">OmniBeam</a> <a href="${link('how-to-use')}">${ui(lang, 'howTo')}</a> <a href="${link('guides')}">${ui(lang, 'guides')}</a>${pages.has(`en/blog`) ? ` <a href="${link('blog')}">${ui(lang, 'blog')}</a>` : ''}${pages.has(`en/compare`) ? ` <a href="${link('compare')}">${ui(lang, 'compare')}</a>` : ''}${pages.has(`${lang}/faq`) ? ` <a href="${link('faq')}">${ui(lang, 'faq')}</a>` : ''} <a href="${link('about')}">${ui(lang, 'about')}</a> <a href="${link('privacy')}">${ui(lang, 'privacy')}</a> <a href="${link('terms')}">${ui(lang, 'terms')}</a></p>${others ? `\n    <p class="page-langs">${others}</p>` : ''}
     <p>© 2026 OmniBeam.Site • ${ui(lang, 'createdBy')} <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer">Yazeed Bdour</a></p>`;
   return { lang, slug, url, versions, alternates, homeUrl, ld, articleHtml, footerHtml };
 }
@@ -853,8 +861,22 @@ function llmsTxt() {
 
 How it works: open ${SITE_URL} on both devices. Devices on the same Wi-Fi appear automatically; devices on different networks pair once with a 6-digit code or a QR code, and paired devices find each other from then on. Tap a device, choose files, and the other device accepts. Files can also be shared by a link that expires. There is no file size limit set by OmniBeam. The site is available in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese (Simplified), Korean, Italian and Urdu (for example ${SITE_URL}/ar/).
 
-Apps: Windows (Microsoft Store): https://apps.microsoft.com/detail/9PLR2PMX3SQZ ; Chrome and Edge extension: https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki ; on phones it can be installed from the browser as an app.
+Apps: Windows (Microsoft Store): https://apps.microsoft.com/detail/9PLR2PMX3SQZ ; Chrome and Edge extension: https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki ; Firefox add-on: https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/ ; command line: \`npx omnibeam send <file>\` (https://www.npmjs.com/package/omnibeam); on phones it can be installed from the browser as an app.
+Open source: GPL-3.0, source code at https://github.com/yazeedbdourwork/OmniBeam
 Price: free, no ads. Made by Yazeed Bdour. Contact: yazeedbdourwork@gmail.com
+Full text of the English pages, for AI assistants: ${SITE_URL}/llms-full.txt
+
+## Key facts
+
+- What it is: a free, browser-based alternative to AirDrop that works between iPhone, Android, Windows, Mac, Linux and Chromebook.
+- No app, no account and no sign-up: open ${SITE_URL} on both devices.
+- Same Wi-Fi: devices appear automatically. Different networks (mobile data, another house, a VPN): pair once with a 6-digit code or QR code.
+- Privacy: end-to-end encrypted on the device; files go directly between devices (WebRTC) when possible, otherwise through an encrypted relay that cannot read them. Nothing from a live transfer is stored.
+- Size: no file size limit set by OmniBeam; photos and videos are sent in full quality (HEIC can be saved as JPG). Dropped transfers resume.
+- When the other person is offline: share an encrypted link that expires (7 days by default, up to 30; links have a size cap shown in the app, direct sends have none), or a "Request files" link others upload to.
+- Also: chat and clipboard sync between paired devices, public and team rooms, send to everyone, TV mode (/tv), phone as a webcam or mic, event photo album with one QR code, scan to PDF, syncing a folder between two computers, photo backup that skips repeats.
+- Limits: both devices need a modern browser and an internet connection to find each other; on iPhone, Safari must stay open (screen on) during a transfer.
+- Best for: iPhone to Windows PC, Android to iPhone or Mac, sending large videos without WhatsApp compression, replacing WeTransfer for files you send to your own devices or to someone online at the same time.
 
 ## Guides
 
@@ -872,6 +894,31 @@ ${list(['post'])}
 
 ${list(['page', 'info', 'legal', undefined])}
 `.replace(/\n## [^\n]+\n\n(?=\n## |$)/g, '\n');
+}
+// llms-full.txt: llms.txt followed by the text of every English page as Markdown, so an AI assistant can read the
+// whole site in one request
+function htmlToMarkdown(html) {
+  const abs = (href) => (href.startsWith('/') ? SITE_URL + href : href);
+  const inline = (h) => normText(decodeHtml(h
+    .replace(/<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (m, href, t) => `[${t.replace(/<[^>]+>/g, '')}](${abs(href)})`)
+    .replace(/<\/?(b|strong)>/gi, '**').replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '')));
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/<tr>([\s\S]*?)<\/tr>/gi, (m, row) => `\n| ${[...row.matchAll(/<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi)].map(([, c]) => inline(c).replace(/\|/g, '/')).join(' | ')} |`)
+    .replace(/<\/thead>/gi, '\n| --- | --- | --- |')
+    .replace(/<h([1-4])[^>]*>([\s\S]*?)<\/h\1>/gi, (m, n, t) => `\n\n${'#'.repeat(Number(n) + 1)} ${inline(t)}\n\n`)
+    .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (m, t) => `\n- ${inline(t)}`)
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (m, t) => `\n\n${inline(t)}\n\n`)
+    .replace(/<[^>]+>/g, '')
+    .replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+let llmsFullCache = null;
+function llmsFullTxt() {
+  if (llmsFullCache) return llmsFullCache;
+  const order = { info: 0, guide: 1, compare: 2, post: 3 };
+  const list = [...pages.values()].filter((p) => p.lang === 'en' && p.kind in order && p.kind !== 'legal')
+    .sort((a, b) => order[a.kind] - order[b.kind] || a.order - b.order);
+  return (llmsFullCache = `${llmsTxt()}\n---\n\n${list.map((p) => `# ${p.title}\n\nURL: ${SITE_URL}${langPath('en', p.slug)}${p.updated ? `\nUpdated: ${p.updated}` : ''}\n\n${htmlToMarkdown(p.body)}`).join('\n\n---\n\n')}\n`);
 }
 
 // When a home page last really changed: the newest commit that touched index.html or that language's text
@@ -1151,6 +1198,7 @@ const server = http.createServer((req, res) => {
   }
   if (urlPath === '/sitemap.xml') return sendFile(req, res, 200, 'sitemap.xml', Buffer.from(sitemap()));
   if (urlPath === '/llms.txt') return sendFile(req, res, 200, 'llms.txt', Buffer.from(llmsTxt()));
+  if (urlPath === '/llms-full.txt') return sendFile(req, res, 200, 'llms-full.txt', Buffer.from(llmsFullTxt()));
   // The service worker, with this deploy's version written in, so browsers drop the files saved from the last one
   if (urlPath === '/sw.js') return sendFile(req, res, 200, 'sw.js', swScript(), { 'Cache-Control': 'no-cache, no-store' });
   // Download page of a shared link (the key is after # in the address, so it never reaches the server)
