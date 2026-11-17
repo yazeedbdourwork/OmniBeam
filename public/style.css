@@ -219,7 +219,7 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
   box-shadow: 4px 4px 10px var(--sd), -3px -3px 8px var(--sl), inset 0 2px 2px rgba(255, 255, 255, 0.35);
 }
 .peer .avatar svg, .me-avatar svg { width: 30px; height: 30px; fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.peer .progress { position: absolute; inset: 0; width: 92px; height: 92px; transform: rotate(-90deg); pointer-events: none; }
+.peer .progress { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 92px; height: 92px; transform: rotate(-90deg); pointer-events: none; }
 .peer .progress circle { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round;
   stroke-dasharray: 276.5; stroke-dashoffset: 276.5; transition: stroke-dashoffset 0.15s; }
 .peer .name { font-weight: 700; font-size: 0.98rem; letter-spacing: -0.02em; }
@@ -251,7 +251,7 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
 
 /* Hover actions: "Send files" / "Send message" over the card (mouse/trackpad only; touch keeps tap + long-press) */
 .peer-actions {
-  position: absolute; inset: 0; border-radius: inherit; display: flex; flex-direction: column;
+  position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: inherit; display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 6px; padding: 10px;
   background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(3px);
   opacity: 0; pointer-events: none; transition: opacity 0.18s;
@@ -281,7 +281,7 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
   color: var(--fg); background: var(--bg); box-shadow: var(--raise-sm); transition: color 0.15s, box-shadow 0.15s;
 }
 /* A bigger area to tap than the button looks */
-.peer-more-btn::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.peer-more-btn::before { content: ""; position: absolute; top: -6px; right: -6px; bottom: -6px; left: -6px; border-radius: 50%; }
 .peer-more-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; }
 .peer-more-btn:hover { color: var(--accent); box-shadow: var(--raise); }
 /* The unread-messages number takes the corner: the ⋯ moves down under it */
@@ -370,7 +370,7 @@ footer {
 .me-name:hover svg, .me-name:focus-visible svg { stroke: var(--accent); }
 .me-status { font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .radar {
-  position: absolute; inset: 9px; border-radius: 50%; border: 2px solid var(--accent);
+  position: absolute; top: 9px; right: 9px; bottom: 9px; left: 9px; border-radius: 50%; border: 2px solid var(--accent);
   opacity: 0; animation: radar 3s ease-out infinite;
 }
 .radar.r2 { animation-delay: 1.5s; }
@@ -671,7 +671,7 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 .intro-play { position: relative; display: block; border-radius: 18px; overflow: hidden; box-shadow: var(--raise-sm); background: #e6e9f0; }
 .intro-play img, .intro-inline { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 18px; }
 .intro-inline { background: #000; }
-.intro-play-btn { position: absolute; inset: 0; margin: auto; width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center;
+.intro-play-btn { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto; width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center;
   background: linear-gradient(135deg, var(--accent-2), var(--accent)); box-shadow: 0 8px 24px rgba(60, 50, 200, .35); transition: transform .15s; }
 .intro-play-btn svg { width: 30px; height: 30px; fill: #fff; margin-inline-start: 4px; }
 .intro-play:hover .intro-play-btn, .intro-play:focus-visible .intro-play-btn { transform: scale(1.08); }
@@ -953,8 +953,8 @@ header { z-index: 20; } /* above main, so the open menu covers the page below */
   position: relative; aspect-ratio: 1; padding: 0; border: 0; border-radius: 14px; overflow: hidden; cursor: pointer;
   background: var(--bg); box-shadow: var(--raise-sm); color: var(--muted); font: inherit;
 }
-.thumb img, .thumb video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.thumb .thumb-name { position: absolute; inset: auto 6px 6px; font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; }
+.thumb img, .thumb video { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.thumb .thumb-name { position: absolute; top: auto; right: 6px; bottom: 6px; left: 6px; font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0; }
 .thumb.no-preview .thumb-name, .thumb.gone .thumb-name, .thumb:not(:has(img, video)) .thumb-name { opacity: 1; }
 .thumb.gone { opacity: 0.45; }
 .thumb .play {
@@ -1102,7 +1102,7 @@ dialog.webcam-view { overflow: auto; }
 .secret-body { position: relative; margin-top: 12px; padding: 14px; border-radius: 16px; box-shadow: var(--inset-sm); max-height: 50vh; overflow: auto; }
 .secret-body pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92rem; }
 .secret-body.hidden-note pre { filter: blur(7px); user-select: none; }
-.secret-body .btn { position: absolute; inset: 0; margin: auto; width: max-content; height: max-content; }
+.secret-body .btn { position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto; width: max-content; height: max-content; }
 /* Preview of a received file */
 dialog.preview-dialog { width: min(980px, calc(100vw - 16px)); padding: 16px; }
 .preview-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
@@ -1165,12 +1165,12 @@ html.tv body { min-height: 100vh; }
 /* The screen fills the space under the top bar and its text scales with the height too, so on a short TV browser
    window (big toolbar, zoomed page) everything still fits and the title isn't scrolled up under the top bar */
 html.tv main { padding: 0; }
-.tv-screen { display: flex; align-items: center; justify-content: center; gap: clamp(24px, 5vw, 72px); padding: clamp(12px, 3vh, 48px) clamp(16px, 5vw, 64px); flex: 1 0 auto; box-sizing: border-box; }
+.tv-screen { display: flex; align-items: center; justify-content: center; gap: 48px; padding: 24px 40px; gap: clamp(24px, 5vw, 72px); padding: clamp(12px, 3vh, 48px) clamp(16px, 5vw, 64px); flex: 1 0 auto; box-sizing: border-box; }
 .tv-screen[hidden] { display: none; }
-.tv-qr { flex: none; width: min(42vw, 62vh); aspect-ratio: 1; background: #fff; border-radius: 24px; padding: 12px; box-shadow: 0 10px 40px rgba(20, 20, 60, .18); }
+.tv-qr { flex: none; width: 50vh; width: min(42vw, 62vh); aspect-ratio: 1; background: #fff; border-radius: 24px; padding: 12px; box-shadow: 0 10px 40px rgba(20, 20, 60, .18); }
 .tv-qr svg { width: 100%; height: 100%; display: block; }
-.tv-text { max-width: 40rem; font-size: clamp(16px, 2.2vw, 30px); font-size: clamp(14px, min(2.2vw, 3.3vh), 30px); line-height: 1.4; }
-.tv-text h1, .tv-text .tv-heading { font-size: clamp(26px, 4vw, 58px); font-size: clamp(22px, min(4vw, 6vh), 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
+.tv-text { max-width: 40rem; font-size: 2.2vw; font-size: clamp(16px, 2.2vw, 30px); font-size: clamp(14px, min(2.2vw, 3.3vh), 30px); line-height: 1.4; }
+.tv-text h1, .tv-text .tv-heading { font-size: 4vw; font-size: clamp(26px, 4vw, 58px); font-size: clamp(22px, min(4vw, 6vh), 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
 .tv-steps { margin: 0 0 .8em; padding-inline-start: 1.3em; }
 .tv-steps li { margin: .25em 0; }
 .tv-alt, .tv-keys { opacity: .75; }
@@ -1181,14 +1181,14 @@ html.tv main { padding: 0; }
 .tv-buttons .btn { font-size: .8em; }
 .tv-buttons .btn:focus-visible, .tv-shut:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
 @media (max-aspect-ratio: 1/1) { .tv-screen { flex-direction: column; text-align: center; } .tv-qr { width: min(80vw, 50vh); } .tv-steps { text-align: start; } .tv-buttons { justify-content: center; } }
-.tv-show { position: fixed; inset: 0; z-index: 50; background: #000; color: #fff; cursor: none; }
+.tv-show { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 50; background: #000; color: #fff; cursor: none; }
 .tv-show[hidden] { display: none; }
-.tv-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.tv-stage { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; }
 .tv-stage img, .tv-stage video { max-width: 100%; max-height: 100%; object-fit: contain; animation: tv-in .6s ease; }
 @keyframes tv-in { from { opacity: 0; } to { opacity: 1; } }
-.tv-caption { position: absolute; left: 24px; bottom: 16px; margin: 0; padding: 6px 14px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: clamp(14px, 1.6vw, 24px); transition: opacity .6s; }
+.tv-caption { position: absolute; left: 24px; bottom: 16px; margin: 0; padding: 6px 14px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: 1.6vw; font-size: clamp(14px, 1.6vw, 24px); transition: opacity .6s; }
 .tv-show-status { bottom: auto; top: 16px; }
-.tv-shut { position: absolute; top: 16px; inset-inline-end: 16px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 26px; cursor: pointer; transition: opacity .6s; }
+.tv-shut { position: absolute; top: 16px; right: 16px; width: 56px; height: 56px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 26px; cursor: pointer; transition: opacity .6s; }
 .tv-show.idle .tv-caption:not(.tv-show-status), .tv-show.idle .tv-shut { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .tv-stage img, .tv-stage video { animation: none; } }
 /* TV mode upgrades (tv.js): a clear focus for the remote, photo wall, video bar, slideshow fades and zoom, music,
@@ -1198,9 +1198,9 @@ html.tv .btn:focus { outline: 5px solid var(--accent); outline-offset: 4px; }
 html.tv .btn:focus:not(:focus-visible) { outline-width: 3px; }
 .tv-remote-tip { font-size: .62em; opacity: .65; margin-top: .6em; }
 /* More buttons now: the home screen stays within one TV screen (smaller QR code and buttons) */
-html.tv .tv-qr { width: min(36vw, 54vh); }
-html.tv .tv-text { font-size: clamp(13px, min(2vw, 2.9vh), 28px); max-width: 46rem; }
-html.tv .tv-text .tv-heading { font-size: clamp(20px, min(3.6vw, 5.4vh), 54px); }
+html.tv .tv-qr { width: 46vh; width: min(36vw, 54vh); }
+html.tv .tv-text { font-size: 2vw; font-size: clamp(13px, min(2vw, 2.9vh), 28px); max-width: 46rem; }
+html.tv .tv-text .tv-heading { font-size: 3.6vw; font-size: clamp(20px, min(3.6vw, 5.4vh), 54px); }
 html.tv .tv-buttons { gap: 10px; margin-top: .7em; }
 html.tv .tv-buttons .btn { font-size: .74em; padding: .5em 1em; }
 html.tv .tv-keys { margin-top: .8em; }
@@ -1220,7 +1220,7 @@ html.tv .tv-keys { margin-top: .8em; }
 .tv-stage:not(.fade) img.kb { animation: tv-kb var(--kb-time, 10s) linear forwards; }
 @keyframes tv-kb { from { transform: scale(1); } to { transform: scale(1.14); } }
 .tv-caption, .tv-shut, .tv-bar { z-index: 2; }
-.tv-hint { bottom: auto; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: clamp(12px, 1.3vw, 20px); }
+.tv-hint { bottom: auto; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 1.3vw; font-size: clamp(12px, 1.3vw, 20px); }
 .tv-show-status { left: 24px; top: 64px; }
 .tv-song { left: auto; inset-inline-end: 24px; right: 24px; max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 html[dir=rtl] .tv-song { right: auto; left: 24px; }
@@ -1229,43 +1229,43 @@ html[dir=rtl] .tv-song { right: auto; left: 24px; }
 .tv-bar[hidden] { display: none; }
 .tv-bar-track { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, .25); overflow: hidden; }
 .tv-bar-track span { display: block; height: 100%; width: 0; background: var(--accent); }
-.tv-bar-time { font-size: clamp(14px, 1.5vw, 22px); text-shadow: 0 1px 3px #000; font-variant-numeric: tabular-nums; }
+.tv-bar-time { font-size: 1.5vw; font-size: clamp(14px, 1.5vw, 22px); text-shadow: 0 1px 3px #000; font-variant-numeric: tabular-nums; }
 .tv-show.idle .tv-bar { opacity: 0; }
-.tv-heic { max-width: 40rem; padding: 2em; text-align: center; font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
+.tv-heic { max-width: 40rem; padding: 2em; text-align: center; font-size: 2.4vw; font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
 .tv-heic .muted { opacity: .7; font-size: .7em; }
-.tv-wall { position: fixed; inset: 0; z-index: 45; background: var(--bg); color: var(--fg); overflow-y: auto; padding: clamp(14px, 3vh, 40px) clamp(16px, 4vw, 56px); box-sizing: border-box; }
+.tv-wall { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 45; background: var(--bg); color: var(--fg); overflow-y: auto; padding: 3vh 4vw; padding: clamp(14px, 3vh, 40px) clamp(16px, 4vw, 56px); box-sizing: border-box; }
 .tv-wall[hidden] { display: none; }
-.tv-wall-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; font-size: clamp(14px, 1.8vw, 24px); }
+.tv-wall-top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; font-size: 1.8vw; font-size: clamp(14px, 1.8vw, 24px); }
 .tv-wall-title { flex: 1; margin: 0; font-size: 1.4em; }
-.tv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 18vw, 300px), 1fr)); gap: clamp(10px, 1.5vw, 22px); }
+.tv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(18vw, 1fr)); gap: 16px; grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 18vw, 300px), 1fr)); gap: clamp(10px, 1.5vw, 22px); }
 .tv-tile { position: relative; aspect-ratio: 16 / 10; border: 0; padding: 0; border-radius: 14px; overflow: hidden; background: #222 center / 40% no-repeat; cursor: pointer; color: #fff; }
 .tv-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tv-tile.is-video::after { content: '▶'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(26px, 3vw, 48px); text-shadow: 0 2px 8px #000; }
-.tv-tile.is-heic::before { content: '📷 HEIC'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1em; opacity: .8; }
-.tv-tile-from { position: absolute; left: 8px; bottom: 8px; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: clamp(11px, 1vw, 16px); max-width: calc(100% - 16px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tv-tile.is-video::after { content: '▶'; position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; font-size: 3vw; font-size: clamp(26px, 3vw, 48px); text-shadow: 0 2px 8px #000; }
+.tv-tile.is-heic::before { content: '📷 HEIC'; position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1em; opacity: .8; }
+.tv-tile-from { position: absolute; left: 8px; bottom: 8px; padding: 2px 10px; border-radius: 999px; background: rgba(0, 0, 0, .55); font-size: 1vw; font-size: clamp(11px, 1vw, 16px); max-width: calc(100% - 16px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 html[dir=rtl] .tv-tile-from { left: auto; right: 8px; }
 .tv-tile:focus-visible { transform: scale(1.05); z-index: 1; }
-.tv-note { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .72); padding: 4vh 4vw; box-sizing: border-box; }
+.tv-note { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 55; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .72); padding: 4vh 4vw; box-sizing: border-box; }
 .tv-note[hidden] { display: none; }
-.tv-note-card { max-width: min(90vw, 70rem); max-height: 90vh; overflow: auto; padding: clamp(18px, 4vh, 48px) clamp(20px, 4vw, 64px); border-radius: 28px; background: var(--bg); color: var(--fg); text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
-.tv-note-from { margin: 0 0 .6em; font-size: clamp(16px, 2vw, 28px); opacity: .75; }
-.tv-note-text { margin: 0; font-size: clamp(28px, min(5vw, 8vh), 80px); font-weight: 700; line-height: 1.25; white-space: pre-wrap; overflow-wrap: anywhere; }
-.tv-note-text.long { font-size: clamp(20px, min(3vw, 4.5vh), 44px); font-weight: 600; text-align: start; }
-.tv-note-qr { width: min(36vw, 46vh); aspect-ratio: 1; margin: 0 auto; background: #fff; border-radius: 18px; padding: 10px; }
+.tv-note-card { max-width: 90vw; max-width: min(90vw, 70rem); max-height: 90vh; overflow: auto; padding: 4vh 4vw; padding: clamp(18px, 4vh, 48px) clamp(20px, 4vw, 64px); border-radius: 28px; background: var(--bg); color: var(--fg); text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, .4); }
+.tv-note-from { margin: 0 0 .6em; font-size: 2vw; font-size: clamp(16px, 2vw, 28px); opacity: .75; }
+.tv-note-text { margin: 0; font-size: 5vw; font-size: clamp(28px, min(5vw, 8vh), 80px); font-weight: 700; line-height: 1.25; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tv-note-text.long { font-size: 3vw; font-size: clamp(20px, min(3vw, 4.5vh), 44px); font-weight: 600; text-align: start; }
+.tv-note-qr { width: 46vh; width: min(36vw, 46vh); aspect-ratio: 1; margin: 0 auto; background: #fff; border-radius: 18px; padding: 10px; }
 .tv-note-qr[hidden] { display: none; }
 .tv-note-qr svg { width: 100%; height: 100%; display: block; }
-.tv-note-link { margin: .7em 0 0; font-size: clamp(14px, 1.8vw, 26px); overflow-wrap: anywhere; opacity: .8; }
-.tv-note-hint { margin: 1em 0 0; font-size: clamp(12px, 1.3vw, 18px); opacity: .55; }
-.tv-saver { position: fixed; inset: 0; z-index: 60; background: #000; color: #fff; cursor: none; overflow: hidden; }
+.tv-note-link { margin: .7em 0 0; font-size: 1.8vw; font-size: clamp(14px, 1.8vw, 26px); overflow-wrap: anywhere; opacity: .8; }
+.tv-note-hint { margin: 1em 0 0; font-size: 1.3vw; font-size: clamp(12px, 1.3vw, 18px); opacity: .55; }
+.tv-saver { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 60; background: #000; color: #fff; cursor: none; overflow: hidden; }
 .tv-saver[hidden] { display: none; }
 .tv-saver-box { position: absolute; left: 0; top: 0; padding: 3vh 3vw; text-align: center; transition: transform 3s ease-in-out; opacity: .85; }
-.tv-saver-time { margin: 0; font-size: clamp(60px, min(12vw, 20vh), 220px); font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; }
-.tv-saver-date { margin: .3em 0 0; font-size: clamp(18px, min(2.4vw, 4vh), 40px); opacity: .7; }
-.tv-saver-song { margin: .5em 0 0; font-size: clamp(14px, 1.8vw, 28px); opacity: .7; }
-.tv-saver-qr { width: min(16vw, 22vh); aspect-ratio: 1; margin: 2.5vh auto 0; background: #fff; border-radius: 12px; padding: 6px; opacity: .8; }
+.tv-saver-time { margin: 0; font-size: 12vw; font-size: clamp(60px, min(12vw, 20vh), 220px); font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; }
+.tv-saver-date { margin: .3em 0 0; font-size: 2.4vw; font-size: clamp(18px, min(2.4vw, 4vh), 40px); opacity: .7; }
+.tv-saver-song { margin: .5em 0 0; font-size: 1.8vw; font-size: clamp(14px, 1.8vw, 28px); opacity: .7; }
+.tv-saver-qr { width: 22vh; width: min(16vw, 22vh); aspect-ratio: 1; margin: 2.5vh auto 0; background: #fff; border-radius: 12px; padding: 6px; opacity: .8; }
 .tv-saver-qr svg { width: 100%; height: 100%; display: block; }
-.tv-saver-tip { margin: .6em 0 0; font-size: clamp(12px, 1.4vw, 20px); opacity: .6; }
-.tv-set { max-width: min(92vw, 46rem); font-size: clamp(15px, 1.8vw, 24px); }
+.tv-saver-tip { margin: .6em 0 0; font-size: 1.4vw; font-size: clamp(12px, 1.4vw, 20px); opacity: .6; }
+.tv-set { max-width: 92vw; max-width: min(92vw, 46rem); font-size: 1.8vw; font-size: clamp(15px, 1.8vw, 24px); }
 .tv-set h2 { margin-top: 0; }
 .tv-set-row { margin: 0 0 1em; }
 .tv-set-row p { margin: 0 0 .4em; font-weight: 600; }
@@ -1273,6 +1273,17 @@ html[dir=rtl] .tv-tile-from { left: auto; right: 8px; }
 .tv-set-opts .btn { font-size: .85em; }
 .tv-set-opts .btn[aria-pressed=true] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .tv-stage img.kb, .tv-prev img.out { animation: none; } .tv-saver-box { transition: none; } }
+/* Older TV browsers (Chrome/Chromium before 88): no aspect-ratio, no :focus-visible, no inset-inline-end. Without
+   these the QR codes and photo wall tiles had no height and the remote's focus ring was missing. */
+html[dir=rtl] .tv-shut { right: auto; left: 16px; }
+html.tv .tv-tile:focus, html.tv .tv-set button:focus { outline: 5px solid var(--accent); outline-offset: 4px; }
+@supports not (aspect-ratio: 1 / 1) {
+  .tv-qr, html.tv .tv-qr { width: 46vh; height: 46vh; box-sizing: border-box; }
+  .tv-note-qr { height: 46vh; box-sizing: border-box; }
+  .tv-saver-qr { height: 22vh; box-sizing: border-box; }
+  .tv-tile { height: 0; padding-top: 62.5%; }
+  .tv-tile img { position: absolute; top: 0; left: 0; }
+}
 /* The phone remote */
 .tv-remote-chip { display: inline-block; margin: 4px auto 0; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; position: relative; z-index: 2; }
 .tv-remote { width: min(92vw, 24rem); text-align: center; }

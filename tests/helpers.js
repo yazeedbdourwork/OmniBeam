@@ -8,7 +8,7 @@ const { expect } = require('@playwright/test');
 //   relayOnly: block direct connections (as on a network where they fail), so everything goes through the server
 //   clipboard: allow the page to read and write the clipboard (Chrome asks the user otherwise)
 //   userAgent: open it as another kind of device (e.g. an Android phone)
-async function openDevice(browser, name, { relayOnly = false, clipboard = false, path = '/', storage = {}, userAgent } = {}) {
+async function openDevice(browser, name, { relayOnly = false, clipboard = false, path = '/', storage = {}, userAgent, setup } = {}) {
   const context = await browser.newContext({
     acceptDownloads: true,
     ...(userAgent ? { userAgent } : {}),
@@ -34,6 +34,8 @@ async function openDevice(browser, name, { relayOnly = false, clipboard = false,
   }
   // Fonts and other outside services aren't needed (and may be unreachable where the tests run)
   await context.route(/^https?:\/\/(?!localhost[:/])/, (route) => route.abort());
+  // setup(context): a test's own routes or scripts before the page opens
+  if (setup) await setup(context);
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));

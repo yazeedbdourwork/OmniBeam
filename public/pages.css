@@ -135,7 +135,7 @@ main.stats { max-width: 980px; }
 .req-field { display: grid; gap: 6px; margin: 16px 0; font-weight: 600; }
 .req-field input { padding: 10px 14px; border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-weight: 400; }
 .req-zone { position: relative; display: grid; place-items: center; gap: 4px; padding: 28px 16px; border: 2px dashed var(--muted); border-radius: 20px; cursor: pointer; text-align: center; }
-.req-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.req-zone input { position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0; cursor: pointer; width: 100%; }
 .req-zone.over, .req-zone:focus-within { border-color: var(--accent); }
 .req-zone-big { font-weight: 700; font-size: 1.15rem; }
 .req-zone-small { color: var(--muted); font-size: 0.9rem; }
