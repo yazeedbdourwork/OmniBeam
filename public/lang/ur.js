@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "1 منٹ کا تعارف دیکھیں",
     "Watch the intro video": "تعارفی ویڈیو دیکھیں",
     "OmniBeam in 1 minute": "1 منٹ میں OmniBeam",
+    "Watch the full video": "پوری ویڈیو دیکھیں",
+    "Everything OmniBeam can do": "OmniBeam کیا کچھ کر سکتا ہے",
+    "Play the video": "ویڈیو چلائیں",
+    "OmniBeam video: every feature, step by step": "OmniBeam ویڈیو: ہر فیچر، قدم بہ قدم",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "کسی بھی ڈیوائس پر فائلیں بھیجیں: iPhone، Android، PC | OmniBeam",

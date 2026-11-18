@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "1分の紹介動画を見る",
     "Watch the intro video": "紹介動画を見る",
     "OmniBeam in 1 minute": "1分でわかるOmniBeam",
+    "Watch the full video": "動画をすべて見る",
+    "Everything OmniBeam can do": "OmniBeam でできること",
+    "Play the video": "動画を再生",
+    "OmniBeam video: every feature, step by step": "OmniBeam の動画：すべての機能をステップごとに",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "どのデバイスにもファイルを送信:iPhone、Android、PC | OmniBeam",

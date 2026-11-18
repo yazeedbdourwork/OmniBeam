@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "观看 1 分钟介绍",
     "Watch the intro video": "观看介绍视频",
     "OmniBeam in 1 minute": "1 分钟了解 OmniBeam",
+    "Watch the full video": "观看完整视频",
+    "Everything OmniBeam can do": "OmniBeam 的全部功能",
+    "Play the video": "播放视频",
+    "OmniBeam video: every feature, step by step": "OmniBeam 视频：逐步了解每项功能",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "向任何设备发送文件：iPhone、Android、电脑 | OmniBeam",

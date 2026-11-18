@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "1분 소개 영상 보기",
     "Watch the intro video": "소개 영상 보기",
     "OmniBeam in 1 minute": "1분 만에 알아보는 OmniBeam",
+    "Watch the full video": "전체 영상 보기",
+    "Everything OmniBeam can do": "OmniBeam으로 할 수 있는 모든 것",
+    "Play the video": "영상 재생",
+    "OmniBeam video: every feature, step by step": "OmniBeam 영상: 모든 기능을 단계별로",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "모든 기기로 파일 보내기: iPhone, Android, PC | OmniBeam",

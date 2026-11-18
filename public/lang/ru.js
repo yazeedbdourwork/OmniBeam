@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "Смотреть минутное видео",
     "Watch the intro video": "Смотреть вводное видео",
     "OmniBeam in 1 minute": "OmniBeam за 1 минуту",
+    "Watch the full video": "Смотреть видео целиком",
+    "Everything OmniBeam can do": "Всё, что умеет OmniBeam",
+    "Play the video": "Воспроизвести видео",
+    "OmniBeam video: every feature, step by step": "Видео об OmniBeam: каждая функция шаг за шагом",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Отправка файлов на любое устройство: iPhone, Android, ПК | OmniBeam",

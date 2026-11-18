@@ -58,7 +58,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=92" as="script">
+  <link rel="preload" href="/app.js?v=93" as="script">
   <script src="/look.js?v=3"></script>
   <link rel="stylesheet" href="/style.css?v=79">
 </head>
@@ -132,7 +132,7 @@
           <button type="button" class="menu-item bar-twin" role="menuitem" id="btn-theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Dark mode</span></button>
           <button type="button" class="menu-item" role="menuitem" id="menu-lock" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Lock now</span></button>
           <hr>
-          <button type="button" class="menu-item" role="menuitem" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the intro video</span></button>
+          <button type="button" class="menu-item" role="menuitem" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the full video</span></button>
           <button type="button" class="menu-item" role="menuitem" id="menu-invite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span>Invite a friend</span></button>
           <button type="button" class="menu-item" role="menuitem" id="menu-tour"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg><span>Show the quick tour</span></button>
           <a class="menu-item" role="menuitem" id="menu-support" href="/about" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Support OmniBeam</span></a>
@@ -195,7 +195,7 @@
         </div>
       </div>
       <button class="btn" id="btn-pair-empty">Pair a device</button>
-      <button type="button" class="intro-link" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the 1-minute intro</span></button>
+      <button type="button" class="intro-link" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the full video</span></button>
     </div>
     <button type="button" class="btn ghost small send-all" id="btn-send-all" hidden>Send to everyone</button>
     </div>
@@ -213,12 +213,12 @@
 
       <!-- The intro video: only a small poster image (loaded when scrolled near) until it is pressed, then the video
            plays here (app.js: Intro video). The server puts in this page's language and the video's length. -->
-      <h2 id="intro-title">OmniBeam in 1 minute</h2>
+      <h2 id="intro-title">Everything OmniBeam can do</h2>
       <figure class="intro-poster">
-        <a class="intro-play" href="/media/intro-en.mp4?v=4" aria-label="Play the intro video">
-          <img src="/media/intro-en.webp?v=4" width="1280" height="720" loading="lazy" decoding="async" alt="OmniBeam intro video: send files between any devices">
+        <a class="intro-play" href="/media/intro-en.mp4?v=4" aria-label="Play the video">
+          <img src="/media/intro-en.webp?v=4" width="1280" height="720" loading="lazy" decoding="async" alt="OmniBeam video: every feature, step by step">
           <span class="intro-play-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg></span>
-          <span class="intro-time" aria-hidden="true">1:00</span>
+          <span class="intro-time" aria-hidden="true">6:37</span>
         </a>
         <figcaption>See how to send photos and files between a phone and a computer, in your language.</figcaption>
       </figure>
@@ -835,8 +835,8 @@
     </div>
   </dialog>
 
-  <!-- Intro video (public/media/), started with sound when opened (app.js: Intro video) -->
-  <dialog id="dlg-intro" class="intro-dialog" aria-label="OmniBeam in 1 minute">
+  <!-- The video tour of every feature (public/media/intro-<lang>.mp4), started with sound when opened (app.js: Intro video) -->
+  <dialog id="dlg-intro" class="intro-dialog" aria-label="Everything OmniBeam can do">
     <video id="intro-video" controls playsinline preload="none"></video>
     <div class="row">
       <button class="btn ghost" data-close>Close</button>
@@ -1193,7 +1193,7 @@
 
   <script src="/report.js?v=4" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=92" defer></script>
+  <script src="/app.js?v=93" defer></script>
   <script src="/drop.js?v=10" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>
