@@ -20,14 +20,14 @@ test('first visit shows the three-step walkthrough once, and Settings shows it a
   devices.push(a);
   const tour = a.page.locator('#dlg-tour');
   await expect(tour).toBeVisible({ timeout: 5000 });
-  await expect(tour.locator('.tour-step:visible h3')).toHaveText('Open OmniBeam on your other device');
+  await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Open OmniBeam on your other device');
   await tour.locator('[data-tour=next]').click();
-  await expect(tour.locator('.tour-step:visible h3')).toHaveText('Not showing up? Pair once');
+  await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Not showing up? Pair once');
   await tour.locator('[data-tour=back]').click();
-  await expect(tour.locator('.tour-step:visible h3')).toHaveText('Open OmniBeam on your other device');
+  await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Open OmniBeam on your other device');
   await tour.locator('[data-tour=next]').click();
   await tour.locator('[data-tour=next]').click();
-  await expect(tour.locator('.tour-step:visible h3')).toHaveText('Tap a device to send');
+  await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Tap a device to send');
   await expect(tour.locator('[data-tour=next]')).toHaveText('Start');
   await tour.locator('[data-tour=next]').click();
   await expect(tour).toBeHidden();
@@ -46,7 +46,7 @@ test('first visit shows the three-step walkthrough once, and Settings shows it a
 test('the walkthrough is in the page language', async ({ browser }) => {
   const a = await openDevice(browser, 'Test Laptop', { path: '/fr/', storage: { 'omnibeam-tour': null, 'omnibeam-lang': 'fr' } });
   devices.push(a);
-  await expect(a.page.locator('#dlg-tour .tour-step:visible h3')).toHaveText('Ouvrez OmniBeam sur votre autre appareil', { timeout: 5000 });
+  await expect(a.page.locator('#dlg-tour .tour-step:visible [role=heading]')).toHaveText('Ouvrez OmniBeam sur votre autre appareil', { timeout: 5000 });
   await expect(a.page.locator('#dlg-tour [data-tour=next]')).toHaveText('Suivant');
 });
 

@@ -83,7 +83,7 @@ let publicLocked = false;
 // Screen readers announce a dialog by its title: link each dialog to its first heading
 document.querySelectorAll('dialog').forEach((dlg, i) => {
   if (dlg.hasAttribute('aria-labelledby') || dlg.hasAttribute('aria-label')) return;
-  const h = dlg.querySelector('h1, h2, h3');
+  const h = dlg.querySelector('h1, h2, h3, [role=heading]');
   if (!h) return;
   h.id = h.id || `dlg-title-${i}`;
   dlg.setAttribute('aria-labelledby', h.id);
@@ -6932,7 +6932,7 @@ function loadInfoDialogs() {
       const tpl = document.createElement('template');
       tpl.innerHTML = html;
       tpl.content.querySelectorAll('dialog').forEach((dlg, i) => {
-        const h = dlg.querySelector('h1, h2, h3');
+        const h = dlg.querySelector('h1, h2, h3, [role=heading]');
         if (h && !dlg.hasAttribute('aria-labelledby')) { h.id = h.id || `dlg-info-title-${i}`; dlg.setAttribute('aria-labelledby', h.id); }
       });
       tpl.content.querySelectorAll('.text-body').forEach((el) => { el.tabIndex = 0; });
