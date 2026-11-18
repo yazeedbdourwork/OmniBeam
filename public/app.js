@@ -6867,6 +6867,10 @@ if (window.I18N) {
   sel.onchange = () => I18N.set(sel.value);
 } else $('#btn-lang').hidden = true;
 $('#btn-pair-empty').onclick = () => $('#btn-pair').click();
+// ---------- No pinch zoom on phones ----------
+// style.css keeps pinch-zoom and double-tap zoom out of the page's touch-action. iPhone Safari also zooms with its
+// own pinch gesture events (and ignores user-scalable=no), so those are stopped here.
+for (const type of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
 // ---------- Intro video ----------
 // The video tour of every feature, one per language (public/media/intro-<lang>.mp4: English voice, with the titles
 // and subtitles in the page's language). It is wide only, so phones held upright play it across the screen too.
