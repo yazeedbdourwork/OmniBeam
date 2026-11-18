@@ -969,6 +969,12 @@ function cacheFor(req, status, ext) {
   if (['.txt', '.xml'].includes(ext)) return 'public, max-age=86400';
   return 'no-cache';
 }
+// Pages that are the same for everyone (home page, info pages, guides, AMP copies, sitemap, llms.txt) may also be
+// kept by Cloudflare, so most visitors and search bots get them from a Cloudflare server near them in a few
+// milliseconds instead of waiting ~1 s for this app on the shared host. Browsers still revalidate them (no-cache), and
+// every deploy purges Cloudflare, so a deploy shows at once. Cloudflare only uses this header when the Cache Rule
+// "OmniBeam pages" makes these pages eligible for its cache (Edge TTL: use the origin's cache headers).
+const EDGE_CACHE = { 'Cloudflare-CDN-Cache-Control': 'max-age=86400, stale-while-revalidate=600' };
 function sendFile(req, res, status, filePath, data, extraHeaders = {}) {
   const ext = path.extname(filePath);
   if ((ext === '.js' || ext === '.css') && minified.size) data = minified.get(sha1(data)) || data;
@@ -983,7 +989,8 @@ function sendFile(req, res, status, filePath, data, extraHeaders = {}) {
   const hash = crypto.createHash('sha1').update(data).digest('base64url').slice(0, 20);
   headers.ETag = `"${hash}"`;
   if (status === 200 && (req.headers['if-none-match'] || '').includes(hash)) {
-    res.writeHead(304, { ETag: headers.ETag, 'Cache-Control': headers['Cache-Control'], Vary: 'Accept-Encoding' });
+    res.writeHead(304, { ETag: headers.ETag, 'Cache-Control': headers['Cache-Control'], Vary: 'Accept-Encoding',
+      ...(headers['Cloudflare-CDN-Cache-Control'] ? { 'Cloudflare-CDN-Cache-Control': headers['Cloudflare-CDN-Cache-Control'] } : {}) });
     return res.end();
   }
   if (COMPRESSIBLE.has(ext)) {
@@ -1196,9 +1203,9 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify({ n: hit.length }));
   }
-  if (urlPath === '/sitemap.xml') return sendFile(req, res, 200, 'sitemap.xml', Buffer.from(sitemap()));
-  if (urlPath === '/llms.txt') return sendFile(req, res, 200, 'llms.txt', Buffer.from(llmsTxt()));
-  if (urlPath === '/llms-full.txt') return sendFile(req, res, 200, 'llms-full.txt', Buffer.from(llmsFullTxt()));
+  if (urlPath === '/sitemap.xml') return sendFile(req, res, 200, 'sitemap.xml', Buffer.from(sitemap()), EDGE_CACHE);
+  if (urlPath === '/llms.txt') return sendFile(req, res, 200, 'llms.txt', Buffer.from(llmsTxt()), EDGE_CACHE);
+  if (urlPath === '/llms-full.txt') return sendFile(req, res, 200, 'llms-full.txt', Buffer.from(llmsFullTxt()), EDGE_CACHE);
   // The service worker, with this deploy's version written in, so browsers drop the files saved from the last one
   if (urlPath === '/sw.js') return sendFile(req, res, 200, 'sw.js', swScript(), { 'Cache-Control': 'no-cache, no-store' });
   // Download page of a shared link (the key is after # in the address, so it never reaches the server)
@@ -1282,7 +1289,7 @@ const server = http.createServer((req, res) => {
     const canonicalPath = lang === 'en' ? '/' : `/${lang}/`;
     if (urlPath !== canonicalPath) return redirect(res, canonicalPath + query);
     try {
-      return sendFile(req, res, 200, 'index.html', Buffer.from(home(lang)));
+      return sendFile(req, res, 200, 'index.html', Buffer.from(home(lang)), EDGE_CACHE);
     } catch (err) {
       console.error('Rendering the home page failed', err);
       res.writeHead(500);
@@ -1300,7 +1307,7 @@ const server = http.createServer((req, res) => {
     }
     if (urlPath !== ampPath(lang, slug)) return redirect(res, ampPath(lang, slug) + query);
     res.removeHeader('X-Frame-Options');
-    return sendFile(req, res, 200, 'page.html', ampHtml(key), { 'Content-Security-Policy': AMP_CSP });
+    return sendFile(req, res, 200, 'page.html', ampHtml(key), { 'Content-Security-Policy': AMP_CSP, ...EDGE_CACHE });
   }
   // Info pages and guides: /privacy, /ar/privacy… (and /privacy.html or /privacy/ redirect there)
   const pageMatch = urlPath.match(/^\/(?:([a-z]{2})\/)?([a-z0-9-]+)(\.html|\/)?$/);
@@ -1309,7 +1316,7 @@ const server = http.createServer((req, res) => {
     const key = `${lang}/${slug}`;
     if (pages.has(key) && !(lang === 'en' && urlPath.startsWith('/en/'))) {
       if (extra) return redirect(res, langPath(lang, slug) + query);
-      return sendFile(req, res, 200, 'page.html', pageHtml(key));
+      return sendFile(req, res, 200, 'page.html', pageHtml(key), EDGE_CACHE);
     }
     // Old address of a page that now only exists in English, or /en/…: send to the English one
     if (pages.has(`en/${slug}`) && (extra || lang !== 'en' || urlPath.startsWith('/en/'))) return redirect(res, langPath('en', slug) + query);

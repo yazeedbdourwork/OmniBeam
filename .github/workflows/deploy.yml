@@ -309,6 +309,15 @@ jobs:
           echo "::error::The live site did not report build ${BUILD} after 5 minutes. Check cPanel -> Setup Node.js App (Restart) and the app's log."
           exit 1
 
+      # Cloudflare keeps the pages too (EDGE_CACHE in server.js). A visit between the first purge and the app's restart
+      # could have put the old page back in its cache, so purge once more now that the new build is answering.
+      - name: Purge Cloudflare again
+        if: env.CLOUDFLARE_TOKEN != '' && env.MODE != 'Test the connection' && env.SKIP != '1'
+        run: |
+          curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE}/purge_cache" \
+            -H "Authorization: Bearer ${CLOUDFLARE_TOKEN}" -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | grep -q '"success":true'
+
       - run: npx playwright install --with-deps chromium
         if: env.MODE != 'Test the connection' && env.SKIP != '1'
       - name: Quick live check
