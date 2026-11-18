@@ -6,6 +6,11 @@ test('brotli for pages and scripts, gzip for browsers without it, early fetch of
   const home = await request.get('/', { headers: { 'Accept-Encoding': 'gzip, deflate, br' } });
   expect(home.headers()['content-encoding']).toBe('br');
   expect(home.headers()['cache-control']).toBe('no-cache');
+  // Cloudflare may keep the pages that are the same for everyone; never the app's live answers
+  expect(home.headers()['cloudflare-cdn-cache-control']).toContain('max-age=');
+  expect((await request.get('/privacy')).headers()['cloudflare-cdn-cache-control']).toContain('max-age=');
+  expect((await request.get('/config.json')).headers()['cloudflare-cdn-cache-control']).toBeUndefined();
+  expect((await request.get('/d/abcdefgh12')).headers()['cloudflare-cdn-cache-control']).toBeUndefined();
   const html = await home.text();
   const app = html.match(/<script src="(\/app\.js\?v=\d+)"/)[1];
   expect(html).toContain(`<link rel="preload" href="${app}" as="script">`);
