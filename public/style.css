@@ -60,6 +60,10 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
+/* Phones: the app page doesn't zoom, stretch or bounce under the fingers, it only scrolls (pinch-zoom and
+   double-tap zoom are left out of touch-action; app.js also stops the iPhone pinch gesture). Bigger text comes
+   from Settings > Text size instead. */
+html { touch-action: pan-x pan-y; overscroll-behavior: none; }
 /* A local font sized like Plus Jakarta Sans, used until it has loaded, so text doesn't move when it swaps in */
 @font-face {
   font-family: "Jakarta Fallback";
