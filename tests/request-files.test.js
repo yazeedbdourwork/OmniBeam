@@ -167,7 +167,7 @@ test('the request pages are translated', async ({ browser }) => {
   await a.page.locator('#btn-menu').click();
   await expect(a.page.locator('#btn-request')).toHaveText('اطلب ملفات');
   await a.page.locator('#btn-request').click();
-  await expect(a.page.locator('#dlg-asklink [role=heading]')).toHaveText('اطلب ملفات');
+  await expect(a.page.locator('#dlg-asklink .h3')).toHaveText('اطلب ملفات');
   await a.page.locator('#dlg-asklink [data-act=make]').click();
   await expect(a.page.locator('#req-done')).toBeVisible();
   const url = await a.page.locator('#req-url').textContent();
