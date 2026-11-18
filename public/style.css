@@ -419,6 +419,11 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
   color: var(--accent);
 }
 
+/* "Featured on LaunchBuff" badge under the copyright line: kept small so it sits quietly in the footer */
+.featured-badge { display: inline-flex; margin-top: 4px; border-radius: 10px; opacity: 0.85; transition: opacity 0.2s; }
+.featured-badge:hover, .featured-badge:focus-visible { opacity: 1; }
+.featured-badge img { display: block; width: 128px; height: 40px; }
+
 .dot-sep {
   opacity: 0.4;
   font-size: 0.75rem;
