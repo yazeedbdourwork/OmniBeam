@@ -372,7 +372,7 @@ for (const l of LANGS) {
     const ui = await d.page.evaluate(() => ({
       title: document.title,
       history: document.querySelector('#btn-history')?.textContent.trim(),
-      pair: document.querySelector('#dlg-pair h3')?.textContent.trim(),
+      pair: document.querySelector('#dlg-pair [role=heading]')?.textContent.trim(),
       settings: document.querySelector('#btn-settings')?.textContent.trim(),
     }));
     if (code === 'en') english = ui;

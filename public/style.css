@@ -86,7 +86,12 @@ body {
   text-rendering: optimizeLegibility;
   transition: background 0.3s, color 0.3s;
 }
-h2, h3 { text-wrap: balance; letter-spacing: -0.025em; }
+h2, h3, .h3 { text-wrap: balance; letter-spacing: -0.025em; }
+/* Dialog titles in index.html: <div role="heading" aria-level="3|4" class="h3|h4"> (the same to screen readers as
+   <h3>/<h4>, but not counted as page headings by SEO checkers), drawn like the browser draws <h3>/<h4> */
+.h3, .h4 { display: block; font-weight: bold; }
+.h3 { font-size: 1.17em; margin: 1em 0; }
+.h4 { font-size: 1em; margin: 1.33em 0; }
 p { text-wrap: pretty; }
 button { font: inherit; color: inherit; cursor: pointer; }
 .muted { color: var(--muted); font-size: 0.88rem; }
@@ -457,7 +462,7 @@ dialog {
 dialog[open] { animation: dlg 0.3s cubic-bezier(.2, .9, .3, 1.2); }
 @keyframes dlg { from { transform: scale(0.94); opacity: 0; } }
 dialog::backdrop { background: rgba(40, 45, 60, 0.35); }
-dialog h3 { margin: 0 0 12px; font-size: 1.2rem; font-weight: 800; }
+dialog h3, dialog .h3 { margin: 0 0 12px; font-size: 1.2rem; font-weight: 800; }
 .row { display: flex; justify-content: flex-end; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
 
 .info-dialog {
@@ -755,7 +760,7 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 #dlg-link select { padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
 #dlg-link .check-row { display: flex; align-items: center; gap: 8px; margin: 8px 0 14px; cursor: pointer; }
 #dlg-link .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
-#dlg-link h4 { margin: 18px 0 8px; }
+#dlg-link h4, #dlg-link .h4 { margin: 18px 0 8px; }
 #dlg-link .link-bar { height: 8px; border-radius: 99px; box-shadow: var(--inset-sm); overflow: hidden; margin: 12px 0; }
 #dlg-link .link-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width 0.2s; }
 #dlg-link #link-url { overflow-wrap: anywhere; }
@@ -1150,7 +1155,7 @@ pre.code { margin: 0; max-height: 68vh; overflow: auto; padding: 14px; border-ra
 #dlg-asklink .link-opts { display: grid; grid-template-columns: 1fr; }
 #dlg-asklink .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
 #dlg-asklink #req-pin-note { text-align: start; margin: -4px 0 10px; }
-#dlg-asklink h4 { margin: 18px 0 8px; }
+#dlg-asklink h4, #dlg-asklink .h4 { margin: 18px 0 8px; }
 #dlg-asklink #req-url { overflow-wrap: anywhere; }
 #dlg-asklink .row a.btn.btn-a { text-decoration: none; color: var(--fg); }
 #dlg-asklink .row { flex-wrap: wrap; }
@@ -1521,7 +1526,7 @@ html.tv .tv-tile:focus, html.tv .tv-set button:focus { outline: 5px solid var(--
 
 /* ---------- Settings: one group at a time (app.js: SetTabs), short sections, buttons lined up at the start ---------- */
 #dlg-settings[open] { display: flex; flex-direction: column; width: min(460px, calc(100vw - 24px)); height: min(680px, calc(100dvh - 24px)); max-height: none; padding: 22px 22px 18px; overflow: hidden; }
-#dlg-settings h3 { margin-bottom: 10px; }
+#dlg-settings h3, #dlg-settings .h3 { margin-bottom: 10px; }
 .set-tabs { flex: none; margin: 0 0 6px; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .set-tabs::-webkit-scrollbar { display: none; }
 .set-tabs .tab { flex: 1 1 auto; min-width: min-content; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; padding: 7px 4px 6px; border-radius: 18px; font-size: 0.76rem; line-height: 1.15; }
@@ -1567,7 +1572,7 @@ html[data-locked] body { overflow: hidden; }
 dialog.lock-dialog { width: min(380px, calc(100vw - 32px)); text-align: center; }
 dialog.lock-dialog::backdrop { background: var(--bg); }
 [data-look="glass"] dialog.lock-dialog::backdrop { background: var(--glass-solid, var(--bg)); }
-.lock-box h3 { margin-top: 6px; }
+.lock-box h3, .lock-box .h3 { margin-top: 6px; }
 .lock-icon { width: 46px; height: 46px; fill: none; stroke: var(--accent, currentColor); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .lock-input { display: block; width: 100%; margin: 10px 0 0; text-align: center; font-size: 1.4rem; letter-spacing: 0.3em; }
 .lock-msg { min-height: 1.3em; margin: 8px 0 0; color: #d03b3b; }
@@ -1703,7 +1708,7 @@ main:focus { outline: none; }
 #dlg-album .field input { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--inset-sm); font: inherit; font-weight: 400; }
 #dlg-album .link-opts { display: grid; grid-template-columns: 1fr; }
 #dlg-album .small { font-size: 0.8rem; text-align: center; margin-top: 8px; }
-#dlg-album h4 { margin: 18px 0 8px; }
+#dlg-album h4, #dlg-album .h4 { margin: 18px 0 8px; }
 #dlg-album #album-url { overflow-wrap: anywhere; }
 
 /* Dialogs sit at the top, just under the header bar, instead of the middle of the screen,
