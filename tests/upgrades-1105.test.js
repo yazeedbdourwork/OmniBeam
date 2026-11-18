@@ -168,8 +168,8 @@ test('intro video: a poster until pressed (no video bytes), the page language, i
   await expect(poster).toHaveAttribute('href', '/media/intro-ar.mp4?v=4');
   await expect(poster.locator('img')).toHaveAttribute('loading', 'lazy');
   await expect(poster.locator('img')).toHaveAttribute('src', '/media/intro-ar.webp?v=4');
-  await expect(poster.locator('.intro-time')).toHaveText('1:02');
-  await expect(a.page.locator('#intro-title')).toHaveText('OmniBeam في دقيقة واحدة');
+  await expect(poster.locator('.intro-time')).toHaveText(/^6:3\d$/); // the video tour of every feature
+  await expect(a.page.locator('#intro-title')).toHaveText('كل ما يستطيع OmniBeam فعله');
   await poster.scrollIntoViewIfNeeded();
   await a.page.waitForTimeout(1000);
   expect(video).toEqual([]);
@@ -184,11 +184,12 @@ test('intro video: a poster until pressed (no video bytes), the page language, i
   expect(Math.abs(now.height - box.height)).toBeLessThan(2);
   expect(a.errors).toEqual([]);
   // Search engines: a VideoObject in this language, with the length from the file
-  for (const [p, lang, secs] of [['/', 'en', 52], ['/ar/', 'ar', 62], ['/de/', 'de', 53]]) {
+  for (const [p, lang] of [['/', 'en'], ['/ar/', 'ar'], ['/de/', 'de']]) {
     const html = await (await fetch(`${baseURL}${p}`)).text();
     const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
     const v = ld['@graph'].find((g) => g['@type'] === 'VideoObject');
-    expect(v).toMatchObject({ inLanguage: lang, duration: `PT${secs}S`, contentUrl: `https://omnibeam.site/media/intro-${lang}.mp4?v=4` });
+    expect(v).toMatchObject({ inLanguage: lang, contentUrl: `https://omnibeam.site/media/intro-${lang}.mp4?v=4` });
+    expect(v.duration).toMatch(/^PT39\dS$/); // 6 min 36 s
     expect(v.thumbnailUrl[0]).toBe(`https://omnibeam.site/media/intro-${lang}.jpg`);
     expect(v.name.length).toBeGreaterThan(5);
     expect(v.uploadDate).toMatch(/^2026-/);

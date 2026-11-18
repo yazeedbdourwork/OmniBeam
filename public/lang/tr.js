@@ -527,6 +527,10 @@
     "Watch the 1-minute intro": "1 dakikalık tanıtımı izle",
     "Watch the intro video": "Tanıtım videosunu izle",
     "OmniBeam in 1 minute": "1 dakikada OmniBeam",
+    "Watch the full video": "Videonun tamamını izle",
+    "Everything OmniBeam can do": "OmniBeam'in yapabildiği her şey",
+    "Play the video": "Videoyu oynat",
+    "OmniBeam video: every feature, step by step": "OmniBeam videosu: her özellik adım adım",
 
     // SEO update 2026-10-29: title, description and the new home page sections
     "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Her Cihaza Dosya Gönderin: iPhone, Android, PC | OmniBeam",

@@ -6868,16 +6868,14 @@ if (window.I18N) {
 } else $('#btn-lang').hidden = true;
 $('#btn-pair-empty').onclick = () => $('#btn-pair').click();
 // ---------- Intro video ----------
-// One video per language (public/media/intro-<lang>.mp4, text and voice translated), so it plays in the language
-// the page is in. The tall version on screens held upright, the wide one otherwise. It starts with sound: browsers
-// allow that because the tap that opened it counts. Closing the window stops it.
+// The video tour of every feature, one per language (public/media/intro-<lang>.mp4: English voice, with the titles
+// and subtitles in the page's language). It is wide only, so phones held upright play it across the screen too.
+// It starts with sound: browsers allow that because the tap that opened it counts. Closing the window stops it.
 const introDlg = $('#dlg-intro');
 const introVideo = $('#intro-video');
 document.addEventListener('click', (e) => {
   if (!e.target.closest('[data-open="dlg-intro"]') || e.ctrlKey || e.metaKey || e.shiftKey) return;
-  const tall = innerHeight > innerWidth;
-  const name = `intro-${(window.I18N && I18N.lang) || 'en'}${tall ? '-tall' : ''}`;
-  introDlg.classList.toggle('tall', tall);
+  const name = `intro-${(window.I18N && I18N.lang) || 'en'}`;
   if (!introVideo.src.includes(`/${name}.mp4`)) {
     introVideo.poster = `/media/${name}.webp?v=4`;
     introVideo.src = `/media/${name}.mp4?v=4`;
@@ -6887,10 +6885,10 @@ document.addEventListener('click', (e) => {
 });
 // A language whose video isn't on the server (missing, or blocked): play the English one instead of a dead player.
 introVideo.addEventListener('error', () => {
-  const m = /\/media\/intro-([a-z]+)(-tall)?\.mp4/.exec(introVideo.src);
+  const m = /\/media\/intro-([a-z]+)\.mp4/.exec(introVideo.src);
   if (!m || m[1] === 'en') return;
-  introVideo.poster = `/media/intro-en${m[2] || ''}.webp?v=4`;
-  introVideo.src = `/media/intro-en${m[2] || ''}.mp4?v=4`;
+  introVideo.poster = '/media/intro-en.webp?v=4';
+  introVideo.src = '/media/intro-en.mp4?v=4';
   if (introDlg.open) introVideo.play().catch(() => {});
 });
 introDlg.addEventListener('close', () => introVideo.pause());
