@@ -52,10 +52,15 @@ test('the admin panel: sign in, Overview first, tabs, the address remembers the 
   expect((await request.get('/admin')).headers()['x-robots-tag']).toContain('noindex');
 });
 
-test('the admin panel fits a phone: tabs in a row, no sideways scrolling', async ({ browser }) => {
+test('the admin panel fits a phone: every tab in view, no sideways scrolling', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 375, height: 760 } });
   const page = await ctx.newPage();
   await signIn(page, '/admin#features');
+  // The tabs wrap onto more rows instead of scrolling sideways, so none is hidden past the edge of the screen
+  for (const box of await page.locator('.admin-nav [role="tab"]').evaluateAll((tabs) => tabs.map((t) => t.getBoundingClientRect().toJSON()))) {
+    expect(box.left).toBeGreaterThanOrEqual(0);
+    expect(box.right).toBeLessThanOrEqual(375);
+  }
   for (const t of ['overview', 'visitors', 'transfers', 'features', 'problems', 'log', 'status', 'settings']) {
     await page.click(`#tab-${t}`);
     await expect(page.locator(`#p-${t}`)).toBeVisible();
