@@ -169,12 +169,12 @@
 .clear-dlg #clear-word { font: inherit; width: 100%; box-sizing: border-box; padding: 8px 12px; border: 0; border-radius: 12px; box-shadow: var(--inset-sm); background: transparent; color: var(--fg); letter-spacing: 0.1em; }
 .clear-buttons { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-bottom: 0; }
 
-/* Tablets and phones: the menu becomes a row of tabs at the top that scrolls sideways by itself */
+/* Tablets and phones: the menu becomes rows of tabs at the top. They wrap onto a second row instead of scrolling
+   sideways, so every tab (Error log too) is in view on a phone. */
 @media (max-width: 900px) {
   .admin-shell { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 12px 16px 32px; }
   .admin-side { position: static; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px; border-radius: 22px; }
-  .admin-nav { flex-direction: row; order: 3; flex-basis: 100%; overflow-x: auto; scrollbar-width: none; gap: 4px; margin: 0 -4px; padding: 2px 4px; }
-  .admin-nav::-webkit-scrollbar { display: none; }
+  .admin-nav { flex-direction: row; flex-wrap: wrap; order: 3; flex-basis: 100%; gap: 4px; margin: 0 -4px; padding: 2px 4px; }
   .admin-nav [role="tab"] { width: auto; flex: none; padding: 8px 13px; font-size: 0.9rem; }
   .admin-nav [role="tab"][aria-selected="true"]::before { display: none; }
   .admin-side-foot { margin-inline-start: auto; padding: 0; border: 0; line-height: 1.5; text-align: end; }
