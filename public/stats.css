@@ -116,6 +116,20 @@
 .table-wrap th { color: var(--muted); font-weight: 600; font-size: 0.8rem; }
 .table-wrap tr:last-child td { border-bottom: 0; }
 
+/* Error log: one line per report, opens to show everything */
+.log-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 10px; font-size: 0.85rem; }
+.log-tools select, .log-tools input { font: inherit; color: var(--fg); background: var(--bg); border: 0; border-radius: 10px; padding: 7px 10px; box-shadow: var(--inset-sm); }
+.log-tools input { flex: 1 1 180px; min-width: 0; }
+.log-list { display: grid; gap: 6px; }
+.log-row { border-radius: 12px; box-shadow: var(--inset-sm); padding: 0 12px; font-size: 0.85rem; }
+.log-row summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 9px 0; cursor: pointer; }
+.log-row summary time { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.log-row summary b { white-space: nowrap; }
+.log-row.k-crash summary b, .log-row.k-stuck summary b, .log-row.k-js summary b { color: #d0453a; }
+.log-row .log-msg { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; }
+.log-row summary small { color: var(--muted); }
+.log-row pre { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.06); white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; line-height: 1.5; }
+
 /* Features: one sorted list instead of a wall of tiles */
 .features td:first-child { white-space: nowrap; }
 .features .share { width: 22%; }
