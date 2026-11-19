@@ -64,16 +64,20 @@ test('the admin panel fits a phone: tabs in a row, no sideways scrolling', async
   await ctx.close();
 });
 
-test('Error log tab: every report in full, newest first, with kind and search filters', async ({ page, request }) => {
-  const ua = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0 Mobile/15E148 Safari/604.1';
-  const crash = await request.post('/api/report', {
-    headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '203.0.113.71', 'User-Agent': ua },
-    data: { k: 'crash', m: 'The page stopped without closing (browser crash or out of memory)', busy: false, up: 3, page: 'app', v: '95', d: 'window: dlg-how' },
-  });
-  expect(crash.status()).toBe(204);
-  await request.post('/api/report', {
-    headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '203.0.113.72', 'User-Agent': ua },
-    data: { k: 'js', m: 'TypeError: Error log test', src: '/app.js', line: 42, v: '95' },
+test('Error log tab: every report in full, newest first, with kind and search filters', async ({ page }) => {
+  // The reports are added to the panel's own data (not sent to /api/report), so the server's report limits and the
+  // counts other tests check stay as they were
+  const now = Date.now();
+  const extra = [
+    { t: now - 3600e3, k: 'js', m: 'TypeError: Error log test', os: 'Windows', browser: 'Chrome 141', src: '/app.js:42', v: '95' },
+    { t: now - 1200e3, k: 'crash', m: 'The page stopped without closing (browser crash or out of memory)', os: 'iOS', browser: 'Safari 27',
+      busy: false, up: 3, page: 'app', v: '95', d: 'window: dlg-how' },
+  ];
+  await page.route('**/api/stats?**', async (route) => {
+    const res = await route.fetch();
+    const data = await res.json();
+    data.errors = (data.errors || []).concat(extra);
+    await route.fulfill({ response: res, json: data });
   });
   await signIn(page, '/admin#log');
   await expect(page.locator('#tab-log')).toHaveAttribute('aria-selected', 'true');
@@ -92,8 +96,7 @@ test('Error log tab: every report in full, newest first, with kind and search fi
   await expect(page.locator('#log-list .log-row.k-js').filter({ hasText: 'Error log test' })).toHaveCount(1);
   await page.selectOption('#log-kind', '');
   await page.fill('#log-search', 'dlg-how');
-  await expect(page.locator('#log-list .log-row')).not.toHaveCount(0);
-  for (const text of await page.locator('#log-list .log-row pre').allTextContents()) expect(text).toContain('dlg-how');
+  await expect(page.locator('#log-list .log-row')).toHaveCount(1);
   // Download (JSON) gives the shown reports
   const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#log-json')]);
   expect(dl.suggestedFilename()).toMatch(/^omnibeam-error-log-\d{4}-\d{2}-\d{2}\.json$/);
