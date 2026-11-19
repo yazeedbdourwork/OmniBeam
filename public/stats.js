@@ -334,6 +334,7 @@
     renderStatus();
     renderCrashes(days, before, data.errors || []);
     renderProblems(data.errors || []);
+    renderLog();
     renderTurn(data.turn || {});
     renderAlerts(data.alerts || {});
     renderWeekly(data.weekly || {});
@@ -543,8 +544,8 @@
   }
 
   // Tabs: one section on screen at a time; the address (#visitors…) and this browser remember which
-  const TABS = ['overview', 'visitors', 'transfers', 'features', 'problems', 'status', 'settings'];
-  const TITLES = { overview: 'Overview', visitors: 'Visitors', transfers: 'Transfers', features: 'Features', problems: 'Problems', status: 'Status', settings: 'Settings' };
+  const TABS = ['overview', 'visitors', 'transfers', 'features', 'problems', 'log', 'status', 'settings'];
+  const TITLES = { overview: 'Overview', visitors: 'Visitors', transfers: 'Transfers', features: 'Features', problems: 'Problems', log: 'Error log', status: 'Status', settings: 'Settings' };
   let tab = 'overview';
   function showTab(name, { focus = false, push = true } = {}) {
     if (!TABS.includes(name)) name = 'overview';
@@ -732,6 +733,61 @@
         e.role === 'receive' ? 'receiving' : e.role === 'send' ? 'sending' : '', e.r ? ROUTE_NAMES[e.r] || e.r : '', e.same ? 'same Wi‑Fi' : '',
         e.size ? size(e.size) : ''].filter(Boolean).join(' · '))}</td><td>${esc([e.d, e.src, e.v ? 'v' + e.v : ''].filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody>` : '';
   }
+
+  // Error log: every stored report (the server keeps the newest 300) in the period, newest first, each one with all
+  // that the page sent. A row opens to show every detail; the kind and search boxes narrow the list; Copy as text and
+  // Download (JSON) give the shown reports in full, e.g. to paste into a bug report.
+  const FIELDS = [
+    ['k', 'Kind', (v) => `${KINDS[v] || v} (${v})`], ['m', 'Problem'], ['d', 'What the page was doing'], ['page', 'Page'],
+    ['v', 'App version', (v) => 'v' + v], ['os', 'System'], ['browser', 'Browser'],
+    ['busy', 'Transfer running', (v) => (v ? 'yes' : 'no')], ['up', 'Page open for', (v) => `${v} min`],
+    ['role', 'Side', (v) => (v === 'receive' ? 'receiving' : 'sending')], ['r', 'Route', (v) => ROUTE_NAMES[v] || v],
+    ['same', 'Same Wi‑Fi', (v) => (v ? 'yes' : 'no')], ['size', 'Size', (v) => size(v)], ['pct', 'Progress', (v) => `${v}%`],
+    ['secs', 'Without progress', (v) => `${v} s`], ['src', 'Script and line'],
+  ];
+  const fullTime = (t) => new Date(t).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const logShown = () => {
+    const [since, until] = span();
+    const kind = $('#log-kind').value;
+    const q = $('#log-search').value.trim().toLowerCase();
+    return ((last && last.errors) || []).filter((e) => e.t >= since && e.t < until && (!kind || e.k === kind)
+      && (!q || JSON.stringify(e).toLowerCase().includes(q) || (KINDS[e.k] || '').toLowerCase().includes(q))).slice().reverse();
+  };
+  const logText = (e) => [`${fullTime(e.t)} (${new Date(e.t).toISOString()})`]
+    .concat(FIELDS.filter(([f]) => e[f] != null && e[f] !== '').map(([f, name, fmt]) => `${name}: ${fmt ? fmt(e[f]) : e[f]}`))
+    .concat(Object.keys(e).filter((f) => f !== 't' && !FIELDS.some(([x]) => x === f)).map((f) => `${f}: ${JSON.stringify(e[f])}`)).join('\n');
+  function renderLog() {
+    const sel = $('#log-kind');
+    if (sel.options.length === 1) for (const [k, name] of Object.entries(KINDS)) sel.add(new Option(name, k));
+    const all = (last && last.errors) || [];
+    const shown = logShown();
+    $('#log-lead').textContent = `${num(shown.length)} report${shown.length === 1 ? '' : 's'} ${endBack ? 'in ' + label() : 'from the last ' + label()}, newest first. `
+      + `The server keeps the newest 300 (${num(all.length)} now). Reports never include file names, contents or addresses.`;
+    $('#log-list').innerHTML = shown.slice(0, 300).map((e) => `<details class="log-row k-${esc(e.k)}"><summary><time datetime="${new Date(e.t).toISOString()}">${esc(fullTime(e.t))}</time>`
+      + `<b>${esc(KINDS[e.k] || e.k)}</b><span class="log-msg">${esc(e.m)}</span><small>${esc([e.os, e.browser, e.v ? 'v' + e.v : ''].filter(Boolean).join(' · '))}</small></summary>`
+      + `<pre>${esc(logText(e))}</pre></details>`).join('');
+    $('#log-empty').hidden = shown.length > 0;
+  }
+  $('#log-kind').onchange = renderLog;
+  $('#log-search').oninput = renderLog;
+  $('#log-open').onclick = () => {
+    const rows = [...document.querySelectorAll('#log-list details')];
+    const open = rows.some((d) => !d.open);
+    for (const d of rows) d.open = open;
+    $('#log-open').textContent = open ? 'Close all' : 'Open all';
+  };
+  $('#log-copy').onclick = async () => {
+    const text = logShown().map(logText).join('\n\n');
+    try { await navigator.clipboard.writeText(text); $('#log-copy').textContent = 'Copied'; } catch { $('#log-copy').textContent = 'Could not copy'; }
+    setTimeout(() => { $('#log-copy').textContent = 'Copy as text'; }, 2000);
+  };
+  $('#log-json').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(logShown(), null, 2)], { type: 'application/json' }));
+    a.download = `omnibeam-error-log-${isoDay(endBack)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
 
   function renderTurn(turn) {
     let html;

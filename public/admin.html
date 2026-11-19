@@ -7,7 +7,7 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="stylesheet" href="/pages.css?v=13">
-  <link rel="stylesheet" href="/stats.css?v=4">
+  <link rel="stylesheet" href="/stats.css?v=5">
 </head>
 <body class="admin">
   <a class="skip" href="#content">Skip to the numbers</a>
@@ -31,6 +31,7 @@
         <button type="button" role="tab" id="tab-transfers" aria-controls="p-transfers" data-tab="transfers">Transfers</button>
         <button type="button" role="tab" id="tab-features" aria-controls="p-features" data-tab="features">Features</button>
         <button type="button" role="tab" id="tab-problems" aria-controls="p-problems" data-tab="problems">Problems <b class="nav-count" id="nav-problems" hidden></b></button>
+        <button type="button" role="tab" id="tab-log" aria-controls="p-log" data-tab="log">Error log</button>
         <button type="button" role="tab" id="tab-status" aria-controls="p-status" data-tab="status">Status <i class="nav-dot" id="nav-status" aria-hidden="true"></i></button>
         <button type="button" role="tab" id="tab-settings" aria-controls="p-settings" data-tab="settings">Settings</button>
       </nav>
@@ -157,6 +158,23 @@
         </section>
       </section>
 
+      <!-- Error log: every stored report in full, newest first (stats.js: renderLog) -->
+      <section class="panel" role="tabpanel" id="p-log" aria-labelledby="tab-log" hidden>
+        <h2 class="print-only">Error log</h2>
+        <section class="card">
+          <div class="log-tools">
+            <label>Kind <select id="log-kind"><option value="">All</option></select></label>
+            <input type="search" id="log-search" placeholder="Search the log" aria-label="Search the log">
+            <button type="button" class="link-btn" id="log-open">Open all</button>
+            <button type="button" class="link-btn" id="log-copy">Copy as text</button>
+            <button type="button" class="link-btn" id="log-json">Download (JSON)</button>
+          </div>
+          <p class="lead small" id="log-lead"></p>
+          <div id="log-list" class="log-list"></div>
+          <p class="empty" id="log-empty" hidden>No reports match.</p>
+        </section>
+      </section>
+
       <!-- Status: uptime, parts and incidents (only here; /status sends to this tab), plus the TURN server -->
       <section class="panel" role="tabpanel" id="p-status" aria-labelledby="tab-status" hidden>
         <h2 class="print-only">Status</h2>
@@ -237,6 +255,6 @@
       </p>
     </form>
   </dialog>
-  <script src="/stats.js?v=22"></script>
+  <script src="/stats.js?v=23"></script>
 </body>
 </html>
