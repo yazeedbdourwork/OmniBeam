@@ -23,6 +23,8 @@ async function device(browser, name, { relayOnly = false, path: p = '/', lang = 
   const context = await browser.newContext({ acceptDownloads: true, permissions: clipboard ? ['clipboard-read', 'clipboard-write'] : [] });
   open.push(context);
   await context.addInitScript(({ name, lang, storage }) => {
+    // Also runs in the sandboxed preview frame, which has no storage
+    try { if (!window.localStorage) return; } catch (e) { return; }
     localStorage.setItem('omnibeam-name', name);
     localStorage.setItem('omnibeam-tour', 'done');
     localStorage.setItem('omnibeam-rights', '1'); // "I have the legal right to share this": ticked already
@@ -76,6 +78,9 @@ async function accept(to) {
 }
 const send = async (from, to, files) => { await pick(from, to, files); return accept(to); };
 async function menu(page, id) {
+  // Theme, TV and Settings sit in the top bar when it has room; the ⋯ menu only has them on narrow screens
+  const twin = page.locator(`#${id.replace(/^btn-/, 'bar-')}`);
+  if (id !== 'btn-menu' && await twin.isVisible().catch(() => false)) return twin.click();
   await page.locator('#btn-menu').click();
   await page.locator(`#menu #${id}`).click();
 }
@@ -368,7 +373,7 @@ for (const l of LANGS) {
     const code = l.slice(0, 2) || 'en';
     const d = await device(browser, `Full Lang ${run}`, { path: '/' + l, lang: code });
     await expect(d.page.locator('html')).toHaveAttribute('lang', code);
-    await expect(d.page.locator('html')).toHaveAttribute('dir', code === 'ar' ? 'rtl' : 'ltr');
+    await expect(d.page.locator('html')).toHaveAttribute('dir', ['ar', 'ur'].includes(code) ? 'rtl' : 'ltr');
     const ui = await d.page.evaluate(() => ({
       title: document.title,
       history: document.querySelector('#btn-history')?.textContent.trim(),
