@@ -3772,6 +3772,7 @@ const folderInput = document.createElement('input');
 folderInput.type = 'file';
 folderInput.multiple = true;
 folderInput.hidden = true;
+folderInput.setAttribute('aria-label', t('Send folder'));
 const CAN_PICK_FOLDER = 'webkitdirectory' in folderInput && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 folderInput.webkitdirectory = true;
 document.body.appendChild(folderInput);
