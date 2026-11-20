@@ -6,6 +6,7 @@
   <title>Send Files to Any Device: iPhone, Android, PC | OmniBeam</title>
   <meta name="description" content="Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.">
   <!-- The server rewrites the language-specific tags below for /ar/, /fr/, /es/, /tr/ and the other languages (see renderHome in server.js) -->
+  <meta name="robots" content="max-image-preview:large">
   <link rel="canonical" href="https://omnibeam.site/">
   <link rel="alternate" hreflang="en" href="https://omnibeam.site/">
   <link rel="alternate" hreflang="ar" href="https://omnibeam.site/ar/">
@@ -327,7 +328,7 @@
     </div>
   </footer>
 
-  <input type="file" id="file-input" multiple hidden>
+  <input type="file" id="file-input" multiple hidden aria-label="Choose files">
 
   <!-- Incoming request -->
   <dialog id="dlg-request">
@@ -409,9 +410,9 @@
     <div id="pair-idle">
       <p class="step"><b>On this device:</b></p>
       <button class="btn wide" data-act="create">Create a pairing code</button>
-      <p class="step"><b>Or enter the code from the other device:</b></p>
+      <p class="step" id="pair-code-label"><b>Or enter the code from the other device:</b></p>
       <div class="code-box">
-        <input id="pair-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off">
+        <input id="pair-code" aria-labelledby="pair-code-label" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off">
         <button class="btn" data-act="join">Join</button>
       </div>
     </div>
@@ -526,7 +527,7 @@
           <button class="btn small" id="backup-save">Save backup file</button>
           <button class="btn small ghost" id="backup-open">Open backup file</button>
         </div>
-        <input type="file" id="backup-file" accept=".json,application/json" hidden>
+        <input type="file" id="backup-file" accept=".json,application/json" hidden aria-label="Open backup file">
         <p class="muted small">Tip: send the file to the new phone with OmniBeam itself.</p>
       </section>
       <!-- Supporter perks (app.js: Supporter), shown when the server has supporter codes (SUPPORTER_KEY) -->
@@ -924,7 +925,7 @@
       <button class="btn ghost" data-act="close">Close</button>
     </div>
   </dialog>
-  <input type="file" id="link-input" multiple hidden>
+  <input type="file" id="link-input" multiple hidden aria-label="Choose files">
 
   <!-- Request files by link (request.js) -->
   <dialog id="dlg-asklink">
@@ -1091,7 +1092,7 @@
   <dialog id="dlg-tg" aria-labelledby="tg-title">
     <div role="heading" aria-level="3" class="h3" id="tg-title">Send to Telegram</div>
     <p class="muted">Files and text go to your chat with the OmniBeam bot. Up to 50 MB per file. Not end-to-end encrypted: Telegram can see them.</p>
-    <textarea id="tg-text" rows="3" placeholder="Type a message (optional)"></textarea>
+    <textarea id="tg-text" rows="3" placeholder="Type a message (optional)" aria-label="Type a message (optional)"></textarea>
     <ul class="file-list" id="tg-files"></ul>
     <p class="small" id="tg-progress" role="status"></p>
     <div class="row">
@@ -1099,7 +1100,7 @@
       <button class="btn ghost" id="tg-pick">Choose files</button>
       <button class="btn" id="tg-send">Send</button>
     </div>
-    <input type="file" id="tg-input" multiple hidden>
+    <input type="file" id="tg-input" multiple hidden aria-label="Choose files">
   </dialog>
 
   <!-- Connection check -->

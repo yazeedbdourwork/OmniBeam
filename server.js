@@ -339,6 +339,9 @@ const GA_INLINE = GA_TAG ? (GA_TAG.match(/<script>([\s\S]*?)<\/script>/) || [])[
 const GA_HASH = GA_INLINE ? `'sha256-${crypto.createHash('sha256').update(GA_INLINE).digest('base64')}'` : '';
 const FB_INLINE = FB_TAG ? (FB_TAG.match(/<script>([\s\S]*?)<\/script>/) || [])[1] : '';
 const FB_HASH = FB_INLINE ? `'sha256-${crypto.createHash('sha256').update(FB_INLINE).digest('base64')}'` : '';
+// public/look.js, put inside the home page (renderHome) so it doesn't hold up drawing the page; allowed by its hash
+const LOOK_INLINE = fs.readFileSync(path.join(PUBLIC_DIR, 'look.js'), 'utf8').replace(/^(\/\/.*\n)+/, '').trim();
+const LOOK_HASH = `'sha256-${crypto.createHash('sha256').update(LOOK_INLINE).digest('base64')}'`;
 const META = FB_PIXEL_ID ? 'https://connect.facebook.net https://www.facebook.com' : '';
 function securityHeaders(req, res) {
   const host = /^[a-z0-9.:[\]-]+$/i.test(req.headers.host || '') ? req.headers.host : SITE_HOST;
@@ -347,7 +350,7 @@ function securityHeaders(req, res) {
   const google = 'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.google.com';
   const csp = [
     "default-src 'self'",
-    `script-src 'self' ${GA_HASH} ${FB_HASH} https://*.googletagmanager.com ${META}`.replace(/\s+/g, ' ').trim(),
+    `script-src 'self' ${LOOK_HASH} ${GA_HASH} ${FB_HASH} https://*.googletagmanager.com ${META}`.replace(/\s+/g, ' ').trim(),
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
     `img-src 'self' data: blob: https://app.seobility.net https://launchbuff.com ${google} ${META}`.trim(),
@@ -389,6 +392,9 @@ function translateHtml(html, strings) {
     });
 }
 
+// The person behind OmniBeam (Organization founder, article author), with a link to his public profile
+const FOUNDER = { '@type': 'Person', '@id': `${SITE_URL}/#founder`, name: 'Yazeed Bdour', url: 'https://github.com/yazeedbdourwork',
+  sameAs: ['https://github.com/yazeedbdourwork'] };
 // JSON-LD for search engines, built from the page itself so the FAQ always matches what visitors see
 function structuredData(html, lang, url) {
   const text = (h) => normText(decodeHtml(h.replace(/<[^>]+>/g, '')));
@@ -404,7 +410,12 @@ function structuredData(html, lang, url) {
       description: 'Free browser-based file sharing between iPhone, Android, Windows, Mac and Linux, encrypted end to end.',
       email: 'yazeedbdourwork@gmail.com', areaServed: 'Worldwide', foundingDate: '2026',
       contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: 'yazeedbdourwork@gmail.com', availableLanguage: ['en', 'ar'] },
-      founder: { '@type': 'Person', name: 'Yazeed Bdour' },
+      founder: FOUNDER,
+      knowsAbout: ['File sharing', 'Peer-to-peer file transfer', 'WebRTC', 'End-to-end encryption', 'Progressive web apps',
+        'Sending files between iPhone, Android, Windows and Mac', 'Large file transfer', 'Browser extensions'],
+      makesOffer: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock',
+        itemOffered: { '@type': 'WebApplication', name: 'OmniBeam', url: `${SITE_URL}/`, applicationCategory: 'UtilitiesApplication',
+          operatingSystem: 'Any (web browser)' } },
       sameAs: [...SOCIAL.map(([, link]) => link), 'https://apps.microsoft.com/detail/9PLR2PMX3SQZ', 'https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki',
         'https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/', 'https://github.com/yazeedbdourwork/OmniBeam',
         'https://www.npmjs.com/package/omnibeam'] },
@@ -509,6 +520,9 @@ function renderHome(lang) {
       if (!SUPPORT_URL || !mine) return m;
       return `<${tag} ${before}class="${cls}"${after}>`.replace(/href="(\/[a-z]{2})?\/about"/, `href="${encodeHtml(SUPPORT_URL)}"`);
     })
+    // look.js goes inside the page too: it has to run before the page is drawn (saved theme, text size, App lock), and
+    // inside the page it does that without making the browser wait for a separate file. CSP allows it by its hash.
+    .replace(/<script src="\/look\.js\?v=\d+"><\/script>/, () => `<script>${LOOK_INLINE}</script>`)
     // The styles go inside the page, so it can be drawn without waiting for style.css (one round trip less on phones)
     .replace(/<link rel="stylesheet" href="\/style\.css\?v=\d+">/, () => `<style>${minifyCss(fs.readFileSync(path.join(PUBLIC_DIR, 'style.css'), 'utf8'))}</style>`);
   return withAnalytics(html.replace('<!--structured-data-->', structuredData(html, lang, url)));
@@ -536,7 +550,7 @@ function tvPage(lang) {
     .replace(/<h1 id="learn-title">([\s\S]*?)<\/h1>/, '<h2 id="learn-title">$1</h2>')
     .replace(/<p class="tv-heading" id="tv-title">([\s\S]*?)<\/p>/, '<h1 class="tv-heading" id="tv-title">$1</h1>')
     .replace(/<title>[^<]*<\/title>/, `<title>${(LANGS[lang] && LANGS[lang].strings['TV mode']) || 'TV mode'} · OmniBeam</title>`)
-    .replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="robots" content="noindex">')
+    .replace('<meta name="robots" content="max-image-preview:large">', '<meta name="robots" content="noindex">')
     // The TV screen's own script (slideshow, photo wall, music, the remote), right after app.js
     .replace(/(\s*)(<script src="\/app\.js\?v=\d+" defer><\/script>)/, '$1$2$1<script src="/tv.js?v=4" defer></script>');
   const out = Buffer.from(html);
@@ -631,7 +645,7 @@ function pageParts(page) {
     '@graph': [
       { '@type': page.kind === 'post' ? 'BlogPosting' : page.kind === 'guide' || page.kind === 'compare' ? 'Article' : 'WebPage', '@id': url, url, name: page.title, headline: page.short, description: page.description,
         inLanguage: lang, ...(page.updated ? { dateModified: page.updated } : {}), ...(page.kind === 'post' && page.published ? { datePublished: page.published } : {}), image: `${SITE_URL}/og.png`,
-        ...(article ? { author: { '@type': 'Person', name: 'Yazeed Bdour' } } : {}),
+        ...(article ? { author: FOUNDER } : {}),
         isPartOf: { '@id': `${SITE_URL}/#site` }, publisher: { '@id': `${SITE_URL}/#org` } },
       { '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, ...c })) },
     ],
@@ -672,6 +686,7 @@ function renderPage(page) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${page.title}</title>
   <meta name="description" content="${attr(page.description)}">
+  <meta name="robots" content="max-image-preview:large">
   <link rel="canonical" href="${url}">${amphtml}${alternates}
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OmniBeam">
@@ -755,6 +770,7 @@ function renderAmpPage(page) {
   <script async src="https://cdn.ampproject.org/v0.js"></script>
   <title>${page.title}</title>
   <meta name="description" content="${attr(page.description)}">
+  <meta name="robots" content="max-image-preview:large">
   <link rel="canonical" href="${url}">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OmniBeam">
@@ -954,6 +970,23 @@ function sitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`;
 }
 
+// /.well-known/security.txt (RFC 9116): where to report a security problem. Expires is always less than a year ahead
+// (the 1st of this month next year), so the file never goes out of date.
+const SECURITY_CONTACTS = ['https://github.com/yazeedbdourwork/OmniBeam/security/advisories/new'];
+function securityTxt() {
+  const now = new Date();
+  const expires = new Date(Date.UTC(now.getUTCFullYear() + 1, now.getUTCMonth(), 1)).toISOString().replace('.000Z', 'Z');
+  return [
+    '# How to report a security problem in OmniBeam. Please report privately first; thank you!',
+    ...SECURITY_CONTACTS.map((c) => `Contact: ${c}`),
+    `Expires: ${expires}`,
+    'Preferred-Languages: en, ar',
+    `Canonical: ${SITE_URL}/.well-known/security.txt`,
+    'Policy: https://github.com/yazeedbdourwork/OmniBeam/security/policy',
+    '',
+  ].join('\n');
+}
+
 // Gzip text files once and keep them: they are small and only change on a deploy. Brotli too, for browsers that take
 // it (all current ones): about 15% smaller than gzip for the scripts and pages, so phones get the page sooner.
 const gzipCache = new Map();
@@ -975,6 +1008,19 @@ function cacheFor(req, status, ext) {
 // every deploy purges Cloudflare, so a deploy shows at once. Cloudflare only uses this header when the Cache Rule
 // "OmniBeam pages" makes these pages eligible for its cache (Edge TTL: use the origin's cache headers).
 const EDGE_CACHE = { 'Cloudflare-CDN-Cache-Control': 'max-age=86400, stale-while-revalidate=600' };
+// When this app first sent each content (by its hash), to the second: the pages' Last-Modified. Content changes on a
+// deploy (new hash, new date); a restart without changes starts over at the restart time, which only costs one full
+// download. Kept small: the oldest entries go first.
+const contentDates = new Map();
+function contentDate(hash) {
+  let d = contentDates.get(hash);
+  if (!d) {
+    d = new Date(Math.floor(Date.now() / 1000) * 1000);
+    contentDates.set(hash, d);
+    if (contentDates.size > 5000) contentDates.delete(contentDates.keys().next().value);
+  }
+  return d;
+}
 function sendFile(req, res, status, filePath, data, extraHeaders = {}) {
   const ext = path.extname(filePath);
   if ((ext === '.js' || ext === '.css') && minified.size) data = minified.get(sha1(data)) || data;
@@ -988,8 +1034,14 @@ function sendFile(req, res, status, filePath, data, extraHeaders = {}) {
   // ETag: browsers and crawlers that already have this version get a quick "304 Not Modified"
   const hash = crypto.createHash('sha1').update(data).digest('base64url').slice(0, 20);
   headers.ETag = `"${hash}"`;
-  if (status === 200 && (req.headers['if-none-match'] || '').includes(hash)) {
-    res.writeHead(304, { ETag: headers.ETag, 'Cache-Control': headers['Cache-Control'], Vary: 'Accept-Encoding',
+  // Last-Modified too: Cloudflare drops the ETag of pages it changes on the way (HTML), but keeps this one, so
+  // crawlers can still ask "changed since…?" and get a short 304. It is when this app first sent this exact content.
+  const changed = contentDate(hash);
+  headers['Last-Modified'] = changed.toUTCString();
+  const since = Date.parse(req.headers['if-modified-since'] || '');
+  const fresh = req.headers['if-none-match'] ? req.headers['if-none-match'].includes(hash) : since >= changed.getTime();
+  if (status === 200 && fresh) {
+    res.writeHead(304, { ETag: headers.ETag, 'Last-Modified': headers['Last-Modified'], 'Cache-Control': headers['Cache-Control'], Vary: 'Accept-Encoding',
       ...(headers['Cloudflare-CDN-Cache-Control'] ? { 'Cloudflare-CDN-Cache-Control': headers['Cloudflare-CDN-Cache-Control'] } : {}) });
     return res.end();
   }
@@ -1206,6 +1258,9 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/sitemap.xml') return sendFile(req, res, 200, 'sitemap.xml', Buffer.from(sitemap()), EDGE_CACHE);
   if (urlPath === '/llms.txt') return sendFile(req, res, 200, 'llms.txt', Buffer.from(llmsTxt()), EDGE_CACHE);
   if (urlPath === '/llms-full.txt') return sendFile(req, res, 200, 'llms-full.txt', Buffer.from(llmsFullTxt()), EDGE_CACHE);
+  if (urlPath === '/.well-known/security.txt' || urlPath === '/security.txt') {
+    return sendFile(req, res, 200, 'security.txt', Buffer.from(securityTxt()), EDGE_CACHE);
+  }
   // The service worker, with this deploy's version written in, so browsers drop the files saved from the last one
   if (urlPath === '/sw.js') return sendFile(req, res, 200, 'sw.js', swScript(), { 'Cache-Control': 'no-cache, no-store' });
   // Download page of a shared link (the key is after # in the address, so it never reaches the server)
