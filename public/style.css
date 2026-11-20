@@ -664,6 +664,18 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 .learn-lead { color: var(--muted); margin: 0; }
 .learn > p:not([class]) { color: var(--muted); line-height: 1.6; margin: 0 0 12px; }
 .learn-routes { margin: 4px 0 0; font-size: 0.92rem; font-weight: 700; }
+.learn-byline { margin: 8px 0 0; font-size: 0.88rem; color: var(--muted); }
+.learn-byline a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.learn-byline a:hover { text-decoration: underline; }
+/* Comparison table: scrolls sideways inside its box on narrow phones instead of widening the page */
+.learn-table { margin: 18px 0 0; overflow-x: auto; border-radius: 18px; box-shadow: var(--inset-sm); }
+.learn-table table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 520px; }
+.learn-table caption { text-align: start; font-weight: 800; padding: 12px 14px 4px; }
+.learn-table th, .learn-table td { padding: 8px 14px; text-align: start; vertical-align: top; border-top: 1px solid rgba(127, 127, 127, .18); }
+.learn-table thead th, .learn-table thead td { border-top: 0; }
+.learn-table tbody th { font-weight: 600; }
+.learn-table td { color: var(--muted); }
+.learn-table tbody td:nth-child(2) { color: var(--fg); font-weight: 600; }
 .learn-steps { margin: 0; padding-inline-start: 22px; display: grid; gap: 8px; }
 .learn-steps b, .learn-features b { color: var(--fg); }
 .learn-steps span, .learn-features span { color: var(--muted); }

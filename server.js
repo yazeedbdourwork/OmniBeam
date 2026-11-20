@@ -422,8 +422,11 @@ function structuredData(html, lang, url) {
     { '@type': 'WebSite', '@id': `${SITE_URL}/#site`, name: 'OmniBeam', url: `${SITE_URL}/`, inLanguage: ['en', ...PAGE_LANGS], publisher: { '@id': `${SITE_URL}/#org` } },
     { '@type': 'WebApplication', name: 'OmniBeam', url, description, inLanguage: lang, applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Any (web browser): iOS, Android, Windows, macOS, Linux, ChromeOS', browserRequirements: 'Requires a modern browser with WebRTC',
-      isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, image: `${SITE_URL}/og.png`, publisher: { '@id': `${SITE_URL}/#org` } },
-    { '@type': 'WebPage', '@id': url, url, name: title, inLanguage: lang, isPartOf: { '@id': `${SITE_URL}/#site` } },
+      isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, image: `${SITE_URL}/og.png`, publisher: { '@id': `${SITE_URL}/#org` },
+      author: { '@id': FOUNDER['@id'] }, creator: { '@id': FOUNDER['@id'] } },
+    { '@type': 'WebPage', '@id': url, url, name: title, inLanguage: lang, isPartOf: { '@id': `${SITE_URL}/#site` }, author: { '@id': FOUNDER['@id'] } },
+    // The maker, named in the page's byline (index.html: learn-byline) and meta author
+    FOUNDER,
   ];
   if (faq.length) graph.push({ '@type': 'FAQPage', '@id': `${url}#faq`, inLanguage: lang, mainEntity: faq });
   // The intro video on the page (its poster in the learn section), in this page's language
@@ -687,6 +690,7 @@ function renderPage(page) {
   <title>${page.title}</title>
   <meta name="description" content="${attr(page.description)}">
   <meta name="robots" content="max-image-preview:large">
+  <meta name="author" content="Yazeed Bdour">
   <link rel="canonical" href="${url}">${amphtml}${alternates}
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="OmniBeam">
