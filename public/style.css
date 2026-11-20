@@ -720,9 +720,10 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 .share-btn[data-share="instagram"] .ico circle:last-child { fill: #e1306c; }
 .share-btn[data-share="snapchat"] .brand { fill: #fffc00; stroke: #222; stroke-width: 1.4; stroke-linejoin: round; }
 @media (max-width: 600px) {
-  .share-btn span { display: none; }
+  /* Icon only on phones, but the words stay for screen readers (the button keeps its name) */
+  .share-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .share-btn { padding: 12px; }
-  .share-btn[data-share="native"] span, .share-btn[data-share="copy"] span { display: inline; }
+  .share-btn[data-share="native"] span, .share-btn[data-share="copy"] span { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
 }
 
 /* Lead words in the learn section (spans, not <b>, to keep the page's bold-tag count low) */
@@ -735,7 +736,7 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 .seo-badge img { width: 96px; height: auto; vertical-align: middle; }
 
 /* Network ID next to the device name: opens the connection check */
-.net-chip { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.net-chip { border: 0; background: none; padding: 4px 0; margin: -4px 0; min-height: 24px; font: inherit; color: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
 .net-chip:empty { display: none; }
 /* Connection check dialog */
 .check-list { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 8px; }
@@ -1187,7 +1188,7 @@ html.tv main { padding: 0; }
 .tv-text h1, .tv-text .tv-heading { font-size: 4vw; font-size: clamp(26px, 4vw, 58px); font-size: clamp(22px, min(4vw, 6vh), 58px); font-weight: 700; margin: 0 0 .5em; line-height: 1.1; }
 .tv-steps { margin: 0 0 .8em; padding-inline-start: 1.3em; }
 .tv-steps li { margin: .25em 0; }
-.tv-alt, .tv-keys { opacity: .75; }
+.tv-alt, .tv-keys { opacity: .85; }
 .tv-keys { font-size: .7em; margin-top: 1.2em; }
 .tv-peers { font-weight: 600; }
 .tv-status { font-weight: 700; color: var(--accent); }
@@ -1210,7 +1211,7 @@ html.tv main { padding: 0; }
 html.tv .btn:focus-visible, html.tv .tv-tile:focus-visible, html.tv .tv-set button:focus-visible { outline: 5px solid var(--accent); outline-offset: 4px; box-shadow: 0 0 0 9px rgba(255, 255, 255, .35); transform: scale(1.06); transition: transform .12s; }
 html.tv .btn:focus { outline: 5px solid var(--accent); outline-offset: 4px; }
 html.tv .btn:focus:not(:focus-visible) { outline-width: 3px; }
-.tv-remote-tip { font-size: .62em; opacity: .65; margin-top: .6em; }
+.tv-remote-tip { font-size: .62em; opacity: .85; margin-top: .6em; }
 /* More buttons now: the home screen stays within one TV screen (smaller QR code and buttons) */
 html.tv .tv-qr { width: 46vh; width: min(36vw, 54vh); }
 html.tv .tv-text { font-size: 2vw; font-size: clamp(13px, min(2vw, 2.9vh), 28px); max-width: 46rem; }

@@ -368,7 +368,7 @@ for (const l of LANGS) {
     const code = l.slice(0, 2) || 'en';
     const d = await device(browser, `Full Lang ${run}`, { path: '/' + l, lang: code });
     await expect(d.page.locator('html')).toHaveAttribute('lang', code);
-    await expect(d.page.locator('html')).toHaveAttribute('dir', code === 'ar' ? 'rtl' : 'ltr');
+    await expect(d.page.locator('html')).toHaveAttribute('dir', ['ar', 'ur'].includes(code) ? 'rtl' : 'ltr');
     const ui = await d.page.evaluate(() => ({
       title: document.title,
       history: document.querySelector('#btn-history')?.textContent.trim(),
