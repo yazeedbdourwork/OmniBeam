@@ -1,7 +1,9 @@
 {
   "name": "omnibeam",
   "version": "1.0.0",
-  "description": "Local network file sharing in the browser (PairDrop-style) using WebRTC",
+  "description": "Send files, photos and text between any devices in the browser: an open-source, end-to-end encrypted AirDrop alternative for iPhone, Android, Windows, Mac and Linux (WebRTC)",
+  "keywords": ["file-sharing", "file-transfer", "airdrop-alternative", "webrtc", "p2p", "end-to-end-encryption", "pwa", "self-hosted", "snapdrop-alternative", "pairdrop"],
+  "homepage": "https://omnibeam.site",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

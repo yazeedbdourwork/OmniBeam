@@ -2,8 +2,49 @@
 
 **Send files, photos and text from any device to any device, right in the browser.**
 iPhone, Android, Windows, Mac, Linux and Chromebook. Encrypted end to end, free, no app and no sign-up.
+A free, open-source **AirDrop alternative for every platform**, and a modern alternative to Snapdrop, PairDrop and WeTransfer.
 
 **👉 Use it now: [omnibeam.site](https://omnibeam.site)** (nothing to install)
+
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
+[![Website](https://img.shields.io/badge/web-omnibeam.site-7b61ff)](https://omnibeam.site)
+[![npm](https://img.shields.io/npm/v/omnibeam?label=npx%20omnibeam)](https://www.npmjs.com/package/omnibeam)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-extension-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki)
+[![Firefox add-on](https://img.shields.io/badge/Firefox-add--on-FF7139?logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/)
+[![Microsoft Store](https://img.shields.io/badge/Windows-Microsoft%20Store-0078D4)](https://apps.microsoft.com/detail/9PLR2PMX3SQZ)
+[![15 languages](https://img.shields.io/badge/languages-15-success)](#languages)
+
+<p align="center">
+  <a href="https://omnibeam.site"><img src="public/store/screen-wide-1.png" alt="OmniBeam in the browser: nearby devices (an iPhone, an Android tablet and a MacBook) ready to receive files" width="720"></a>
+</p>
+
+If OmniBeam saves you a cable or an email to yourself, **a ⭐ star on GitHub** helps other people find it.
+
+### What you can do with it
+
+| You want to… | With OmniBeam |
+|---|---|
+| Send photos from an **iPhone to a Windows PC** (AirDrop for Windows) | Open omnibeam.site on both and tap the PC. Full quality; HEIC can be saved as JPG |
+| Move files between **Android and iPhone or Mac** | The same page on both devices, no app to install |
+| Send a **large file** to someone who isn't online | Share by link: encrypted in the browser, kept up to 7 days (30 optional) |
+| Collect photos from guests at a **wedding or party** | Event photo album with one QR code |
+| Use your **phone as a webcam** for OBS, Zoom or Teams | Phone as webcam/mic over encrypted WebRTC |
+| Send from a **terminal** | `npx omnibeam send file.zip` |
+| **Self-host** your own copy | `node server.js`, nothing to `npm install` ([how](#run-it-locally)) |
+
+### Compared with similar tools
+
+| | OmniBeam | AirDrop | Snapdrop | PairDrop | LocalSend | WeTransfer |
+|---|---|---|---|---|---|---|
+| iPhone, Android, Windows, Mac and Linux | ✅ | Apple only | ✅ | ✅ | ✅ | ✅ |
+| Nothing to install | ✅ | built in | ✅ | ✅ | ❌ app | ✅ |
+| Devices on different networks | ✅ | ❌ | ❌ | ✅ | ❌ | ✅ |
+| Share by link when the other device is off | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Encrypted end to end | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Chat, TV mode, photo album, phone webcam | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Open source | ✅ GPL-3.0 | ❌ | ✅ | ✅ | ✅ | ❌ |
+
+Longer comparisons: [vs AirDrop](https://omnibeam.site/omnibeam-vs-airdrop) · [vs Snapdrop](https://omnibeam.site/omnibeam-vs-snapdrop) · [vs PairDrop](https://omnibeam.site/omnibeam-vs-pairdrop) · [vs LocalSend](https://omnibeam.site/omnibeam-vs-localsend) · [vs WeTransfer](https://omnibeam.site/omnibeam-vs-wetransfer) · [AirDrop for Windows](https://omnibeam.site/airdrop-for-windows)
 
 ---
 
@@ -17,7 +58,7 @@ iPhone, Android, Windows, Mac, Linux and Chromebook. Encrypted end to end, free,
 6. [Apps, extensions and tools](#apps-extensions-and-tools)
 7. [Privacy and security](#privacy-and-security)
 8. [Project layout](#project-layout)
-9. [Run it locally](#run-it-locally)
+9. [Run it locally (self-host)](#run-it-locally)
 10. [Deploy on cPanel](#deploy-on-cpanel)
 11. [Environment variables](#environment-variables)
 12. [Owner tools: stats, status and alerts](#owner-tools-stats-status-and-alerts)
@@ -142,8 +183,9 @@ The browser's language is picked automatically on the first visit and can be cha
 |---|---|
 | Chrome Web Store | https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki |
 | Microsoft Store (Windows app) | https://apps.microsoft.com/detail/9PLR2PMX3SQZ |
-| Firefox add‑on | Package ready, awaiting upload to addons.mozilla.org |
-| Android | Trusted Web Activity package `site.omnibeam.app` (built) |
+| Firefox add‑on | https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/ |
+| Android | Install from the browser (PWA); Trusted Web Activity package `site.omnibeam.app` (built) |
+| npm (command line) | https://www.npmjs.com/package/omnibeam |
 
 Downloads served by the site (`public/tools/`):
 - `omnibeam-windows.zip`: Windows tray app and right‑click Send to.
