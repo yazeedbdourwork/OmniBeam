@@ -152,3 +152,19 @@ test('Organization has knowsAbout and a free offer; the founder links to a profi
     .map((el) => el.id || el.outerHTML.slice(0, 80)));
   expect(unlabelled).toEqual([]);
 });
+
+// nslookup.io GEO check (2026-11-20): author signals and a data table on the home page
+test('home page: author meta, visible byline, Person author in JSON-LD, and a translated comparison table', async ({ request }) => {
+  for (const [p, yes] of [['/', 'Yes'], ['/de/', 'Ja'], ['/ar/', 'نعم']]) {
+    const html = await (await request.get(p)).text();
+    expect(html, p).toContain('<meta name="author" content="Yazeed Bdour">');
+    expect(html).toMatch(/class="learn-byline">[^<]+<a href="https:\/\/github\.com\/yazeedbdourwork" rel="author">Yazeed Bdour<\/a>/);
+    const graph = ld(html);
+    const page = graph.find((n) => n['@type'] === 'WebPage');
+    expect(page.author['@id']).toBe('https://omnibeam.site/#founder');
+    expect(graph.find((n) => n['@id'] === 'https://omnibeam.site/#founder' && n['@type'] === 'Person').url).toBeTruthy();
+    const table = html.match(/<table>[\s\S]*?<\/table>/)[0];
+    expect((table.match(/<tr>/g) || []).length).toBe(7);
+    expect(table).toContain(`<td>${yes}</td>`);
+  }
+});

@@ -7,6 +7,7 @@
   <meta name="description" content="Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.">
   <!-- The server rewrites the language-specific tags below for /ar/, /fr/, /es/, /tr/ and the other languages (see renderHome in server.js) -->
   <meta name="robots" content="max-image-preview:large">
+  <meta name="author" content="Yazeed Bdour">
   <link rel="canonical" href="https://omnibeam.site/">
   <link rel="alternate" hreflang="en" href="https://omnibeam.site/">
   <link rel="alternate" hreflang="ar" href="https://omnibeam.site/ar/">
@@ -61,7 +62,7 @@
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/app.js?v=96" as="script">
   <script src="/look.js?v=3"></script>
-  <link rel="stylesheet" href="/style.css?v=83">
+  <link rel="stylesheet" href="/style.css?v=84">
 </head>
 <body>
   <!-- For keyboard users: the first Tab shows this, Enter jumps past the top bar to the devices -->
@@ -204,6 +205,7 @@
     <section class="learn" id="learn" aria-labelledby="learn-title">
       <h1 id="learn-title">Send files between iPhone, Android and PC, free and without an app</h1>
       <p class="learn-lead">I built OmniBeam because getting one photo from my iPhone to my Windows PC kept taking longer than taking the photo. It's a free AirDrop alternative for people whose devices don't all come from Apple: open omnibeam.site on both, tap the other device, pick your photos, videos or documents. You don't sign up for anything.</p>
+      <p class="learn-byline">Made by <a href="https://github.com/yazeedbdourwork" rel="author">Yazeed Bdour</a></p>
 
       <h2>How it works</h2>
       <ol class="learn-steps">
@@ -238,6 +240,23 @@
       <p>Before OmniBeam I tried the usual tricks. Emailing myself ran into the 25 MB attachment limit. The cable was always the wrong one. Cloud folders made me upload a file, then download the same file again. Now the file goes from one device to the other, over your own Wi‑Fi when it can, so a 12 MP iPhone photo is usually on the Windows PC before I've put the phone down. A PDF from a laptop reaches an Android phone the same way.</p>
       <p>It runs in the browser, so it's the same page on every device. That turned out to matter more than I expected: it works on a friend's laptop, a locked-down work PC or a school Chromebook where you aren't allowed to install apps.</p>
       <p class="learn-routes"><a href="/send-files-iphone-to-pc">iPhone to PC</a> <span class="dot-sep">•</span> <a href="/send-files-pc-to-iphone">PC to iPhone</a> <span class="dot-sep">•</span> <a href="/send-files-android-to-iphone">Android to iPhone</a> <span class="dot-sep">•</span> <a href="/send-files-android-to-pc">Android to PC</a></p>
+
+      <!-- A short comparison as a real table (search engines and AI assistants read tables well). Facts kept in line
+           with the comparison pages (omnibeam-vs-airdrop, omnibeam-vs-wetransfer). -->
+      <div class="learn-table" role="region" aria-labelledby="compare-caption" tabindex="0">
+        <table>
+          <caption id="compare-caption">OmniBeam, AirDrop, WeTransfer and email compared</caption>
+          <thead><tr><td></td><th scope="col">OmniBeam</th><th scope="col">AirDrop</th><th scope="col">WeTransfer</th><th scope="col">Email</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Works between iPhone, Android and Windows</th><td>Yes</td><td>Apple devices only</td><td>Yes</td><td>Yes</td></tr>
+            <tr><th scope="row">Size limit</th><td>None for direct sends</td><td>None</td><td>Limit on the free plan</td><td>About 25 MB</td></tr>
+            <tr><th scope="row">Account needed</th><td>No</td><td>No</td><td>No</td><td>Yes</td></tr>
+            <tr><th scope="row">File kept on a server</th><td>No</td><td>No</td><td>Yes, until the link expires</td><td>Yes</td></tr>
+            <tr><th scope="row">Encrypted end to end</th><td>Yes</td><td>Yes</td><td>No</td><td>No</td></tr>
+            <tr><th scope="row">Price</th><td>Free</td><td>Free</td><td>Free plan and paid plans</td><td>Free</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>Encrypted end to end, never stored</h2>
       <p>Every file you send is encrypted end to end on your device before it leaves, and only the receiving device can decrypt it. When the two devices can reach each other, the file travels directly between them. When they can't, for example on a strict office network, the encrypted data passes through our server, which forwards it straight away and cannot read it. Nothing is saved on a server, and each transfer has to be accepted on the receiving device first.</p>
