@@ -1,0 +1,39 @@
+# OmniBeam: make a GitHub release (tag + notes) from .github/release-notes/<tag>.md.
+# Runs once when this file or a notes file lands on main, and by hand: Actions -> Release -> Run workflow.
+# A tag that already has a release is skipped, so re-runs are safe. Changes no site files.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/release-notes/**'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (needs .github/release-notes/<tag>.md)'
+        required: true
+        default: 'v1.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create missing releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ONE_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          if [ -n "$ONE_TAG" ]; then tags="$ONE_TAG"; else tags=$(ls .github/release-notes | sed 's/\.md$//'); fi
+          for tag in $tags; do
+            notes=".github/release-notes/$tag.md"
+            [ -f "$notes" ] || { echo "No notes file for $tag"; exit 1; }
+            if gh release view "$tag" >/dev/null 2>&1; then echo "$tag already released, skipping"; continue; fi
+            gh release create "$tag" --target "$GITHUB_SHA" --title "OmniBeam ${tag#v}" --notes-file "$notes" --latest
+            echo "Released $tag"
+          done
