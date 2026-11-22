@@ -438,6 +438,10 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
    pinned footer, and the "Ready to beam" card is a little tighter so the Pair button shows without scrolling */
 .page-foot { flex: none; padding: 28px 0 8px; }
 .page-foot .footer-meta { width: 100%; }
+/* Hidden in the pinned footer from the first paint, so nothing moves when app.js carries it into the page */
+@media (max-width: 600px), (max-height: 520px) {
+  body > footer .footer-meta { display: none; }
+}
 @media (max-width: 600px) {
   main { padding: 20px 16px; }
   .empty { padding: 20px 18px; }
