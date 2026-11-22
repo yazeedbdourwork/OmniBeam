@@ -512,7 +512,8 @@ function renderHome(lang) {
   // The intro video poster: this language's video and its length (0:52)
   const intro = introVideoInfo(lang);
   if (intro) {
-    html = html.replace(/\/media\/intro-en\.(mp4|webp)\?v=4/g, `/media/${intro.name}.$1?v=4`)
+    // (intro-<lang>-720.webp: the smaller poster in srcset, so desktops at 1x don't download the 1280 px one)
+    html = html.replace(/\/media\/intro-en(-720)?\.(mp4|webp)\?v=4/g, (m, small, ext) => `/media/${intro.name}${small && fs.existsSync(path.join(PUBLIC_DIR, 'media', `${intro.name}-720.webp`)) ? small : ''}.${ext}?v=4`)
       .replace(/<span class="intro-time" aria-hidden="true">[^<]*<\/span>/, `<span class="intro-time" aria-hidden="true">${Math.floor(intro.seconds / 60)}:${String(intro.seconds % 60).padStart(2, '0')}</span>`);
     if (intro.vtt) html = html.replace('<a class="intro-play" ', `<a class="intro-play" data-captions="${intro.vtt}" `);
   } else html = html.replace(/\s*<h2 id="intro-title">[\s\S]*?<\/figure>/, '');

@@ -63,6 +63,10 @@ test('home page HTML: H3s under H2s, no clear-text emails, images sized', async 
     expect(html.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/gi), path).toBeNull();
     const unsized = (html.match(/<img\s[^>]*>/g) || []).filter((tag) => !/\swidth="\d+"/.test(tag) || !/\sheight="\d+"/.test(tag));
     expect(unsized, path).toEqual([]);
+    // The intro poster offers a 720 px copy (shown at most 696 px wide), in this page's language
+    const lang = path === '/' ? 'en' : 'ar';
+    expect(html, path).toContain(`srcset="/media/intro-${lang}-720.webp?v=4 720w, /media/intro-${lang}.webp?v=4 1280w"`);
+    expect((await request.get(`/media/intro-${lang}-720.webp?v=4`)).status(), path).toBe(200);
     // The FAQ and contact still reach search engines through the structured data
     const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
     const org = ld['@graph'].find((n) => n['@type'] === 'Organization' || (Array.isArray(n['@type']) && n['@type'].includes('Organization')));
