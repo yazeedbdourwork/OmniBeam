@@ -766,6 +766,8 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 /* Lead words in the learn section (spans, not <b>, to keep the page's bold-tag count low) */
 .learn-steps .lt, .learn-features .lt { color: var(--fg); font-weight: 700; }
 .learn-features .lt { font-size: 1rem; }
+/* Feature titles are real <h3>s (heading levels for SEO checkers); keep the old look */
+.learn-features h3.lt { display: block; margin: 0; line-height: inherit; letter-spacing: normal; text-wrap: wrap; }
 .copyright .author-name { font-weight: 700; }
 
 /* Seobility score badge at the end of the learn section */

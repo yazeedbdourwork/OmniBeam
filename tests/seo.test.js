@@ -41,7 +41,7 @@ test('llms.txt, minified scripts and cache headers', async ({ request }) => {
 // anchor text used for two followed internal links, and no placeholder href="#" links
 test('home page HTML: few headings, unique internal link texts, no ?parameter links', async ({ request }) => {
   const html = await (await request.get('/')).text();
-  expect((html.match(/<h[1-6][\s>]/g) || []).length).toBeLessThanOrEqual(12);
+  expect((html.match(/<h[1-6][\s>]/g) || []).length).toBeLessThanOrEqual(16);
   const links = [...html.matchAll(/<a\s([^>]*)>([\s\S]*?)<\/a>/g)].map(([, attrs, inner]) => ({
     href: (attrs.match(/\shref="([^"]*)"/) || [])[1],
     follow: !/\brel="[^"]*\bnofollow\b/.test(attrs),
@@ -52,4 +52,20 @@ test('home page HTML: few headings, unique internal link texts, no ?parameter li
   const seen = new Map();
   const twice = links.filter((l) => l.follow && l.text && (seen.has(l.text) ? true : (seen.set(l.text, 1), false)));
   expect(twice).toEqual([]);
+});
+
+// What SEOptimer checks on the home page as sent: more than one heading level, no clear-text email address, and a
+// width and height on every image (so nothing jumps while images load). Translated pages too.
+test('home page HTML: H3s under H2s, no clear-text emails, images sized', async ({ request }) => {
+  for (const path of ['/', '/ar/']) {
+    const html = await (await request.get(path)).text();
+    expect((html.match(/<h3[\s>]/g) || []).length, path).toBeGreaterThan(0);
+    expect(html.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/gi), path).toBeNull();
+    const unsized = (html.match(/<img\s[^>]*>/g) || []).filter((tag) => !/\swidth="\d+"/.test(tag) || !/\sheight="\d+"/.test(tag));
+    expect(unsized, path).toEqual([]);
+    // The FAQ and contact still reach search engines through the structured data
+    const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+    const org = ld['@graph'].find((n) => n['@type'] === 'Organization' || (Array.isArray(n['@type']) && n['@type'].includes('Organization')));
+    expect(org.email, path).toContain('@');
+  }
 });
