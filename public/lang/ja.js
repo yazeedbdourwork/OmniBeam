@@ -1500,5 +1500,14 @@
     "Price": "料金",
     "Free": "無料",
     "Free plan and paid plans": "無料プランと有料プラン",
+    // "Ready to beam" card and Pair dialog (2026-11-22)
+    "Not showing up?": "表示されない場合",
+    "A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.": "別のWi‑Fi、モバイルデータ、VPN、iCloudプライベートリレーがあるとデバイスは互いに見えません。一度ペアリングすれば、その後は自動で見つかります。",
+    "Scan with your phone to connect": "スマホでスキャンして接続",
+    "Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.": "どのネットワークでも使え、コードの入力は不要です。同じWi‑Fiなら、デバイスは自動でも表示されます。",
+    "Scan with the other device's camera": "もう一方のデバイスのカメラでスキャン",
+    "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "パソコンの場合は、そちらでomnibeam.siteを開き、表示されたコードをこのスマホのカメラでスキャンしてください。",
+    "No account": "アカウント不要",
+    "Open source": "オープンソース",
   },
 });

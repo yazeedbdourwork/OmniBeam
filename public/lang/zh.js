@@ -1500,5 +1500,14 @@
     "Price": "价格",
     "Free": "免费",
     "Free plan and paid plans": "免费版和付费版",
+    // "Ready to beam" card and Pair dialog (2026-11-22)
+    "Not showing up?": "没有出现？",
+    "A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.": "不同的 Wi‑Fi、移动数据、VPN 或 iCloud 专用代理会让设备互相看不到。配对一次，之后它们就会自动找到彼此。",
+    "Scan with your phone to connect": "用手机扫码连接",
+    "Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.": "适用于任何网络，无需输入代码。在同一 Wi‑Fi 下，设备也会自动出现。",
+    "Scan with the other device's camera": "用另一台设备的相机扫码",
+    "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "在电脑上？在电脑上打开 omnibeam.site，用这部手机的相机扫描它显示的二维码。",
+    "No account": "无需账号",
+    "Open source": "开源",
   },
 });

@@ -60,9 +60,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=97" as="script">
+  <link rel="preload" href="/app.js?v=98" as="script">
   <script src="/look.js?v=3"></script>
-  <link rel="stylesheet" href="/style.css?v=89">
+  <link rel="stylesheet" href="/style.css?v=90">
 </head>
 <body>
   <!-- For keyboard users: the first Tab shows this, Enter jumps past the top bar to the devices -->
@@ -100,6 +100,7 @@
       </button>
       <button id="btn-history" class="icon-btn" title="Received files" aria-label="Received files">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <span class="bar-label" aria-hidden="true">Files</span>
       </button>
       <!-- Light/Dark, TV mode and Settings right in the bar (app.js: Bar). On small screens the ones that don't fit
            are in the ⋯ menu instead (style.css: .bar-extra / .bar-twin) -->
@@ -186,6 +187,17 @@
       </div>
       <p class="empty-title">Ready to beam</p>
       <p class="lead">Open <b id="site-host">omnibeam.site</b> on another device and it will show up here.</p>
+      <!-- Computers (wide screens with a mouse): the pairing QR right here, so a phone connects with one scan
+           (style.css shows it before app.js draws the code, so nothing moves; app.js: EmptyQr) -->
+      <div class="empty-qr" id="empty-qr-box">
+        <div class="pair-qr" id="empty-qr" role="img" aria-label="QR code that pairs this device"></div>
+        <div><b>Scan with your phone to connect</b><span>Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.</span></div>
+      </div>
+      <!-- After 20 s with no device here, this takes the place of the two hints on phones (app.js: EmptyCard) -->
+      <div class="empty-help" id="empty-help" role="status" hidden>
+        <span class="hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+        <div><b>Not showing up?</b><span>A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.</span></div>
+      </div>
       <div class="hints">
         <div class="hint">
           <span class="hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg></span>
@@ -198,6 +210,7 @@
       </div>
       <button class="btn" id="btn-pair-empty">Pair a device</button>
       <button type="button" class="intro-link" data-open="dlg-intro"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7l5.5-3.5z"/></svg><span>Watch the full video</span></button>
+      <p class="trust-row"><span>Free</span><span>No account</span><span>Encrypted end to end</span><a href="https://github.com/yazeedbdourwork/omnibeam" target="_blank" rel="noopener">Open source</a></p>
     </div>
     <button type="button" class="btn ghost small send-all" id="btn-send-all" hidden>Send to everyone</button>
     </div>
@@ -417,8 +430,10 @@
     <div class="pair-pane" id="pair-pane-scan" role="tabpanel" aria-labelledby="pair-tab-scan">
     <div id="pair-qr-section">
       <div class="pair-qr pair-qr-big" id="pair-qr" role="img" aria-label="QR code that pairs this device"></div>
-      <p class="center qr-title"><b>Scan with your phone's camera</b></p>
-      <p class="muted center small">It pairs straight away, with no code to type, and works on any network.</p>
+      <!-- On a phone it says to scan with the other device, and how to pair with a computer (app.js: phoneQrText) -->
+      <p class="center qr-title"><b class="qr-for-pc">Scan with your phone's camera</b><b class="qr-for-phone" hidden>Scan with the other device's camera</b></p>
+      <p class="muted center small qr-for-pc">It pairs straight away, with no code to type, and works on any network.</p>
+      <p class="muted center small qr-for-phone" hidden>On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.</p>
     </div>
     </div>
 
@@ -1224,7 +1239,7 @@
 
   <script src="/report.js?v=4" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=97" defer></script>
+  <script src="/app.js?v=98" defer></script>
   <script src="/drop.js?v=10" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>

@@ -180,6 +180,31 @@ main::-webkit-scrollbar-thumb { background: var(--sd); border-radius: 8px; }
 .hint div b { font-size: 0.9rem; font-weight: 700; }
 .hint div span { font-size: 0.8rem; color: var(--muted); }
 #btn-pair-empty { padding: 12px 30px; }
+/* "Not showing up?" after 20 s with nobody here: in the place of the two hints (app.js: EmptyCard). Computers show
+   the QR instead, which already works on any network. */
+.empty-help { display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; margin-bottom: 18px; border-radius: 18px; box-shadow: var(--inset-sm); text-align: start; }
+.empty-help[hidden] { display: none; }
+.empty-help > div b { display: block; font-size: 0.9rem; font-weight: 700; }
+.empty-help > div span { display: block; font-size: 0.8rem; line-height: 1.4; color: var(--muted); }
+.empty.needs-help .hints { display: none; }
+/* Computers: the pairing QR in the card instead of the two hints, shown from the first paint (app.js: EmptyQr) */
+.empty-qr { display: none; }
+@media (min-width: 700px) and (min-height: 560px) and (hover: hover) and (pointer: fine) {
+  .empty-qr { display: flex; align-items: center; gap: 18px; margin: 6px auto 16px; padding: 10px 18px 10px 10px; max-width: 520px; border-radius: 22px; box-shadow: var(--inset-sm); text-align: start; }
+  .empty-qr .pair-qr { display: block; flex: none; width: 116px; height: 116px; box-sizing: border-box; margin: 0; padding: 8px; }
+  .empty-qr > div b { display: block; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .empty-qr > div span { display: block; font-size: 0.85rem; line-height: 1.45; color: var(--muted); }
+  .empty .empty-qr ~ .hints, .empty .empty-qr ~ .empty-help { display: none; }
+  /* The code is the picture now: no Wi-Fi icon above the title, so the card still fits a laptop screen */
+  .empty .empty-icon { display: none; }
+  .empty-qr .pair-qr:empty { background: #fff linear-gradient(90deg, #fff, #eef0f5, #fff); }
+}
+html.tv .empty-qr { display: none !important; }
+/* Free · No account · Encrypted · Open source, under the Pair button */
+.trust-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0; margin: 12px 0 0; font-size: 0.8rem; color: var(--muted); }
+.trust-row > * + *::before { content: "·"; display: inline-block; margin: 0 8px; color: var(--muted); }
+.trust-row a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.trust-row a:hover { color: var(--accent); }
 .intro-link {
   display: flex; align-items: center; gap: 8px; margin: 14px auto 0; padding: 6px 12px; border: 0; border-radius: 999px;
   background: none; color: var(--accent); font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
@@ -1566,6 +1591,22 @@ html.tv .tv-tile:focus, html.tv .tv-set button:focus { outline: 5px solid var(--
 @media (max-width: 359px) {
   .bar-extra { display: none !important; }
   #menu .bar-twin { display: flex; }
+}
+/* Phones: Received files says "Files" next to its icon, so first-time visitors know what the arrow is. Light/Dark
+   moves to the ⋯ menu to make room (it is in Settings too). Below 390px the bar stays icons only. */
+.bar-label { display: none; }
+@media (max-width: 600px) and (min-width: 360px) {
+  #bar-theme { display: none !important; }
+  #menu #btn-theme { display: flex; }
+}
+@media (max-width: 600px) and (min-width: 390px) {
+  #btn-history { width: auto; padding: 0 12px 0 10px; border-radius: 999px; display: flex; align-items: center; gap: 5px; }
+  #btn-history .bar-label { display: inline; font: inherit; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+}
+@media (max-width: 429px) and (min-width: 390px) {
+  header .actions { gap: 6px; }
+  #btn-history { padding: 0 9px 0 8px; gap: 4px; }
+  #btn-history .bar-label { font-size: 0.74rem; letter-spacing: -0.01em; }
 }
 
 /* ---------- Settings: one group at a time (app.js: SetTabs), short sections, buttons lined up at the start ---------- */

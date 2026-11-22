@@ -5001,16 +5001,18 @@ function renderOffline() {
   updateSendAll();
 }
 // QR code for one-tap pairing (see startQrPair): scan it with the other device's camera to pair
+// The same code is in the "Ready to beam" card on computers (#empty-qr, see EmptyCard).
 function renderPairQr() {
-  const box = $('#pair-qr');
-  box.innerHTML = '';
+  const boxes = [$('#pair-qr'), $('#empty-qr')];
+  for (const box of boxes) box.innerHTML = '';
   if (!qrPair) { if (IS_TV) window.Tv?.drawQr(); return; }
   if (typeof qrcode !== 'function') { loadQr().then(renderPairQr, () => {}); return; }
   try {
     const qr = qrcode(0, 'M');
     qr.addData(qrPairLink());
     qr.make();
-    box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    const svg = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    for (const box of boxes) box.innerHTML = svg;
   } catch {}
   if (IS_TV) window.Tv?.drawQr();
 }
@@ -6211,9 +6213,10 @@ function tvPin() { try { return localStorage.getItem(TV_PIN_KEY) || ''; } catch 
 // The TV screen itself is in tv.js (the TV page loads it after this script; see server.js tvPage)
 const loadTv = () => loadScript('/tv.js?v=4');
 
-// ---------- First-visit walkthrough ----------
-// Three short steps for new visitors: open it on the other device, pair if it doesn't show up, tap to send.
-// Shown once (Settings has "Show the quick tour"), and not to visitors who arrived through a pairing or shared link.
+// ---------- Quick tour ----------
+// Three short steps: open it on the other device, pair if it doesn't show up, tap to send. Opened from the ⋯ menu
+// ("Show the quick tour"). It no longer opens by itself on a first visit (2026-11-22): the "Ready to beam" card says
+// the same, and a tour plus the cookie banner on top of the app was too much before anyone had seen it.
 const TOUR_KEY = 'omnibeam-tour';
 const tourDlg = $('#dlg-tour');
 let tourStep = 0;
@@ -6239,13 +6242,6 @@ tourDlg.onclick = (e) => {
   if (act === 'skip') tourDlg.close();
   if (act === 'pair') { tourDlg.close(); $('#btn-pair').click(); }
 };
-function maybeShowTour() {
-  let seen = true;
-  try { seen = !!localStorage.getItem(TOUR_KEY); } catch {}
-  const arrivedByLink = /(pair|qr|room|shortcut)=/.test(location.hash) || /[?&](share|wake)=/.test(location.search);
-  if (seen || arrivedByLink || IS_TV || /bot|crawl|spider|slurp|lighthouse|inspectiontool/i.test(navigator.userAgent)) return;
-  setTimeout(() => { if (!document.querySelector('dialog[open]')) openTour(); }, 1200);
-}
 $('#tour-open').onclick = () => { $('#dlg-settings').close(); openTour(); };
 
 // ---------- Notifications while OmniBeam is closed (web push) ----------
@@ -6446,7 +6442,6 @@ if (/[?&]wake=1/.test(location.search)) history.replaceState(null, '', location.
   }
   loadNotifReply();
 }
-maybeShowTour();
 $('#public-code').onkeydown = (e) => { if (e.key === 'Enter') joinPublic(e.target.value, $('#public-pass').value); };
 $('#public-pass').onkeydown = (e) => { if (e.key === 'Enter') joinPublic($('#public-code').value, e.target.value); };
 const linkCode = (location.hash.match(/pair=(\d{6})/) || [])[1];
@@ -6881,6 +6876,31 @@ if (window.I18N) {
   sel.onchange = () => I18N.set(sel.value);
 } else $('#btn-lang').hidden = true;
 $('#btn-pair-empty').onclick = () => $('#btn-pair').click();
+// ---------- "Ready to beam" card (shown while no other device is here) ----------
+// Computers: the pairing QR is right in the card (style.css shows its box on wide screens with a mouse), so a phone
+// connects with one scan. The code is the one the Pair dialog shows, renewed before its 10 minutes run out.
+// Everyone: after 20 s with nobody here, "Not showing up?" takes the place of the two hints and says why.
+// Phones: the Pair dialog's QR says to scan it with the other device, and how to pair with a computer instead.
+const EmptyCard = {
+  since: 0,
+  tick() {
+    const card = $('#empty');
+    const shown = !IS_TV && card && card.offsetParent !== null && !$('#peers').children.length;
+    if (!shown) { this.since = 0; card?.classList.remove('needs-help'); $('#empty-help').hidden = true; return; }
+    if (!this.since) this.since = Date.now();
+    const help = Date.now() - this.since >= 20000;
+    card.classList.toggle('needs-help', help);
+    $('#empty-help').hidden = !help;
+    const qrBox = $('#empty-qr-box');
+    if (qrBox && getComputedStyle(qrBox).display !== 'none' && (!qrPair || qrPair.until < Date.now() + 60000)) startQrPair();
+  },
+};
+setInterval(() => EmptyCard.tick(), 2000);
+setTimeout(() => EmptyCard.tick(), 300);
+if (isPhone) {
+  for (const el of document.querySelectorAll('#pair-qr-section .qr-for-phone')) el.hidden = false;
+  for (const el of document.querySelectorAll('#pair-qr-section .qr-for-pc')) el.hidden = true;
+}
 // ---------- No pinch zoom on phones ----------
 // style.css keeps pinch-zoom and double-tap zoom out of the page's touch-action. iPhone Safari also zooms with its
 // own pinch gesture events (and ignores user-scalable=no), so those are stopped here.

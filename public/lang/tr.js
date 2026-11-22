@@ -1500,5 +1500,14 @@
     "Price": "Fiyat",
     "Free": "Ücretsiz",
     "Free plan and paid plans": "Ücretsiz plan ve ücretli planlar",
+    // "Ready to beam" card and Pair dialog (2026-11-22)
+    "Not showing up?": "Görünmüyor mu?",
+    "A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.": "Farklı bir Wi‑Fi, mobil veri, VPN veya iCloud Özel Geçiş cihazları birbirinden ayırır. Bir kez eşleştirin, bundan sonra birbirlerini bulurlar.",
+    "Scan with your phone to connect": "Bağlanmak için telefonunuzla tarayın",
+    "Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.": "Her ağda çalışır, kod yazmanız gerekmez. Aynı Wi‑Fi ağında cihazlar kendiliğinden de görünür.",
+    "Scan with the other device's camera": "Diğer cihazın kamerasıyla tarayın",
+    "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Bilgisayarda mısınız? Orada omnibeam.site'ı açın ve gösterdiği kodu bu telefonun kamerasıyla tarayın.",
+    "No account": "Hesap yok",
+    "Open source": "Açık kaynak",
   },
 });
