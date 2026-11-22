@@ -384,7 +384,7 @@ function translateHtml(html, strings) {
   return html
     .replace(/>([^<]+)</g, (m, text) => {
       const t = tr(text);
-      return t ? '>' + text.replace(/^(\s*)[\s\S]*?(\s*)$/, (x, a, b) => a + encodeHtml(t) + b) + '<' : m;
+      return t ? '>' + text.replace(/^(\s*)[\s\S]*?(\s*)$/, (x, a, b) => a + encodeHtml(t).replace(/@/g, '&#64;') + b) + '<' : m; // no clear-text emails in the HTML
     })
     .replace(/\b(title|placeholder|aria-label|content|alt)="([^"]*)"/g, (m, attr, value) => {
       const t = tr(value);
@@ -438,8 +438,14 @@ function structuredData(html, lang, url) {
       duration: `PT${intro.seconds}S`, contentUrl: `${SITE_URL}/media/${intro.name}.mp4?v=4`, isFamilyFriendly: true,
       publisher: { '@id': `${SITE_URL}/#org` }, ...(intro.vtt ? { caption: `${SITE_URL}${intro.vtt}` } : {}) });
   }
-  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
-  return `<script type="application/ld+json">${json}</script>`;
+  return `<script type="application/ld+json">${ldJson({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
+}
+
+// JSON for a <script type="application/ld+json">: "<" is escaped so the block can't close early, and the "@" inside
+// email addresses is written as \u0040 (still the same JSON for Google) so the page has no clear-text address for
+// email scrapers and SEO checkers to find.
+function ldJson(data) {
+  return JSON.stringify(data).replace(/</g, '\\u003c').replace(/([\w.+-])@([\w-]+\.)/g, '$1\\u0040$2');
 }
 
 // Icons linking to OmniBeam's social media pages (SOCIAL above), for the home page footer
@@ -702,7 +708,7 @@ function renderPage(page) {
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="${OG_LOCALE[lang] || lang}">${versions.filter((l) => l !== lang).map((l) => `\n  <meta property="og:locale:alternate" content="${OG_LOCALE[l]}">`).join('')}
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
+  <script type="application/ld+json">${ldJson(ld)}</script>
   <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -786,7 +792,7 @@ function renderAmpPage(page) {
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="${OG_LOCALE[lang] || lang}">
   <meta name="twitter:card" content="summary_large_image">
-  <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
+  <script type="application/ld+json">${ldJson(ld)}</script>
   <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="${SITE_URL}/favicon.ico" sizes="48x48">
