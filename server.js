@@ -332,7 +332,7 @@ const withAnalytics = (html) => {
 
 // ---------- Security headers ----------
 // The Content Security Policy lists everything pages may load: our own files (fonts included), Google Analytics
-// (only the inline Google tag above, by its hash), and the Seobility and LaunchBuff badge images. Anything else (injected scripts,
+// (only the inline Google tag above, by its hash), and the Seobility, LaunchBuff and SaaSHub badge images. Anything else (injected scripts,
 // other sites framing the page) is blocked by the browser. When adding a new outside service, add it here.
 const SITE_HOST = new URL(SITE_URL).host;
 const GA_INLINE = GA_TAG ? (GA_TAG.match(/<script>([\s\S]*?)<\/script>/) || [])[1] : '';
@@ -353,7 +353,7 @@ function securityHeaders(req, res) {
     `script-src 'self' ${LOOK_HASH} ${GA_HASH} ${FB_HASH} https://*.googletagmanager.com ${META}`.replace(/\s+/g, ' ').trim(),
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
-    `img-src 'self' data: blob: https://app.seobility.net https://launchbuff.com ${google} ${META}`.trim(),
+    `img-src 'self' data: blob: https://app.seobility.net https://launchbuff.com https://cdn-b.saashub.com ${google} ${META}`.trim(),
     `connect-src 'self' wss://${host} ws://${host} ${google} ${META}`.trim(),
     "media-src 'self' blob: data:",
     "worker-src 'self' blob:",
