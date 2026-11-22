@@ -5184,6 +5184,19 @@ function updateBarTheme() {
 $('#bar-theme').onclick = () => { setTheme(isDarkTheme() ? 'light' : 'dark'); updateBarTheme(); };
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', updateBarTheme);
 updateBarTheme();
+
+// Phones: the footer links, copyright and badges move to the end of the scrolling page, so only the "This device"
+// card stays pinned at the bottom. Left in the pinned footer they took half a phone screen and hid the Pair button.
+const footMeta = $('.footer-meta'), footHome = footMeta?.parentNode, pageFoot = document.createElement('footer');
+pageFoot.className = 'page-foot';
+const phoneFoot = matchMedia('(max-width: 600px), (max-height: 520px)');
+const placeFooter = () => {
+  if (!footMeta) return;
+  if (phoneFoot.matches) { if (!pageFoot.isConnected) $('#main').append(pageFoot); pageFoot.append(footMeta); }
+  else if (footMeta.parentNode !== footHome) { footHome.append(footMeta); pageFoot.remove(); }
+};
+placeFooter();
+phoneFoot.addEventListener?.('change', placeFooter);
 $('#theme-choice').onchange = (e) => setTheme(e.target.value);
 $('#look-choice').onchange = (e) => setLook(e.target.value);
 

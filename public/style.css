@@ -434,6 +434,26 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
 .saashub-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
 .fazier-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
 
+/* Phones (app.js: placeFooter): the links, copyright and badges sit at the end of the scrolling page, not in the
+   pinned footer, and the "Ready to beam" card is a little tighter so the Pair button shows without scrolling */
+.page-foot { flex: none; padding: 28px 0 8px; }
+.page-foot .footer-meta { width: 100%; }
+@media (max-width: 600px) {
+  main { padding: 20px 16px; }
+  .empty { padding: 20px 18px; }
+  .empty-icon { width: 46px; height: 46px; margin-bottom: 10px; }
+  .empty .empty-title { font-size: 1.45rem; }
+  .empty .lead { margin-bottom: 14px; }
+  .hints { margin-bottom: 14px; }
+}
+@media (max-width: 600px) and (max-height: 600px) {
+  .empty-icon { display: none; }
+}
+/* Very small screens (old 4-inch iPhones): the Pair button matters more than the two hints */
+@media (max-width: 600px) and (max-height: 500px) {
+  .empty .hints { display: none; }
+}
+
 .dot-sep {
   opacity: 0.4;
   font-size: 0.75rem;
