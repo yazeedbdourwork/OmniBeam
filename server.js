@@ -353,7 +353,7 @@ function securityHeaders(req, res) {
     `script-src 'self' ${LOOK_HASH} ${GA_HASH} ${FB_HASH} https://*.googletagmanager.com ${META}`.replace(/\s+/g, ' ').trim(),
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
-    `img-src 'self' data: blob: https://app.seobility.net https://launchbuff.com https://cdn-b.saashub.com ${google} ${META}`.trim(),
+    `img-src 'self' data: blob: https://app.seobility.net https://launchbuff.com https://cdn-b.saashub.com https://fazier.com ${google} ${META}`.trim(),
     `connect-src 'self' wss://${host} ws://${host} ${google} ${META}`.trim(),
     "media-src 'self' blob: data:",
     "worker-src 'self' blob:",
