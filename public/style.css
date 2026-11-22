@@ -428,6 +428,10 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
 .featured-badge { display: inline-flex; margin-top: 4px; border-radius: 10px; opacity: 0.85; transition: opacity 0.2s; }
 .featured-badge:hover, .featured-badge:focus-visible { opacity: 1; }
 .featured-badge img { display: block; width: 128px; height: 40px; }
+/* Badges sit side by side (LaunchBuff, SaaSHub); they wrap under each other on very narrow screens */
+.featured-badges { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 4px; }
+.featured-badges .featured-badge { margin-top: 0; }
+.saashub-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
 
 .dot-sep {
   opacity: 0.4;
