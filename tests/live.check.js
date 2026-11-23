@@ -124,7 +124,7 @@ test('the first visit loads only what it needs', async ({ browser }) => {
   const d = await device(browser, `Live check ${run}`);
   const loaded = await d.page.evaluate(() => performance.getEntriesByType('resource').map((e) => e.name));
   expect(loaded.some((u) => u.includes('/more.js'))).toBe(false);
-  expect(loaded.some((u) => u.includes('/qrcode.js'))).toBe(false);
+  // (qrcode.js is not on this list since 2026-11-22: on computers the start card shows the pairing QR code)
   expect(loaded.some((u) => /fonts\.(googleapis|gstatic)/.test(u))).toBe(false);
   const t = await d.page.evaluate(() => performance.getEntriesByType('navigation')[0].toJSON());
   console.log(`  page loaded in ${Math.round(t.loadEventEnd)} ms on this PC`);
