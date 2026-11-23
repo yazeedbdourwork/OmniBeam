@@ -1,7 +1,7 @@
 // omnibeam send: files, folders, standard input or a message, to a device that has OmniBeam open
 'use strict';
 const nodeCrypto = require('crypto');
-const { fail, log, formatSize, plural, progressLine, progressDone, collectInputs, readInput, readStdinBuffer, crc32 } = require('./util');
+const { fail, log, formatSize, plural, progressLine, progressDone, collectInputs, readInput, readStdinBuffer, crc32, starOnce } = require('./util');
 const { openHub, pickTarget } = require('./find');
 
 const CHUNK = 256 * 1024;
@@ -65,6 +65,7 @@ async function send(opts) {
     progressLine('sending', total, total, started);
     progressDone();
     log(`Sent ${plural(files.length, 'file')} to ${target.name}`);
+    starOnce();
   }
   await hub.close();
 }

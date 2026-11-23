@@ -40,6 +40,19 @@ function pairProof(secret, from, to) {
   return nodeCrypto.createHmac('sha256', secret).update(`omnibeam-auto:${from}>${to}`).digest().subarray(0, 16).toString('hex');
 }
 
+// After the first transfer that works, once per computer and only on a terminal (never in scripts): a line asking
+// for a GitHub star. A small file in the settings folder remembers that it was shown.
+const STAR_FILE = path.join(CONFIG_DIR, 'star-shown');
+function starOnce() {
+  if (!isTTY || process.env.CI) return;
+  try {
+    if (fs.existsSync(STAR_FILE)) return;
+    fs.mkdirSync(CONFIG_DIR, { recursive: true });
+    fs.writeFileSync(STAR_FILE, new Date().toISOString());
+  } catch { return; }
+  log('Like it? A star helps others find OmniBeam: https://github.com/yazeedbdourwork/omnibeam');
+}
+
 // ---------- Formatting ----------
 function formatSize(n) {
   if (n < 1024) return `${n} B`;
@@ -232,5 +245,5 @@ const b64u = (buf) => Buffer.from(buf).toString('base64url');
 module.exports = {
   CliError, fail, log, isTTY, subtle, CONFIG_DIR, PAIRED_FILE, loadPaired, savePaired, pairProof, formatSize, plural,
   progressLine, progressDone, mimeOf, collectInputs, readInput, readStdinBuffer, safePath, freeName, ask, askYes, closeAsk,
-  crc32, qrText, setInterrupt, interrupt, showQr, b64u,
+  crc32, qrText, setInterrupt, interrupt, showQr, b64u, starOnce,
 };
