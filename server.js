@@ -82,12 +82,12 @@ const INSTANT_MAX_DAY = Number(process.env.INSTANT_MAX_DAY) || 30;
 // Share by link: files are encrypted in the browser, uploaded here, and anyone with the link can download them
 // until it expires. Uses the host's disk, so it has limits (environment variables in cPanel, all optional):
 //   DROPS=false          turn the feature off
-//   DROP_MAX_MB=100      largest upload per link, in MB
-//   DROP_TOTAL_MB=1024   all links together may use at most this much disk
+//   DROP_MAX_MB=500      largest upload per link, in MB (sent in 4 MB parts, so Cloudflare's 100 MB body cap does not apply)
+//   DROP_TOTAL_MB=5120   all links together may use at most this much disk
 //   DROP_MAX_HOURS=168   longest a link can stay available (7 days; 720 also offers 30 days)
 const DROPS = process.env.DROPS !== 'false';
-const DROP_MAX_MB = Number(process.env.DROP_MAX_MB) || 100;
-const DROP_TOTAL_MB = Number(process.env.DROP_TOTAL_MB) || 1024;
+const DROP_MAX_MB = Number(process.env.DROP_MAX_MB) || 500;
+const DROP_TOTAL_MB = Number(process.env.DROP_TOTAL_MB) || 5120;
 const DROP_MAX_HOURS = Number(process.env.DROP_MAX_HOURS) || 168;
 // Notifications while OmniBeam is closed (web push). The server signs them with its own key pair ("VAPID"),
 // made automatically on the first start and kept in data/push-keys.json. Optional environment variables:
