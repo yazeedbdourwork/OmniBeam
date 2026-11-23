@@ -46,7 +46,7 @@ const SOCIAL = Object.entries({
 // Meta (Facebook) Pixel ID, only needed for Facebook/Instagram ads: the number from Meta Events Manager, between the
 // quotes or as FB_PIXEL_ID in cPanel. Like Google Analytics, it only loads after the visitor presses Allow.
 const FB_PIXEL_ID = (() => {
-  const id = (process.env.FB_PIXEL_ID ?? '1146646898302082').trim(); // "OmniBeam Pixel" in Meta Events Manager; set FB_PIXEL_ID to '' to turn it off
+  const id = (process.env.FB_PIXEL_ID ?? '').trim(); // off by default since 2026-11-23; set FB_PIXEL_ID (digits, "OmniBeam Pixel" in Meta Events Manager) to turn it on
   if (id && !/^\d{6,20}$/.test(id)) { console.warn(`FB_PIXEL_ID "${id}" should be only digits; the pixel is off`); return ''; }
   return id;
 })();

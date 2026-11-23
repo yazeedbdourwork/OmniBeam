@@ -962,12 +962,12 @@ header { z-index: 20; } /* above main, so the open menu covers the page below */
 /* Store buttons in Settings are links styled as buttons (the global link style would underline them) */
 #dlg-settings a.btn.btn-a { text-decoration: none; color: var(--accent-fg); }
 /* "Worked well? Tell a friend" card under received files */
-.loop { margin: 14px 0 4px; padding: 12px 14px; border-radius: 16px; box-shadow: var(--inset-sm); font-size: 0.88rem; }
-.loop p { margin: 0; }
-.loop p span { color: var(--muted); }
+.loop, .star-note { margin: 14px 0 4px; padding: 12px 14px; border-radius: 16px; box-shadow: var(--inset-sm); font-size: 0.88rem; }
+.loop p, .star-note p { margin: 0; }
+.loop p span, .star-note p span { color: var(--muted); }
 .loop-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
-.loop a.btn.btn-a { text-decoration: none; color: var(--fg); }
-.loop .link-btn { border: 0; background: none; padding: 4px; color: var(--muted); font: inherit; font-size: 0.82rem; cursor: pointer; text-decoration: underline; }
+.loop a.btn.btn-a, .star-note a.btn.btn-a { text-decoration: none; color: var(--fg); }
+.loop .link-btn, .star-note .link-btn { border: 0; background: none; padding: 4px; color: var(--muted); font: inherit; font-size: 0.82rem; cursor: pointer; text-decoration: underline; }
 #dlg-settings a.btn.ghost.btn-a { color: var(--fg); }
 
 /* OmniBeam's social media pages (SOCIAL in server.js), above the copyright line */

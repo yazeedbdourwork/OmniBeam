@@ -60,9 +60,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=98" as="script">
+  <link rel="preload" href="/app.js?v=99" as="script">
   <script src="/look.js?v=3"></script>
-  <link rel="stylesheet" href="/style.css?v=93">
+  <link rel="stylesheet" href="/style.css?v=94">
 </head>
 <body>
   <!-- For keyboard users: the first Tab shows this, Enter jumps past the top bar to the devices -->
@@ -399,6 +399,14 @@
         <button type="button" class="btn ghost small" data-act="install" hidden>Install OmniBeam</button>
         <a class="btn ghost small btn-a" data-app="rate" href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki/reviews" target="_blank" rel="noopener" hidden>Rate OmniBeam</a>
         <button type="button" class="link-btn" data-act="loop-no">Not now</button>
+      </div>
+    </div>
+    <!-- Shown once per device, the third time files arrive (see showStar in app.js) -->
+    <div class="star-note" hidden>
+      <p><b>OmniBeam is free and open source.</b> <span>A star on GitHub helps other people find it.</span></p>
+      <div class="loop-btns">
+        <a class="btn ghost small btn-a" data-act="star" href="https://github.com/yazeedbdourwork/omnibeam" target="_blank" rel="noopener">Star on GitHub</a>
+        <button type="button" class="link-btn" data-act="star-no">Not now</button>
       </div>
     </div>
     <div class="row">
@@ -1244,7 +1252,7 @@
 
   <script src="/report.js?v=5" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=98" defer></script>
+  <script src="/app.js?v=99" defer></script>
   <script src="/drop.js?v=10" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>

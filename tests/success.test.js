@@ -132,3 +132,28 @@ test('the stats page shows whether transfers finished', async ({ page }) => {
   await expect(page.locator('#success-routes')).toContainText('OmniBeam server relay');
   await expect(page.locator('#success-browsers')).toContainText(`Chrome · ${OS}`);
 });
+
+// "OmniBeam is free and open source" GitHub star note: once per device, the third time files arrive, in place of
+// the "Worked well?" card, and never again after that.
+test('the GitHub star note shows once, the third time files arrive', async ({ browser }) => {
+  const a = await openDevice(browser, 'Star A');
+  const b = await openDevice(browser, 'Star B', { storage: { 'omnibeam-star': JSON.stringify({ n: 2 }), 'omnibeam-loop': JSON.stringify({ n: 5 }) } });
+  await startSend(a, b, [makeFile('star.bin', 1024)]);
+  const got = b.page.locator('#dlg-received');
+  await expect(got).toBeVisible({ timeout: 60000 });
+  const star = got.locator('.star-note');
+  await expect(star).toBeVisible();
+  await expect(got.locator('.loop')).toBeHidden();
+  await expect(star.locator('[data-act=star]')).toHaveAttribute('href', 'https://github.com/yazeedbdourwork/omnibeam');
+  await star.locator('[data-act=star-no]').click();
+  await expect(star).toBeHidden();
+  expect(JSON.parse(await b.page.evaluate(() => localStorage.getItem('omnibeam-star')))).toMatchObject({ n: 3, done: 1 });
+
+  await got.locator('[data-act=close]').click();
+  await startSend(a, b, [makeFile('star2.bin', 1024)]);
+  await expect(got).toBeVisible({ timeout: 60000 });
+  await expect(star).toBeHidden();
+  expect(a.errors.concat(b.errors)).toEqual([]);
+  await a.close();
+  await b.close();
+});

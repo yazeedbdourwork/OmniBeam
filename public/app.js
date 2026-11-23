@@ -4467,6 +4467,8 @@ const RATE_WINDOWS_WEB = 'https://apps.microsoft.com/detail/9PLR2PMX3SQZ';
 const RATE_CHROME = 'https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki/reviews';
 function showLoop(dlg) {
   const box = $('.loop', dlg);
+  // The GitHub star note takes this card's place the one time it shows
+  if (showStar(dlg)) { box.hidden = true; return; }
   let st = {};
   try { st = JSON.parse(localStorage.getItem(LOOP_KEY) || '{}') || {}; } catch {}
   st.n = (st.n || 0) + 1;
@@ -4496,6 +4498,27 @@ function showLoop(dlg) {
     if (act === 'install') window.dispatchEvent(new Event('omnibeam-install'));
     if (act === 'loop-no') { st.no = (st.no || 0) + 1; save(); box.hidden = true; }
   };
+}
+
+// "OmniBeam is free and open source. A star on GitHub helps…" in the received-files dialog: once per device, the
+// third time files arrive. Either button (or showing it once) means it never comes back. TV mode has its own page.
+const STAR_KEY = 'omnibeam-star';
+function showStar(dlg) {
+  const box = $('.star-note', dlg);
+  if (!box) return false;
+  let st = {};
+  try { st = JSON.parse(localStorage.getItem(STAR_KEY) || '{}') || {}; } catch {}
+  if (st.done) { box.hidden = true; return false; }
+  st.n = (st.n || 0) + 1;
+  const show = st.n >= 3;
+  if (show) st.done = 1;
+  try { localStorage.setItem(STAR_KEY, JSON.stringify(st)); } catch {}
+  box.hidden = !show;
+  box.onclick = (e) => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act === 'star' || act === 'star-no') box.hidden = true;
+  };
+  return show;
 }
 
 // ---------- Share menu (Android, when OmniBeam is installed as an app) ----------

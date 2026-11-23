@@ -1512,5 +1512,9 @@
     // GitHub star badge and Cloudflare line (2026-11-23)
     "Secured by Cloudflare": "Cloudflare で保護",
     "Star us on GitHub": "GitHub でスターをお願いします",
+    // GitHub star note under received files (2026-11-23)
+    "OmniBeam is free and open source.": "OmniBeam は無料のオープンソースです。",
+    "A star on GitHub helps other people find it.": "GitHub でスターを付けると、ほかの人が見つけやすくなります。",
+    "Star on GitHub": "GitHub でスターを付ける",
   },
 });

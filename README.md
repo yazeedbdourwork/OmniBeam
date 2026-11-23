@@ -15,7 +15,7 @@ A free, open-source **AirDrop alternative for every platform**, and a modern alt
 [![15 languages](https://img.shields.io/badge/languages-15-success)](#languages)
 
 <p align="center">
-  <a href="https://omnibeam.site"><img src="public/store/screen-wide-1.png" alt="OmniBeam in the browser: nearby devices (an iPhone, an Android tablet and a MacBook) ready to receive files" width="720"></a>
+  <a href="https://omnibeam.site"><img src="docs/demo.gif" alt="OmniBeam sending three photos from a laptop to an iPhone in the browser: tap the device, the iPhone accepts, and the photos arrive in full quality" width="800"></a>
 </p>
 
 If OmniBeam saves you a cable or an email to yourself, **a ⭐ star on GitHub** helps other people find it.
@@ -215,7 +215,7 @@ Details in [cli/README.md](cli/README.md). It is not part of the website: the de
 - **Notification buttons**: Reply and Open chat on a message, Open link and Reply on a link, Save and Open chat on received files, Stop on Ring my device (Android and computers; iPhone shows none). Where the browser allows typing in the notification, the reply is sent without opening OmniBeam; elsewhere Reply opens the chat ready to type. No Reply or Save while App lock is on.
 - **Keep history** (Settings → Privacy): received files and messages, the Sent list and clipboard history are deleted by themselves after 1 hour, 1 day, 7 days (default) or 30 days.
 - Pairing codes are rate limited per network, and each code works for 2 devices only.
-- Google Analytics and the Meta Pixel load only after the visitor presses **Allow** on the cookie banner.
+- Google Analytics loads only after the visitor presses **Allow** on the cookie banner. The Meta Pixel is off (it can be turned on with `FB_PIXEL_ID`, and then also waits for Allow).
 - Visitor counting stores no IP addresses and no cookies.
 - The `.htaccess` blocks every file outside `public/`, so `server.js` and the `data/` folder are never served.
 
@@ -339,7 +339,7 @@ Set these in **cPanel → Setup Node.js App → your app**. All are optional unl
 | `SUPPORTER_KEY` | **Required for supporter codes.** Long random secret; set once and never change it, or every code stops working |
 | `SUPPORT_URL` | Donation page for the ♥ Support link |
 | `GA_ID` | Google Analytics ID (loads only after consent) |
-| `FB_PIXEL_ID` | Meta Pixel ID (loads only after consent; `''` turns it off) |
+| `FB_PIXEL_ID` | Meta Pixel ID, off when unset (loads only after consent) |
 | `SOCIAL_X`, `SOCIAL_INSTAGRAM`, `SOCIAL_LINKEDIN`, `SOCIAL_YOUTUBE`, `SOCIAL_FACEBOOK`, `SOCIAL_TIKTOK` | Footer icons and schema `sameAs` |
 
 ## Owner tools: stats, status and alerts

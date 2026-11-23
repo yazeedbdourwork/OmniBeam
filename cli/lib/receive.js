@@ -4,7 +4,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { fail, log, formatSize, plural, progressLine, progressDone, safePath, freeName, askYes, closeAsk, crc32, showQr, setInterrupt } = require('./util');
+const { fail, log, formatSize, plural, progressLine, progressDone, safePath, freeName, askYes, closeAsk, crc32, showQr, setInterrupt, starOnce } = require('./util');
 const { openHub, waitInNewRoom, inRoom } = require('./find');
 
 async function receive(opts) {
@@ -147,6 +147,7 @@ async function receive(opts) {
     }
     log(`Received ${plural(inc.saved.length, 'file')} from ${p.name} (${formatSize(inc.total)})`);
     if (bad) { log(`${plural(bad, 'file')} did not match the sender's check. Ask for ${bad > 1 ? 'them' : 'it'} again.`); failures++; }
+    else starOnce();
     if (!keep) finishedOne();
   }
 
