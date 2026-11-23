@@ -205,6 +205,8 @@ html.tv .empty-qr { display: none !important; }
 .trust-row > * + *::before { content: "·"; display: inline-block; margin: 0 8px; color: var(--muted); }
 .trust-row a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .trust-row a:hover { color: var(--accent); }
+/* Phones: the row wraps, so a "·" would start the second line. Space the items apart instead. */
+@media (max-width: 600px) { .trust-row { gap: 4px 16px; } .trust-row > * { white-space: nowrap; } .trust-row > * + *::before { content: none; } }
 .intro-link {
   display: flex; align-items: center; gap: 8px; margin: 14px auto 0; padding: 6px 12px; border: 0; border-radius: 999px;
   background: none; color: var(--accent); font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
