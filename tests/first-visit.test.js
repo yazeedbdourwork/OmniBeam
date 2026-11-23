@@ -29,6 +29,19 @@ test('computer: the pairing QR is in the card, the same code as the Pair dialog,
   // Trust row with the link to the source code
   await expect(page.locator('#empty .trust-row a')).toHaveText('Open source');
   await expect(page.locator('#empty .trust-row a')).toHaveAttribute('href', /github\.com\/yazeedbdourwork\/omnibeam$/);
+  // Plain text Cloudflare line (no Cloudflare logo: their brand rules need permission)
+  await expect(page.locator('#empty .trust-row')).toContainText('Secured by Cloudflare');
+  expect(await page.locator('img[src*="cloudflare" i], svg[class*="cloudflare" i]').count()).toBe(0);
+  // GitHub star badge in the footer: GitHub mark, text and the live star count (shields.io SVG, sized, lazy)
+  const gh = page.locator('.featured-badges a.github-badge');
+  await expect(gh).toHaveAttribute('href', /github\.com\/yazeedbdourwork\/omnibeam$/);
+  await expect(gh).toContainText('Star us on GitHub');
+  await expect(gh.locator('svg.gh-mark')).toHaveCount(1);
+  const stars = gh.locator('img.gh-stars');
+  await expect(stars).toHaveAttribute('src', /^https:\/\/img\.shields\.io\/github\/stars\/yazeedbdourwork\/omnibeam\.svg\?/);
+  await expect(stars).toHaveAttribute('loading', 'lazy');
+  await expect(stars).toHaveAttribute('width', /\d+/);
+  await expect(stars).toHaveAttribute('height', /\d+/);
   // When another device shows up, the card (and its QR) goes away
   const b = await openDevice(browser, 'QR Card Phone');
   devices.push(b);
@@ -79,5 +92,8 @@ test('the new words are translated (German page)', async ({ browser }) => {
   const page = a.page;
   await expect(page.locator('#empty-qr-box b')).toHaveText('Mit dem Handy scannen und verbinden');
   await expect(page.locator('#empty .trust-row')).toContainText('Kein Konto');
+  await expect(page.locator('#empty .trust-row')).toContainText('Geschützt durch Cloudflare');
+  await expect(page.locator('.featured-badges a.github-badge')).toContainText('Gib uns einen Stern auf GitHub');
+  await expect(page.locator('.featured-badges a.github-badge')).toHaveAttribute('title', 'Gib uns einen Stern auf GitHub');
   expect(a.errors).toEqual([]);
 });

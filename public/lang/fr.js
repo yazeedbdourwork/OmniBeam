@@ -1509,5 +1509,8 @@
     "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Sur un ordinateur ? Ouvrez omnibeam.site dessus et scannez le code affiché avec l'appareil photo de ce téléphone.",
     "No account": "Sans compte",
     "Open source": "Open source",
+    // GitHub star badge and Cloudflare line (2026-11-23)
+    "Secured by Cloudflare": "Sécurisé par Cloudflare",
+    "Star us on GitHub": "Donnez-nous une étoile sur GitHub",
   },
 });

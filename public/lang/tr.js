@@ -1509,5 +1509,8 @@
     "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Bilgisayarda mısınız? Orada omnibeam.site'ı açın ve gösterdiği kodu bu telefonun kamerasıyla tarayın.",
     "No account": "Hesap yok",
     "Open source": "Açık kaynak",
+    // GitHub star badge and Cloudflare line (2026-11-23)
+    "Secured by Cloudflare": "Cloudflare ile korunuyor",
+    "Star us on GitHub": "GitHub'da bize yıldız verin",
   },
 });
