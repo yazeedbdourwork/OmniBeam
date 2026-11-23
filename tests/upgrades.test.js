@@ -51,6 +51,7 @@ test('the three-step walkthrough opens from the menu, not by itself on a first v
 test('the walkthrough is in the page language', async ({ browser }) => {
   const a = await openDevice(browser, 'Test Laptop', { path: '/fr/', storage: { 'omnibeam-tour': null, 'omnibeam-lang': 'fr' } });
   devices.push(a);
+  await menu(a.page, 'menu-tour'); // (opened from the menu since 2026-11-22)
   await expect(a.page.locator('#dlg-tour .tour-step:visible [role=heading]')).toHaveText('Ouvrez OmniBeam sur votre autre appareil', { timeout: 5000 });
   await expect(a.page.locator('#dlg-tour [data-tour=next]')).toHaveText('Suivant');
 });
