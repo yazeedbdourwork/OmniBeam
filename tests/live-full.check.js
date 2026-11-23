@@ -962,7 +962,7 @@ test('only public/ is the website: server.js, data/, logs and notes in the app f
 });
 
 test('files with a version are kept a year (Cloudflare cache rule); scripts without one are not, pages and sw.js are checked every time', async ({ baseURL }) => {
-  const cc = async (u) => (await rawGet(`${baseURL}${u}`, 'br')).headers['cache-control'];
+  const cc = async (u) => (await rawGet(`${baseURL}${u}`, 'br')).headers['cache-control'] || ''; // no header at all = not kept long
   const home = (await rawGet(`${baseURL}/?analytics=off&c=${run}`, 'identity')).body.toString();
   const versioned = [...new Set(home.match(/\/[\w./-]+\.(?:js|css|woff2|svg|webp|png)\?v=[\w]+/g))];
   expect(versioned.length).toBeGreaterThan(5);
