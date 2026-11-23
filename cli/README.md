@@ -56,7 +56,7 @@ omnibeam link build.zip --json                          # {"url": …, "expires"
 ```
 
 The link is the only thing printed on standard output, so `URL=$(omnibeam link file.zip)` works. Links hold up to
-100 MB on omnibeam.site and last up to 7 days. To delete one early: `omnibeam unlink <id> --token <token>` (both are
+500 MB on omnibeam.site and last up to 7 days. To delete one early: `omnibeam unlink <id> --token <token>` (both are
 printed when it's made, and in `--json`).
 
 ```sh

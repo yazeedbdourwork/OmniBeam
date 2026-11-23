@@ -68,7 +68,7 @@ test('someone without OmniBeam sends files to a request link; they arrive here',
   await v.page.locator('#drop-pin button').click();
   await expect(v.page.locator('#req-title')).toHaveText('Send files to Yazeed PC');
   await expect(v.page.locator('#req-ask')).toHaveText('The photos from Saturday');
-  await expect(v.page.locator('#drop-status')).toContainText('Up to 100 MB at a time');
+  await expect(v.page.locator('#drop-status')).toContainText('Up to 500 MB at a time');
   await v.page.fill('#req-from', 'Sara');
   const files = [makeFile('beach.jpg', 5 * 1024 * 1024 + 123, 'image/jpeg'), makeFile('notes.txt', 2000, 'text/plain')];
   await v.page.setInputFiles('#req-input', files);
