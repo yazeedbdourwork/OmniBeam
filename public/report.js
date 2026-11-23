@@ -9,7 +9,10 @@
 // a note last refreshed more than CRASH_GAP ago (a crashed tab is reloaded at once; an old 'visible' note is iOS Safari
 // restoring its tabs after it was swiped away or killed in the background, which saves sessionStorage without the
 // last 'hidden'), a tab the browser discarded on purpose, and a copy of the note in a new or duplicated tab while the
-// page that wrote it is still open (it answers on a BroadcastChannel). Stuck
+// page that wrote it is still open (it answers on a BroadcastChannel). Phones: a page that lost focus (the Camera app,
+// Control Center, the app switcher, another app) is noted 'away', not 'visible': iOS often closes the tab to free
+// memory there, without the 'hidden' note, and that is not a crash of ours (2026-11-23: the phone Pair window says to
+// scan a computer's code with the Camera app). Stuck
 // transfers are reported by app.js (kind stuck). Both also reach the owner on Telegram (see server.js).
 'use strict';
 (function () {
@@ -64,6 +67,9 @@
     } catch {}
     return parts.join(', ');
   };
+  // Phones and tablets only: on a computer the window often has no focus while the page is in plain view
+  const touch = (() => { try { return matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches; } catch { return false; } })();
+  const shown = () => !document.hidden && (!touch || document.hasFocus());
   const note = (state) => {
     let busy = false;
     try { busy = !!(window.omniBusy && window.omniBusy()); } catch {}
@@ -73,12 +79,12 @@
     const t = e.target;
     if (t && t.tagName === 'INPUT' && t.type === 'file') picking = Date.now();
     // After the tap has opened or closed a window
-    setTimeout(() => { if (!document.hidden) note('visible'); }, 0);
+    setTimeout(() => { if (shown()) note('visible'); }, 0);
   }, true);
   for (const ev of ['change', 'cancel']) {
     addEventListener(ev, (e) => {
       const t = e.target;
-      if (t && t.tagName === 'INPUT' && t.type === 'file' && picking) { picking = 0; note(document.hidden ? 'hidden' : 'visible'); }
+      if (t && t.tagName === 'INPUT' && t.type === 'file' && picking) { picking = 0; note(now()); }
     }, true);
   }
   // Answers "is the page that wrote this note still open?" (closed while the page sits in the back/forward cache)
@@ -108,10 +114,15 @@
       setTimeout(() => { ask.close(); if (!alive) send(); }, 1500);
     }
   }
-  note(document.hidden ? 'hidden' : 'visible');
-  addEventListener('visibilitychange', () => note(document.hidden ? 'hidden' : 'visible'));
+  const now = () => (document.hidden ? 'hidden' : shown() ? 'visible' : 'away');
+  note(now());
+  addEventListener('visibilitychange', () => note(now()));
+  if (touch) {
+    addEventListener('blur', () => { if (!document.hidden) note('away'); });
+    addEventListener('focus', () => note(now()));
+  }
   addEventListener('pagehide', () => { note('closed'); if (bc) { bc.close(); bc = null; } });
-  addEventListener('pageshow', (e) => { if (e.persisted) { note(document.hidden ? 'hidden' : 'visible'); if (!bc) listen(); } });
+  addEventListener('pageshow', (e) => { if (e.persisted) { note(now()); if (!bc) listen(); } });
   // Keep "seen" and "a transfer is running" fresh
-  setInterval(() => { if (!document.hidden) note('visible'); }, 15000);
+  setInterval(() => { if (shown()) note('visible'); }, 15000);
 })();
