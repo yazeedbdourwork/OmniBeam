@@ -1502,5 +1502,14 @@
     "Price": "Harga",
     "Free": "Gratis",
     "Free plan and paid plans": "Paket gratis dan paket berbayar",
+    // "Ready to beam" card and Pair dialog (2026-11-22)
+    "Not showing up?": "Tidak muncul?",
+    "A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.": "Wi‑Fi yang berbeda, data seluler, VPN, atau iCloud Private Relay memisahkan perangkat. Pasangkan sekali dan sejak itu keduanya akan saling menemukan.",
+    "Scan with your phone to connect": "Pindai dengan ponsel untuk terhubung",
+    "Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.": "Berfungsi di jaringan apa pun, tanpa mengetik kode. Di Wi‑Fi yang sama, perangkat juga muncul dengan sendirinya.",
+    "Scan with the other device's camera": "Pindai dengan kamera perangkat lain",
+    "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Di komputer? Buka omnibeam.site di sana dan pindai kode yang muncul dengan kamera ponsel ini.",
+    "No account": "Tanpa akun",
+    "Open source": "Sumber terbuka",
   },
 });

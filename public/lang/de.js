@@ -1500,5 +1500,14 @@
     "Price": "Preis",
     "Free": "Kostenlos",
     "Free plan and paid plans": "Gratis-Tarif und bezahlte Tarife",
+    // "Ready to beam" card and Pair dialog (2026-11-22)
+    "Not showing up?": "Wird nicht angezeigt?",
+    "A different Wi‑Fi, mobile data, a VPN or iCloud Private Relay keeps devices apart. Pair them once and they find each other from then on.": "Ein anderes Wi‑Fi, mobile Daten, ein VPN oder iCloud Privat-Relay trennen die Geräte. Kopple sie einmal, dann finden sie sich von da an.",
+    "Scan with your phone to connect": "Mit dem Handy scannen und verbinden",
+    "Works on any network, with no code to type. On the same Wi‑Fi, devices also show up by themselves.": "Funktioniert in jedem Netz, ohne Code einzutippen. Im selben Wi‑Fi erscheinen Geräte auch von selbst.",
+    "Scan with the other device's camera": "Mit der Kamera des anderen Geräts scannen",
+    "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Am Computer? Öffne dort omnibeam.site und scanne den angezeigten Code mit der Kamera dieses Handys.",
+    "No account": "Kein Konto",
+    "Open source": "Open Source",
   },
 });

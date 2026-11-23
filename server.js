@@ -300,7 +300,7 @@ const GA_TAG = GA_OK ? `<!-- Google tag (gtag.js) -->
       });
     })();
   </script>
-  <script src="/consent.js?v=6" data-ga="${GA_ID}"${FB_PIXEL_ID ? ' data-pixel="1"' : ''} defer></script>` : '';
+  <script src="/consent.js?v=7" data-ga="${GA_ID}"${FB_PIXEL_ID ? ' data-pixel="1"' : ''} defer></script>` : '';
 // Meta Pixel, when FB_PIXEL_ID is set: Meta's usual snippet, except that fbevents.js is only fetched once the visitor
 // has pressed Allow on the banner (now or on an earlier visit); consent.js calls obLoadPixel() when they do.
 const FB_TAG = FB_PIXEL_ID ? `<!-- Meta Pixel -->

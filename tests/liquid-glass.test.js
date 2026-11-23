@@ -152,7 +152,8 @@ test('pairing window: Devices tab only with remembered devices; translated in Ar
 // ⋯ menu so the bar still fits on one line; below 360px all three are in the menu.
 for (const [width, bar, inMenu] of [
   [1280, ['bar-theme', 'bar-tv', 'bar-settings'], []],
-  [390, ['bar-theme', 'bar-settings'], ['menu-tv']],
+  // Phones (2026-11-22): Received files shows "Files" beside its icon, and Light/Dark moves to the menu for room
+  [390, ['bar-settings', 'btn-history'], ['menu-tv', 'btn-theme']],
   [340, [], ['btn-theme', 'menu-tv', 'btn-settings']],
 ]) {
   test(`top bar buttons fit at ${width}px`, async ({ browser }) => {

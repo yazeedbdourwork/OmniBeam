@@ -1,4 +1,4 @@
-// The first-visit walkthrough, one-tap QR pairing, notifications for a closed device (web push, checked against a
+// The quick tour, one-tap QR pairing, notifications for a closed device (web push, checked against a
 // stand-in push service), and the Chrome extension
 const path = require('path');
 const http = require('http');
@@ -15,11 +15,16 @@ test.afterEach(async () => {
 
 const pairedList = (secret, name, extra = {}) => JSON.stringify([{ secret, name, at: Date.now(), seen: Date.now(), auto: false, trusted: true, ...extra }]);
 
-test('first visit shows the three-step walkthrough once, and Settings shows it again', async ({ browser }) => {
+// Since 2026-11-22 the tour no longer opens by itself on a first visit (the "Ready to beam" card says the same);
+// it opens from the menu.
+test('the three-step walkthrough opens from the menu, not by itself on a first visit', async ({ browser }) => {
   const a = await openDevice(browser, 'Test Laptop', { storage: { 'omnibeam-tour': null } });
   devices.push(a);
   const tour = a.page.locator('#dlg-tour');
-  await expect(tour).toBeVisible({ timeout: 5000 });
+  await a.page.waitForTimeout(2500);
+  await expect(tour).toBeHidden();
+  await menu(a.page, 'menu-tour');
+  await expect(tour).toBeVisible();
   await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Open OmniBeam on your other device');
   await tour.locator('[data-tour=next]').click();
   await expect(tour.locator('.tour-step:visible [role=heading]')).toHaveText('Not showing up? Pair once');
