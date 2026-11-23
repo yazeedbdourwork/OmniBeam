@@ -1509,5 +1509,8 @@
     "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "在电脑上？在电脑上打开 omnibeam.site，用这部手机的相机扫描它显示的二维码。",
     "No account": "无需账号",
     "Open source": "开源",
+    // GitHub star badge and Cloudflare line (2026-11-23)
+    "Secured by Cloudflare": "由 Cloudflare 提供安全保护",
+    "Star us on GitHub": "在 GitHub 上给我们点星",
   },
 });

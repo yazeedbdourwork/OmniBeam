@@ -1509,5 +1509,8 @@
     "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "パソコンの場合は、そちらでomnibeam.siteを開き、表示されたコードをこのスマホのカメラでスキャンしてください。",
     "No account": "アカウント不要",
     "Open source": "オープンソース",
+    // GitHub star badge and Cloudflare line (2026-11-23)
+    "Secured by Cloudflare": "Cloudflare で保護",
+    "Star us on GitHub": "GitHub でスターをお願いします",
   },
 });

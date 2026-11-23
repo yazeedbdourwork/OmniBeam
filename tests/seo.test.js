@@ -19,7 +19,8 @@ test('home page: real title, H1 first, no inline styles, every image has alt tex
   expect(info.noAlt).toEqual([]);
   expect(info.words).toBeGreaterThan(700);
   expect(info.styleLinks).toBe(0);
-  // Images: modern format, not larger than shown (SEO image checks). The SaaSHub listing badge is the one
+  // Images: modern format, not larger than shown (SEO image checks). The GitHub star count (shields.io) is
+  // an SVG, so it passes as it is. The SaaSHub listing badge is the one
   // outside image we can't change: SaaSHub only serves it as a PNG and checks that exact badge is on the page.
   const OUTSIDE_BADGES = ['https://cdn-b.saashub.com/img/badges/approved-color.png?v=1'];
   expect(await page.evaluate((skip) => [...document.images].filter((i) => !skip.includes(i.src) && !/\.(webp|avif|svg)(\?|$)/.test(i.src)).map((i) => i.src), OUTSIDE_BADGES)).toEqual([]);

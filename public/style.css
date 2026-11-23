@@ -458,6 +458,10 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
 /* Badges sit side by side (LaunchBuff, SaaSHub, Fazier); they wrap under each other on very narrow screens */
 .featured-badges { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 4px; }
 .featured-badges .featured-badge { margin-top: 0; }
+/* GitHub star badge: GitHub mark + text + live star count (shields.io SVG, its width follows the number) */
+.github-badge { align-items: center; gap: 8px; height: 40px; padding: 0 12px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); box-shadow: var(--raise-sm); color: var(--fg); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+.github-badge .gh-mark { flex: none; display: block; }
+.featured-badge.github-badge img.gh-stars { width: auto; height: 20px; border-radius: 3px; }
 .saashub-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
 .fazier-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
 

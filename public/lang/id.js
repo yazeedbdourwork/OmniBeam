@@ -1511,5 +1511,8 @@
     "On a computer? Open omnibeam.site there and scan the code it shows with this phone's camera.": "Di komputer? Buka omnibeam.site di sana dan pindai kode yang muncul dengan kamera ponsel ini.",
     "No account": "Tanpa akun",
     "Open source": "Sumber terbuka",
+    // GitHub star badge and Cloudflare line (2026-11-23)
+    "Secured by Cloudflare": "Diamankan oleh Cloudflare",
+    "Star us on GitHub": "Beri kami bintang di GitHub",
   },
 });
