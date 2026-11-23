@@ -721,6 +721,9 @@ textarea::placeholder, input::placeholder { color: var(--muted); }
 .learn-byline { margin: 8px 0 0; font-size: 0.88rem; color: var(--muted); }
 .learn-byline a { color: var(--accent); font-weight: 600; text-decoration: none; }
 .learn-byline a:hover { text-decoration: underline; }
+/* Dark: the lighter purple (as .intro-link), so the name clears WCAG AA on the dark grey with room to spare */
+:root[data-theme="dark"] .learn-byline a { color: #9a93ff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .learn-byline a { color: #9a93ff; } }
 /* Comparison table: scrolls sideways inside its box on narrow phones instead of widening the page */
 .learn-table { margin: 18px 0 0; overflow-x: auto; border-radius: 18px; box-shadow: var(--inset-sm); }
 .learn-table table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 520px; }
