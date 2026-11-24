@@ -39,3 +39,5 @@ sizes.js (bytes of the home page and scripts), transfer-speed.js (100 MB direct 
                        Share a folder / Browse files (a paired phone looks in a computer's folder and takes files)
   tv-upgrades.test.js  TV mode: photo wall, remote keys, video controls, music, HEIC card, slideshow settings, photos kept
                        after a reload, Clear photos, the phone as the remote, messages and links on screen, screen saver
+  share-page.test.js   share links as a file page: short links, pictures and previews before the download, Save all as ZIP,
+                       views and downloads, a password with letters, WhatsApp/Telegram, chat previews only when asked

@@ -4,7 +4,8 @@
 // data it can't read. The download page (drop.html + get.js) decrypts it in the receiver's browser.
 // Format: part n of the files (one after the other, 4 MB each) is encrypted with IV [0,0,0,0,0,0,0,0,n (4 bytes)];
 // the list of names and sizes is encrypted with IV [1,0,…,0].
-// Options: how long the link works (up to the server's limit), how many downloads it allows, a PIN (see pinProof),
+// Options: how long the link works (up to the server's limit), how many downloads it allows, a PIN or password (any
+// 4 to 32 characters, see pinProof), whether chat apps may show the file name and a small picture (linkPreview),
 // and an email address or phone number to send it to: an email is sent by the server when it has a Resend key
 // (see emailByServer), otherwise the mail or messages app opens with the link written in. "Your links" shows how many times each link was downloaded.
 'use strict';
@@ -44,7 +45,7 @@
   async function pinProof(pin, keyB64) {
     return b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`omnibeam-pin:${pin}:${keyB64}`)));
   }
-  const PIN_RE = /^\d{4,8}$/;
+  const PIN_RE = /^[^\n]{4,32}$/;
   // Text messages only on phones (a computer usually has no messages app): computers get email only
   const PHONE_DEVICE = isIOS || /Android/i.test(navigator.userAgent);
   if (!PHONE_DEVICE) {
@@ -118,6 +119,9 @@
   function setSendButtons(l) {
     $('#link-email-status').hidden = true;
     $('#link-email').href = mailtoUrl(l);
+    const text = message(l).body;
+    $('#link-wa').href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    $('#link-tg').href = `https://t.me/share/url?url=${encodeURIComponent(l.url)}&text=${encodeURIComponent(text.replace(l.url, '').replace(/\n\n+/g, '\n').trim())}`;
     if ($('#link-sms')) $('#link-sms').href = smsUrl(l);
     const big = $('#link-send-to');
     big.hidden = !l.to;
@@ -154,7 +158,7 @@
         <button class="btn small ghost" data-act="copy-one">${escapeHtml(t('Copy link'))}</button>
         <button class="btn small ghost" data-act="delete-one">${escapeHtml(t('Delete'))}</button>`;
       $('.fname', item).textContent = l.names;
-      $('.fsize', item).textContent = `${formatSize(l.size)} · ${timeLeft(l.expires - Date.now())} · ${downloadsText(l)}${l.pin ? ' · ' + t('PIN') : ''}`;
+      $('.fsize', item).textContent = `${formatSize(l.size)} · ${timeLeft(l.expires - Date.now())} · ${downloadsText(l)} · ${t('Views: {n}', { n: l.views || 0 })}${l.pin ? ' · ' + t('PIN') : ''}`;
       if (l.locked) $('.fsize', item).insertAdjacentHTML('beforeend', ` · <span class="locked">${escapeHtml(t('Locked: too many wrong PINs'))}</span>`);
       item.querySelector('[data-act="copy-one"]').onclick = () => copy(l.url);
       item.querySelector('[data-act="delete-one"]').onclick = () => removeLink(l);
@@ -213,7 +217,7 @@
     if (!gone.length && !info.size) return;
     saveLinks(loadLinks().filter((l) => !gone.includes(l.id)).map((l) => {
       const i = info.get(l.id);
-      return i ? { ...l, downloads: i.downloads, max: i.max, locked: i.locked } : l;
+      return i ? { ...l, downloads: i.downloads, views: i.views, max: i.max, locked: i.locked } : l;
     }));
     renderLinks();
   }
@@ -238,11 +242,16 @@
   btn.onclick = () => open(false);
   btnTo.onclick = () => open(true);
   $('#link-pin').addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = e.target.value.slice(0, 32);
     $('#link-pin-note').hidden = !e.target.value;
+    // A link with a PIN shows nothing in chat previews
+    $('#link-pub-box').hidden = !!e.target.value;
   });
+  // "Show the name in chat previews": remembered on this device
+  try { $('#link-pub').checked = localStorage.getItem('omnibeam-link-pub') === '1'; } catch {}
+  $('#link-pub').addEventListener('change', (e) => { try { localStorage.setItem('omnibeam-link-pub', e.target.checked ? '1' : '0'); } catch {} });
   $('#link-to').addEventListener('input', (e) => { e.target.removeAttribute('aria-invalid'); });
-  for (const id of ['#link-email', '#link-sms', '#link-send-to']) $(id)?.addEventListener('click', sentStat);
+  for (const id of ['#link-email', '#link-sms', '#link-send-to', '#link-wa', '#link-tg']) $(id)?.addEventListener('click', sentStat);
   dlg.addEventListener('click', (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
     if (act === 'close') dlg.close();
@@ -255,7 +264,7 @@
         return toast(PHONE_DEVICE ? t('Type an email address or a phone number, or leave it empty.') : t('Type an email address, or leave it empty.'));
       }
       const pin = $('#link-pin').value;
-      if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN needs 4 to 8 digits.')); }
+      if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN or password needs 4 to 32 characters.')); }
       if (!window.rightsOk()) return window.needRights(rights);
       input.click();
     }
@@ -274,7 +283,7 @@
         return toast(PHONE_DEVICE ? t('Type an email address or a phone number, or leave it empty.') : t('Type an email address, or leave it empty.'));
       }
       const pin = $('#link-pin').value;
-      if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN needs 4 to 8 digits.')); }
+      if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN or password needs 4 to 32 characters.')); }
       const text = $('#link-note-text').value;
       if (!text.trim()) return $('#link-note-text').focus();
       if (!window.rightsOk()) return window.needRights(rights);
@@ -360,6 +369,29 @@
     await Promise.all(Array.from({ length: Math.min(UP_PARALLEL, parts) }, () => worker().catch((err) => { failed = true; throw err; })));
   }
 
+  // What chat apps show when the link is pasted, if the sender ticked it: the name and size, and a small JPEG of the
+  // first photo. Only these are readable by the server (the files stay encrypted).
+  async function linkPreview(files, size) {
+    const title = `${files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name} (${formatSize(size)})`.slice(0, 120);
+    let thumb = '';
+    const photo = files.find((f) => /^image\/(jpeg|png|webp|gif)$/.test(f.type) && f.size < 40 * 1048576);
+    if (photo) {
+      try {
+        const url = URL.createObjectURL(photo);
+        const img = await new Promise((resolve, reject) => { const i = new Image(); i.onload = () => resolve(i); i.onerror = reject; i.src = url; });
+        URL.revokeObjectURL(url);
+        for (const [side, q] of [[600, 0.75], [400, 0.6]]) {
+          const k = Math.min(1, side / Math.max(img.naturalWidth, img.naturalHeight));
+          const c = Object.assign(document.createElement('canvas'), { width: Math.max(1, Math.round(img.naturalWidth * k)), height: Math.max(1, Math.round(img.naturalHeight * k)) });
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const data = c.toDataURL('image/jpeg', q).split(',')[1] || '';
+          if (data.length <= 130000) { thumb = data; break; }
+        }
+      } catch {}
+    }
+    return { title, ...(thumb ? { thumb } : {}) };
+  }
+
   // opts.note: a secret note (one file with the text): the link opens once, whatever "Downloads allowed" says
   async function upload(files, opts = {}) {
     if (!cfg || job) return;
@@ -383,9 +415,10 @@
       const pinText = $('#link-pin').value;
       const pin = PIN_RE.test(pinText) ? await pinProof(pinText, b64u(raw)) : '';
       const to = recipient($('#link-to').value) || null;
+      const pub = !opts.note && !pin && $('#link-pub').checked ? await linkPreview(files, size) : undefined;
       const r = await fetch('/api/drop', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ size, hours, max, once, pin, meta: b64u(encMeta), note: !!opts.note }),
+        body: JSON.stringify({ size, hours, max, once, pin, meta: b64u(encMeta), note: !!opts.note, pub }),
       });
       const created = await r.json().catch(() => ({}));
       if (!r.ok) {
@@ -420,6 +453,7 @@
       $('[data-act=note-open]', dlg).setAttribute('aria-expanded', 'false');
       $('#link-pin').value = '';
       $('#link-pin-note').hidden = true;
+      $('#link-pub-box').hidden = false;
       $('#link-to').value = '';
       const qrBox = $('#link-qr');
       qrBox.innerHTML = '';

@@ -12,13 +12,15 @@
   <meta property="og:title" content="Files shared with you on OmniBeam">
   <meta property="og:description" content="Open the link to download them. End-to-end encrypted.">
   <meta property="og:image" content="https://omnibeam.site/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Files shared with you on OmniBeam">
   <meta name="theme-color" content="#e6e9f0" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#2b2e38" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/pages.css?v=14">
+  <link rel="stylesheet" href="/pages.css?v=15">
 </head>
 <body>
   <header class="page-header">
@@ -32,18 +34,39 @@
       <h1 data-t="Files shared with you">Files shared with you</h1>
       <p class="lead" id="drop-status" data-t="Loading…">Loading…</p>
       <form class="drop-pin" id="drop-pin" hidden>
-        <label for="drop-pin-input" data-t="This link needs a PIN. Ask the person who sent it.">This link needs a PIN. Ask the person who sent it.</label>
-        <input id="drop-pin-input" type="text" inputmode="numeric" autocomplete="off" pattern="[0-9]*" minlength="4" maxlength="8" placeholder="PIN" required>
+        <label for="drop-pin-input" data-t="This link needs a PIN or password. Ask the person who sent it.">This link needs a PIN or password. Ask the person who sent it.</label>
+        <input id="drop-pin-input" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" minlength="4" maxlength="32" placeholder="PIN" required>
         <button type="submit" class="open-app" data-t="Open">Open</button>
       </form>
+      <!-- One row per file: an icon or small picture, name, size and type, Preview and (after the download) Save -->
       <ul class="drop-files" id="drop-files"></ul>
       <div class="drop-bar" id="drop-bar" hidden><span></span></div>
-      <p class="cta"><button type="button" class="open-app" id="drop-get" hidden data-t="Download">Download</button></p>
+      <p class="cta drop-actions">
+        <button type="button" class="open-app drop-big" id="drop-get" hidden data-t="Download">Download</button>
+        <button type="button" class="open-app drop-big" id="drop-zip" hidden data-t="Save all as ZIP">Save all as ZIP</button>
+      </p>
+      <!-- When it was shared, how many times it was opened and downloaded -->
+      <p class="drop-stats" id="drop-stats" hidden></p>
+      <p class="drop-share" id="drop-share" hidden>
+        <button type="button" class="drop-chip" id="drop-copy" data-t="Copy link">Copy link</button>
+        <button type="button" class="drop-chip" id="drop-sharebtn" hidden data-t="Share">Share</button>
+      </p>
       <p class="drop-note" data-t="End-to-end encrypted: the files are decrypted on this device. The OmniBeam server can't read them.">End-to-end encrypted: the files are decrypted on this device. The OmniBeam server can't read them.</p>
     </article>
-    <p class="drop-own"><a href="/" data-t="Send your own files with OmniBeam: free, no app">Send your own files with OmniBeam: free, no app</a></p>
+    <aside class="drop-own">
+      <img src="/icon.svg?v=4" alt="" width="44" height="44">
+      <div>
+        <a href="/" data-t="Send your own files with OmniBeam: free, no app">Send your own files with OmniBeam: free, no app</a>
+        <span data-t="No sign-up. End-to-end encrypted. Any device.">No sign-up. End-to-end encrypted. Any device.</span>
+      </div>
+    </aside>
+    <!-- Preview of one file: a photo, video, song, PDF or text, right on the page -->
+    <dialog class="drop-view" id="drop-view" aria-labelledby="drop-view-name">
+      <div class="dv-head"><span id="drop-view-name"></span><button type="button" class="dv-close" id="drop-view-close" aria-label="Close">✕</button></div>
+      <div class="dv-body" id="drop-view-body"></div>
+    </dialog>
   </main>
   <script src="/report.js?v=5"></script>
-  <script src="/get.js?v=6"></script>
+  <script src="/get.js?v=7"></script>
 </body>
 </html>

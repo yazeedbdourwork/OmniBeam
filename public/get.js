@@ -1,6 +1,9 @@
 // OmniBeam download page for files shared by link (/d/<id>#<key>). See drop.js for the format.
 // The key comes from the part of the address after #, which never reaches the server. Nothing is downloaded until
 // the visitor presses Download, so link previews in chat apps don't use up a one-time link.
+// The page shows a row per file (icon or small picture, size, type), when it was shared and how many times it was
+// opened and downloaded. On a link without a download limit, one file can be fetched on its own (Range, not counted)
+// for a preview or a small picture; after the download every file can be previewed, saved, or saved all as one ZIP.
 'use strict';
 (function () {
   const TEXT = {
@@ -424,6 +427,150 @@
       "{n} min": "{n} منٹ",
     },
   };
+  // Added with the file page (previews, ZIP, counts, share buttons; 2026-11-24)
+  const MORE = {
+    ar: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'هذا الرابط يحتاج إلى رمز PIN أو كلمة مرور. اطلبها من الشخص الذي أرسله.',
+      'The PIN or password has 4 to 32 characters.': 'رمز PIN أو كلمة المرور من 4 إلى 32 حرفًا.',
+      'Shared {date}': 'تمت المشاركة {date}', 'Downloads: {n}': 'التنزيلات: {n}', 'Views: {n}': 'المشاهدات: {n}',
+      'Preview': 'معاينة', 'Close': 'إغلاق', 'Save all as ZIP': 'حفظ الكل كملف ZIP', 'Making the ZIP…': 'جارٍ إنشاء ملف ZIP…',
+      'No preview for this file. Download it to open it.': 'لا توجد معاينة لهذا الملف. نزّله لفتحه.', 'Loading preview…': 'جارٍ تحميل المعاينة…',
+      'Copy link': 'نسخ الرابط', 'Link copied': 'تم نسخ الرابط', 'Share': 'مشاركة',
+      'No sign-up. End-to-end encrypted. Any device.': 'دون تسجيل. مشفّر من طرف إلى طرف. على أي جهاز.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'تم. احفظ الكل كملف ZIP، أو اضغط على ملف لحفظه.',
+    },
+    fr: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Ce lien demande un code PIN ou un mot de passe. Demandez-le à la personne qui l\'a envoyé.',
+      'The PIN or password has 4 to 32 characters.': 'Le code PIN ou le mot de passe contient 4 à 32 caractères.',
+      'Shared {date}': 'Partagé le {date}', 'Downloads: {n}': 'Téléchargements : {n}', 'Views: {n}': 'Vues : {n}',
+      'Preview': 'Aperçu', 'Close': 'Fermer', 'Save all as ZIP': 'Tout enregistrer en ZIP', 'Making the ZIP…': 'Création du ZIP…',
+      'No preview for this file. Download it to open it.': 'Pas d\'aperçu pour ce fichier. Téléchargez-le pour l\'ouvrir.', 'Loading preview…': 'Chargement de l\'aperçu…',
+      'Copy link': 'Copier le lien', 'Link copied': 'Lien copié', 'Share': 'Partager',
+      'No sign-up. End-to-end encrypted. Any device.': 'Sans inscription. Chiffré de bout en bout. Sur tout appareil.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Terminé. Enregistrez tout en ZIP, ou touchez un fichier pour l\'enregistrer.',
+    },
+    es: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Este enlace necesita un PIN o una contraseña. Pídesela a quien lo envió.',
+      'The PIN or password has 4 to 32 characters.': 'El PIN o la contraseña tiene de 4 a 32 caracteres.',
+      'Shared {date}': 'Compartido el {date}', 'Downloads: {n}': 'Descargas: {n}', 'Views: {n}': 'Visitas: {n}',
+      'Preview': 'Vista previa', 'Close': 'Cerrar', 'Save all as ZIP': 'Guardar todo como ZIP', 'Making the ZIP…': 'Creando el ZIP…',
+      'No preview for this file. Download it to open it.': 'No hay vista previa de este archivo. Descárgalo para abrirlo.', 'Loading preview…': 'Cargando vista previa…',
+      'Copy link': 'Copiar enlace', 'Link copied': 'Enlace copiado', 'Share': 'Compartir',
+      'No sign-up. End-to-end encrypted. Any device.': 'Sin registro. Cifrado de extremo a extremo. En cualquier dispositivo.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Listo. Guarda todo como ZIP o toca un archivo para guardarlo.',
+    },
+    tr: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Bu bağlantı bir PIN veya parola istiyor. Gönderen kişiye sorun.',
+      'The PIN or password has 4 to 32 characters.': 'PIN veya parola 4 ile 32 karakterdir.',
+      'Shared {date}': 'Paylaşıldı: {date}', 'Downloads: {n}': 'İndirme: {n}', 'Views: {n}': 'Görüntülenme: {n}',
+      'Preview': 'Önizleme', 'Close': 'Kapat', 'Save all as ZIP': 'Tümünü ZIP olarak kaydet', 'Making the ZIP…': 'ZIP hazırlanıyor…',
+      'No preview for this file. Download it to open it.': 'Bu dosya için önizleme yok. Açmak için indirin.', 'Loading preview…': 'Önizleme yükleniyor…',
+      'Copy link': 'Bağlantıyı kopyala', 'Link copied': 'Bağlantı kopyalandı', 'Share': 'Paylaş',
+      'No sign-up. End-to-end encrypted. Any device.': 'Kayıt yok. Uçtan uca şifreli. Her cihazda.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Bitti. Tümünü ZIP olarak kaydedin veya kaydetmek için bir dosyaya dokunun.',
+    },
+    de: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Dieser Link braucht eine PIN oder ein Passwort. Frag die Person, die ihn geschickt hat.',
+      'The PIN or password has 4 to 32 characters.': 'Die PIN oder das Passwort hat 4 bis 32 Zeichen.',
+      'Shared {date}': 'Geteilt am {date}', 'Downloads: {n}': 'Downloads: {n}', 'Views: {n}': 'Aufrufe: {n}',
+      'Preview': 'Vorschau', 'Close': 'Schließen', 'Save all as ZIP': 'Alle als ZIP speichern', 'Making the ZIP…': 'ZIP wird erstellt…',
+      'No preview for this file. Download it to open it.': 'Keine Vorschau für diese Datei. Lade sie herunter, um sie zu öffnen.', 'Loading preview…': 'Vorschau wird geladen…',
+      'Copy link': 'Link kopieren', 'Link copied': 'Link kopiert', 'Share': 'Teilen',
+      'No sign-up. End-to-end encrypted. Any device.': 'Ohne Anmeldung. Ende-zu-Ende-verschlüsselt. Auf jedem Gerät.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Fertig. Speichere alle als ZIP oder tippe auf eine Datei, um sie zu speichern.',
+    },
+    pt: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Este link precisa de um PIN ou senha. Peça à pessoa que o enviou.',
+      'The PIN or password has 4 to 32 characters.': 'O PIN ou a senha tem de 4 a 32 caracteres.',
+      'Shared {date}': 'Compartilhado em {date}', 'Downloads: {n}': 'Downloads: {n}', 'Views: {n}': 'Visualizações: {n}',
+      'Preview': 'Pré-visualizar', 'Close': 'Fechar', 'Save all as ZIP': 'Salvar tudo em ZIP', 'Making the ZIP…': 'Criando o ZIP…',
+      'No preview for this file. Download it to open it.': 'Sem pré-visualização para este arquivo. Baixe-o para abrir.', 'Loading preview…': 'Carregando pré-visualização…',
+      'Copy link': 'Copiar link', 'Link copied': 'Link copiado', 'Share': 'Compartilhar',
+      'No sign-up. End-to-end encrypted. Any device.': 'Sem cadastro. Criptografia de ponta a ponta. Em qualquer aparelho.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Pronto. Salve tudo em ZIP ou toque em um arquivo para salvá-lo.',
+    },
+    hi: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'इस लिंक के लिए PIN या पासवर्ड चाहिए। भेजने वाले से पूछें।',
+      'The PIN or password has 4 to 32 characters.': 'PIN या पासवर्ड 4 से 32 अक्षरों का होता है।',
+      'Shared {date}': '{date} को शेयर किया', 'Downloads: {n}': 'डाउनलोड: {n}', 'Views: {n}': 'व्यू: {n}',
+      'Preview': 'प्रीव्यू', 'Close': 'बंद करें', 'Save all as ZIP': 'सब ZIP में सेव करें', 'Making the ZIP…': 'ZIP बन रहा है…',
+      'No preview for this file. Download it to open it.': 'इस फ़ाइल का प्रीव्यू नहीं है। खोलने के लिए डाउनलोड करें।', 'Loading preview…': 'प्रीव्यू लोड हो रहा है…',
+      'Copy link': 'लिंक कॉपी करें', 'Link copied': 'लिंक कॉपी हुआ', 'Share': 'शेयर करें',
+      'No sign-up. End-to-end encrypted. Any device.': 'साइन-अप नहीं। एंड-टू-एंड एन्क्रिप्टेड। किसी भी डिवाइस पर।',
+      'Done. Save all as ZIP, or tap a file to save it.': 'हो गया। सब ZIP में सेव करें, या सेव करने के लिए किसी फ़ाइल पर टैप करें।',
+    },
+    id: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Tautan ini memerlukan PIN atau kata sandi. Tanyakan kepada pengirimnya.',
+      'The PIN or password has 4 to 32 characters.': 'PIN atau kata sandi terdiri dari 4 sampai 32 karakter.',
+      'Shared {date}': 'Dibagikan {date}', 'Downloads: {n}': 'Unduhan: {n}', 'Views: {n}': 'Dilihat: {n}',
+      'Preview': 'Pratinjau', 'Close': 'Tutup', 'Save all as ZIP': 'Simpan semua sebagai ZIP', 'Making the ZIP…': 'Membuat ZIP…',
+      'No preview for this file. Download it to open it.': 'Tidak ada pratinjau untuk file ini. Unduh untuk membukanya.', 'Loading preview…': 'Memuat pratinjau…',
+      'Copy link': 'Salin tautan', 'Link copied': 'Tautan disalin', 'Share': 'Bagikan',
+      'No sign-up. End-to-end encrypted. Any device.': 'Tanpa daftar. Terenkripsi end-to-end. Di perangkat apa pun.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Selesai. Simpan semua sebagai ZIP, atau ketuk file untuk menyimpannya.',
+    },
+    ru: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Для этой ссылки нужен PIN-код или пароль. Спросите у отправителя.',
+      'The PIN or password has 4 to 32 characters.': 'PIN-код или пароль — от 4 до 32 символов.',
+      'Shared {date}': 'Отправлено {date}', 'Downloads: {n}': 'Скачиваний: {n}', 'Views: {n}': 'Просмотров: {n}',
+      'Preview': 'Просмотр', 'Close': 'Закрыть', 'Save all as ZIP': 'Сохранить всё в ZIP', 'Making the ZIP…': 'Создаём ZIP…',
+      'No preview for this file. Download it to open it.': 'Для этого файла нет просмотра. Скачайте его, чтобы открыть.', 'Loading preview…': 'Загружаем просмотр…',
+      'Copy link': 'Копировать ссылку', 'Link copied': 'Ссылка скопирована', 'Share': 'Поделиться',
+      'No sign-up. End-to-end encrypted. Any device.': 'Без регистрации. Сквозное шифрование. На любом устройстве.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Готово. Сохраните всё в ZIP или нажмите на файл, чтобы сохранить его.',
+    },
+    ja: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'このリンクには PIN またはパスワードが必要です。送った人に聞いてください。',
+      'The PIN or password has 4 to 32 characters.': 'PIN またはパスワードは 4〜32 文字です。',
+      'Shared {date}': '{date} に共有', 'Downloads: {n}': 'ダウンロード: {n}', 'Views: {n}': '閲覧: {n}',
+      'Preview': 'プレビュー', 'Close': '閉じる', 'Save all as ZIP': 'すべて ZIP で保存', 'Making the ZIP…': 'ZIP を作成中…',
+      'No preview for this file. Download it to open it.': 'このファイルはプレビューできません。ダウンロードして開いてください。', 'Loading preview…': 'プレビューを読み込み中…',
+      'Copy link': 'リンクをコピー', 'Link copied': 'リンクをコピーしました', 'Share': '共有',
+      'No sign-up. End-to-end encrypted. Any device.': '登録不要。エンドツーエンド暗号化。どのデバイスでも。',
+      'Done. Save all as ZIP, or tap a file to save it.': '完了。すべて ZIP で保存するか、ファイルをタップして保存してください。',
+    },
+    zh: {
+      'This link needs a PIN or password. Ask the person who sent it.': '此链接需要 PIN 码或密码。请向发送者询问。',
+      'The PIN or password has 4 to 32 characters.': 'PIN 码或密码为 4 到 32 个字符。',
+      'Shared {date}': '分享于 {date}', 'Downloads: {n}': '下载：{n}', 'Views: {n}': '浏览：{n}',
+      'Preview': '预览', 'Close': '关闭', 'Save all as ZIP': '全部保存为 ZIP', 'Making the ZIP…': '正在生成 ZIP…',
+      'No preview for this file. Download it to open it.': '此文件无法预览。请下载后打开。', 'Loading preview…': '正在加载预览…',
+      'Copy link': '复制链接', 'Link copied': '链接已复制', 'Share': '分享',
+      'No sign-up. End-to-end encrypted. Any device.': '无需注册。端到端加密。任何设备可用。',
+      'Done. Save all as ZIP, or tap a file to save it.': '完成。全部保存为 ZIP，或点按文件单独保存。',
+    },
+    ko: {
+      'This link needs a PIN or password. Ask the person who sent it.': '이 링크에는 PIN 또는 비밀번호가 필요합니다. 보낸 사람에게 물어보세요.',
+      'The PIN or password has 4 to 32 characters.': 'PIN 또는 비밀번호는 4~32자입니다.',
+      'Shared {date}': '{date} 공유됨', 'Downloads: {n}': '다운로드: {n}', 'Views: {n}': '조회: {n}',
+      'Preview': '미리 보기', 'Close': '닫기', 'Save all as ZIP': '모두 ZIP으로 저장', 'Making the ZIP…': 'ZIP 만드는 중…',
+      'No preview for this file. Download it to open it.': '이 파일은 미리 볼 수 없습니다. 다운로드해서 여세요.', 'Loading preview…': '미리 보기 불러오는 중…',
+      'Copy link': '링크 복사', 'Link copied': '링크 복사됨', 'Share': '공유',
+      'No sign-up. End-to-end encrypted. Any device.': '가입 없음. 종단 간 암호화. 모든 기기에서.',
+      'Done. Save all as ZIP, or tap a file to save it.': '완료. 모두 ZIP으로 저장하거나 파일을 탭해 저장하세요.',
+    },
+    it: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'Questo link richiede un PIN o una password. Chiedila a chi l\'ha inviato.',
+      'The PIN or password has 4 to 32 characters.': 'Il PIN o la password ha da 4 a 32 caratteri.',
+      'Shared {date}': 'Condiviso il {date}', 'Downloads: {n}': 'Download: {n}', 'Views: {n}': 'Visualizzazioni: {n}',
+      'Preview': 'Anteprima', 'Close': 'Chiudi', 'Save all as ZIP': 'Salva tutto come ZIP', 'Making the ZIP…': 'Creazione dello ZIP…',
+      'No preview for this file. Download it to open it.': 'Nessuna anteprima per questo file. Scaricalo per aprirlo.', 'Loading preview…': 'Caricamento anteprima…',
+      'Copy link': 'Copia link', 'Link copied': 'Link copiato', 'Share': 'Condividi',
+      'No sign-up. End-to-end encrypted. Any device.': 'Senza registrazione. Crittografia end-to-end. Su qualsiasi dispositivo.',
+      'Done. Save all as ZIP, or tap a file to save it.': 'Fatto. Salva tutto come ZIP o tocca un file per salvarlo.',
+    },
+    ur: {
+      'This link needs a PIN or password. Ask the person who sent it.': 'اس لنک کے لیے PIN یا پاس ورڈ چاہیے۔ بھیجنے والے سے پوچھیں۔',
+      'The PIN or password has 4 to 32 characters.': 'PIN یا پاس ورڈ 4 سے 32 حروف کا ہوتا ہے۔',
+      'Shared {date}': '{date} کو شیئر کیا گیا', 'Downloads: {n}': 'ڈاؤن لوڈ: {n}', 'Views: {n}': 'ویوز: {n}',
+      'Preview': 'پیش نظارہ', 'Close': 'بند کریں', 'Save all as ZIP': 'سب ZIP میں محفوظ کریں', 'Making the ZIP…': 'ZIP بن رہی ہے…',
+      'No preview for this file. Download it to open it.': 'اس فائل کا پیش نظارہ نہیں ہے۔ کھولنے کے لیے ڈاؤن لوڈ کریں۔', 'Loading preview…': 'پیش نظارہ لوڈ ہو رہا ہے…',
+      'Copy link': 'لنک کاپی کریں', 'Link copied': 'لنک کاپی ہو گیا', 'Share': 'شیئر کریں',
+      'No sign-up. End-to-end encrypted. Any device.': 'سائن اپ نہیں۔ اینڈ ٹو اینڈ انکرپٹڈ۔ کسی بھی ڈیوائس پر۔',
+      'Done. Save all as ZIP, or tap a file to save it.': 'ہو گیا۔ سب ZIP میں محفوظ کریں، یا محفوظ کرنے کے لیے کسی فائل پر ٹیپ کریں۔',
+    },
+  };
+  for (const [code, strings] of Object.entries(MORE)) Object.assign(TEXT[code], strings);
   let lang = 'en';
   try { lang = localStorage.getItem('omnibeam-lang') || ''; } catch {}
   if (!TEXT[lang] && lang !== 'en') lang = (navigator.languages || [navigator.language || 'en']).map((l) => String(l).slice(0, 2).toLowerCase()).find((l) => TEXT[l]) || 'en';
@@ -457,10 +604,15 @@
     new DataView(v.buffer).setUint32(8, n);
     return v;
   };
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  $('#drop-view-close').setAttribute('aria-label', t('Close'));
 
   const id = location.pathname.split('/').pop();
   const keyText = location.hash.slice(1);
   let key, info, files;
+  let offsets = []; // where each file starts in the data (the files are one after the other)
+  let saved = null; // after the download: one Blob per file
   let note = false; // a secret note (drop.js): text shown here once, then gone from the server
   let pinHeader = {}; // { 'X-Drop-Pin': proof } once the right PIN was typed (links with a PIN)
   const b64u = (buf) => {
@@ -470,7 +622,7 @@
   };
   // Same as pinProof in drop.js: the server only ever sees this, never the PIN
   const pinProof = async (pin) => b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`omnibeam-pin:${pin}:${keyText}`)));
-  // Ask for the PIN; resolves with the answer to the first request that it unlocked
+  // Ask for the PIN (or password: any 4 to 32 characters); resolves with the answer to the first request that it unlocked
   function askPin(first) {
     const form = $('#drop-pin');
     const input = $('#drop-pin-input');
@@ -481,8 +633,8 @@
     return new Promise((resolve) => {
       form.onsubmit = async (e) => {
         e.preventDefault();
-        const pin = input.value.replace(/\D/g, '');
-        if (pin.length < 4) return status(t('The PIN has 4 to 8 digits.'));
+        const pin = input.value;
+        if (pin.length < 4 || pin.length > 32) return status(t('The PIN or password has 4 to 32 characters.'));
         const header = { 'X-Drop-Pin': await pinProof(pin) };
         const r = await fetch(`/api/drop/${id}`, { cache: 'no-store', headers: header }).catch(() => null);
         if (!r) return status(t('Download failed. Check the connection and try again.'));
@@ -495,6 +647,217 @@
         resolve(null);
       };
     });
+  }
+
+  // ---- What each file is: an icon, a type label, and whether this browser can show it here ----
+  const ext = (name) => (/\.([A-Za-z0-9]{1,8})$/.exec(name) || [])[1]?.toLowerCase() || '';
+  function kindOf(f) {
+    const type = (f.type || '').toLowerCase();
+    const e = ext(f.name);
+    if (/^image\/(jpeg|png|gif|webp|avif|bmp|svg\+xml)$/.test(type) || /^(jpe?g|png|gif|webp|avif|bmp)$/.test(e)) return 'image';
+    if ((type === 'image/heic' || type === 'image/heif' || /^hei[cf]$/.test(e)) && isIOS) return 'image'; // only Safari shows HEIC
+    if (type.startsWith('image/') || /^hei[cf]$/.test(e)) return 'photo';
+    if (type.startsWith('video/') || /^(mp4|m4v|mov|webm|mkv|avi|3gp)$/.test(e)) return /^(mp4|m4v|mov|webm)$/.test(e) || /^video\/(mp4|webm|quicktime)$/.test(type) ? 'video' : 'movie';
+    if (type.startsWith('audio/') || /^(mp3|m4a|aac|wav|ogg|oga|opus|flac)$/.test(e)) return 'audio';
+    if (type === 'application/pdf' || e === 'pdf') return 'pdf';
+    if (type.startsWith('text/') || /^(txt|md|csv|json|log|xml|ya?ml|ini|js|ts|py|c|cpp|h|java|go|rs|rb|php|sh|css|html?|srt|vtt)$/.test(e) || type === 'application/json') return 'text';
+    if (/^(zip|rar|7z|tar|gz|tgz|bz2|xz)$/.test(e) || /zip|compressed|x-tar/.test(type)) return 'archive';
+    if (/^(apk|exe|msi|dmg|pkg|deb|rpm|appimage|ipa)$/.test(e)) return 'app';
+    if (/^(xlsx?|ods|numbers)$/.test(e) || /sheet|excel/.test(type)) return 'sheet';
+    if (/^(pptx?|odp|key)$/.test(e) || /presentation|powerpoint/.test(type)) return 'slides';
+    if (/^(docx?|odt|rtf|pages)$/.test(e) || /word|opendocument\.text/.test(type)) return 'doc';
+    return 'file';
+  }
+  const ICON = { image: '🖼️', photo: '🖼️', video: '🎬', movie: '🎬', audio: '🎵', pdf: '📕', text: '📝', archive: '🗜️', app: '📦', sheet: '📊', slides: '📽️', doc: '📄', file: '📁' };
+  // The largest file each kind may be to preview before the whole download (it is fetched and decrypted in memory:
+  // phones, iPhones above all, have little)
+  const MB = 1048576;
+  function previewMax(kind) {
+    if (kind === 'image') return 25 * MB;
+    if (kind === 'video' || kind === 'audio') return (isIOS ? 60 : 150) * MB;
+    if (kind === 'pdf') return isAndroid ? 0 : 30 * MB; // Chrome on Android can't show a PDF inside a page
+    if (kind === 'text') return Infinity; // only its start is shown
+    return 0;
+  }
+  const canShow = (kind) => previewMax(kind) > 0;
+  // Parts of a link without a download limit can be fetched one file at a time (not counted as a download)
+  const partsOk = () => !info.max && !info.once;
+
+  // ---- Reading the encrypted data: part by part as it arrives, so it never sits in memory twice ----
+  const partLen = (k) => Math.min(info.part, info.size - k * info.part) + 16;
+  // Decrypts the parts from `first` in the response body, in order; onPart(plain bytes, part number). Returns how many
+  // plain bytes there were. onRead(bytes so far) for the progress bar.
+  async function readParts(r, first, last, onPart, onRead) {
+    const reader = r.body.getReader();
+    let pending = new Uint8Array(0);
+    let n = first;
+    let done = 0;
+    for (;;) {
+      const { value, done: end } = await reader.read();
+      if (value) {
+        const merged = new Uint8Array(pending.length + value.length);
+        merged.set(pending);
+        merged.set(value, pending.length);
+        pending = merged;
+        while (n <= last && pending.length >= partLen(n)) {
+          const len = partLen(n);
+          const plain = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, pending.subarray(0, len)));
+          onPart(plain, n);
+          pending = pending.slice(len);
+          done += len - 16;
+          n++;
+        }
+        onRead?.(done + pending.length);
+      }
+      if (end) break;
+    }
+    return done;
+  }
+  // One file (or its first `limit` bytes) of a link without a download limit, before the whole download
+  async function fetchOne(i, limit = Infinity) {
+    const f = files[i];
+    const start = offsets[i];
+    const end = start + Math.max(1, Math.min(f.size, limit)); // plain bytes [start, end)
+    const first = Math.floor(start / info.part);
+    const last = Math.floor((end - 1) / info.part);
+    const from = first * (info.part + 16);
+    const to = last * (info.part + 16) + partLen(last) - 1;
+    const r = await fetch(`/api/drop/${id}/data`, { cache: 'no-store', headers: { ...pinHeader, Range: `bytes=${from}-${to}` } });
+    if (r.status !== 206 || !r.body) { r.body?.cancel().catch(() => {}); throw new Error('range'); }
+    const out = [];
+    await readParts(r, first, last, (plain, n) => {
+      const a = Math.max(start, n * info.part) - n * info.part;
+      const b = Math.min(end, n * info.part + plain.length) - n * info.part;
+      if (b > a) out.push(plain.subarray(a, b));
+    });
+    return new Blob(out, { type: f.type || 'application/octet-stream' });
+  }
+
+  // ---- The preview window ----
+  const view = $('#drop-view');
+  const viewBody = $('#drop-view-body');
+  let viewUrl = '';
+  function closeView() {
+    if (view.open) view.close();
+  }
+  view.addEventListener('close', () => {
+    viewBody.innerHTML = '';
+    if (viewUrl) URL.revokeObjectURL(viewUrl);
+    viewUrl = '';
+  });
+  view.addEventListener('click', (e) => { if (e.target === view) closeView(); });
+  $('#drop-view-close').onclick = closeView;
+  const viewMsg = (text) => {
+    viewBody.innerHTML = '<p class="dv-msg"></p>';
+    viewBody.firstChild.textContent = text;
+  };
+  async function preview(i) {
+    const f = files[i];
+    const kind = kindOf(f);
+    $('#drop-view-name').textContent = f.name;
+    viewMsg(t('Loading preview…'));
+    if (!view.open) view.showModal();
+    try {
+      const textMax = 256 * 1024;
+      const blob = saved ? saved[i] : await fetchOne(i, kind === 'text' ? textMax : Infinity);
+      if (!view.open) return;
+      if (kind === 'text') {
+        const text = await blob.slice(0, textMax).text();
+        viewBody.innerHTML = '<pre class="dv-text"></pre>';
+        viewBody.firstChild.textContent = text + (f.size > textMax ? '\n…' : '');
+        return;
+      }
+      if (viewUrl) URL.revokeObjectURL(viewUrl);
+      viewUrl = URL.createObjectURL(blob);
+      let el;
+      if (kind === 'image') el = Object.assign(document.createElement('img'), { alt: f.name });
+      else if (kind === 'video') el = Object.assign(document.createElement('video'), { controls: true, playsInline: true, autoplay: true });
+      else if (kind === 'audio') el = Object.assign(document.createElement('audio'), { controls: true, autoplay: true });
+      else el = Object.assign(document.createElement('iframe'), { title: f.name });
+      el.className = `dv-${kind}`;
+      el.onerror = () => viewMsg(t('No preview for this file. Download it to open it.'));
+      el.src = viewUrl;
+      viewBody.innerHTML = '';
+      viewBody.appendChild(el);
+    } catch (err) {
+      if (view.open) viewMsg(t('No preview for this file. Download it to open it.'));
+      if (err.message !== 'range') window.omniReport?.('link', 'Preview failed: ' + (err.message || err.name || 'unknown'));
+    }
+  }
+
+  // ---- The file list ----
+  function fileRow(f, i) {
+    const kind = kindOf(f);
+    const li = document.createElement('li');
+    li.className = `f k-${kind}${files.length === 1 ? ' one' : ''}`;
+    li.innerHTML = '<span class="ic" aria-hidden="true"></span><span class="tx"><span class="n"></span><span class="s"></span></span><span class="acts"></span>';
+    li.querySelector('.ic').textContent = ICON[kind];
+    li.querySelector('.n').textContent = f.name;
+    const e = ext(f.name);
+    li.querySelector('.s').textContent = `${formatSize(f.size)}${e ? ' · ' + e.toUpperCase() : ''}`;
+    if (f.size && canShow(kind) && partsOk() && f.size <= previewMax(kind)) addPreview(li, i);
+    return li;
+  }
+  function addPreview(li, i) {
+    if (li.querySelector('.pv')) return;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pv';
+    b.textContent = t('Preview');
+    b.setAttribute('aria-label', `${t('Preview')}: ${files[i].name}`);
+    b.onclick = () => preview(i);
+    li.querySelector('.acts').prepend(b);
+  }
+  // Small pictures of photos in the list (links without a download limit, small photos only, a few at a time)
+  async function thumbnails() {
+    const rows = [...$('#drop-files').children];
+    const one = files.length === 1;
+    let shown = 0;
+    for (let i = 0; i < files.length && shown < 24; i++) {
+      const f = files[i];
+      if (kindOf(f) !== 'image' || f.size > (one ? 12 : 4) * MB || /svg/.test(f.type)) continue;
+      shown++;
+      try {
+        const blob = saved ? saved[i] : await fetchOne(i);
+        const img = new Image();
+        img.alt = '';
+        img.decoding = 'async';
+        img.onerror = () => { URL.revokeObjectURL(img.src); img.remove(); rows[i].classList.remove('has-pic'); };
+        img.src = URL.createObjectURL(blob);
+        const ic = rows[i].querySelector('.ic');
+        ic.textContent = '';
+        ic.appendChild(img);
+        rows[i].classList.add('has-pic');
+        ic.onclick = () => preview(i);
+      } catch { break; } // the server won't give parts (an old server, or a limit): no pictures
+    }
+  }
+  function showStats() {
+    const parts = [];
+    if (info.created) parts.push(t('Shared {date}', { date: new Date(info.created).toLocaleDateString(document.documentElement.lang || undefined, { dateStyle: 'medium' }) }));
+    if (info.downloads != null) parts.push(t('Downloads: {n}', { n: info.downloads }));
+    if (info.views != null) parts.push(t('Views: {n}', { n: info.views }));
+    $('#drop-stats').textContent = parts.join(' · ');
+    $('#drop-stats').hidden = !parts.length;
+  }
+  // Copy or share this page's link (with the key: whoever gets it can open it too)
+  function shareRow() {
+    $('#drop-share').hidden = false;
+    $('#drop-copy').onclick = async () => {
+      try { await navigator.clipboard.writeText(location.href); } catch {
+        const el = Object.assign(document.createElement('input'), { value: location.href });
+        document.body.append(el);
+        el.select();
+        document.execCommand('copy');
+        el.remove();
+      }
+      $('#drop-copy').textContent = '✓ ' + t('Link copied');
+      setTimeout(() => { $('#drop-copy').textContent = t('Copy link'); }, 2500);
+    };
+    if (navigator.share) {
+      $('#drop-sharebtn').hidden = false;
+      $('#drop-sharebtn').onclick = () => navigator.share({ title: files.length === 1 ? files[0].name : 'OmniBeam', url: location.href }).catch(() => {});
+    }
   }
 
   async function init() {
@@ -519,6 +882,8 @@
     } catch {
       return status(t('This link is incomplete. Copy the whole link, including the part after #.'));
     }
+    let at = 0;
+    offsets = files.map((f) => { const o = at; at += f.size; return o; });
     const left = info.expires - Date.now();
     const time = left >= 3600000 ? t('{n} h', { n: Math.round(left / 3600000) }) : t('{n} min', { n: Math.max(1, Math.round(left / 60000)) });
     if (note) {
@@ -532,18 +897,72 @@
       $('#drop-get').hidden = false;
       return;
     }
+    if (files.length === 1) document.title = `${files[0].name} | OmniBeam`;
     const list = $('#drop-files');
-    for (const f of files) {
-      const li = document.createElement('li');
-      li.innerHTML = '<span class="n"></span><span class="s"></span>';
-      li.querySelector('.n').textContent = f.name;
-      li.querySelector('.s').textContent = formatSize(f.size);
-      list.appendChild(li);
-    }
+    files.forEach((f, i) => list.appendChild(fileRow(f, i)));
     status(`${files.length > 1 ? t('{n} files · {size}', { n: files.length, size: formatSize(info.size) }) : t('1 file · {size}', { size: formatSize(info.size) })}. ${t('Available for {time}.', { time })}${info.once ? ' ' + t('This link works for one download only.') : info.max ? ' ' + t('Downloads left: {n} of {max}.', { n: info.left, max: info.max }) : ''}`);
+    showStats();
+    shareRow();
     if (info.max && info.left === 0) return status(t('Someone is already downloading these files, or the one download was used.'));
+    $('#drop-get').textContent = `${t('Download')} · ${formatSize(info.size)}`;
     $('#drop-get').hidden = false;
+    if (partsOk()) thumbnails();
   }
+
+  // ---- ZIP of all the files (no compression: it's quick, and photos and videos are compressed already) ----
+  const CRC = (() => {
+    const tab = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; tab[n] = c >>> 0; }
+    return tab;
+  })();
+  const crcUpdate = (c, bytes) => {
+    for (let i = 0; i < bytes.length; i++) c = CRC[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+    return c;
+  };
+  let crcs = null; // each file's CRC-32, worked out while downloading
+  function makeZip() {
+    const enc = new TextEncoder();
+    const parts = [];
+    const central = [];
+    const used = new Set();
+    let offset = 0;
+    const d = new Date(info.created || Date.now());
+    const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+    const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+    files.forEach((f, i) => {
+      let name = String(f.name).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_') || 'file';
+      for (let n = 2; used.has(name.toLowerCase()); n++) name = f.name.replace(/(\.[^.]*)?$/, ` (${n})$1`);
+      used.add(name.toLowerCase());
+      const nameBytes = enc.encode(name);
+      const crc = (crcs[i] ^ 0xffffffff) >>> 0;
+      const local = new DataView(new ArrayBuffer(30));
+      local.setUint32(0, 0x04034b50, true); local.setUint16(4, 20, true); local.setUint16(6, 0x0800, true);
+      local.setUint16(10, time, true); local.setUint16(12, date, true); local.setUint32(14, crc, true);
+      local.setUint32(18, f.size, true); local.setUint32(22, f.size, true); local.setUint16(26, nameBytes.length, true);
+      parts.push(local.buffer, nameBytes, saved[i]);
+      const cen = new DataView(new ArrayBuffer(46));
+      cen.setUint32(0, 0x02014b50, true); cen.setUint16(4, 20, true); cen.setUint16(6, 20, true); cen.setUint16(8, 0x0800, true);
+      cen.setUint16(12, time, true); cen.setUint16(14, date, true); cen.setUint32(16, crc, true);
+      cen.setUint32(20, f.size, true); cen.setUint32(24, f.size, true); cen.setUint16(28, nameBytes.length, true);
+      cen.setUint32(42, offset, true);
+      central.push(cen.buffer, nameBytes);
+      offset += 30 + nameBytes.length + f.size;
+    });
+    const size = central.reduce((s, p) => s + p.byteLength, 0);
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+    end.setUint32(12, size, true); end.setUint32(16, offset, true);
+    return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
+  }
+  $('#drop-zip').onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(makeZip());
+    a.download = `OmniBeam ${new Date(info.created || Date.now()).toISOString().slice(0, 10)}.zip`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  };
 
   async function download() {
     const button = $('#drop-get');
@@ -560,32 +979,21 @@
       if (r.status === 410) throw new Error(note ? t('This note was already read, or someone is reading it now.') : t('Someone is already downloading these files, or the one download was used.'));
       if (r.status === 404) throw new Error(t('This link has expired or was deleted.'));
       if (!r.ok || !r.body) throw new Error('');
-      // Decrypt part by part as the data arrives
-      const reader = r.body.getReader();
+      // Decrypt part by part as the data arrives; with several files, each one's CRC-32 too (for the ZIP)
       const out = [];
-      let pending = new Uint8Array(0);
-      let n = 0;
-      let done = 0;
-      const partLen = (k) => Math.min(info.part, info.size - k * info.part) + 16;
-      for (;;) {
-        const { value, done: end } = await reader.read();
-        if (value) {
-          const merged = new Uint8Array(pending.length + value.length);
-          merged.set(pending);
-          merged.set(value, pending.length);
-          pending = merged;
-          while (n * info.part < info.size && pending.length >= partLen(n)) {
-            const len = partLen(n);
-            out.push(new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, pending.subarray(0, len))));
-            pending = pending.slice(len);
-            done += len - 16;
-            n++;
-          }
-          setBar((done + pending.length) / info.size);
-        }
-        if (end) break;
-      }
-      if (done !== info.size) throw new Error('');
+      const many = !note && files.length > 1;
+      crcs = many ? files.map(() => 0xffffffff) : null;
+      const total = await readParts(r, 0, Math.max(1, Math.ceil(info.size / info.part)) - 1, (plain, n) => {
+        out.push(plain);
+        if (!many) return;
+        const at = n * info.part;
+        files.forEach((f, i) => {
+          const a = Math.max(offsets[i], at);
+          const b = Math.min(offsets[i] + f.size, at + plain.length);
+          if (b > a) crcs[i] = crcUpdate(crcs[i], plain.subarray(a - at, b - at));
+        });
+      }, (got) => setBar(got / info.size));
+      if (total !== info.size) throw new Error('');
       const all = new Blob(out);
       out.length = 0;
       if (note) {
@@ -602,26 +1010,28 @@
         status(t('The note is now deleted from the server and won\'t open again. Copy it if you need it.'));
         return;
       }
-      let offset = 0;
-      const list = $('#drop-files');
-      list.innerHTML = '';
+      saved = files.map((f, i) => new Blob([all.slice(offsets[i], offsets[i] + f.size)], { type: f.type || 'application/octet-stream' }));
+      const rows = [...$('#drop-files').children];
       const saveButtons = [];
-      for (const f of files) {
-        const blob = new Blob([all.slice(offset, offset + f.size)], { type: f.type || 'application/octet-stream' });
-        offset += f.size;
-        const url = URL.createObjectURL(blob);
-        const li = document.createElement('li');
-        li.innerHTML = '<span class="n"></span><a class="save"></a>';
-        li.querySelector('.n').textContent = `${f.name} · ${formatSize(f.size)}`;
-        const a = li.querySelector('a');
-        a.href = url;
+      files.forEach((f, i) => {
+        const a = document.createElement('a');
+        a.className = 'save';
+        a.href = URL.createObjectURL(saved[i]);
         a.download = f.name;
         a.textContent = t('Save');
+        a.setAttribute('aria-label', `${t('Save')}: ${f.name}`);
+        rows[i].querySelector('.acts').appendChild(a);
+        if (f.size && canShow(kindOf(f))) addPreview(rows[i], i);
         saveButtons.push(a);
-        list.appendChild(li);
-      }
+      });
       bar.hidden = true;
-      status(t('Done. Tap a file to save it.'));
+      if (many) {
+        $('#drop-zip').hidden = false;
+        status(t('Done. Save all as ZIP, or tap a file to save it.'));
+      } else status(t('Done. Tap a file to save it.'));
+      info.downloads = (info.downloads || 0) + 1;
+      showStats();
+      if (!partsOk()) thumbnails(); // the photos are here now
       if (saveButtons.length === 1) saveButtons[0].click();
     } catch (err) {
       bar.hidden = true;

@@ -1516,5 +1516,11 @@
     "OmniBeam is free and open source.": "OmniBeam 免费且开源。",
     "A star on GitHub helps other people find it.": "在 GitHub 上点个星，能帮助更多人发现它。",
     "Star on GitHub": "在 GitHub 上点星",
+    // Share links: password, chat previews, views (2026-11-24)
+    "PIN or password (optional)": "PIN 码或密码（可选）",
+    "4 to 32 characters": "4 到 32 个字符",
+    "The PIN or password needs 4 to 32 characters.": "PIN 码或密码需要 4 到 32 个字符。",
+    "Show the file name and a small picture when the link is pasted in a chat (not encrypted)": "在聊天中粘贴链接时显示文件名和小图片（不加密）",
+    "Views: {n}": "浏览：{n}",
   },
 });
