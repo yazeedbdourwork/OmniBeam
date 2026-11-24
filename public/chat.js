@@ -87,6 +87,7 @@
 .bubble.photo { padding: 3px; }
 .bubble.photo .chat-file, .bubble.photo .chat-acts, .bubble.photo .chat-foot { padding: 0 7px; }
 .bubble.photo .chat-foot { padding-bottom: 3px; }
+.chat-why { margin: 4px 10px 0; font-size: .78rem; line-height: 1.3; opacity: .9; overflow-wrap: anywhere; }
 .chat-photo { position: relative; }
 .chat-photo .chat-thumb { width: 100%; max-height: 320px; object-fit: cover; margin-bottom: 4px; border-radius: 15px; }
 .chat-photo .chat-meta.on-photo { position: absolute; bottom: 10px; right: 8px; background: rgba(0,0,0,.45); color: #fff; padding: 1px 7px; border-radius: 9px; opacity: 1; }
@@ -665,6 +666,13 @@
           tick.setAttribute('role', 'img');
           meta.appendChild(tick);
         } else meta.textContent += ' · ' + (res[it.result] || '');
+      }
+      // Why it didn't finish (e.g. "Connection lost…", "Could not save the file"), so it can be put right
+      if (entry.dir === 'out' && it.result === 'failed' && it.why) {
+        const why = document.createElement('p');
+        why.className = 'chat-why';
+        why.textContent = it.why;
+        b.appendChild(why);
       }
       const foot = document.createElement('div');
       foot.className = 'chat-foot';
