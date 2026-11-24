@@ -677,21 +677,67 @@
   document.addEventListener('dragover', (e) => { if (!$('#req-form').hidden) e.preventDefault(); });
   document.addEventListener('drop', (e) => { if (!$('#req-form').hidden) { e.preventDefault(); add([...(e.dataTransfer?.files || [])]); } });
 
-  async function put(url, token, body) {
+  // The same upload as share by link (drop.js): parts a few at a time, with upload progress.
+  // One part by PUT, with how many bytes went so far (onSent). XMLHttpRequest, not fetch: only it tells upload progress,
+  // so the bar moves smoothly on a slow line instead of jumping once per part
+  function sendPart(url, token, body, onSent) {
+    return new Promise((resolve, reject) => {
+      const x = new XMLHttpRequest();
+      x.open('PUT', url);
+      x.setRequestHeader('X-Drop-Token', token);
+      x.setRequestHeader('Content-Type', 'application/octet-stream');
+      x.upload.onprogress = (e) => onSent(e.loaded);
+      x.onload = () => {
+        let j = {};
+        try { j = JSON.parse(x.responseText); } catch {}
+        resolve({ status: x.status, json: j });
+      };
+      x.onerror = x.ontimeout = x.onabort = () => reject(new TypeError(''));
+      x.send(body);
+    });
+  }
+  async function put(url, token, body, onSent = () => {}) {
+    // A few tries per part: phones switch networks, and shared hosting has hiccups. 409: that part is still
+    // arriving from a try that seemed lost; asking again later answers OK once it's there
     for (let attempt = 0; ; attempt++) {
       try {
-        const r = await fetch(url, { method: 'PUT', headers: { 'X-Drop-Token': token, 'Content-Type': 'application/octet-stream' }, body });
-        if (r.ok) return r.json();
+        const r = await sendPart(url, token, body, onSent);
+        if (r.status >= 200 && r.status < 300) return r.json;
         if (r.status < 500 && r.status !== 409) throw Object.assign(new Error(''), { fatal: true });
-        if (r.status === 409) {
-          const j = await r.json().catch(() => ({}));
-          if (j.got > Number(url.split('/').pop())) return j;
-        }
       } catch (err) {
-        if (err.fatal || attempt >= 4) throw err;
+        if (err.fatal || attempt >= 6) throw err;
       }
-      await sleep(1000 * (attempt + 1));
+      onSent(0);
+      await sleep(1000 * Math.min(attempt + 1, 5));
     }
+  }
+  // Encrypt and upload all parts, UP_PARALLEL at a time. One at a time left the line idle while each part went
+  // through Cloudflare to the server and back (about half the time); a few at once keeps it busy.
+  // onProgress(bytes sent, all bytes); stop() true: give up (Cancel)
+  const UP_PARALLEL = 4;
+  async function uploadParts(all, size, part, key, base, token, onProgress, stop) {
+    const parts = Math.max(1, Math.ceil(size / part));
+    const total = size + parts * 16;
+    const sent = new Array(parts).fill(0);
+    let sum = 0;
+    let next = 0;
+    let failed = false;
+    const worker = async () => {
+      while (next < parts && !failed) {
+        if (stop()) throw new Error('cancelled');
+        const n = next++;
+        const plain = await all.slice(n * part, Math.min(size, (n + 1) * part)).arrayBuffer();
+        const sealed = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, plain);
+        const mark = (b) => {
+          sum += b - sent[n];
+          sent[n] = b;
+          onProgress(Math.min(sum, total), total);
+        };
+        await put(`${base}/${n}`, token, sealed, mark);
+        mark(sealed.byteLength);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(UP_PARALLEL, parts) }, () => worker().catch((err) => { failed = true; throw err; })));
   }
 
   async function send() {
@@ -730,14 +776,13 @@
           : '');
       }
       up = j;
-      const all = new Blob(files);
-      const parts = Math.max(1, Math.ceil(size / j.part));
-      for (let n = 0; n < parts; n++) {
-        const plain = await all.slice(n * j.part, Math.min(size, (n + 1) * j.part)).arrayBuffer();
-        const sealed = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivFor(n) }, fileKey, plain);
-        await put(`/api/drop/${j.id}/${n}`, j.token, sealed);
-        setBar((n + 1) / parts);
-      }
+      let shown = 0;
+      await uploadParts(new Blob(files), size, j.part, fileKey, `/api/drop/${j.id}`, j.token, (done, total) => {
+        const now = Date.now();
+        if (now - shown < 200 && done < total) return; // at most 5 updates a second
+        shown = now;
+        setBar(done / total);
+      }, () => false);
       up = null;
       picked = [];
       render();

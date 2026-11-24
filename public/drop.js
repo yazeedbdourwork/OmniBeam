@@ -298,22 +298,66 @@
   // Scan to PDF (scan.js) and the chat view hand their files to a new link with the options set in this window
   window.OmniLink = { available: () => !btn.hidden && !!window.crypto?.subtle, share(files) { open(false); upload(files); } };
 
-  async function put(url, token, body) {
-    // A few tries per part: phones switch networks, and shared hosting has hiccups
+  // One part by PUT, with how many bytes went so far (onSent). XMLHttpRequest, not fetch: only it tells upload progress,
+  // so the bar moves smoothly on a slow line instead of jumping once per part
+  function sendPart(url, token, body, onSent) {
+    return new Promise((resolve, reject) => {
+      const x = new XMLHttpRequest();
+      x.open('PUT', url);
+      x.setRequestHeader('X-Drop-Token', token);
+      x.setRequestHeader('Content-Type', 'application/octet-stream');
+      x.upload.onprogress = (e) => onSent(e.loaded);
+      x.onload = () => {
+        let j = {};
+        try { j = JSON.parse(x.responseText); } catch {}
+        resolve({ status: x.status, json: j });
+      };
+      x.onerror = x.ontimeout = x.onabort = () => reject(new TypeError('network'));
+      x.send(body);
+    });
+  }
+  async function put(url, token, body, onSent = () => {}) {
+    // A few tries per part: phones switch networks, and shared hosting has hiccups. 409: that part is still
+    // arriving from a try that seemed lost; asking again later answers OK once it's there
     for (let attempt = 0; ; attempt++) {
       try {
-        const r = await fetch(url, { method: 'PUT', headers: { 'X-Drop-Token': token, 'Content-Type': 'application/octet-stream' }, body });
-        if (r.ok) return r.json();
+        const r = await sendPart(url, token, body, onSent);
+        if (r.status >= 200 && r.status < 300) return r.json;
         if (r.status < 500 && r.status !== 409) throw Object.assign(new Error('rejected'), { fatal: true });
-        if (r.status === 409) {
-          const info = await r.json().catch(() => ({}));
-          if (info.got > Number(url.split('/').pop())) return info; // it arrived after all
-        }
       } catch (err) {
-        if (err.fatal || attempt >= 4) throw err;
+        if (err.fatal || attempt >= 6) throw err;
       }
-      await sleep(1000 * (attempt + 1));
+      onSent(0);
+      await sleep(1000 * Math.min(attempt + 1, 5));
     }
+  }
+  // Encrypt and upload all parts, UP_PARALLEL at a time. One at a time left the line idle while each part went
+  // through Cloudflare to the server and back (about half the time); a few at once keeps it busy.
+  // onProgress(bytes sent, all bytes); stop() true: give up (Cancel)
+  const UP_PARALLEL = 4;
+  async function uploadParts(all, size, part, key, base, token, onProgress, stop) {
+    const parts = Math.max(1, Math.ceil(size / part));
+    const total = size + parts * 16;
+    const sent = new Array(parts).fill(0);
+    let sum = 0;
+    let next = 0;
+    let failed = false;
+    const worker = async () => {
+      while (next < parts && !failed) {
+        if (stop()) throw new Error('cancelled');
+        const n = next++;
+        const plain = await all.slice(n * part, Math.min(size, (n + 1) * part)).arrayBuffer();
+        const sealed = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, plain);
+        const mark = (b) => {
+          sum += b - sent[n];
+          sent[n] = b;
+          onProgress(Math.min(sum, total), total);
+        };
+        await put(`${base}/${n}`, token, sealed, mark);
+        mark(sealed.byteLength);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(UP_PARALLEL, parts) }, () => worker().catch((err) => { failed = true; throw err; })));
   }
 
   // opts.note: a secret note (one file with the text): the link opens once, whatever "Downloads allowed" says
@@ -351,16 +395,14 @@
           : t('Could not create the link. Try again.'));
       }
       Object.assign(current, { id: created.id, token: created.token });
-      const all = new Blob(files);
-      const parts = Math.max(1, Math.ceil(size / created.part));
-      for (let n = 0; n < parts; n++) {
-        if (current.cancelled) throw new Error('cancelled');
-        const plain = await all.slice(n * created.part, Math.min(size, (n + 1) * created.part)).arrayBuffer();
-        const sealed = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, plain);
-        await put(`/api/drop/${created.id}/${n}`, created.token, sealed);
-        const frac = (n + 1) / parts;
-        setBar(frac, `${t('Encrypting and uploading…')} ${Math.floor(frac * 100)}%`);
-      }
+      let shown = 0;
+      await uploadParts(new Blob(files), size, created.part, key, `/api/drop/${created.id}`, created.token, (done, total) => {
+        const now = Date.now();
+        if (now - shown < 200 && done < total) return; // at most 5 updates a second
+        shown = now;
+        const frac = done / total;
+        setBar(frac, `${t('Encrypting and uploading…')} ${Math.floor(frac * 100)}% · ${formatSize(Math.min(done, size))} / ${formatSize(size)}`);
+      }, () => current.cancelled);
       const url = `${location.origin}/d/${created.id}#${b64u(raw)}`;
       const names = opts.note ? `🔒 ${t('Secret note')}` : files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name;
       const link = { id: created.id, token: created.token, url, names, size, expires: created.expires, once, max, downloads: 0, pin: !!pin, note: !!opts.note };
