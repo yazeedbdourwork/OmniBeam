@@ -1516,5 +1516,11 @@
     "OmniBeam is free and open source.": "OmniBeam は無料のオープンソースです。",
     "A star on GitHub helps other people find it.": "GitHub でスターを付けると、ほかの人が見つけやすくなります。",
     "Star on GitHub": "GitHub でスターを付ける",
+    // Share links: password, chat previews, views (2026-11-24)
+    "PIN or password (optional)": "PIN またはパスワード（任意）",
+    "4 to 32 characters": "4〜32 文字",
+    "The PIN or password needs 4 to 32 characters.": "PIN またはパスワードは 4〜32 文字にしてください。",
+    "Show the file name and a small picture when the link is pasted in a chat (not encrypted)": "チャットにリンクを貼ったときにファイル名と小さな画像を表示する（暗号化されません）",
+    "Views: {n}": "閲覧: {n}",
   },
 });

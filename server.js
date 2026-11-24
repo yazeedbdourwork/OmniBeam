@@ -1278,7 +1278,10 @@ const server = http.createServer((req, res) => {
   if (/^\/d\/[A-Za-z0-9_-]{8,40}$/.test(urlPath)) {
     return fs.readFile(path.join(PUBLIC_DIR, 'drop.html'), (err, data) => {
       if (err) return notFound(req, res);
-      sendFile(req, res, 200, 'drop.html', Buffer.from(withAnalytics(data)), { 'X-Robots-Tag': 'noindex, nofollow' });
+      const link = drops.get(urlPath.slice(3));
+      let html = String(withAnalytics(data));
+      if (link && link.complete && link.title && !link.req) html = dropPreviewHtml(html, link);
+      sendFile(req, res, 200, 'drop.html', Buffer.from(html), { 'X-Robots-Tag': 'noindex, nofollow' });
     });
   }
   // The "Send me files" box people put on their own website (/embed explains it): the upload page of a request link,
@@ -1532,6 +1535,24 @@ let dropBytes = 0;       // disk used or reserved by all links
 const dropUploads = new Map(); // network -> [{ at, size }] recent uploads, for the limits above
 const encryptedSize = (size) => size + Math.max(1, Math.ceil(size / DROP_PART)) * DROP_TAG;
 const dropFile = (id, ext) => path.join(DROP_DIR, `${id}.${ext}`);
+// Share links have short ids (8 letters: omnibeam.site/d/x7Kq2mPa#…). The key after # is what keeps a link private,
+// so the id only has to be unique.
+function newDropId() {
+  let id;
+  do id = crypto.randomBytes(6).toString('base64url'); while (drops.has(id));
+  return id;
+}
+// The download page of a link whose sender ticked "show the name in chat previews": its name (and small picture)
+// in the og tags, so WhatsApp, Telegram and others show them when the link is pasted
+function dropPreviewHtml(html, d) {
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const title = esc(d.title);
+  html = html.replace(/(<meta property="og:title" content=")[^"]*/, `$1${title}`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*/, `$1${title}`)
+    .replace(/<title>[^<]*/, `<title>${title} | OmniBeam`);
+  if (d.thumb) html = html.replace(/(<meta property="og:image" content=")[^"]*/, `$1${SITE_URL}/api/drop/${d.id}/thumb`);
+  return html;
+}
 const DROP_PARALLEL = 6; // parts of one link that can be uploading at the same time
 const dropBusy = new Map(); // link id -> Set of parts being uploaded right now (not saved)
 // Whether part n arrived. Links started before parts could come out of order only have got (parts 0..got-1)
@@ -1613,7 +1634,7 @@ function handleDrop(req, res, urlPath) {
     res.end(JSON.stringify(obj));
   };
   if (!DROPS) { req.resume(); return json(404, { error: 'off' }); }
-  const m = urlPath.match(/^\/api\/drop(?:\/([A-Za-z0-9_-]{8,40}))?(?:\/(data|email|\d{1,6}))?$/);
+  const m = urlPath.match(/^\/api\/drop(?:\/([A-Za-z0-9_-]{8,40}))?(?:\/(data|email|thumb|\d{1,6}))?$/);
   if (!m) { req.resume(); return json(404, { error: 'not found' }); }
   const [, id, sub] = m;
   const d = id ? drops.get(id) : null;
@@ -1641,10 +1662,11 @@ function handleDrop(req, res, urlPath) {
   };
   const left = (x) => (x.max ? Math.max(0, x.max - x.downloads - (x.active || 0)) : null);
 
-  // New link: { size, hours, max (downloads allowed, 0 = no limit), once (old pages: max 1), pin (proof), meta }
+  // New link: { size, hours, max (downloads allowed, 0 = no limit), once (old pages: max 1), pin (proof), meta,
+  //   pub (optional, the sender ticked "show the name in chat previews": { title, thumb (small JPEG, base64) }) }
   //   -> { id, token, part, expires }
   if (!id && req.method === 'POST') {
-    return readJsonBody(req).then((body) => {
+    return readJsonBody(req, 192 * 1024).then((body) => {
       const size = Math.floor(Number(body.size));
       const hours = Math.min(DROP_MAX_HOURS, Math.max(1, Number(body.hours) || 24));
       const max = body.once ? 1 : Math.min(100, Math.max(0, Math.floor(Number(body.max) || 0)));
@@ -1664,11 +1686,17 @@ function handleDrop(req, res, urlPath) {
       recent.push({ at: now, size });
       dropUploads.set(net, recent);
       const token = crypto.randomBytes(16).toString('hex');
+      // Chat previews (WhatsApp, Telegram…) only if the sender asked, and never for a link with a PIN: the name and
+      // picture are then readable by the server, unlike the files
+      const pub = !pin && !body.note && body.pub && typeof body.pub === 'object' ? body.pub : null;
+      const title = pub ? String(pub.title || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) : '';
+      const thumb = title && typeof pub.thumb === 'string' && pub.thumb.length <= 140000 && /^\/9j\/[A-Za-z0-9+/]+={0,2}$/.test(pub.thumb) ? pub.thumb : '';
       const drop = {
-        id: crypto.randomBytes(12).toString('base64url'), size, reserved, parts: Math.max(1, Math.ceil(size / DROP_PART)), got: 0,
-        meta, once: max === 1, max, created: now, expires: now + hours * 3600 * 1000, touched: now, complete: false, downloads: 0,
+        id: newDropId(), size, reserved, parts: Math.max(1, Math.ceil(size / DROP_PART)), got: 0,
+        meta, once: max === 1, max, created: now, expires: now + hours * 3600 * 1000, touched: now, complete: false, downloads: 0, views: 0,
         tokenHash: crypto.createHash('sha256').update(token).digest('hex'),
         pinHash: pin ? crypto.createHash('sha256').update(pin).digest('hex') : '', pinFails: 0,
+        ...(title ? { title } : {}), ...(thumb ? { thumb } : {}),
       };
       drops.set(drop.id, drop);
       dropBytes += reserved;
@@ -1679,6 +1707,7 @@ function handleDrop(req, res, urlPath) {
       if (max) count('linkLimited');
       if (hours > 72) count('linkLong');
       if (body.note) count('noteLinks'); // a read-once secret note (drop.js), not files
+      if (title) count('linkPublic');
       json(200, { id: drop.id, token, part: DROP_PART, expires: drop.expires });
     }).catch(() => json(400, { error: 'bad request' }));
   }
@@ -1784,20 +1813,52 @@ function handleDrop(req, res, urlPath) {
   // For the sender (with its token): how many times the link was downloaded, and whether it's locked
   if (!sub && req.method === 'GET' && req.headers['x-drop-token']) {
     if (!owner(d)) return json(403, { error: 'forbidden' });
-    return json(200, { complete: d.complete, downloads: d.downloads, max: d.max || 0, left: left(d), expires: d.expires,
-      pin: !!d.pinHash, locked: !!d.pinHash && d.pinFails >= DROP_PIN_TRIES });
+    return json(200, { complete: d.complete, downloads: d.downloads, views: d.views || 0, max: d.max || 0, left: left(d), expires: d.expires,
+      pin: !!d.pinHash, locked: !!d.pinHash && d.pinFails >= DROP_PIN_TRIES, preview: !!d.title });
   }
-  // Information for the download page: encrypted file names, size, expiry (after the PIN, if it has one)
+  // Information for the download page: encrypted file names, size, expiry (after the PIN, if it has one), when it
+  // was shared and how many times it was opened and downloaded. Each GET is one more view.
   if (!sub && (req.method === 'GET' || req.method === 'HEAD')) {
     if (!d.complete || d.req) return json(404, { error: 'uploading' });
     if (!pinOk(d)) return;
-    return json(200, { size: d.size, part: DROP_PART, meta: d.meta, expires: d.expires, once: d.once, max: d.max || 0, left: left(d), pin: !!d.pinHash });
+    if (req.method === 'GET') {
+      d.views = (d.views || 0) + 1;
+      count('linkViews');
+      saveDrop(d);
+    }
+    return json(200, { size: d.size, part: DROP_PART, meta: d.meta, expires: d.expires, once: d.once, max: d.max || 0, left: left(d), pin: !!d.pinHash,
+      created: d.created, downloads: d.downloads, views: d.views || 0 });
+  }
+  // The small picture for chat previews (only links whose sender asked for one: see pub above)
+  if (sub === 'thumb' && (req.method === 'GET' || req.method === 'HEAD')) {
+    if (!d.complete || !d.thumb) return json(404, { error: 'none' });
+    const img = Buffer.from(d.thumb, 'base64');
+    res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Content-Length': img.length, 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' });
+    return res.end(req.method === 'HEAD' ? undefined : img);
   }
   // The encrypted data itself
   if (sub === 'data' && req.method === 'GET') {
     if (!d.complete) return json(404, { error: 'gone' });
     if (d.req && !reqOwnerOf(d)) return json(403, { error: 'forbidden' });
     if (!pinOk(d)) return;
+    // Part of it (Range: bytes=a-b): the download page shows one file of a link before the whole download, a preview
+    // or a small picture. Only links without a download limit, and it isn't counted as a download.
+    const range = !d.max && !d.req ? /^bytes=(\d{1,12})-(\d{1,12})$/.exec(String(req.headers.range || '')) : null;
+    if (range) {
+      const file = dropFile(d.id, 'bin');
+      let total;
+      try { total = fs.statSync(file).size; } catch { return json(404, { error: 'gone' }); }
+      const start = Number(range[1]);
+      const end = Math.min(Number(range[2]), total - 1);
+      if (start > end) return json(416, { error: 'range' });
+      count('linkPreviews');
+      res.writeHead(206, { 'Content-Type': 'application/octet-stream', 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
+      const part = fs.createReadStream(file, { start, end });
+      part.pipe(res);
+      res.on('close', () => part.destroy());
+      return;
+    }
     // No downloads left (counting the ones still going: a limited link can't be downloaded more at the same time)
     if (d.max && d.downloads + (d.active || 0) >= d.max) return json(410, { error: 'gone' });
     d.active = (d.active || 0) + 1;

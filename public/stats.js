@@ -454,6 +454,7 @@
       ['Clipboard history', 'clipResend', 'texts sent again from the Clipboard tab'],
       ['Auto-send folder', 'autoSend', 'files sent by themselves from a watched folder'],
       ['Big-file mode', 'bigFiles', 'sends with a file of 1 GB or more, checked piece by piece'],
+      ['Share link pages', 'linkViews', `times a link page was opened · ${num(sum('linkPreviews'))} previews and small pictures · ${num(sum('linkPublic'))} links shown in chat previews`],
       ['Secret notes', 'secretNotes', `sent to a device · ${num(sum('noteLinks'))} read-once links made`],
       ['Camera and voice', 'photosTaken', `photos taken and sent · ${num(sum('voiceNotes'))} voice notes`],
       ['Request links', 'requests', `made · ${num(sum('requestFiles'))} uploads received (${size(sum('requestBytes'))})`],
@@ -844,7 +845,7 @@
     const days = period(last, range, endBack);
     const fields = ['visitors', 'views', 'time', 'engaged', 'timed', 'app', 'connections', 'networks', 'transfers', 't_lan', 't_internet', 't_turn',
       't_relay', 'texts', 'files', 'bytes', 'relayBytes', 'links', 'linkDownloads', 'err', 'tfail', 'tcancel', 'tresumed',
-      'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo',
+      'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo', 'linkViews', 'linkPreviews', 'linkPublic',
       'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes',
       'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',
       'telegramLinks', 'requestEmbedUploads', 'lockOn', 'cleanOn', 'backupsSaved', 'backupsOpened', 'notifReplies',

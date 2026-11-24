@@ -34,8 +34,7 @@ test('send to an email address: a link with a PIN, 7 days and 3 downloads', asyn
   await a.page.fill('#link-to', 'friend@example.com');
   await a.page.selectOption('#link-hours', '168');
   await a.page.selectOption('#link-max', '3');
-  await a.page.fill('#link-pin', '43a21');
-  await expect(a.page.locator('#link-pin')).toHaveValue('4321'); // digits only
+  await a.page.fill('#link-pin', '4321');
   await expect(a.page.locator('#link-pin-note')).toBeVisible();
   const file = makeFile('report.pdf', 300 * 1024 + 7, 'application/pdf');
   const chooser = a.page.waitForEvent('filechooser');

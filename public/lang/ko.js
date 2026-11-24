@@ -1516,5 +1516,11 @@
     "OmniBeam is free and open source.": "OmniBeam은 무료 오픈 소스입니다.",
     "A star on GitHub helps other people find it.": "GitHub에서 별을 주시면 다른 사람들이 찾는 데 도움이 됩니다.",
     "Star on GitHub": "GitHub에서 별 주기",
+    // Share links: password, chat previews, views (2026-11-24)
+    "PIN or password (optional)": "PIN 또는 비밀번호 (선택)",
+    "4 to 32 characters": "4~32자",
+    "The PIN or password needs 4 to 32 characters.": "PIN 또는 비밀번호는 4~32자여야 합니다.",
+    "Show the file name and a small picture when the link is pasted in a chat (not encrypted)": "채팅에 링크를 붙여 넣으면 파일 이름과 작은 사진 표시 (암호화되지 않음)",
+    "Views: {n}": "조회: {n}",
   },
 });

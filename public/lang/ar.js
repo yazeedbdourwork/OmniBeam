@@ -1516,5 +1516,11 @@
     "OmniBeam is free and open source.": "OmniBeam مجاني ومفتوح المصدر.",
     "A star on GitHub helps other people find it.": "نجمة على GitHub تساعد الآخرين على اكتشافه.",
     "Star on GitHub": "ضع نجمة على GitHub",
+    // Share links: password, chat previews, views (2026-11-24)
+    "PIN or password (optional)": "رمز PIN أو كلمة مرور (اختياري)",
+    "4 to 32 characters": "من 4 إلى 32 حرفًا",
+    "The PIN or password needs 4 to 32 characters.": "رمز PIN أو كلمة المرور يحتاج من 4 إلى 32 حرفًا.",
+    "Show the file name and a small picture when the link is pasted in a chat (not encrypted)": "اعرض اسم الملف وصورة صغيرة عند لصق الرابط في محادثة (غير مشفّرة)",
+    "Views: {n}": "المشاهدات: {n}",
   },
 });

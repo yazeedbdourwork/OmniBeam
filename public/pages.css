@@ -78,7 +78,53 @@ button.open-app { border: 0; cursor: pointer; font: inherit; font-weight: 700; }
 .drop-bar { height: 8px; border-radius: 99px; box-shadow: var(--inset-sm); overflow: hidden; margin: 14px 0; }
 .drop-bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width 0.2s; }
 .drop-note { color: var(--muted); font-size: 0.85rem; text-align: center; }
-.drop-own { text-align: center; }
+/* The file page of a shared link (get.js): a row per file with an icon or small picture, its size and type,
+   Preview and Save; one file gets a big card */
+.drop-files li.f { justify-content: flex-start; padding: 10px 12px; }
+.drop-files .ic { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; box-shadow: var(--inset-sm); font-size: 1.6rem; line-height: 1; overflow: hidden; }
+.drop-files .ic img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+.drop-files .tx { flex: 1 1 auto; min-width: 0; display: grid; }
+.drop-files .tx .n { font-weight: 700; line-height: 1.35; }
+.drop-files .acts { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.drop-files .pv { padding: 6px 14px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent); font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+.drop-files .save { font-size: 0.9rem; }
+.drop-files li.one { flex-direction: column; align-items: center; text-align: center; padding: 26px 18px 20px; gap: 14px; }
+.drop-files li.one .ic { width: 112px; height: 112px; border-radius: 26px; font-size: 3.6rem; }
+.drop-files li.one.has-pic .ic { width: auto; height: auto; max-width: 100%; box-shadow: var(--raise); }
+.drop-files li.one.has-pic .ic img { width: auto; height: auto; max-width: 100%; max-height: 360px; }
+.drop-files li.one .tx .n { font-size: 1.2rem; }
+.drop-files li.one .acts { justify-content: center; }
+.drop-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
+.drop-actions[hidden], .drop-big[hidden] { display: none; }
+.drop-big { padding: 14px 34px; font-size: 1.08rem; min-width: 220px; }
+.drop-stats { margin: 14px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+.drop-share { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 12px 0; }
+.drop-stats[hidden], .drop-share[hidden], .drop-chip[hidden] { display: none; }
+.drop-chip { padding: 7px 16px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: 4px 4px 10px var(--sd), -4px -4px 10px var(--sl); font: inherit; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+.drop-chip:hover, .drop-chip:focus-visible { color: var(--accent); }
+/* "Send your own files with OmniBeam" under the file page */
+.drop-own { display: flex; align-items: center; gap: 14px; max-width: 520px; margin: 22px auto 8px; padding: 14px 20px; border-radius: 20px; background: var(--bg); box-shadow: var(--raise); }
+.drop-own img { flex: none; }
+.drop-own div { display: grid; gap: 2px; }
+.drop-own a { font-weight: 700; text-decoration: none; }
+.drop-own span { color: var(--muted); font-size: 0.88rem; }
+/* Preview of one file */
+.drop-view { width: calc(100vw - 24px); max-width: 960px; max-height: calc(100vh - 24px); padding: 0; border: 0; border-radius: 20px; background: var(--bg); color: var(--fg); box-shadow: 0 20px 60px rgba(0, 0, 0, .45); }
+.drop-view::backdrop { background: rgba(12, 14, 22, .72); }
+.dv-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px 10px 18px; font-weight: 700; overflow-wrap: anywhere; }
+.dv-close { flex: none; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--bg); color: var(--fg); box-shadow: 4px 4px 10px var(--sd), -4px -4px 10px var(--sl); font-size: 1.1rem; cursor: pointer; }
+.dv-body { display: grid; place-items: center; padding: 0 12px 12px; }
+.dv-body img, .dv-body video { display: block; max-width: 100%; max-height: calc(100vh - 110px); border-radius: 12px; background: #000; }
+.dv-body audio { width: 100%; margin: 20px 0; }
+.dv-body iframe { width: 100%; height: calc(100vh - 110px); border: 0; border-radius: 12px; background: #fff; }
+.dv-text { width: 100%; margin: 0; padding: 14px; max-height: calc(100vh - 110px); overflow: auto; border-radius: 12px; box-shadow: var(--inset-sm); white-space: pre-wrap; word-break: break-word; font: 0.88rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.dv-msg { padding: 30px 10px; color: var(--muted); text-align: center; }
+[dir="rtl"] .dv-head { padding: 10px 18px 10px 12px; }
+@media (max-width: 600px) {
+  .drop-files li.f:not(.one) { flex-wrap: wrap; }
+  .drop-files li.f:not(.one) .acts { flex: 1 0 100%; justify-content: flex-start; padding-inline-start: 60px; }
+  .drop-big { width: 100%; min-width: 0; }
+}
 /* A secret note, shown once (get.js) */
 .secret-note pre { margin: 18px 0 8px; padding: 16px; border-radius: 16px; box-shadow: var(--inset-sm); white-space: pre-wrap; word-break: break-word; font: 0.95rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; max-height: 60vh; overflow: auto; }
 /* Owner stats page (/stats) */
@@ -128,7 +174,7 @@ main.stats { max-width: 980px; }
 /* PIN box on the download page of a shared link */
 .drop-pin { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 16px 0; }
 .drop-pin label { flex: 1 0 100%; font-weight: 600; }
-.drop-pin input { width: 9em; padding: 10px 14px; border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 1.1rem; letter-spacing: 0.2em; text-align: center; }
+.drop-pin input { width: 12em; max-width: 100%; padding: 10px 14px; border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; font: inherit; font-size: 1.1rem; letter-spacing: 0.08em; text-align: center; }
 .drop-pin button { border: 0; cursor: pointer; font: inherit; }
 .drop-pin[hidden] { display: none; }
 /* Request files page (request.html + put.js) */
