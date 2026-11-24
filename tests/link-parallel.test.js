@@ -76,3 +76,39 @@ test('a link with several parts uploads them side by side and downloads the same
   expect(sha(fs.readFileSync(await d.path()))).toBe(sha(file.buffer));
   expect(a.errors).toEqual([]);
 });
+
+test('a part that stops moving is given up and sent again, and the link still works', async ({ browser }) => {
+  let held = 0;
+  const a = await openDevice(browser, 'Test Laptop', {
+    setup: async (context) => {
+      // Give up a stalled part after 2 s here (20 s on the site)
+      await context.addInitScript(() => { window.omnibeamStallMs = 2000; });
+      // The first try of part 1 never gets through (as on a connection that silently died)
+      await context.route(/\/api\/drop\/[^/]+\/1$/, (route) => {
+        if (route.request().method() === 'PUT' && !held++) return; // left hanging: no answer, ever
+        return route.continue();
+      });
+    },
+  });
+  devices.push(a);
+  await menu(a.page, 'btn-sendto');
+  const dlg = a.page.locator('#dlg-link');
+  await expect(dlg).toBeVisible();
+  const file = makeFile('stalled.bin', 2 * PART + 999);
+  const chooser = a.page.waitForEvent('filechooser');
+  await dlg.locator('[data-act=pick]').click();
+  await (await chooser).setFiles([file]);
+  await expect(a.page.locator('#link-done')).toBeVisible({ timeout: 30000 });
+  expect(held).toBeGreaterThan(1); // tried again
+  const url = await a.page.locator('#link-url').textContent();
+
+  const ctx = await browser.newContext({ acceptDownloads: true });
+  devices.push({ close: () => ctx.close() });
+  const page = await ctx.newPage();
+  await page.goto(url);
+  const download = page.waitForEvent('download');
+  await page.locator('#drop-get').click();
+  const d = await download;
+  expect(sha(fs.readFileSync(await d.path()))).toBe(sha(file.buffer));
+  expect(a.errors).toEqual([]);
+});
