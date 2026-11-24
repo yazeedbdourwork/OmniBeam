@@ -8,12 +8,18 @@
 // 4 to 32 characters, see pinProof), whether chat apps may show the file name and a small picture (linkPreview),
 // and an email address or phone number to send it to: an email is sent by the server when it has a Resend key
 // (see emailByServer), otherwise the mail or messages app opens with the link written in. "Your links" shows how many times each link was downloaded.
+// A whole folder can be shared too (its files keep their places in it: the download page saves them as one ZIP with
+// the same folders). "Notify me when someone downloads my links": a notification from the server (web push, also
+// while OmniBeam is closed) and, while this page is open, a message here.
 'use strict';
 (function () {
   const btn = $('#btn-link');
   const btnTo = $('#btn-sendto');
   const dlg = $('#dlg-link');
   const input = $('#link-input');
+  const folderInput = $('#link-folder-input');
+  // iPhones and iPads can't choose a folder in a browser
+  if (isIOS || !('webkitdirectory' in folderInput)) $('#link-folder-btn').remove();
   const LINKS_KEY = 'omnibeam-links';
   let cfg = null;
   let job = null; // the upload in progress: { cancelled, id, token }
@@ -149,6 +155,7 @@
     const list = loadLinks();
     saveLinks(list);
     $('#link-mine').hidden = !list.length;
+    $('#link-notify').checked = notifyOn();
     const box = $('#link-list');
     box.innerHTML = '';
     for (const l of list.slice().reverse()) {
@@ -223,6 +230,32 @@
   }
   let pruneTimer = 0;
 
+  // ---- Notify me when someone downloads my links ----
+  const NOTIFY_KEY = 'omnibeam-link-notify';
+  const notifyOn = () => { try { return localStorage.getItem(NOTIFY_KEY) !== '0'; } catch { return true; } };
+  // For app.js (sendPushSub): the links the server may send a notification about
+  window.shareLinksForPush = () => (notifyOn() ? loadLinks().filter((l) => !l.note).slice(-20).map((l) => ({ id: l.id, token: l.token })) : []);
+  $('#link-notify').addEventListener('change', (e) => {
+    try { localStorage.setItem(NOTIFY_KEY, e.target.checked ? '1' : '0'); } catch {}
+    // Notifications while OmniBeam is closed need them turned on (asked now, while the tap counts)
+    if (e.target.checked && typeof pushOn === 'function' && !pushOn() && typeof enablePush === 'function') enablePush();
+    else window.sendPushSub?.();
+    toast(e.target.checked ? t('You get a notification when someone downloads one of your links') : t('No notifications about downloads'));
+  });
+  // While this page is open: a message when a link was downloaded since the last look (every minute)
+  async function watchDownloads() {
+    if (document.hidden || !notifyOn() || !loadLinks().length || dlg.open) return;
+    const before = new Map(loadLinks().map((l) => [l.id, l.downloads || 0]));
+    await pruneLinks();
+    for (const l of loadLinks()) {
+      const was = before.get(l.id);
+      if (was != null && (l.downloads || 0) > was) toast(t('Someone downloaded {name}', { name: l.names }), 6000);
+    }
+  }
+  setInterval(watchDownloads, 60000);
+  // A notification about a download was tapped: show the links
+  if (/[?&]links=1/.test(location.search)) setTimeout(() => { if (cfg) open(false); }, 1500);
+
   // "I have the legal right to share this": in this window until it is ticked once on this device (see confirmRights
   // in app.js); unticking it again before the link is made takes it back
   const rights = $('#link-rights');
@@ -255,7 +288,7 @@
   dlg.addEventListener('click', (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
     if (act === 'close') dlg.close();
-    else if (act === 'pick') {
+    else if (act === 'pick' || act === 'pick-folder') {
       // Check the options before the file picker opens
       const to = recipient($('#link-to').value);
       if (to === false) {
@@ -266,7 +299,7 @@
       const pin = $('#link-pin').value;
       if (pin && !PIN_RE.test(pin)) { $('#link-pin').focus(); return toast(t('The PIN or password needs 4 to 32 characters.')); }
       if (!window.rightsOk()) return window.needRights(rights);
-      input.click();
+      (act === 'pick-folder' ? folderInput : input).click();
     }
     else if (act === 'note-open') {
       // A secret note: text instead of files, on a link that opens once (get.js shows it and it's gone)
@@ -303,6 +336,13 @@
     const files = [...input.files];
     input.value = '';
     if (files.length) upload(files);
+  };
+  folderInput.onchange = () => {
+    const files = [...folderInput.files].filter((f) => !/(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/i.test(f.webkitRelativePath || f.name));
+    folderInput.value = '';
+    if (!files.length) return toast(t('This folder is empty.'));
+    if (files.length > 1000) return toast(t('Too many files in this folder (up to {n}).', { n: 1000 }));
+    upload(files, { folder: (files[0].webkitRelativePath || '').split('/')[0] || t('Folder') });
   };
   // Scan to PDF (scan.js) and the chat view hand their files to a new link with the options set in this window
   window.OmniLink = { available: () => !btn.hidden && !!window.crypto?.subtle, share(files) { open(false); upload(files); } };
@@ -379,8 +419,8 @@
 
   // What chat apps show when the link is pasted, if the sender ticked it: the name and size, and a small JPEG of the
   // first photo. Only these are readable by the server (the files stay encrypted).
-  async function linkPreview(files, size) {
-    const title = `${files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name} (${formatSize(size)})`.slice(0, 120);
+  async function linkPreview(files, size, folder) {
+    const title = folder ? `📁 ${folder} (${t('{n} files', { n: files.length })}, ${formatSize(size)})`.slice(0, 120) : `${files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name} (${formatSize(size)})`.slice(0, 120);
     let thumb = '';
     const photo = files.find((f) => /^image\/(jpeg|png|webp|gif)$/.test(f.type) && f.size < 40 * 1048576);
     if (photo) {
@@ -400,7 +440,8 @@
     return { title, ...(thumb ? { thumb } : {}) };
   }
 
-  // opts.note: a secret note (one file with the text): the link opens once, whatever "Downloads allowed" says
+  // opts.note: a secret note (one file with the text): the link opens once, whatever "Downloads allowed" says.
+  // opts.folder: the name of a folder chosen whole (the files' names then keep their place in it: "Trip/day 1/a.jpg")
   async function upload(files, opts = {}) {
     if (!cfg || job) return;
     const size = files.reduce((s, f) => s + f.size, 0);
@@ -415,15 +456,17 @@
     try {
       const raw = crypto.getRandomValues(new Uint8Array(16));
       const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
-      const meta = { v: 1, files: files.map((f) => ({ name: f.name, size: f.size, type: f.type || '' })), ...(opts.note ? { note: 1 } : {}) };
+      const nameOf = (f) => (opts.folder && f.webkitRelativePath ? f.webkitRelativePath : f.name).slice(0, 200);
+      const meta = { v: 1, files: files.map((f) => ({ name: nameOf(f), size: f.size, type: f.type || '' })), ...(opts.note ? { note: 1 } : {}), ...(opts.folder ? { folder: String(opts.folder).slice(0, 120) } : {}) };
       const encMeta = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: ivFor(0, true) }, key, new TextEncoder().encode(JSON.stringify(meta)));
+      if (b64u(encMeta).length > 300000) throw new Error(t('Too many files in this folder (up to {n}).', { n: 1000 }));
       const hours = Number($('#link-hours').value) || 24;
       const max = opts.note ? 1 : Number($('#link-max').value) || 0;
       const once = max === 1;
       const pinText = $('#link-pin').value;
       const pin = PIN_RE.test(pinText) ? await pinProof(pinText, b64u(raw)) : '';
       const to = recipient($('#link-to').value) || null;
-      const pub = !opts.note && !pin && $('#link-pub').checked ? await linkPreview(files, size) : undefined;
+      const pub = !opts.note && !pin && $('#link-pub').checked ? await linkPreview(files, size, opts.folder) : undefined;
       const r = await fetch('/api/drop', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ size, hours, max, once, pin, meta: b64u(encMeta), note: !!opts.note, pub }),
@@ -445,9 +488,10 @@
         setBar(frac, `${t('Encrypting and uploading…')} ${Math.floor(frac * 100)}% · ${formatSize(Math.min(done, size))} / ${formatSize(size)}`);
       }, () => current.cancelled);
       const url = `${location.origin}/d/${created.id}#${b64u(raw)}`;
-      const names = opts.note ? `🔒 ${t('Secret note')}` : files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name;
+      const names = opts.note ? `🔒 ${t('Secret note')}` : opts.folder ? `📁 ${opts.folder} (${t('{n} files', { n: files.length })})` : files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name;
       const link = { id: created.id, token: created.token, url, names, size, expires: created.expires, once, max, downloads: 0, pin: !!pin, note: !!opts.note };
       saveLinks([...loadLinks(), link]);
+      if (notifyOn()) window.sendPushSub?.(); // the server learns this link may send download notifications
       $('#link-url').textContent = url;
       $('#link-summary').textContent = `${names} · ${formatSize(size)} · ${timeLeft(created.expires - Date.now())}${max ? ' · ' + (max === 1 ? t('one download') : t('{max} downloads', { max })) : ''}${pin ? ' · ' + t('PIN') + ' ' + pinText : ''}`;
       setSendButtons({ ...link, to });

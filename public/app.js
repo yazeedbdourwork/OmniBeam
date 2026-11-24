@@ -138,6 +138,18 @@ const webcam = (name) => async (...args) => {
   }
   return window.Webcam[name](...args);
 };
+// call.js: voice and video calls between two devices; edit.js: crop, rotate, draw on and blur a photo before sending
+const lazyModule = (src, global) => (name) => async (...args) => {
+  try {
+    await loadScript(src);
+  } catch (err) {
+    toast(err.message);
+    throw err;
+  }
+  return window[global][name](...args);
+};
+const calls = lazyModule('/call.js?v=1', 'Calls');
+const photoEdit = lazyModule('/edit.js?v=1', 'PhotoEdit');
 const media = (name) => async (...args) => {
   try {
     await loadMedia();
@@ -1548,6 +1560,7 @@ class Peer {
 
   // --- Sending ---
   // opts.re: the message this one answers ({ id, text, mine } as this device sees it; the chat view's Reply).
+  // opts.fwd: a message forwarded from another chat (the chat view's Forward).
   // The id lets the other device tell this one when it arrived and was read (the ticks), and react to it.
   async sendText(text, opts = {}) {
     try {
@@ -1555,11 +1568,12 @@ class Peer {
       await this.connect();
       const id = randomHex(8);
       const re = opts.re && opts.re.id ? { id: String(opts.re.id).slice(0, 24), text: String(opts.re.text || '').slice(0, 160), mine: !!opts.re.mine } : null;
+      const fwd = opts.fwd ? 1 : 0; // passed on from another chat (Forward): shown as "Forwarded" on both sides
       // To the other device, "mine" means its own message: flipped here
-      this.sendJson({ t: 'text', text, id, ...(re ? { re: { id: re.id, text: re.text, mine: !re.mine } } : {}) });
+      this.sendJson({ t: 'text', text, id, ...(re ? { re: { id: re.id, text: re.text, mine: !re.mine } } : {}), ...(fwd ? { fwd } : {}) });
       this.setStatus('');
       if (!chatShowing(this)) toast(t('Message sent to {name}', { name: this.info.name }));
-      Sent.add(this, { text, id, re }, 'ok');
+      Sent.add(this, { text, id, re, fwd }, 'ok');
       this.reportStat({ kind: 'text', bytes: 0, files: 0 });
     } catch (err) {
       this.setStatus('');
@@ -1930,7 +1944,7 @@ class Peer {
       case 'text': {
         const mid = typeof msg.id === 'string' && /^[0-9a-f]{4,24}$/.test(msg.id) ? msg.id : '';
         const re = msg.re && typeof msg.re.id === 'string' ? { id: msg.re.id.slice(0, 24), text: String(msg.re.text || '').slice(0, 160), mine: !!msg.re.mine } : null;
-        Messages.add(String(msg.text), this.info.name, this.pairSecret, { id: mid, re });
+        Messages.add(String(msg.text), this.info.name, this.pairSecret, { id: mid, re, fwd: msg.fwd === 1 });
         // Arrived (the second grey tick on the sender); read too when its chat is on screen here
         if (mid) chatTell(this, { t: 'ack', ids: [mid] });
         window.Chat?.typing?.(this, false);
@@ -1959,6 +1973,12 @@ class Peer {
         break;
       case 'clear-kept':
         toast(t('{name} kept the chat on that device', { name: this.info.name }), 4000);
+        break;
+      // Disappearing messages: the other device set the timer of this chat (see Vanish)
+      case 'vanish':
+        Vanish.set(chatWho(this), Number(msg.ms) || 0, false);
+        toast(Number(msg.ms) > 0 ? t('{name} set messages in this chat to disappear after {time}', { name: this.info.name, time: Vanish.label(Number(msg.ms)) })
+          : t('{name} turned off disappearing messages', { name: this.info.name }), 5000);
         break;
       case 'react':
         if (typeof msg.id === 'string') Reactions.set(msg.id.slice(0, 24), 'them', typeof msg.e === 'string' ? msg.e.slice(0, 16) : '');
@@ -3212,7 +3232,7 @@ const Messages = {
   add(text, from, pair, extra = {}) {
     this.load();
     const id = extra.id || 'l' + randomHex(6);
-    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), id, ...(extra.id ? {} : { loc: 1 }), ...(extra.re ? { re: extra.re } : {}), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
+    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), id, ...(extra.id ? {} : { loc: 1 }), ...(extra.re ? { re: extra.re } : {}), ...(extra.fwd ? { fwd: 1 } : {}), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
     this.items = this.items.slice(0, MAX_MESSAGES);
     this.save();
     History.onChange?.();
@@ -3271,6 +3291,7 @@ const Sent = {
       entry.text = String(files.text).slice(0, 5000);
       if (files.id) entry.id = files.id;
       if (files.re) entry.re = files.re;
+      if (files.fwd) entry.fwd = 1;
     } else {
       entry.files = files.slice(0, 50).map((f) => ({ name: pathOf(f), size: f.size }));
       entry.n = files.length;
@@ -3329,13 +3350,129 @@ function chatTell(peer, obj) {
   return false;
 }
 
+// The thread of a chat key (chatKey below): { pair, name }
+function keyWho(key) {
+  if (key[0] === 'p') {
+    const pair = key.slice(2);
+    return { pair, name: loadPaired().find((p) => p.secret.startsWith(pair))?.name || '' };
+  }
+  return { pair: '', name: key.slice(2) };
+}
+
+// ---------- Disappearing messages: { chat key: ms } on this device ----------
+// Set for one chat (the chat's ⋮ menu): its messages and files older than that are deleted from this device, now
+// and every minute. Setting it tells the other device (if it is here), which sets the same time for its side.
+const VANISH_KEY = 'omnibeam-vanish';
+const VANISH_TIMES = [0, 3600000, 86400000, 7 * 86400000, 90 * 86400000];
+const Vanish = {
+  all() { try { return JSON.parse(localStorage.getItem(VANISH_KEY)) || {}; } catch { return {}; } },
+  of(who) { return (who && this.all()[chatKey(who)]) || 0; },
+  label(ms) {
+    if (ms >= 86400000) return ms === 86400000 ? t('24 hours') : t('{n} days', { n: Math.round(ms / 86400000) });
+    return t('1 hour');
+  },
+  // tell: also tell the other device (not when it was the other device that set it)
+  set(who, ms, tell = true) {
+    if (!who) return;
+    ms = VANISH_TIMES.includes(ms) ? ms : 0;
+    const all = this.all();
+    if (ms) all[chatKey(who)] = ms; else delete all[chatKey(who)];
+    try { localStorage.setItem(VANISH_KEY, JSON.stringify(all)); } catch {}
+    if (tell) {
+      const peer = who.peer && peers.get(who.peer.info.id) === who.peer ? who.peer : peerOfKey(chatKey(who));
+      if (peer) peer.connect().then(() => peer.sendJson({ t: 'vanish', ms })).catch(() => {});
+      if (ms) wsSend({ type: 'stat', kind: 'clean' });
+    }
+    this.sweep();
+    chatChanged();
+  },
+  sweep() {
+    const all = Object.entries(this.all());
+    if (!all.length) return;
+    const now = Date.now();
+    Messages.load();
+    Sent.load();
+    let msgs = false, sent = false;
+    for (const [key, ms] of all) {
+      const who = keyWho(key);
+      const old = (x, field) => x.at < now - ms && chatMine(who, x, field);
+      const m = Messages.items.length;
+      Messages.items = Messages.items.filter((x) => !old(x, 'from'));
+      msgs ||= Messages.items.length !== m;
+      const n = Sent.items.length;
+      Sent.items = Sent.items.filter((x) => { const gone = old(x, 'to'); if (gone) sentFiles.delete(x.id); return !gone; });
+      sent ||= Sent.items.length !== n;
+      for (const f of History.items.filter((x) => old(x, 'from'))) History.remove(f);
+    }
+    if (msgs) Messages.save();
+    if (sent) Sent.save();
+  },
+};
+setInterval(() => Vanish.sweep(), 60000);
+
+// ---------- Send later: messages (and files, while this page stays open) sent at a chosen time ----------
+// [{ id, key (chat key), text, at, n (files) }] on this device; the files themselves in laterFiles (this page only).
+// At the time, the message goes to the device if it is here, or waits for a paired device like any message typed
+// while it is offline. OmniBeam must be open on this device then.
+const LATER_KEY = 'omnibeam-later';
+const laterFiles = new Map();
+const Later = {
+  all() { try { return (JSON.parse(localStorage.getItem(LATER_KEY)) || []).filter((x) => x && x.id && x.key); } catch { return []; } },
+  save(list) { try { localStorage.setItem(LATER_KEY, JSON.stringify(list.slice(0, 100))); } catch {} chatChanged(); },
+  of(who) { const key = chatKey(who); return this.all().filter((x) => x.key === key && (x.text || laterFiles.has(x.id))).sort((a, b) => a.at - b.at); },
+  add(who, at, text, files = []) {
+    const id = randomHex(6);
+    if (files.length) laterFiles.set(id, files);
+    this.save([...this.all(), { id, key: chatKey(who), text: String(text || '').slice(0, 20000), at, ...(files.length ? { n: files.length } : {}) }]);
+    this.arm();
+    return id;
+  },
+  remove(id) { laterFiles.delete(id); this.save(this.all().filter((x) => x.id !== id)); },
+  // Send it now (its time came, or Send now in the chat): false when the device can't be reached yet
+  go(item) {
+    const files = laterFiles.get(item.id) || [];
+    if (!item.text && !files.length) { this.remove(item.id); return true; }
+    const peer = peerOfKey(item.key);
+    if (peer) {
+      this.remove(item.id);
+      if (files.length) peer.sendFiles(files).then(() => item.text && peer.sendText(item.text));
+      else peer.sendText(item.text);
+      return true;
+    }
+    const pairing = item.key[0] === 'p' && loadPaired().find((p) => p.secret.startsWith(item.key.slice(2)));
+    if (!pairing) return false;
+    this.remove(item.id);
+    const w = waiting.get(pairing.secret);
+    sendWhenOnline(pairing, [...(w ? w.files : []), ...files], [w?.text, item.text].filter(Boolean).join('\n\n'));
+    return true;
+  },
+  timer: 0,
+  arm() {
+    clearTimeout(this.timer);
+    const list = this.all();
+    if (!list.length) return;
+    const next = Math.min(...list.map((x) => x.at));
+    this.timer = setTimeout(() => this.tick(), Math.max(1000, Math.min(next - Date.now(), 30000)));
+  },
+  tick() {
+    for (const item of this.all()) {
+      if (item.at > Date.now()) continue;
+      // Files only stay while this page is open: after a reload a scheduled file can't go
+      if (item.n && !laterFiles.has(item.id) && !item.text) { this.remove(item.id); continue; }
+      this.go(item);
+    }
+    this.arm();
+  },
+};
+window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm(); chatChanged(); } else if (e.key === VANISH_KEY) chatChanged(); });
+
 // ---------- Chat view: everything sent to and received from one device, in time order (chat.js) ----------
 // Made from the history above (received files, received messages, the Sent list), nothing else is kept and nothing
 // goes to the server. A paired device is found by its pairing (the first 16 characters of the secret, so its
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=8');
+const loadChat = () => loadScript('/chat.js?v=9');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -4796,6 +4933,13 @@ function onCamSignal(from, data) {
   camQueue = camQueue.then(() => webcam('onSignal')(from, data)).catch(() => {});
 }
 
+// Voice and video calls (call.js), in the same way
+let callQueue = Promise.resolve();
+function onCallSignal(from, data) {
+  if (!data || typeof data !== 'object' || IS_TV) return;
+  callQueue = callQueue.then(() => calls('onSignal')(from, data)).catch(() => {});
+}
+
 // Pairing with a 6-digit code
 const pairDlg = $('#dlg-pair');
 // The pairing window shows one part at a time: Scan (QR), Code (6 digits), Rooms (public and team rooms) and
@@ -5816,6 +5960,7 @@ function connectSocket() {
         else if (msg.data && typeof msg.data.pairForget === 'string') onPairForget(msg.from, msg.data.pairForget);
         else if (msg.data && msg.data.screen) onScreenSignal(msg.from, msg.data.screen);
         else if (msg.data && msg.data.cam) onCamSignal(msg.from, msg.data.cam);
+        else if (msg.data && msg.data.call) onCallSignal(msg.from, msg.data.call);
         else if (msg.data && msg.data.e2e) peers.get(msg.from)?.onE2E(msg.data);
         else if (msg.data && msg.data.resume) peers.get(msg.from)?.onResume(msg.data.resume);
         else if (msg.data && msg.data.resumeOffer) AutoResume.onOffer(msg.from, msg.data.resumeOffer).catch(() => {});
@@ -6434,7 +6579,7 @@ async function sendPushSub() {
         return;
       }
     }
-    if (sub) wsSend({ type: 'push-sub', sub: sub.toJSON(), secrets: loadPaired().map((p) => p.secret), requests: window.requestLinksForPush?.() || [], lang: window.I18N?.lang || 'en' });
+    if (sub) wsSend({ type: 'push-sub', sub: sub.toJSON(), secrets: loadPaired().map((p) => p.secret), requests: window.requestLinksForPush?.() || [], links: window.shareLinksForPush?.() || [], lang: window.I18N?.lang || 'en' });
   } catch {}
 }
 async function enablePush() {
@@ -7005,6 +7150,7 @@ $('#open-links').onchange = (e) => {
 $('#msg-sound').checked = msgSound;
 $('#msg-sound').onchange = (e) => { setMsgSound(e.target.checked); if (e.target.checked) { unlockAudio(); chime(); } };
 Messages.load();
+setTimeout(() => { Vanish.sweep(); Later.arm(); }, 1500);
 $('#btn-send-all').onclick = () => {
   for (const p of peers.values()) p.warmUp();
   openSendAll();

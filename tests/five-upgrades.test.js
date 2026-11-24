@@ -155,6 +155,7 @@ test('Ring from the chat, and a paired device that is offline rings when it open
   await target.hover();
   await target.locator('[data-act=message]').click();
   const chat = a.page.locator('#dlg-chat');
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=ring]').click();
   await expect(b.page.locator('#dlg-ring')).toBeVisible();
   await b.page.locator('#dlg-ring [data-act=stop]').click();
@@ -165,6 +166,7 @@ test('Ring from the chat, and a paired device that is offline rings when it open
   await expect(a.page.locator('.peer.offline')).toBeVisible();
   await a.page.evaluate(() => openChat(loadPaired()[0]));
   await expect(chat.locator('.chat-state')).toHaveText(/Last seen|Offline/);
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=ring]').click();
   await expect(a.page.locator('#toast')).toHaveText(/Find B is offline.* It rings (as soon as|if) it opens OmniBeam/);
   b = await open(browser, 'Find B', { storage: st['Find B'] });
@@ -272,13 +274,15 @@ test('pinned note: pin a message or write one, stays after closing and clearing,
   await target.hover();
   await target.locator('[data-act=message]').click();
   await expect(pin.locator('.pin-text')).toHaveText('Wi-Fi: HomeNet / pass 1234');
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=clear]').click();
   await a.page.locator('#dlg-chat-clear [data-act=yes]').click();
   await expect(chat.locator('.bubble')).toHaveCount(0);
   await expect(pin).toBeVisible();
   // Edit it with the pin button in the head
   a.page.once('dialog', (d) => d.accept('Door code 4321'));
-  await chat.locator('.chat-head [data-act=pin]').click();
+  await chat.locator('[data-act=head-more]').click();
+  await chat.locator('.chat-head-menu [data-act=pin]').click();
   await expect(pin.locator('.pin-text')).toHaveText('Door code 4321');
   // Only in this chat
   expect(await a.page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('omnibeam-pins'))).length)).toBe(1);

@@ -4,7 +4,8 @@
 // The page shows a row per file (icon or small picture, size, type), when it was shared and how many times it was
 // opened and downloaded. On a link without a download limit, one file can be fetched on its own (Range, not counted)
 // for a preview or a small picture, and the download fetches several parts at once (see fastDownload); after the
-// download every file can be previewed, saved, or saved all as one ZIP.
+// download every file can be previewed, saved, or saved all as one ZIP. A shared folder (meta.folder) keeps its
+// folders: each row shows where the file is in it, and the ZIP has the same folders inside, named after the folder.
 'use strict';
 (function () {
   const TEXT = {
@@ -717,6 +718,8 @@
   let offsets = []; // where each file starts in the data (the files are one after the other)
   let saved = null; // after the download: one Blob per file
   let note = false; // a secret note (drop.js): text shown here once, then gone from the server
+  let folder = ''; // the name of a folder shared whole (drop.js), its files named "folder/sub/file"
+  const baseName = (n) => String(n).split('/').pop() || 'file';
   let pinHeader = {}; // { 'X-Drop-Pin': proof } once the right PIN was typed (links with a PIN)
   const b64u = (buf) => {
     let s = '';
@@ -982,6 +985,7 @@
       const meta = JSON.parse(new TextDecoder().decode(plain));
       files = meta.files;
       note = meta.note === 1;
+      folder = typeof meta.folder === 'string' ? meta.folder.slice(0, 120) : '';
     } catch {
       return status(t('This link is incomplete. Copy the whole link, including the part after #.'));
     }
@@ -1000,7 +1004,11 @@
       $('#drop-get').hidden = false;
       return;
     }
-    if (files.length === 1) document.title = `${files[0].name} | OmniBeam`;
+    if (files.length === 1) document.title = `${baseName(files[0].name)} | OmniBeam`;
+    else if (folder) {
+      document.title = `📁 ${folder} | OmniBeam`;
+      $('h1').textContent = `📁 ${folder}`;
+    }
     const list = $('#drop-files');
     files.forEach((f, i) => list.appendChild(fileRow(f, i)));
     status(`${files.length > 1 ? t('{n} files · {size}', { n: files.length, size: formatSize(info.size) }) : t('1 file · {size}', { size: formatSize(info.size) })}. ${t('Available for {time}.', { time })}${info.once ? ' ' + t('This link works for one download only.') : info.max ? ' ' + t('Downloads left: {n} of {max}.', { n: info.left, max: info.max }) : ''}`);
@@ -1033,8 +1041,12 @@
     const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
     const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
     files.forEach((f, i) => {
-      let name = String(f.name).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_') || 'file';
-      for (let n = 2; used.has(name.toLowerCase()); n++) name = f.name.replace(/(\.[^.]*)?$/, ` (${n})$1`);
+      // A folder's files keep their folders inside the ZIP (never "..": nothing can land outside it when unzipped)
+      const clean = (x) => String(x).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_');
+      const path = folder ? String(f.name).split('/').filter((seg) => seg && seg !== '.' && seg !== '..').map(clean).join('/') : '';
+      let name = path || clean(f.name) || 'file';
+      const plain = name;
+      for (let n = 2; used.has(name.toLowerCase()); n++) name = plain.replace(/(\.[^./]*)?$/, ` (${n})$1`);
       used.add(name.toLowerCase());
       const nameBytes = enc.encode(name);
       const crc = (crcs[i] ^ 0xffffffff) >>> 0;
@@ -1060,7 +1072,7 @@
   $('#drop-zip').onclick = () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(makeZip());
-    a.download = `OmniBeam ${new Date(info.created || Date.now()).toISOString().slice(0, 10)}.zip`;
+    a.download = folder ? `${folder.replace(/[\\/:*?"<>|\x00-\x1f]/g, '_')}.zip` : `OmniBeam ${new Date(info.created || Date.now()).toISOString().slice(0, 10)}.zip`;
     document.body.append(a);
     a.click();
     a.remove();
@@ -1245,7 +1257,7 @@
         const a = document.createElement('a');
         a.className = 'save';
         a.href = URL.createObjectURL(saved[i]);
-        a.download = f.name;
+        a.download = baseName(f.name);
         a.textContent = t('Save');
         a.setAttribute('aria-label', `${t('Save')}: ${f.name}`);
         rows[i].querySelector('.acts').appendChild(a);
