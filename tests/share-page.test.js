@@ -12,7 +12,14 @@ test.afterEach(async () => {
   for (const d of devices) await d.close();
   devices = [];
 });
-const open = async (...args) => { const d = await openDevice(...args); devices.push(d); return d; };
+// Every test browser is on one network, which may make only 20 links an hour (DROP_LINKS_PER_HOUR): the links here
+// come from addresses of their own, so the other link tests still have theirs
+const open = async (browser, name, ip) => {
+  const d = await openDevice(browser, name);
+  devices.push(d);
+  await d.page.context().setExtraHTTPHeaders({ 'X-Forwarded-For': ip });
+  return d;
+};
 
 // A real PNG picture (w x h), so the page and the sender's thumbnail can draw it
 function png(w, h) {
@@ -59,7 +66,7 @@ async function makeLink(page, files, setup = async () => {}) {
 }
 
 test('a file page: short link, icons and pictures, preview before the download, ZIP, counts', async ({ browser }) => {
-  const a = await open(browser, 'Test Laptop');
+  const a = await open(browser, 'Test Laptop', '203.0.113.71');
   const photo = { name: 'beach.png', mimeType: 'image/png', buffer: png(320, 200) };
   const text = { name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('Hello from the file page\n'.repeat(10)) };
   const video = makeFile('holiday.mp4', 5 * 1024 * 1024 + 99, 'video/mp4'); // two parts: the text and photo are in part 0
@@ -127,7 +134,7 @@ test('a file page: short link, icons and pictures, preview before the download, 
 test('share link server: parts of a link for previews, not counted, and not for limited links', async ({ request }) => {
   const meta = 'A'.repeat(40);
   const make = async (opts) => {
-    const c = await (await request.post('/api/drop', { data: { size: 100, hours: 1, meta, ...opts } })).json();
+    const c = await (await request.post('/api/drop', { headers: { 'X-Forwarded-For': '203.0.113.73' }, data: { size: 100, hours: 1, meta, ...opts } })).json();
     expect((await request.put(`/api/drop/${c.id}/0`, { headers: { 'X-Drop-Token': c.token, 'Content-Type': 'application/octet-stream' }, data: Buffer.alloc(116, 7) })).ok()).toBe(true);
     return c;
   };
@@ -152,7 +159,7 @@ test('share link server: parts of a link for previews, not counted, and not for 
 });
 
 test('chat previews only when asked: name and picture in the page tags, never with a PIN', async ({ browser, request }) => {
-  const a = await open(browser, 'Test Laptop');
+  const a = await open(browser, 'Test Laptop', '203.0.113.72');
   const photo = { name: 'party <night>.png', mimeType: 'image/png', buffer: png(900, 600) };
   // Not ticked: the general title, and the server has no name
   const plain = await makeLink(a.page, [photo]);
