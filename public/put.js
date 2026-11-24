@@ -680,19 +680,27 @@
   // The same upload as share by link (drop.js): parts a few at a time, with upload progress.
   // One part by PUT, with how many bytes went so far (onSent). XMLHttpRequest, not fetch: only it tells upload progress,
   // so the bar moves smoothly on a slow line instead of jumping once per part
+  const STALL_MS = window.omnibeamStallMs || 20000;
   function sendPart(url, token, body, onSent) {
     return new Promise((resolve, reject) => {
       const x = new XMLHttpRequest();
       x.open('PUT', url);
       x.setRequestHeader('X-Drop-Token', token);
       x.setRequestHeader('Content-Type', 'application/octet-stream');
-      x.upload.onprogress = (e) => onSent(e.loaded);
+      // A part that stops moving (a lost connection the browser doesn't notice, a hiccup on the way to the server)
+      // is given up after STALL_MS without progress and sent again, instead of freezing the bar for minutes
+      let timer = 0;
+      const watch = (ms) => { clearTimeout(timer); timer = setTimeout(() => x.abort(), ms); };
+      x.upload.onprogress = (e) => { watch(STALL_MS); onSent(e.loaded); };
+      x.upload.onload = () => watch(STALL_MS * 2); // all sent: the server writes it and answers
       x.onload = () => {
+        clearTimeout(timer);
         let j = {};
         try { j = JSON.parse(x.responseText); } catch {}
         resolve({ status: x.status, json: j });
       };
-      x.onerror = x.ontimeout = x.onabort = () => reject(new TypeError(''));
+      x.onerror = x.ontimeout = x.onabort = () => { clearTimeout(timer); reject(new TypeError('')); };
+      watch(STALL_MS);
       x.send(body);
     });
   }
