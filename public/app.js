@@ -1749,7 +1749,7 @@ class Peer {
       }
     } finally {
       // Stopped with ✕ (here or on the other device) or the connection went away: still in the Sent list
-      if (!job.logged && job.xid) log(this.cancelled && !job.kept ? 'cancelled' : 'failed');
+      if (!job.logged && job.xid) log(this.cancelled && !job.kept && (!job.why || job.why === 'cancel') ? 'cancelled' : 'failed');
       // Not to be continued any more (otherwise AutoResume continues it)
       if (job.xid && !job.kept) Outgoing.remove(job.xid);
       // After an abort, abort() has already reset everything (and a newer send may be running)
@@ -1875,7 +1875,11 @@ class Peer {
   // why: how the stats page counts it if this device was sending (see reportFail); worked out from reason/keep if not given
   // pause: a screen turned off. Not a problem, so not reported as one; the other device is told, so it can say why.
   abort(reason, notifyPeer = true, keep = false, why = '', pause = false) {
-    if (this.busy && this.job?.send) this.reportFail(why || (reason === 'Transfer cancelled' ? 'cancel' : keep ? 'lost' : 'error'));
+    if (this.busy && this.job?.send) {
+      // Remembered for the Sent list: only a real Stop reads "Cancelled", a problem reads "Not finished"
+      this.job.why = why || (reason === 'Transfer cancelled' ? 'cancel' : keep ? 'lost' : 'error');
+      this.reportFail(this.job.why);
+    }
     if (notifyPeer && this.busy) wsSend({ type: 'signal', to: this.info.id, data: { abort: reason, keep, ...(pause ? { pause: true } : {}) } });
     if (notifyPeer && this.busy && reason !== 'Transfer cancelled' && !pause) this.reportProblem(reason);
     // The connection broke (not a cancel): both sides remember the transfer, so it continues by itself when
