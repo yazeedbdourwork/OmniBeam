@@ -1532,9 +1532,24 @@ let dropBytes = 0;       // disk used or reserved by all links
 const dropUploads = new Map(); // network -> [{ at, size }] recent uploads, for the limits above
 const encryptedSize = (size) => size + Math.max(1, Math.ceil(size / DROP_PART)) * DROP_TAG;
 const dropFile = (id, ext) => path.join(DROP_DIR, `${id}.${ext}`);
+const DROP_PARALLEL = 6; // parts of one link that can be uploading at the same time
+const dropBusy = new Map(); // link id -> Set of parts being uploaded right now (not saved)
+// Whether part n arrived. Links started before parts could come out of order only have got (parts 0..got-1)
+const dropHas = (d, n) => d.complete || (d.have ? d.have.includes(n) : n < d.got);
 
+// One write at a time per link: parts arrive a few at once, and two writes of the same file at once can mix
+const dropSaving = new Map(); // link id -> { again } while its <id>.json is being written
 function saveDrop(d) {
-  fs.writeFile(dropFile(d.id, 'json'), JSON.stringify(d), (err) => { if (err) console.error('Could not save link', err.message); });
+  const busy = dropSaving.get(d.id);
+  if (busy) { busy.again = true; return; }
+  const state = { again: false };
+  dropSaving.set(d.id, state);
+  fs.writeFile(dropFile(d.id, 'json'), JSON.stringify(d), (err) => {
+    if (err) console.error('Could not save link', err.message);
+    dropSaving.delete(d.id);
+    if (drops.get(d.id) !== d) fs.unlink(dropFile(d.id, 'json'), () => {}); // deleted while this was being written
+    else if (state.again) saveDrop(d);
+  });
 }
 function deleteDrop(id) {
   const d = drops.get(id);
@@ -1702,31 +1717,59 @@ function handleDrop(req, res, urlPath) {
       });
     }).catch(() => json(400, { error: 'bad request' }));
   }
-  // Upload part n (in order). Sending a part again that already arrived is fine (a retry after a lost answer).
+  // Upload part n. Parts can come in any order and a few at a time (the page sends several at once, which is
+  // much faster through Cloudflare), each written at its own place in the file. Sending a part again that
+  // already arrived is fine (a retry after a lost answer). d.have lists the parts that arrived while uploading.
   if (sub && sub !== 'data' && req.method === 'PUT') {
     if (!owner(d)) { req.resume(); return json(403, { error: 'forbidden' }); }
     const n = Number(sub);
-    if (n < d.got) { req.resume(); return json(200, { got: d.got }); }
-    if (n !== d.got || d.complete) { req.resume(); return json(409, { error: 'order', got: d.got }); }
+    if (!Number.isInteger(n) || n < 0 || n >= d.parts) { req.resume(); return json(400, { error: 'part' }); }
+    if (dropHas(d, n)) { req.resume(); return json(200, { got: d.got, complete: d.complete }); }
+    const busy = dropBusy.get(d.id) || new Set();
+    // The same part already uploading (a retry while the first try still runs), or too many at once: try again soon
+    if (busy.has(n) || busy.size >= DROP_PARALLEL) { req.resume(); return json(409, { error: 'busy', got: d.got }); }
+    busy.add(n);
+    dropBusy.set(d.id, busy);
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      busy.delete(n);
+      if (!busy.size && dropBusy.get(d.id) === busy) dropBusy.delete(d.id);
+    };
     const expected = Math.min(DROP_PART, d.size - n * DROP_PART) + DROP_TAG;
     const chunks = [];
     let len = 0;
     req.on('data', (c) => {
       len += c.length;
-      if (len > expected) return req.destroy();
+      if (len > expected) { done(); return req.destroy(); }
       chunks.push(c);
     });
+    req.on('aborted', done);
+    req.on('close', () => { if (!req.complete) done(); });
     req.on('end', () => {
-      if (len !== expected) return json(400, { error: 'size' });
-      if (d.got !== n || !drops.has(d.id)) return json(409, { error: 'order', got: d.got });
-      fs.appendFile(dropFile(d.id, 'bin'), Buffer.concat(chunks), (err) => {
-        if (err) { console.error('Could not store link part', err.message); return json(500, { error: 'disk' }); }
-        d.got = n + 1;
-        d.touched = Date.now();
-        d.complete = d.got === d.parts;
-        saveDrop(d);
-        if (d.complete && d.req) requestFileReady(d);
-        json(200, { got: d.got, complete: d.complete });
+      if (len !== expected) { done(); return json(400, { error: 'size' }); }
+      if (!drops.has(d.id)) { done(); return json(409, { error: 'gone', got: d.got }); }
+      const buf = Buffer.concat(chunks);
+      fs.open(dropFile(d.id, 'bin'), 'r+', (err, fd) => {
+        if (err) { done(); console.error('Could not store link part', err.message); return json(500, { error: 'disk' }); }
+        fs.write(fd, buf, 0, buf.length, n * (DROP_PART + DROP_TAG), (err) => {
+          fs.close(fd, () => {});
+          done();
+          if (err) { console.error('Could not store link part', err.message); return json(500, { error: 'disk' }); }
+          if (!drops.has(d.id)) return json(409, { error: 'gone', got: d.got });
+          if (!dropHas(d, n)) {
+            if (!d.have) d.have = Array.from({ length: d.got }, (_, k) => k);
+            d.have.push(n);
+            d.got = d.have.length;
+          }
+          d.touched = Date.now();
+          d.complete = d.got === d.parts;
+          if (d.complete) delete d.have;
+          saveDrop(d);
+          if (d.complete && d.req) requestFileReady(d);
+          json(200, { got: d.got, complete: d.complete });
+        });
       });
     });
     return;
