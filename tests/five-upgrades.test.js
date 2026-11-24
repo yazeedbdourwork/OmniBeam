@@ -272,8 +272,8 @@ test('pinned note: pin a message or write one, stays after closing and clearing,
   await target.hover();
   await target.locator('[data-act=message]').click();
   await expect(pin.locator('.pin-text')).toHaveText('Wi-Fi: HomeNet / pass 1234');
-  a.page.once('dialog', (d) => d.accept());
   await chat.locator('[data-act=clear]').click();
+  await a.page.locator('#dlg-chat-clear [data-act=yes]').click();
   await expect(chat.locator('.bubble')).toHaveCount(0);
   await expect(pin).toBeVisible();
   // Edit it with the pin button in the head

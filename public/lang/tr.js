@@ -1536,5 +1536,15 @@
     "{n} new messages": "{n} yeni mesaj",
     "Go to the latest message": "Son mesaja git",
     "Deleted from this device": "Bu cihazdan silindi",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "{name} üzerinde de sil (orada önce sorulur)",
+    "{name} deleted the chat too": "{name} da sohbeti sildi",
+    "{name} kept the chat on that device": "{name} sohbeti o cihazda tuttu",
+    "Asked {name} to delete this chat too": "{name} cihazından bu sohbeti de silmesi istendi",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} çevrimdışı. OmniBeam'i açar açmaz sorulacak (bu sayfayı açık tutun).",
+    "{name} cleared your chat": "{name} sohbetinizi temizledi",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} sohbetinizi o cihazda sildi ve bu cihazda da silmenizi istiyor. {name} ile mesajlar ve dosya kayıtları yalnızca bu cihazdan kaldırılır.",
+    "Keep it": "Sakla",
+    "Delete here": "Burada sil",
   },
 });

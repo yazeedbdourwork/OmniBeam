@@ -1412,6 +1412,8 @@ html.tv .tv-tile:focus, html.tv .tv-set button:focus { outline: 5px solid var(--
 .received .item .info > div.msg-text { white-space: pre-wrap; }
 [dir=rtl] .received .item .info > div, [dir=rtl] #link-list .fname, [dir=rtl] #req-list .fname { unicode-bidi: plaintext; }
 
+/* Clear chat on both devices: the red button of "Delete here" / "Clear chat" */
+.btn.danger { background: #c62828; color: #fff; font-weight: 700; }
 /* ---------- Chat view (chat.js has the rest of its styles): the unread number on a device's card ---------- */
 .peer > .chat-badge {
   position: absolute; top: 8px; inset-inline-end: 8px; min-width: 24px; height: 24px; padding: 0 7px; border: 0; border-radius: 999px;

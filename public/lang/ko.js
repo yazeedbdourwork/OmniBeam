@@ -1536,5 +1536,15 @@
     "{n} new messages": "새 메시지 {n}개",
     "Go to the latest message": "최신 메시지로 이동",
     "Deleted from this device": "이 기기에서 삭제됨",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "{name}에서도 삭제 (그쪽에서 먼저 확인)",
+    "{name} deleted the chat too": "{name}도 채팅을 삭제했습니다",
+    "{name} kept the chat on that device": "{name}은(는) 그 기기에 채팅을 남겼습니다",
+    "Asked {name} to delete this chat too": "{name}에게 이 채팅 삭제를 요청했습니다",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name}이(가) 오프라인입니다. OmniBeam을 열면 바로 물어봅니다 (이 페이지를 열어 두세요).",
+    "{name} cleared your chat": "{name}이(가) 채팅을 비웠습니다",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name}이(가) 그 기기에서 채팅을 삭제하고 이 기기에서도 삭제해 달라고 요청합니다. {name}과(와)의 메시지와 파일은 이 기기에서만 삭제됩니다.",
+    "Keep it": "유지",
+    "Delete here": "여기서 삭제",
   },
 });

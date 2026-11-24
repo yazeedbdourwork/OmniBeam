@@ -1536,5 +1536,15 @@
     "{n} new messages": "{n} رسائل جديدة",
     "Go to the latest message": "الانتقال إلى آخر رسالة",
     "Deleted from this device": "حُذفت من هذا الجهاز",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "احذفها أيضًا على {name} (يُسأل هناك أولًا)",
+    "{name} deleted the chat too": "حذف {name} المحادثة أيضًا",
+    "{name} kept the chat on that device": "احتفظ {name} بالمحادثة على ذلك الجهاز",
+    "Asked {name} to delete this chat too": "طُلب من {name} حذف هذه المحادثة أيضًا",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} غير متصل. سيُسأل فور فتحه OmniBeam (أبقِ هذه الصفحة مفتوحة).",
+    "{name} cleared your chat": "مسح {name} محادثتكما",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "حذف {name} محادثتكما على ذلك الجهاز ويطلب منك حذفها على هذا الجهاز أيضًا. تُحذف الرسائل والملفات مع {name} من هذا الجهاز فقط.",
+    "Keep it": "احتفظ بها",
+    "Delete here": "احذفها هنا",
   },
 });

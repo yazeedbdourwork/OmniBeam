@@ -1536,5 +1536,15 @@
     "{n} new messages": "Новых сообщений: {n}",
     "Go to the latest message": "К последнему сообщению",
     "Deleted from this device": "Удалено с этого устройства",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "Удалить и на {name} (там сначала спросят)",
+    "{name} deleted the chat too": "{name} тоже удалил чат",
+    "{name} kept the chat on that device": "{name} оставил чат на том устройстве",
+    "Asked {name} to delete this chat too": "{name} попросили тоже удалить этот чат",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} не в сети. Вопрос придёт, как только откроется OmniBeam (не закрывайте эту страницу).",
+    "{name} cleared your chat": "{name} очистил ваш чат",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} удалил ваш чат на том устройстве и просит удалить его и на этом. Сообщения и файлы с {name} удаляются только с этого устройства.",
+    "Keep it": "Оставить",
+    "Delete here": "Удалить здесь",
   },
 });

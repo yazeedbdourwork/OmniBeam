@@ -1536,5 +1536,15 @@
     "{n} new messages": "{n} 条新消息",
     "Go to the latest message": "转到最新消息",
     "Deleted from this device": "已从此设备删除",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "也在 {name} 上删除（对方会先确认）",
+    "{name} deleted the chat too": "{name} 也删除了聊天",
+    "{name} kept the chat on that device": "{name} 在那台设备上保留了聊天",
+    "Asked {name} to delete this chat too": "已请 {name} 也删除此聊天",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} 离线。它一打开 OmniBeam 就会询问（请保持此页面打开）。",
+    "{name} cleared your chat": "{name} 清空了你们的聊天",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} 在那台设备上删除了你们的聊天，并请你在这台设备上也删除。与 {name} 的消息和文件只会从这台设备上删除。",
+    "Keep it": "保留",
+    "Delete here": "在此删除",
   },
 });

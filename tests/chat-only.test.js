@@ -220,17 +220,14 @@ test('Clear chat: asks first, removes only that device\'s messages and files her
   await chat.locator('[data-act=close]').click();
   // Clear the chat with A: the question names A; "Cancel" keeps everything
   await b.page.evaluate((n) => openChat([...peers.values()].find((p) => p.info.name === n)), a.name);
-  let question = '';
-  let answer = false;
-  b.page.on('dialog', async (d) => { question = d.message(); await (answer ? d.accept() : d.dismiss()); });
+  const ask = b.page.locator('#dlg-chat-clear');
   await chat.locator('[data-act=clear]').click();
-  await expect.poll(() => question).not.toBe('');
-  expect(question).toBe('Clear this chat? Messages and file entries with Clear A are removed from this device only.');
+  await expect(ask.locator('p')).toHaveText('Clear this chat? Messages and file entries with Clear A are removed from this device only.');
+  await ask.locator('[data-act=no]').click();
   await expect(chat.locator('.bubble')).toHaveCount(2);
-  answer = true;
-  question = '';
   await chat.locator('[data-act=clear]').click();
-  await expect.poll(() => question).not.toBe('');
+  await expect(ask.locator('.chat-clear-both input')).not.toBeChecked(); // this device only, unless ticked
+  await ask.locator('[data-act=yes]').click();
   await expect(chat.locator('.bubble')).toHaveCount(0);
   await expect(chat.locator('.chat-empty')).toBeVisible();
   await expect(chat.locator('[data-act=clear]')).toBeDisabled();
@@ -245,8 +242,8 @@ test('Clear chat: asks first, removes only that device\'s messages and files her
   await expect(chat.locator('.bubble').nth(0)).toContainText('from A one');
   await expect(chat.locator('.bubble').nth(1)).toContainText('reply to A');
   // Cleared again and left: after the Undo time it stays cleared, also after a reload
-  answer = true;
   await chat.locator('[data-act=clear]').click();
+  await ask.locator('[data-act=yes]').click();
   await expect(chat.locator('.bubble')).toHaveCount(0);
   await b.page.waitForTimeout(6800);
   await expect(b.page.locator('#undo-toast.show')).toHaveCount(0);
