@@ -1547,14 +1547,19 @@ class Peer {
   }
 
   // --- Sending ---
-  async sendText(text) {
+  // opts.re: the message this one answers ({ id, text, mine } as this device sees it; the chat view's Reply).
+  // The id lets the other device tell this one when it arrived and was read (the ticks), and react to it.
+  async sendText(text, opts = {}) {
     try {
       this.setStatus('Connecting…');
       await this.connect();
-      this.sendJson({ t: 'text', text });
+      const id = randomHex(8);
+      const re = opts.re && opts.re.id ? { id: String(opts.re.id).slice(0, 24), text: String(opts.re.text || '').slice(0, 160), mine: !!opts.re.mine } : null;
+      // To the other device, "mine" means its own message: flipped here
+      this.sendJson({ t: 'text', text, id, ...(re ? { re: { id: re.id, text: re.text, mine: !re.mine } } : {}) });
       this.setStatus('');
-      toast(t('Message sent to {name}', { name: this.info.name }));
-      Sent.add(this, { text }, 'ok');
+      if (!chatShowing(this)) toast(t('Message sent to {name}', { name: this.info.name }));
+      Sent.add(this, { text, id, re }, 'ok');
       this.reportStat({ kind: 'text', bytes: 0, files: 0 });
     } catch (err) {
       this.setStatus('');
@@ -1923,7 +1928,12 @@ class Peer {
     try { msg = JSON.parse(data); } catch { return; }
     switch (msg.t) {
       case 'text': {
-        Messages.add(String(msg.text), this.info.name, this.pairSecret);
+        const mid = typeof msg.id === 'string' && /^[0-9a-f]{4,24}$/.test(msg.id) ? msg.id : '';
+        const re = msg.re && typeof msg.re.id === 'string' ? { id: msg.re.id.slice(0, 24), text: String(msg.re.text || '').slice(0, 160), mine: !!msg.re.mine } : null;
+        Messages.add(String(msg.text), this.info.name, this.pairSecret, { id: mid, re });
+        // Arrived (the second grey tick on the sender); read too when its chat is on screen here
+        if (mid) chatTell(this, { t: 'ack', ids: [mid] });
+        window.Chat?.typing?.(this, false);
         if (IS_TV && window.Tv) { window.Tv.note(this, String(msg.text)); break; } // big on the TV screen (tv.js)
         messageSound();
         if (chatShowing(this)) break;
@@ -1932,6 +1942,17 @@ class Peer {
         else messageArrived(this, String(msg.text));
         break;
       }
+      // The chat view (chat.js): ticks, "typing…" and reactions. Older versions of OmniBeam ignore these.
+      case 'ack':
+      case 'seen':
+        if (Array.isArray(msg.ids)) Sent.mark(msg.ids.slice(0, 200).map(String), msg.t === 'seen' ? 'r' : 'd');
+        break;
+      case 'typing':
+        window.Chat?.typing?.(this, msg.on !== false);
+        break;
+      case 'react':
+        if (typeof msg.id === 'string') Reactions.set(msg.id.slice(0, 24), 'them', typeof msg.e === 'string' ? msg.e.slice(0, 16) : '');
+        break;
       case 'ring':
         Ringer.start(this);
         break;
@@ -3176,9 +3197,12 @@ const Messages = {
     History.updateButton();
     chatChanged();
   },
-  add(text, from, pair) {
+  // extra.id: the sender's id of the message (for ticks and reactions); without one (older versions, the clipboard)
+  // a local id, never sent back. extra.re: the message it answers.
+  add(text, from, pair, extra = {}) {
     this.load();
-    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
+    const id = extra.id || 'l' + randomHex(6);
+    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), id, ...(extra.id ? {} : { loc: 1 }), ...(extra.re ? { re: extra.re } : {}), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
     this.items = this.items.slice(0, MAX_MESSAGES);
     this.save();
     History.onChange?.();
@@ -3187,6 +3211,12 @@ const Messages = {
     this.load();
     this.items = this.items.filter((x) => !(x.at === m.at && x.text === m.text));
     this.save();
+  },
+  // The chat told the sender these were read: noted quietly (no new drawing of the chat)
+  markSeen(ids) {
+    this.load();
+    for (const m of this.items) if (ids.includes(m.id)) m.rd = 1;
+    try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(this.items)); } catch {}
   },
   clear() {
     this.items = [];
@@ -3229,6 +3259,8 @@ const Sent = {
     if (peer.pairSecret) entry.pair = peer.pairSecret.slice(0, 16);
     if (files.text !== undefined) {
       entry.text = String(files.text).slice(0, 5000);
+      if (files.id) entry.id = files.id;
+      if (files.re) entry.re = files.re;
     } else {
       entry.files = files.slice(0, 50).map((f) => ({ name: pathOf(f), size: f.size }));
       entry.n = files.length;
@@ -3245,6 +3277,17 @@ const Sent = {
     sentFiles.delete(id);
     this.save();
   },
+  // The ticks of sent messages: st 'd' arrived, 'r' read (never back from read to arrived)
+  mark(ids, st) {
+    this.load();
+    let changed = false;
+    for (const e of this.items) {
+      if (e.text === undefined || !ids.includes(e.id) || e.st === 'r' || e.st === st) continue;
+      e.st = st;
+      changed = true;
+    }
+    if (changed) this.save();
+  },
   clear() {
     this.items = [];
     sentFiles.clear();
@@ -3253,13 +3296,36 @@ const Sent = {
 };
 window.addEventListener('storage', (e) => { if (e.key === SENT_KEY) History.onChange?.(); });
 
+// ---------- Reactions to chat messages: { message id: { me: '❤️', them: '👍' } }, on this device ----------
+const REACT_KEY = 'omnibeam-reactions';
+const Reactions = {
+  all() { try { return JSON.parse(localStorage.getItem(REACT_KEY)) || {}; } catch { return {}; } },
+  of(id) { return (id && this.all()[id]) || null; },
+  set(id, side, emoji) {
+    const all = this.all();
+    const r = all[id] || {};
+    if (emoji) r[side] = emoji; else delete r[side];
+    if (r.me || r.them) all[id] = r; else delete all[id];
+    // Only the newest 500 messages keep their reactions
+    const keys = Object.keys(all);
+    for (const k of keys.slice(0, Math.max(0, keys.length - 500))) delete all[k];
+    try { localStorage.setItem(REACT_KEY, JSON.stringify(all)); } catch {}
+    chatChanged();
+  },
+};
+// A small chat note to a device (ticks, typing): only over a connection that is already open, never opening one
+function chatTell(peer, obj) {
+  try { if (peer && (peer.direct || peer.relayed)) { peer.sendJson(obj); return true; } } catch {}
+  return false;
+}
+
 // ---------- Chat view: everything sent to and received from one device, in time order (chat.js) ----------
 // Made from the history above (received files, received messages, the Sent list), nothing else is kept and nothing
 // goes to the server. A paired device is found by its pairing (the first 16 characters of the secret, so its
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=6');
+const loadChat = () => loadScript('/chat.js?v=7');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -3337,7 +3403,7 @@ function chatChanged() {
     window.Chat?.refresh();
   }, 50);
 }
-window.addEventListener('storage', (e) => { if ([HISTORY_KEY, MESSAGES_KEY, SENT_KEY, CHAT_READ_KEY].includes(e.key)) { if (e.key === HISTORY_KEY) History.sync(); chatChanged(); } });
+window.addEventListener('storage', (e) => { if ([HISTORY_KEY, MESSAGES_KEY, SENT_KEY, CHAT_READ_KEY, REACT_KEY].includes(e.key)) { if (e.key === HISTORY_KEY) History.sync(); chatChanged(); } });
 // The chat view is the one place to write and read messages: every "Send message" opens it (draft: text to put
 // in its box, e.g. Send again of a message from the history)
 async function openChat(x, draft) {
