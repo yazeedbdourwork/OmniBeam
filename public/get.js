@@ -3,7 +3,8 @@
 // the visitor presses Download, so link previews in chat apps don't use up a one-time link.
 // The page shows a row per file (icon or small picture, size, type), when it was shared and how many times it was
 // opened and downloaded. On a link without a download limit, one file can be fetched on its own (Range, not counted)
-// for a preview or a small picture; after the download every file can be previewed, saved, or saved all as one ZIP.
+// for a preview or a small picture, and the download fetches several parts at once (see fastDownload); after the
+// download every file can be previewed, saved, or saved all as one ZIP.
 'use strict';
 (function () {
   const TEXT = {
@@ -571,6 +572,108 @@
     },
   };
   for (const [code, strings] of Object.entries(MORE)) Object.assign(TEXT[code], strings);
+  // Added with fast downloads (several parts at once, resume, speed and time left; 2026-11-24)
+  const FAST = {
+    ar: {
+      "{time} left": "{time} متبقية",
+      "{n} s": "{n} ث",
+      "Connection lost. Waiting for it to come back…": "انقطع الاتصال. بانتظار عودته…",
+      "Resume download": "استئناف التنزيل",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "توقف التنزيل مؤقتًا لأن الاتصال انقطع. اضغط «استئناف التنزيل» للمتابعة من حيث توقف.",
+    },
+    fr: {
+      "{time} left": "{time} restantes",
+      "{n} s": "{n} s",
+      "Connection lost. Waiting for it to come back…": "Connexion perdue. En attente de son retour…",
+      "Resume download": "Reprendre le téléchargement",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "Le téléchargement est en pause : la connexion a été perdue. Touchez Reprendre le téléchargement pour continuer là où il s'est arrêté.",
+    },
+    es: {
+      "{time} left": "quedan {time}",
+      "{n} s": "{n} s",
+      "Connection lost. Waiting for it to come back…": "Se perdió la conexión. Esperando a que vuelva…",
+      "Resume download": "Reanudar descarga",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "La descarga está en pausa: se perdió la conexión. Toca Reanudar descarga para seguir donde se quedó.",
+    },
+    tr: {
+      "{time} left": "{time} kaldı",
+      "{n} s": "{n} sn",
+      "Connection lost. Waiting for it to come back…": "Bağlantı koptu. Geri gelmesi bekleniyor…",
+      "Resume download": "İndirmeyi sürdür",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "İndirme duraklatıldı: bağlantı koptu. Kaldığı yerden devam etmek için İndirmeyi sürdür'e dokunun.",
+    },
+    de: {
+      "{time} left": "noch {time}",
+      "{n} s": "{n} Sek.",
+      "Connection lost. Waiting for it to come back…": "Verbindung verloren. Warte, bis sie zurück ist…",
+      "Resume download": "Download fortsetzen",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "Der Download ist pausiert: Die Verbindung wurde unterbrochen. Tippe auf „Download fortsetzen“, um dort weiterzumachen, wo er aufgehört hat.",
+    },
+    pt: {
+      "{time} left": "faltam {time}",
+      "{n} s": "{n} s",
+      "Connection lost. Waiting for it to come back…": "Conexão perdida. Aguardando ela voltar…",
+      "Resume download": "Retomar download",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "O download foi pausado: a conexão caiu. Toque em Retomar download para continuar de onde parou.",
+    },
+    hi: {
+      "{time} left": "{time} बाकी",
+      "{n} s": "{n} सेकंड",
+      "Connection lost. Waiting for it to come back…": "कनेक्शन टूट गया। उसके वापस आने का इंतज़ार…",
+      "Resume download": "डाउनलोड फिर शुरू करें",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "डाउनलोड रुक गया: कनेक्शन टूट गया। जहाँ रुका था वहीं से जारी रखने के लिए \"डाउनलोड फिर शुरू करें\" पर टैप करें।",
+    },
+    id: {
+      "{time} left": "sisa {time}",
+      "{n} s": "{n} dtk",
+      "Connection lost. Waiting for it to come back…": "Koneksi terputus. Menunggu tersambung lagi…",
+      "Resume download": "Lanjutkan unduhan",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "Unduhan dijeda: koneksi terputus. Ketuk Lanjutkan unduhan untuk melanjutkan dari titik terakhir.",
+    },
+    ru: {
+      "{time} left": "осталось {time}",
+      "{n} s": "{n} с",
+      "Connection lost. Waiting for it to come back…": "Связь потеряна. Ждём, когда она вернётся…",
+      "Resume download": "Продолжить загрузку",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "Загрузка приостановлена: связь потеряна. Нажмите «Продолжить загрузку», чтобы продолжить с того же места.",
+    },
+    ja: {
+      "{time} left": "残り {time}",
+      "{n} s": "{n} 秒",
+      "Connection lost. Waiting for it to come back…": "接続が切れました。復帰を待っています…",
+      "Resume download": "ダウンロードを再開",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "接続が切れたため、ダウンロードを一時停止しました。「ダウンロードを再開」をタップすると、止まったところから続けます。",
+    },
+    zh: {
+      "{time} left": "剩余 {time}",
+      "{n} s": "{n} 秒",
+      "Connection lost. Waiting for it to come back…": "连接已断开，正在等待恢复…",
+      "Resume download": "继续下载",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "下载已暂停：连接已断开。点按“继续下载”，从中断处接着下载。",
+    },
+    ko: {
+      "{time} left": "{time} 남음",
+      "{n} s": "{n}초",
+      "Connection lost. Waiting for it to come back…": "연결이 끊겼습니다. 다시 연결되기를 기다리는 중…",
+      "Resume download": "다운로드 재개",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "연결이 끊겨 다운로드가 일시 중지되었습니다. 다운로드 재개를 탭하면 멈춘 곳부터 이어서 받습니다.",
+    },
+    it: {
+      "{time} left": "{time} rimanenti",
+      "{n} s": "{n} s",
+      "Connection lost. Waiting for it to come back…": "Connessione persa. In attesa che torni…",
+      "Resume download": "Riprendi download",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "Download in pausa: la connessione si è interrotta. Tocca Riprendi download per continuare da dove si era fermato.",
+    },
+    ur: {
+      "{time} left": "{time} باقی",
+      "{n} s": "{n} سیکنڈ",
+      "Connection lost. Waiting for it to come back…": "کنکشن ٹوٹ گیا۔ واپس آنے کا انتظار ہے…",
+      "Resume download": "ڈاؤن لوڈ دوبارہ شروع کریں",
+      "The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.": "ڈاؤن لوڈ رک گیا: کنکشن ٹوٹ گیا۔ جہاں رکا تھا وہیں سے جاری رکھنے کے لیے \"ڈاؤن لوڈ دوبارہ شروع کریں\" پر ٹیپ کریں۔",
+    },
+  };
+  for (const [code, strings] of Object.entries(FAST)) Object.assign(TEXT[code], strings);
   let lang = 'en';
   try { lang = localStorage.getItem('omnibeam-lang') || ''; } catch {}
   if (!TEXT[lang] && lang !== 'en') lang = (navigator.languages || [navigator.language || 'en']).map((l) => String(l).slice(0, 2).toLowerCase()).find((l) => TEXT[l]) || 'en';
@@ -964,38 +1067,163 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 60000);
   };
 
-  async function download() {
-    const button = $('#drop-get');
-    button.hidden = true;
-    const bar = $('#drop-bar');
-    bar.hidden = false;
-    const setBar = (frac) => {
-      bar.firstElementChild.style.width = `${(frac * 100).toFixed(1)}%`;
-      status(t('Downloading… {pct}%', { pct: Math.floor(frac * 100) }));
-    };
-    setBar(0);
+  // ---- Downloading like a download manager (links without a download limit: the server gives info.k) ----
+  // PARALLEL parts at once, each its own request (Cloudflare may answer it from near the visitor: see p/<k>/<n> on the
+  // server), decrypted as each one arrives. A part that stops moving for 20 s is asked for again; after a dropped
+  // connection it waits for it to come back and carries on. The parts it has stay in this page, so "Resume download"
+  // doesn't start over. With several files, each one's CRC-32 is worked out in order (for the ZIP), and parts aren't
+  // fetched far ahead of that, so phones never hold many parts twice.
+  const PARALLEL = 6;
+  const stallMs = () => window.omnibeamStallMs || 20000;
+  const retryMs = (tries) => (window.omnibeamRetryMs || 1000) * 2 ** tries; // 1, 2, 4, 8, 16 s
+  const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
+  let fast = null; // { parts: Blob per part, plain: parts waiting for the CRC, crcAt } between tries
+  async function fetchPart(n, onBytes) {
+    const ctl = new AbortController();
+    let timer;
+    const arm = () => { clearTimeout(timer); timer = setTimeout(() => ctl.abort(), stallMs()); };
+    let got = 0;
+    arm();
     try {
-      const r = await fetch(`/api/drop/${id}/data`, { cache: 'no-store', headers: pinHeader });
-      if (r.status === 410) throw new Error(note ? t('This note was already read, or someone is reading it now.') : t('Someone is already downloading these files, or the one download was used.'));
-      if (r.status === 404) throw new Error(t('This link has expired or was deleted.'));
-      if (!r.ok || !r.body) throw new Error('');
-      // Decrypt part by part as the data arrives; with several files, each one's CRC-32 too (for the ZIP)
-      const out = [];
-      const many = !note && files.length > 1;
-      crcs = many ? files.map(() => 0xffffffff) : null;
-      const total = await readParts(r, 0, Math.max(1, Math.ceil(info.size / info.part)) - 1, (plain, n) => {
-        out.push(plain);
-        if (!many) return;
-        const at = n * info.part;
+      const r = await fetch(`/api/drop/${id}/p/${info.k}/${n}`, { signal: ctl.signal });
+      if (r.status === 404) throw Object.assign(new Error(t('This link has expired or was deleted.')), { stop: true });
+      if (!r.ok || !r.body) throw new Error('part');
+      const len = partLen(n);
+      const buf = new Uint8Array(len);
+      const reader = r.body.getReader();
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        arm();
+        if (got + value.length > len) throw new Error('part');
+        buf.set(value, got);
+        got += value.length;
+        onBytes(value.length);
+      }
+      if (got !== len) throw new Error('part');
+      clearTimeout(timer);
+      return new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ivFor(n) }, key, buf));
+    } catch (err) {
+      onBytes(-got); // these bytes are fetched again
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function fastDownload(show) {
+    const count = Math.max(1, Math.ceil(info.size / info.part));
+    const many = files.length > 1;
+    if (!fast) fast = { parts: new Array(count), plain: new Map(), crcAt: 0 };
+    if (many && !crcs) crcs = files.map(() => 0xffffffff);
+    const queue = [];
+    let done = 0;
+    for (let n = 0; n < count; n++) {
+      if (fast.parts[n]) done += partLen(n);
+      else queue.push(n);
+    }
+    const total = info.size + count * 16;
+    // Speed over the last few seconds, and the time left at that speed
+    const samples = [[performance.now(), done]];
+    let shown = 0;
+    const onBytes = (k) => {
+      done += k;
+      const now = performance.now();
+      if (now - shown < 250 && done < total) return;
+      shown = now;
+      samples.push([now, done]);
+      while (samples.length > 2 && now - samples[1][0] > 4000) samples.shift();
+      const [t0, b0] = samples[0];
+      show(done / total, now - t0 > 700 ? ((done - b0) * 1000) / (now - t0) : 0, total - done);
+    };
+    const crcStep = () => {
+      while (fast.plain.has(fast.crcAt)) {
+        const plain = fast.plain.get(fast.crcAt);
+        fast.plain.delete(fast.crcAt);
+        const at = fast.crcAt * info.part;
         files.forEach((f, i) => {
           const a = Math.max(offsets[i], at);
           const b = Math.min(offsets[i] + f.size, at + plain.length);
           if (b > a) crcs[i] = crcUpdate(crcs[i], plain.subarray(a - at, b - at));
         });
-      }, (got) => setBar(got / info.size));
-      if (total !== info.size) throw new Error('');
-      const all = new Blob(out);
-      out.length = 0;
+        fast.crcAt++;
+      }
+    };
+    let qi = 0;
+    let failure = null;
+    const worker = async () => {
+      while (!failure && qi < queue.length) {
+        if (many && queue[qi] >= fast.crcAt + 4 * PARALLEL) { await sleep(100); continue; }
+        const n = queue[qi++];
+        for (let tries = 0; ; tries++) {
+          try {
+            const plain = await fetchPart(n, onBytes);
+            fast.parts[n] = new Blob([plain]);
+            if (many) { fast.plain.set(n, plain); crcStep(); }
+            break;
+          } catch (err) {
+            if (failure) return;
+            if (err.stop) { failure = err; return; }
+            if (navigator.onLine === false) {
+              status(t('Connection lost. Waiting for it to come back…'));
+              await new Promise((ok) => window.addEventListener('online', ok, { once: true }));
+              tries = -1;
+              continue;
+            }
+            if (tries >= 5) { failure = Object.assign(new Error(''), { paused: true }); return; }
+            await sleep(retryMs(tries));
+          }
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(PARALLEL, queue.length) }, worker));
+    if (failure) throw failure;
+    const all = new Blob(fast.parts);
+    fast = null;
+    // One more download (the server counts it; it doesn't see the parts Cloudflare sends)
+    fetch(`/api/drop/${id}/done`, { method: 'POST', headers: { 'X-Drop-Key': info.k } }).catch(() => {});
+    return all;
+  }
+  const timeLeft = (s) => t('{time} left', { time: s < 60 ? t('{n} s', { n: Math.max(1, Math.round(s)) }) : s < 3600 ? t('{n} min', { n: Math.round(s / 60) }) : t('{n} h', { n: Math.round(s / 3600) }) });
+
+  async function download() {
+    const button = $('#drop-get');
+    button.hidden = true;
+    const bar = $('#drop-bar');
+    bar.hidden = false;
+    const setBar = (frac, speed = 0, left = 0) => {
+      bar.firstElementChild.style.width = `${(frac * 100).toFixed(1)}%`;
+      const pct = t('Downloading… {pct}%', { pct: Math.floor(frac * 100) });
+      status(speed > 0 ? `${pct} · ${formatSize(Math.round(speed))}/s · ${timeLeft(left / speed)}` : pct);
+    };
+    setBar(0);
+    try {
+      let all;
+      if (info.k && !note) all = await fastDownload(setBar);
+      else {
+        const r = await fetch(`/api/drop/${id}/data`, { cache: 'no-store', headers: pinHeader });
+        if (r.status === 410) throw new Error(note ? t('This note was already read, or someone is reading it now.') : t('Someone is already downloading these files, or the one download was used.'));
+        if (r.status === 404) throw new Error(t('This link has expired or was deleted.'));
+        if (!r.ok || !r.body) throw new Error('');
+        // Decrypt part by part as the data arrives; with several files, each one's CRC-32 too (for the ZIP)
+        const out = [];
+        const many = !note && files.length > 1;
+        crcs = many ? files.map(() => 0xffffffff) : null;
+        const total = await readParts(r, 0, Math.max(1, Math.ceil(info.size / info.part)) - 1, (plain, n) => {
+          out.push(plain);
+          if (!many) return;
+          const at = n * info.part;
+          files.forEach((f, i) => {
+            const a = Math.max(offsets[i], at);
+            const b = Math.min(offsets[i] + f.size, at + plain.length);
+            if (b > a) crcs[i] = crcUpdate(crcs[i], plain.subarray(a - at, b - at));
+          });
+        }, (got) => setBar(got / info.size));
+        if (total !== info.size) throw new Error('');
+        all = new Blob(out);
+        out.length = 0;
+      }
+      if (all.size !== info.size) throw new Error('');
+      const many = !note && files.length > 1;
       if (note) {
         const text = await all.text();
         const box = document.createElement('div');
@@ -1035,6 +1263,14 @@
       if (saveButtons.length === 1) saveButtons[0].click();
     } catch (err) {
       bar.hidden = true;
+      if (err.paused) {
+        // The parts it has are kept: the button (or the connection coming back) carries on from there
+        status(t('The download paused: the connection was lost. Tap Resume download to carry on from where it stopped.'));
+        button.textContent = t('Resume download');
+        button.hidden = false;
+        window.addEventListener('online', () => { if (!button.hidden) download(); }, { once: true });
+        return;
+      }
       window.omniReport?.('link', 'Download failed: ' + (err.message || err.name || 'unknown'));
       status(err.message || t('Download failed. Check the connection and try again.'));
       if (!err.message) button.hidden = false;
