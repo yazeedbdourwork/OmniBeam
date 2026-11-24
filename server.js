@@ -1533,6 +1533,13 @@ const DROP_PIN_TRIES = 10;
 const drops = new Map(); // id -> bookkeeping (as in <id>.json)
 let dropBytes = 0;       // disk used or reserved by all links
 const dropUploads = new Map(); // network -> [{ at, size }] recent uploads, for the limits above
+const dropDone = new Map(); // "<link id> <network>" -> when its last finished part-by-part download was counted
+// The key of a link's parts URL (see p/<k>/<n> in handleDrop): made once per link without a download limit
+const partsKey = (d) => {
+  if (d.max || d.req) return undefined;
+  if (!d.partsKey) { d.partsKey = crypto.randomBytes(16).toString('base64url'); saveDrop(d); }
+  return d.partsKey;
+};
 const encryptedSize = (size) => size + Math.max(1, Math.ceil(size / DROP_PART)) * DROP_TAG;
 const dropFile = (id, ext) => path.join(DROP_DIR, `${id}.${ext}`);
 // Share links have short ids (8 letters: omnibeam.site/d/x7Kq2mPa#…). The key after # is what keeps a link private,
@@ -1634,7 +1641,7 @@ function handleDrop(req, res, urlPath) {
     res.end(JSON.stringify(obj));
   };
   if (!DROPS) { req.resume(); return json(404, { error: 'off' }); }
-  const m = urlPath.match(/^\/api\/drop(?:\/([A-Za-z0-9_-]{8,40}))?(?:\/(data|email|thumb|\d{1,6}))?$/);
+  const m = urlPath.match(/^\/api\/drop(?:\/([A-Za-z0-9_-]{8,40}))?(?:\/(data|email|thumb|done|\d{1,6}|p\/[A-Za-z0-9_-]{22}\/\d{1,6}))?$/);
   if (!m) { req.resume(); return json(404, { error: 'not found' }); }
   const [, id, sub] = m;
   const d = id ? drops.get(id) : null;
@@ -1827,7 +1834,7 @@ function handleDrop(req, res, urlPath) {
       saveDrop(d);
     }
     return json(200, { size: d.size, part: DROP_PART, meta: d.meta, expires: d.expires, once: d.once, max: d.max || 0, left: left(d), pin: !!d.pinHash,
-      created: d.created, downloads: d.downloads, views: d.views || 0 });
+      created: d.created, downloads: d.downloads, views: d.views || 0, k: partsKey(d) });
   }
   // The small picture for chat previews (only links whose sender asked for one: see pub above)
   if (sub === 'thumb' && (req.method === 'GET' || req.method === 'HEAD')) {
@@ -1835,6 +1842,45 @@ function handleDrop(req, res, urlPath) {
     const img = Buffer.from(d.thumb, 'base64');
     res.writeHead(200, { 'Content-Type': 'image/jpeg', 'Content-Length': img.length, 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' });
     return res.end(req.method === 'HEAD' ? undefined : img);
+  }
+  // One encrypted part of a link without a download limit: GET /api/drop/<id>/p/<k>/<n>. The download page fetches a
+  // few parts at once and carries on from the parts it has after a dropped connection, like a download manager. k
+  // (partsKey, given with the information above, after the PIN) stands in for the PIN here, so these answers don't
+  // depend on who asks and Cloudflare may keep them near the visitor and send them again without asking this server
+  // (Cache Rule "OmniBeam pages" uses this header). They are encrypted: the key after # never reaches Cloudflare or
+  // this server. Kept at most an hour and never past the link's expiry; a link deleted before that can still have
+  // parts there for up to an hour, but its page says it's gone. Not counted here: the page says when it has them all.
+  if (sub && sub.startsWith('p/') && (req.method === 'GET' || req.method === 'HEAD')) {
+    const [, k, num] = sub.split('/');
+    const n = Number(num);
+    if (!d.complete || d.req || d.max || !d.partsKey || !samePassword(d.partsKey, k) || n >= d.parts) return json(404, { error: 'gone' });
+    const start = n * (DROP_PART + DROP_TAG);
+    const len = Math.min(DROP_PART, d.size - n * DROP_PART) + DROP_TAG;
+    const ttl = Math.min(3600, Math.floor((d.expires - Date.now()) / 1000) - 60);
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': len, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex',
+      ...(ttl >= 60 ? { 'Cloudflare-CDN-Cache-Control': `max-age=${ttl}` } : {}) });
+    if (req.method === 'HEAD') return res.end();
+    const part = fs.createReadStream(dropFile(d.id, 'bin'), { start, end: start + len - 1 });
+    part.on('error', () => res.destroy());
+    part.pipe(res);
+    res.on('close', () => part.destroy());
+    return;
+  }
+  // The download page got every part above: one more download (once per network and link in 10 minutes)
+  if (sub === 'done' && req.method === 'POST') {
+    req.resume();
+    if (!d.complete || d.req || d.max || !d.partsKey || !samePassword(d.partsKey, String(req.headers['x-drop-key'] || ''))) return json(404, { error: 'gone' });
+    const seen = `${d.id} ${getIp(req)}`;
+    const now = Date.now();
+    for (const [x, at] of dropDone) if (now - at > 600000) dropDone.delete(x);
+    if (!dropDone.has(seen)) {
+      dropDone.set(seen, now);
+      d.downloads++;
+      count('linkDownloads');
+      count('linkBytes', d.size);
+      saveDrop(d);
+    }
+    return json(200, { downloads: d.downloads });
   }
   // The encrypted data itself
   if (sub === 'data' && req.method === 'GET') {
