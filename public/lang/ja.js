@@ -1536,5 +1536,15 @@
     "{n} new messages": "新着メッセージ {n} 件",
     "Go to the latest message": "最新のメッセージへ",
     "Deleted from this device": "このデバイスから削除しました",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "{name} でも削除（相手側で確認します）",
+    "{name} deleted the chat too": "{name} もチャットを削除しました",
+    "{name} kept the chat on that device": "{name} はそのデバイスでチャットを残しました",
+    "Asked {name} to delete this chat too": "{name} にこのチャットの削除を依頼しました",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} はオフラインです。OmniBeam を開いたときに確認されます（このページを開いたままにしてください）。",
+    "{name} cleared your chat": "{name} がチャットを削除しました",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} がそのデバイスでチャットを削除し、このデバイスでも削除するよう求めています。{name} とのメッセージとファイルはこのデバイスからのみ削除されます。",
+    "Keep it": "残す",
+    "Delete here": "ここで削除",
   },
 });

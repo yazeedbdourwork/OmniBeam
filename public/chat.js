@@ -145,6 +145,8 @@
 .chat-head .icon-btn[data-act=sound][aria-pressed="false"] { opacity: .6; }
 .chat-notif { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 12px 6px; padding: 8px 10px; border-radius: 12px; font-size: 13px; background: var(--accent-soft, rgba(124,92,255,.14)); }
 .chat-notif span { flex: 1; min-width: 12em; }
+.chat-clear-both { display: flex; gap: 8px; align-items: flex-start; margin: 4px 0 14px; cursor: pointer; }
+.chat-clear-both[hidden] { display: none; }
 .chat-pin { display: flex; align-items: flex-start; gap: 8px; margin: 8px 12px 0; padding: 8px 10px; border-radius: 12px; background: var(--accent-soft, rgba(124,92,255,.14)); border: 1px solid var(--border, rgba(127,127,127,.2)); }
 .chat-pin:not([hidden]) + .chat-thread { padding-top: 8px; }
 .chat-pin .pin-ico { flex: none; font-size: 15px; line-height: 1.4; }
@@ -182,11 +184,44 @@
   let current = null; // { who, dlg, urls, observer }
   const NOTIF_OFFER_KEY = 'omnibeam-chat-notif-offer';
   const offerAnswered = () => { try { localStorage.setItem(NOTIF_OFFER_KEY, '1'); } catch {} $('.chat-notif', current.dlg).hidden = true; };
-  // Clear chat: asks first; then the messages and file entries with this device go from this device (Undo for 6 s)
+  // Clear chat: asks first (in a small window); then the messages and file entries with this device go from this
+  // device (Undo for 6 s). "Also delete it on {name}" asks the other device to delete its copy of this chat too: it
+  // asks its owner there first (see askClearChat in app.js). A paired device that is offline gets the question when it
+  // next opens OmniBeam while this page is open.
   function clear() {
     const name = $('#chat-title').textContent || current.who.name;
-    if (!confirm(t('Clear this chat? Messages and file entries with {name} are removed from this device only.', { name }))) return;
-    clearChat(current.who);
+    const who = current.who;
+    let dlg = document.getElementById('dlg-chat-clear');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-chat-clear';
+      dlg.setAttribute('aria-labelledby', 'chat-clear-title');
+      dlg.innerHTML = '<h3 id="chat-clear-title"></h3><p class="muted"></p><label class="chat-clear-both"><input type="checkbox"> <span></span></label>'
+        + '<div class="row"><button type="button" class="btn ghost" data-act="no"></button><button type="button" class="btn danger" data-act="yes"></button></div>';
+      document.body.appendChild(dlg);
+    }
+    const peer = peerOf(who);
+    const pairing = pairingOf(who);
+    $('h3', dlg).textContent = t('Clear chat');
+    $('p', dlg).textContent = t('Clear this chat? Messages and file entries with {name} are removed from this device only.', { name });
+    const both = $('.chat-clear-both', dlg);
+    const box = $('input', both);
+    both.hidden = !peer && !pairing;
+    box.checked = false;
+    $('span', both).textContent = t('Also delete it on {name} (asks there first)', { name });
+    $('[data-act=no]', dlg).textContent = t('Cancel');
+    $('[data-act=yes]', dlg).textContent = t('Clear chat');
+    dlg.onclick = (e) => {
+      const act = e.target.closest('[data-act]')?.dataset.act;
+      if (!act) return;
+      dlg.close();
+      if (act !== 'yes') return;
+      const askThere = !both.hidden && box.checked;
+      clearChat(who);
+      if (askThere) askOtherToClear(peer || pairing);
+    };
+    dlg.showModal();
+    $('[data-act=no]', dlg).focus();
   }
   // Pinned notes: { thread key: { text, at } } on this device
   const PINS_KEY = 'omnibeam-pins';

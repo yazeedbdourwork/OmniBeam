@@ -110,9 +110,50 @@ test('emoji panel, big emoji, grouped bubbles with one tail, link card, ↓ new 
 
 test('the new chat words are translated in all 15 languages', async () => {
   const keys = ['Delete for me', 'Message options', 'Reactions', 'Replying to {name}', 'Cancel reply', 'You', 'typing…', 'Emoji',
-    'Delivered', 'Read', 'Sent', 'Reply', '{n} new messages', 'Go to the latest message', 'Deleted from this device'];
+    'Delivered', 'Read', 'Sent', 'Reply', '{n} new messages', 'Go to the latest message', 'Deleted from this device',
+    'Also delete it on {name} (asks there first)', '{name} deleted the chat too', '{name} kept the chat on that device', 'Asked {name} to delete this chat too',
+    '{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).', '{name} cleared your chat', 'Keep it', 'Delete here'];
   for (const code of ['ar', 'de', 'es', 'fr', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'ru', 'tr', 'ur', 'zh']) {
     const pack = require(`../public/lang/${code}.js`);
     for (const k of keys) expect(pack.strings[k], `${code}: ${k}`).toBeTruthy();
   }
+});
+
+test('Clear chat on both devices: the other device asks first (Keep it / Delete here), the sender hears back', async ({ browser }) => {
+  test.setTimeout(120000);
+  const a = await open(browser, 'Both A');
+  const b = await open(browser, 'Both B');
+  await card(a.page, b.name);
+  await card(b.page, a.name);
+  await chatWith(a.page, b.name);
+  const chatA = a.page.locator('#dlg-chat');
+  const chatB = b.page.locator('#dlg-chat');
+  await chatA.locator('textarea').fill('secret plans');
+  await chatA.locator('[data-act=send]').click();
+  await expect(chatB.locator('.bubble.in')).toHaveCount(1);
+  // A clears with "Also delete it on B": B is asked, and keeps it the first time
+  const clearBoth = async () => {
+    await chatA.locator('[data-act=clear]').click();
+    const ask = a.page.locator('#dlg-chat-clear');
+    await expect(ask.locator('.chat-clear-both')).toContainText(`Also delete it on ${b.name}`);
+    await ask.locator('.chat-clear-both input').check();
+    await ask.locator('[data-act=yes]').click();
+  };
+  await clearBoth();
+  await expect(chatA.locator('.bubble')).toHaveCount(0);
+  const askB = b.page.locator('#dlg-clear-ask');
+  await expect(askB).toBeVisible();
+  await expect(askB.locator('h3')).toHaveText(`${a.name} cleared your chat`);
+  await askB.locator('[data-act=keep]').click();
+  await expect(chatB.locator('.bubble.in')).toHaveCount(1);
+  await expect(a.page.locator('#toast')).toContainText('kept the chat');
+  // Undo on A, then again: this time B deletes it
+  await a.page.locator('#undo-toast.show button').click();
+  await expect(chatA.locator('.bubble')).toHaveCount(1);
+  await clearBoth();
+  await askB.locator('[data-act=delete]').click();
+  await expect(chatB.locator('.bubble')).toHaveCount(0);
+  expect(await b.page.evaluate(() => Messages.items.length)).toBe(0);
+  await expect(a.page.locator('#toast')).toContainText('deleted the chat too');
+  expect(a.errors.concat(b.errors)).toEqual([]);
 });

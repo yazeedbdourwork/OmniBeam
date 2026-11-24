@@ -1950,6 +1950,16 @@ class Peer {
       case 'typing':
         window.Chat?.typing?.(this, msg.on !== false);
         break;
+      // The other device cleared its chat with this one and asks to delete it here too (asks the person first)
+      case 'clear-ask':
+        askClearChat(this);
+        break;
+      case 'clear-done':
+        toast(t('{name} deleted the chat too', { name: this.info.name }), 4000);
+        break;
+      case 'clear-kept':
+        toast(t('{name} kept the chat on that device', { name: this.info.name }), 4000);
+        break;
       case 'react':
         if (typeof msg.id === 'string') Reactions.set(msg.id.slice(0, 24), 'them', typeof msg.e === 'string' ? msg.e.slice(0, 16) : '');
         break;
@@ -3325,7 +3335,7 @@ function chatTell(peer, obj) {
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=7');
+const loadChat = () => loadScript('/chat.js?v=8');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -3555,6 +3565,64 @@ function clearChat(who) {
     History.onChange?.();
   });
   return true;
+}
+// "Also delete it on {name}" (Clear chat in chat.js): the device here now is asked right away; a paired one that is
+// offline is asked when it next opens OmniBeam (while this page is open, within a day)
+const clearWaiting = new Map(); // pairing secret -> when it was asked
+async function askOtherToClear(x) {
+  const name = x.info ? x.info.name : x.name;
+  const peer = x.info ? x : [...peers.values()].find((p) => p.pairSecret === x.secret);
+  if (peer) {
+    try {
+      await peer.connect();
+      peer.sendJson({ t: 'clear-ask' });
+      toast(t('Asked {name} to delete this chat too', { name }), 4000);
+    } catch { toast(t('{name} is no longer available', { name })); }
+    return;
+  }
+  if (!x.secret) return;
+  clearWaiting.set(x.secret, Date.now());
+  toast(t('{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).', { name }), 5000);
+}
+function clearAskIfWaiting(peer) {
+  const at = peer.pairSecret && clearWaiting.get(peer.pairSecret);
+  if (!at) return;
+  clearWaiting.delete(peer.pairSecret);
+  if (Date.now() - at < 864e5) setTimeout(() => { try { peer.sendJson({ t: 'clear-ask' }); } catch {} }, 1500);
+}
+// Asked by the other device: "Name cleared your chat and asks to delete it here too" with Keep it / Delete here.
+// Nothing here is deleted without that tap (and Delete here has the usual Undo).
+function askClearChat(peer) {
+  const who = chatWho(peer);
+  if (!chatItems(who).length) return peer.sendJson({ t: 'clear-done' }); // nothing here to delete
+  let dlg = document.getElementById('dlg-clear-ask');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'dlg-clear-ask';
+    dlg.setAttribute('aria-labelledby', 'clear-ask-title');
+    dlg.innerHTML = '<h3 id="clear-ask-title"></h3><p class="muted"></p><div class="row"><button type="button" class="btn ghost" data-act="keep"></button><button type="button" class="btn danger" data-act="delete"></button></div>';
+    document.body.appendChild(dlg);
+  }
+  const name = peer.info.name;
+  $('h3', dlg).textContent = t('{name} cleared your chat', { name });
+  $('p', dlg).textContent = t('{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.', { name });
+  $('[data-act=keep]', dlg).textContent = t('Keep it');
+  $('[data-act=delete]', dlg).textContent = t('Delete here');
+  const answer = (del) => {
+    if (dlg.open) dlg.close();
+    dlg.onclick = dlg.oncancel = null;
+    if (del) clearChat(who);
+    try { if (peers.get(peer.info.id) === peer) peer.sendJson({ t: del ? 'clear-done' : 'clear-kept' }); } catch {}
+  };
+  dlg.onclick = (e) => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act) answer(act === 'delete');
+  };
+  dlg.oncancel = () => answer(false);
+  if (!dlg.open) dlg.showModal();
+  $('[data-act=keep]', dlg).focus();
+  messageSound();
+  if (document.visibilityState !== 'visible') notify(t('{name} cleared your chat', { name }), t('Delete here'), { chat: chatKey(who), always: true });
 }
 // A message at the bottom with an Undo button, for 6 seconds (inside the open window, so it can be tapped)
 let undoTimer = 0;
@@ -6436,6 +6504,7 @@ function onPushResult(msg) {
 }
 function sendWaiting(peer) {
   ringIfWaiting(peer);
+  clearAskIfWaiting(peer);
   const w = peer.pairSecret && waiting.get(peer.pairSecret);
   if (!w) return;
   waiting.delete(peer.pairSecret);

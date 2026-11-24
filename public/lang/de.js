@@ -1536,5 +1536,15 @@
     "{n} new messages": "{n} neue Nachrichten",
     "Go to the latest message": "Zur neuesten Nachricht",
     "Deleted from this device": "Von diesem Gerät gelöscht",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "Auch auf {name} löschen (dort wird zuerst gefragt)",
+    "{name} deleted the chat too": "{name} hat den Chat auch gelöscht",
+    "{name} kept the chat on that device": "{name} hat den Chat auf dem Gerät behalten",
+    "Asked {name} to delete this chat too": "{name} wurde gebeten, diesen Chat auch zu löschen",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} ist offline. Es wird gefragt, sobald es OmniBeam öffnet (lass diese Seite offen).",
+    "{name} cleared your chat": "{name} hat euren Chat geleert",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} hat euren Chat auf dem Gerät gelöscht und bittet dich, ihn auch auf diesem Gerät zu löschen. Nachrichten und Dateieinträge mit {name} werden nur von diesem Gerät entfernt.",
+    "Keep it": "Behalten",
+    "Delete here": "Hier löschen",
   },
 });

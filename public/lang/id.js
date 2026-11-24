@@ -1538,5 +1538,15 @@
     "{n} new messages": "{n} pesan baru",
     "Go to the latest message": "Ke pesan terbaru",
     "Deleted from this device": "Dihapus dari perangkat ini",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "Hapus juga di {name} (ditanyakan dulu di sana)",
+    "{name} deleted the chat too": "{name} juga menghapus chat",
+    "{name} kept the chat on that device": "{name} menyimpan chat di perangkat itu",
+    "Asked {name} to delete this chat too": "{name} diminta menghapus chat ini juga",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} sedang offline. Akan ditanyakan saat membuka OmniBeam (biarkan halaman ini terbuka).",
+    "{name} cleared your chat": "{name} menghapus chat kalian",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} menghapus chat kalian di perangkat itu dan meminta Anda menghapusnya juga di perangkat ini. Pesan dan file dengan {name} hanya dihapus dari perangkat ini.",
+    "Keep it": "Simpan",
+    "Delete here": "Hapus di sini",
   },
 });

@@ -1538,5 +1538,15 @@
     "{n} new messages": "{n} नए संदेश",
     "Go to the latest message": "नवीनतम संदेश पर जाएँ",
     "Deleted from this device": "इस डिवाइस से हटाया गया",
+    // Delete a chat on both devices (2026-11-24)
+    "Also delete it on {name} (asks there first)": "{name} पर भी हटाएँ (वहाँ पहले पूछा जाएगा)",
+    "{name} deleted the chat too": "{name} ने भी चैट हटा दी",
+    "{name} kept the chat on that device": "{name} ने उस डिवाइस पर चैट रखी",
+    "Asked {name} to delete this chat too": "{name} से यह चैट भी हटाने को कहा गया",
+    "{name} is offline. It is asked as soon as it opens OmniBeam (keep this page open).": "{name} ऑफ़लाइन है। OmniBeam खोलते ही उससे पूछा जाएगा (यह पेज खुला रखें)।",
+    "{name} cleared your chat": "{name} ने आपकी चैट साफ़ की",
+    "{name} deleted your chat on that device and asks you to delete it on this device too. Messages and file entries with {name} are removed from this device only.": "{name} ने उस डिवाइस पर आपकी चैट हटा दी है और आपसे इस डिवाइस पर भी हटाने को कह रहा है। {name} के साथ संदेश और फ़ाइलें केवल इस डिवाइस से हटेंगी।",
+    "Keep it": "रखें",
+    "Delete here": "यहाँ हटाएँ",
   },
 });
