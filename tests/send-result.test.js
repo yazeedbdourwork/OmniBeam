@@ -1,5 +1,6 @@
 // The Sent list (and the chat bubble) says "Cancelled" only when someone pressed Stop. When the other device
-// stopped the transfer because of a problem (e.g. it could not save the file) it says "Not finished" (2026-11-25).
+// stopped the transfer because of a problem (e.g. it could not save the file) it says "Not finished" (2026-11-25),
+// with the reason under it in the chat.
 const { test, expect } = require('@playwright/test');
 const { openDevice, card, makeFile } = require('./helpers');
 
@@ -31,6 +32,11 @@ test('a problem on the receiving device reads "Not finished" on the sender, not 
   await startSend(a, b);
   await b.page.evaluate((n) => [...peers.values()].find((p) => p.info.name === n).abort('Could not save the file'), a.name);
   await expect.poll(() => lastResult(a), { timeout: 20000 }).toBe('failed');
+  // And why, under "Not finished" in the chat
+  const why = await a.page.evaluate(() => JSON.parse(localStorage.getItem('omnibeam-sent'))[0].why);
+  expect(why).toContain('Could not save the file');
+  await a.page.evaluate((n) => openChat([...peers.values()].find((p) => p.info.name === n)), b.name);
+  await expect(a.page.locator('#dlg-chat .bubble.out.failed .chat-why')).toContainText('Could not save the file');
 });
 
 test('Stop on the sending device still reads "Cancelled"', async ({ browser }) => {

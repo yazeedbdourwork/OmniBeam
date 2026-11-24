@@ -1647,7 +1647,7 @@ class Peer {
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
     // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
-    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid); };
+    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid, result === 'failed' ? job.reason : ''); };
     try {
       // Files the other device asked for (Browse files) go as they are
       if (!opts.want) {
@@ -1741,7 +1741,8 @@ class Peer {
       AskAfterSend.sent();
     } catch (err) {
       if (!gone()) {
-        toast(t(err.message));
+        job.reason = t(err.message || String(err));
+        toast(job.reason);
         this.reportProblem(err.message);
         this.reportFail(/connection lost/i.test(err.message) ? 'lost' : 'error');
         log('failed');
@@ -1878,6 +1879,7 @@ class Peer {
     if (this.busy && this.job?.send) {
       // Remembered for the Sent list: only a real Stop reads "Cancelled", a problem reads "Not finished"
       this.job.why = why || (reason === 'Transfer cancelled' ? 'cancel' : keep ? 'lost' : 'error');
+      if (reason) this.job.reason = t(reason); // shown under "Not finished" in the chat and the Sent list
       this.reportFail(this.job.why);
     }
     if (notifyPeer && this.busy) wsSend({ type: 'signal', to: this.info.id, data: { abort: reason, keep, ...(pause ? { pause: true } : {}) } });
@@ -3279,17 +3281,20 @@ const Sent = {
   },
   // files: the File objects sent, or { text } for a message. result: ok, declined, failed or cancelled.
   // xid: a transfer that continued by itself after a drop updates its first entry instead of adding one.
-  add(peer, files, result, xid) {
+  // why: what went wrong, for a result of failed (shown under "Not finished")
+  add(peer, files, result, xid, why) {
     if (files.text === undefined) peer.lastSendResult = result; // for Auto-send a folder
     this.load();
     const old = xid && this.items.find((e) => e.xid === xid);
     if (old) {
       old.result = result;
+      if (why) old.why = String(why).slice(0, 200); else delete old.why;
       old.at = Date.now();
       this.save();
       return;
     }
     const entry = { id: randomHex(8), at: Date.now(), to: peer.info.name, device: peer.info.device, result };
+    if (why) entry.why = String(why).slice(0, 200);
     if (peer.pairSecret) entry.pair = peer.pairSecret.slice(0, 16);
     if (files.text !== undefined) {
       entry.text = String(files.text).slice(0, 5000);
@@ -3476,7 +3481,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=9');
+const loadChat = () => loadScript('/chat.js?v=10');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -4430,7 +4435,7 @@ function openHistory() {
       info.children[0].textContent = e.text !== undefined ? e.text
         : files.length === 1 && e.n === 1 ? files[0].name
         : t('{n} files', { n: e.n }) + ': ' + files.slice(0, 3).map((f) => f.name.split('/').pop()).join(', ') + (e.n > 3 ? '…' : '');
-      info.children[1].textContent = [e.text !== undefined ? t('Message') : formatSize(e.bytes || 0), t('to {name}', { name: e.to }), when(e.at), results[e.result] || '']
+      info.children[1].textContent = [e.text !== undefined ? t('Message') : formatSize(e.bytes || 0), t('to {name}', { name: e.to }), when(e.at), results[e.result] || '', e.result === 'failed' && e.why ? e.why : '']
         .filter(Boolean).join(' · ');
       const again = document.createElement('button');
       again.className = 'btn small';
