@@ -301,7 +301,7 @@ test('chat view open: a message and files from that device show up only in the c
   await expect(chatB.locator('.bubble.in')).toContainText('Hi');
   await expect(b.page.locator('#dlg-text')).toBeHidden();
   await expect(cardA.locator('.chat-badge')).toHaveCount(0);
-  // On A it is A's own bubble, on the right; Copy and the time stay on one line
+  // On A it is A's own bubble, on the right; the time is one line
   const out = chatA.locator('.bubble.out');
   await expect(out).toHaveCount(1);
   const thread = await chatA.locator('.chat-thread').boundingBox();
@@ -310,9 +310,7 @@ test('chat view open: a message and files from that device show up only in the c
   expect(box.x).toBeGreaterThan(thread.x + 40);
   const inB = chatB.locator('.bubble.in');
   const meta = await inB.locator('.chat-meta').boundingBox();
-  const copy = await inB.getByRole('button', { name: 'Copy' }).boundingBox();
   expect(meta.height).toBeLessThan(20);
-  expect(Math.abs((meta.y + meta.height / 2) - (copy.y + copy.height / 2))).toBeLessThan(8);
   // A file from A's paper clip: B answers inside the chat, and it arrives as a bubble, no windows
   const chooser = a.page.waitForEvent('filechooser');
   await chatA.locator('[data-act=attach]').click();

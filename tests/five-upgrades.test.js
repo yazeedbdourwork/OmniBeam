@@ -263,7 +263,8 @@ test('pinned note: pin a message or write one, stays after closing and clearing,
   await expect(chat.locator('.bubble.in')).toHaveCount(1);
   const pin = chat.locator('.chat-pin');
   await expect(pin).toBeHidden();
-  await chat.locator('.bubble.in .chat-acts button', { hasText: 'Pin' }).click();
+  await chat.locator('.bubble.in').click({ button: 'right' }); // the message menu
+  await chat.locator('.chat-menu [data-menu=pin]').click();
   await expect(pin).toBeVisible();
   await expect(pin.locator('.pin-text')).toHaveText('Wi-Fi: HomeNet / pass 1234');
   await chat.locator('[data-act=close]').click();
