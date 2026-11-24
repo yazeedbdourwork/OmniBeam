@@ -316,6 +316,8 @@ test('chat view open: a message and files from that device show up only in the c
   await chatA.locator('[data-act=attach]').click();
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
   await (await chooser).setFiles([{ name: 'dot.png', mimeType: 'image/png', buffer: png }]);
+  // One photo opens the photo editor first (edit.js): Send as it is
+  await a.page.locator('#dlg-photo-edit [data-act=send]').click();
   const ask = chatB.locator('.chat-ask');
   await expect(ask).toBeVisible({ timeout: 30000 });
   await expect(ask).toContainText('dot.png');

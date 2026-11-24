@@ -1673,13 +1673,14 @@ function handleDrop(req, res, urlPath) {
   //   pub (optional, the sender ticked "show the name in chat previews": { title, thumb (small JPEG, base64) }) }
   //   -> { id, token, part, expires }
   if (!id && req.method === 'POST') {
-    return readJsonBody(req, 192 * 1024).then((body) => {
+    // (up to 448 KB: the encrypted list of names of a whole folder, up to 1000 files, can be long)
+    return readJsonBody(req, 448 * 1024).then((body) => {
       const size = Math.floor(Number(body.size));
       const hours = Math.min(DROP_MAX_HOURS, Math.max(1, Number(body.hours) || 24));
       const max = body.once ? 1 : Math.min(100, Math.max(0, Math.floor(Number(body.max) || 0)));
       const pin = body.pin == null || body.pin === '' ? '' : String(body.pin);
       const meta = String(body.meta || '');
-      if (!(size > 0) || !/^[A-Za-z0-9_-]{20,12000}$/.test(meta) || (pin && !/^[A-Za-z0-9_-]{43}$/.test(pin))) return json(400, { error: 'bad request' });
+      if (!(size > 0) || meta.length > 300000 || !/^[A-Za-z0-9_-]{20,}$/.test(meta) || (pin && !/^[A-Za-z0-9_-]{43}$/.test(pin))) return json(400, { error: 'bad request' });
       if (size > DROP_MAX_MB * 1024 * 1024) return json(413, { error: 'too-large', maxMb: DROP_MAX_MB });
       const net = 'ip:' + getIp(req);
       const now = Date.now();
@@ -1879,6 +1880,7 @@ function handleDrop(req, res, urlPath) {
       count('linkDownloads');
       count('linkBytes', d.size);
       saveDrop(d);
+      dropDownloaded(d);
     }
     return json(200, { downloads: d.downloads });
   }
@@ -1922,6 +1924,7 @@ function handleDrop(req, res, urlPath) {
         if (!d.req) {
           count('linkDownloads');
           count('linkBytes', d.size);
+          dropDownloaded(d);
         }
         if (d.max && d.downloads >= d.max) return deleteDrop(d.id);
         saveDrop(d);
@@ -2017,6 +2020,21 @@ function unwatchRequests(client) {
     if (set && !set.size) reqWatchers.delete(id);
   }
   client.reqs = [];
+}
+// Someone downloaded a share link: a notification on the devices of the person who made it (if they asked for one,
+// see links in push-sub). At most one a minute per link; the server can't read the file names, so the title is shown
+// only when the sender chose chat previews (d.title).
+function dropDownloaded(d) {
+  if (d.req || !pushKeys) return;
+  const now = Date.now();
+  if (now - (d.pushedAt || 0) < 60000) return;
+  d.pushedAt = now;
+  pushRoom('drop:' + d.id, null, (lang) => ({
+    title: trFor(lang, 'Someone downloaded your share link'),
+    body: (d.title ? d.title + ' · ' : '') + trFor(lang, 'Downloads: {n}', { n: d.downloads }),
+    url: '/?links=1',
+    tag: 'drop-' + d.id,
+  }));
 }
 // An upload to a request link finished: tell the requesting device (its newest open tab), or wake it
 function requestFileReady(d) {
@@ -2501,6 +2519,11 @@ function onPushMessage(client, msg) {
     for (const it of (Array.isArray(msg.requests) ? msg.requests : []).slice(0, 20)) {
       const r = it && typeof it.id === 'string' ? requests.get(it.id) : null;
       if (r && typeof it.token === 'string' && samePassword(r.tokenHash, tokenHashOf(it.token))) rooms.push('req:' + r.id);
+    }
+    // Share links this device made (with their tokens), when it asked to hear about downloads (drop.js)
+    for (const it of (Array.isArray(msg.links) ? msg.links : []).slice(0, 20)) {
+      const d = it && typeof it.id === 'string' ? drops.get(it.id) : null;
+      if (d && !d.req && typeof it.token === 'string' && samePassword(d.tokenHash, tokenHashOf(it.token))) rooms.push('drop:' + d.id);
     }
     if (!pushSubs[id] && Object.keys(pushSubs).length >= MAX_PUSH_SUBS) {
       // Full: make room by forgetting the device that hasn't been seen for the longest time

@@ -133,6 +133,7 @@ test('Clear chat on both devices: the other device asks first (Keep it / Delete 
   await expect(chatB.locator('.bubble.in')).toHaveCount(1);
   // A clears with "Also delete it on B": B is asked, and keeps it the first time
   const clearBoth = async () => {
+    await chatA.locator('[data-act=head-more]').click();
     await chatA.locator('[data-act=clear]').click();
     const ask = a.page.locator('#dlg-chat-clear');
     await expect(ask.locator('.chat-clear-both')).toContainText(`Also delete it on ${b.name}`);

@@ -70,6 +70,7 @@ test('a message opens its chat by itself, with the message sound; none for what 
   await expect(chat.locator('.bubble.in')).toHaveCount(2);
   expect(await b.page.evaluate(() => window.__tones)).toBe(4);
   // Muted from the speaker in the chat's head: no sound, and Settings shows it off too
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=sound]').click();
   await expect(chat.locator('[data-act=sound]')).toHaveAttribute('aria-pressed', 'false');
   await sendFrom(a.page, b.name, 'quiet please');
@@ -221,10 +222,12 @@ test('Clear chat: asks first, removes only that device\'s messages and files her
   // Clear the chat with A: the question names A; "Cancel" keeps everything
   await b.page.evaluate((n) => openChat([...peers.values()].find((p) => p.info.name === n)), a.name);
   const ask = b.page.locator('#dlg-chat-clear');
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=clear]').click();
   await expect(ask.locator('p')).toHaveText('Clear this chat? Messages and file entries with Clear A are removed from this device only.');
   await ask.locator('[data-act=no]').click();
   await expect(chat.locator('.bubble')).toHaveCount(2);
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=clear]').click();
   await expect(ask.locator('.chat-clear-both input')).not.toBeChecked(); // this device only, unless ticked
   await ask.locator('[data-act=yes]').click();
@@ -242,6 +245,7 @@ test('Clear chat: asks first, removes only that device\'s messages and files her
   await expect(chat.locator('.bubble').nth(0)).toContainText('from A one');
   await expect(chat.locator('.bubble').nth(1)).toContainText('reply to A');
   // Cleared again and left: after the Undo time it stays cleared, also after a reload
+  await chat.locator('[data-act=head-more]').click();
   await chat.locator('[data-act=clear]').click();
   await ask.locator('[data-act=yes]').click();
   await expect(chat.locator('.bubble')).toHaveCount(0);

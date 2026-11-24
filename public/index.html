@@ -60,7 +60,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=101" as="script">
+  <link rel="preload" href="/app.js?v=102" as="script">
   <script src="/look.js?v=3"></script>
   <link rel="stylesheet" href="/style.css?v=95">
 </head>
@@ -945,6 +945,7 @@
       <!-- Shown until it is ticked once on this device (app.js: confirmRights) -->
       <label class="rights-check" id="link-rights"><input type="checkbox"><span>I confirm I have the legal right to share this file and it does not violate copyright laws. <a href="/terms" target="_blank" rel="noopener nofollow">Terms apply</a>.</span></label>
       <button class="btn wide" data-act="pick">Choose files</button>
+      <button class="btn ghost wide" data-act="pick-folder" id="link-folder-btn">📁 Share a whole folder</button>
       <p class="muted small" id="link-limit"></p>
       <button class="btn ghost wide" data-act="note-open" aria-expanded="false" aria-controls="link-note">🔒 Secret note instead (opens once)</button>
       <div id="link-note" hidden>
@@ -979,6 +980,7 @@
     </div>
     <div id="link-mine" hidden>
       <div role="heading" aria-level="4" class="h4">Your links</div>
+      <label class="rights-check" id="link-notify-box"><input type="checkbox" id="link-notify"><span>Notify me when someone downloads my links</span></label>
       <div class="received" id="link-list"></div>
     </div>
     <div class="row">
@@ -986,6 +988,7 @@
     </div>
   </dialog>
   <input type="file" id="link-input" multiple hidden aria-label="Choose files">
+  <input type="file" id="link-folder-input" webkitdirectory multiple hidden aria-label="Choose a folder">
 
   <!-- Request files by link (request.js) -->
   <dialog id="dlg-asklink">
@@ -1257,8 +1260,8 @@
 
   <script src="/report.js?v=5" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=101" defer></script>
-  <script src="/drop.js?v=13" defer></script>
+  <script src="/app.js?v=102" defer></script>
+  <script src="/drop.js?v=14" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>
   <script src="/share.js?v=3" defer></script>

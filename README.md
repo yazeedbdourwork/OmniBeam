@@ -99,8 +99,11 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 - Messages, links and copied text are sent and read in a **chat** with each paired device.
 - An incoming message opens its chat by itself with a short sound (and a buzz on phones). If you are busy, a banner shows instead: "Name: first words · Open chat".
 - Notifications when the chat can't be seen; tapping one opens the chat.
-- Speaker button to turn the message sound on or off (also in Settings → Message sound).
-- **Clear chat** (bin button) removes that device's messages and file entries from this device only, with 6 seconds to Undo.
+- **Voice and video calls** with the device (the phone and camera buttons at the top of the chat): straight between the two devices, encrypted, nothing recorded.
+- **Search** in the chat, and **Media, files and links**: every photo, file and link shared in that chat in three tabs.
+- **Forward** a message or file to another device, **Translate** a message (the browser's own on-device translator, in recent Chrome and Edge), **Send later** (long-press or right-click Send), and **Disappearing messages** (a timer for the chat, set on both devices).
+- One photo chosen in the chat opens a small **photo editor** first: rotate, crop, draw, or blur a face or a number.
+- The ⋮ menu has Ring this device, Pin a note, the message sound (also in Settings → Message sound) and **Clear chat**, which removes that device's messages and file entries from this device only, with 6 seconds to Undo.
 - Clipboard sync and secret notes.
 
 ### Connecting devices
@@ -111,7 +114,7 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 - **Team rooms**: a fixed link for a family or office. Every device that opens it once stays in the room.
 
 ### When the other device isn't online
-- **Share by link**: files are encrypted in the browser, uploaded, and anyone with the link can download them until it expires (up to 7 days by default, 30 days optional). Optional email of the link.
+- **Share by link**: files are encrypted in the browser, uploaded, and anyone with the link can download them until it expires (up to 7 days by default, 30 days optional). Optional email of the link. A **whole folder** can be shared too (it downloads as one ZIP with the same folders), and OmniBeam can **notify you when someone downloads** one of your links.
 - **Request files**: make a link (or a "Send me files" box for your own website) that others use to upload files to you. Uploads are sealed to your device's key.
 
 ### More tools (More… menu)
@@ -233,7 +236,7 @@ OmniBeam/
 ├── public/               Everything the browser loads
 │   ├── index.html        The app
 │   ├── app.js            Main app logic (WebRTC, pairing, transfers, UI)
-│   ├── chat.js           Per‑device chat
+│   ├── chat.js           Per‑device chat (call.js: voice and video calls; edit.js: the photo editor)
 │   ├── media.js, scan.js, more.js, drop.js, get.js, put.js, request.js, share.js …
 │   ├── style.css, pages.css, stats.css (admin panel)
 │   ├── i18n.js + lang/   Translations (15 languages)
