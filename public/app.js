@@ -127,7 +127,7 @@ const more = (name) => async (...args) => {
   return window.More[name](...args);
 };
 // media.js: taking a photo, voice notes, sharing a screen, secret notes and previews of received files
-const loadMedia = () => loadScript('/media.js?v=1');
+const loadMedia = () => loadScript('/media.js?v=2');
 // webcam.js: a phone as a webcam or microphone for a computer
 const webcam = (name) => async (...args) => {
   try {
@@ -1716,7 +1716,7 @@ class Peer {
       this.acceptHave = null;
       const accepted = await new Promise((resolve) => {
         this.acceptWaiter = resolve;
-        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid, ...(opts.want ? { want: opts.want } : {}) });
+        this.sendJson({ t: 'request', files: files.map((f, i) => ({ name: pathOf(f), size: f.size, mime: f.type, fp: fps[i] })), proofs, xid: job.xid, ...(opts.want ? { want: opts.want } : {}), ...(opts.present ? { present: 1 } : {}) });
       });
       this.acceptWaiter = null;
       if (!accepted) {
@@ -2085,6 +2085,13 @@ class Peer {
       case 'nt-want':
         if (this.pairSecret && !IS_TV) loadNotes().then(() => window.Notes.onMsg(this, msg)).catch(() => {});
         break;
+      // A phone as the remote of this screen's slides and videos (remote.js)
+      case 'rc':
+        loadRemote().then(() => window.Remote.onCmd(this, msg)).catch(() => {});
+        break;
+      case 'rc-state':
+        window.Remote?.onState(this, msg.state);
+        break;
       // A voice message or a copied picture, in pieces (see sendBlobNote)
       case 'bl':
         BlobIn.start(this, msg);
@@ -2185,7 +2192,7 @@ class Peer {
           const skipped = Object.values(have).reduce((s, n) => s + n, 0);
           if (skipped) console.info(`Continuing a transfer from ${this.info.name}: ${formatSize(skipped)} already here`);
           // chain: every storage step of this transfer runs in order (creating files, writing chunks, closing)
-          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup, sync: syncWant };
+          this.incoming = { total, count: msg.files.length, index: 0, files: [], current: null, chain: Promise.resolve(), req: msg.files, resume, xid, backup, sync: syncWant, present: msg.present === 1 };
           this.check = xid ? { xid, sums: {}, files: null } : null;
           // Noted at once, not only when it breaks: if this page is thrown away (a phone's screen turned off), the
           // sender can still continue it here after a reload
@@ -2290,7 +2297,9 @@ class Peer {
             }
             if (this.incoming !== inc) return;
             if (shown.length) {
-              if (!chatShowing(this)) showReceived(this, shown);
+              // Slides sent from a phone's remote (remote.js): shown as slides at once
+              if (inc.present && shown.some((f) => ['pdf', 'image'].includes(previewKind(f)))) loadRemote().then(() => window.Remote.present(shown, this), () => showReceived(this, shown));
+              else if (!chatShowing(this)) showReceived(this, shown);
               else messageSound();
               shown.forEach((f) => History.add(f, this.info.name, this.pairSecret));
             }
@@ -3687,7 +3696,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=13');
+const loadChat = () => loadScript('/chat.js?v=14');
 // voice.js: recording and playing voice messages in a chat (loaded with the chat)
 const loadVoice = () => loadScript('/voice.js?v=1');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
@@ -4306,6 +4315,70 @@ async function saveAllFiles(files, btn) {
   } else {
     files.forEach((f, i) => setTimeout(() => downloadBlob(f), i * 300));
   }
+}
+
+// "Save to gallery as an album" (phones). The album is named after the folder that was sent, else the sender
+// and the date. Android with folder access (Chrome): pick Pictures once, a folder with the album's name is made in it
+// and every photo and video written there, so the gallery shows it as an album. iPhone and iPad: Photos through
+// the share sheet, about 20 at a time (more is too big for one share), the button saying "Save next". Else: one
+// download each, which the gallery shows in its Download album.
+function albumName(files) {
+  const top = (files.find((f) => f.name.includes('/'))?.name || '').split('/')[0];
+  return safePath(top || `OmniBeam ${new Date().toISOString().slice(0, 10)}`).replace(/\//g, ' ');
+}
+async function saveAlbum(files, btn) {
+  const total = files.length;
+  const progress = (n) => { btn.textContent = t('Saving {n} of {total}…', { n, total }); };
+  if (isIOS && navigator.canShare) {
+    const BATCH = 20;
+    let at = btn.albumAt || 0;
+    const batch = files.slice(at, at + BATCH);
+    try {
+      await navigator.share({ files: batch.map(toShareFile) });
+    } catch (err) {
+      if (err.name !== 'AbortError') toast(t('Could not open the Photos menu, so it was saved to Files instead'));
+      if (err.name === 'AbortError') return;
+      batch.forEach((f, i) => setTimeout(() => downloadBlob(f), i * 300));
+    }
+    at += batch.length;
+    btn.albumAt = at < total ? at : 0;
+    btn.textContent = at < total ? t('Save next ({n} of {total} saved)', { n: at, total }) : t('Saved to Photos');
+    if (at >= total) toast(t('In Photos, select them and tap Add to Album to keep them together.'), 6000);
+    return;
+  }
+  if (window.showDirectoryPicker) {
+    let dir;
+    try {
+      const root = await window.showDirectoryPicker({ id: 'omnibeam-album', mode: 'readwrite', startIn: 'pictures' });
+      dir = await root.getDirectoryHandle(albumName(files), { create: true });
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      dir = null;
+    }
+    if (dir) {
+      btn.disabled = true;
+      let n = 0;
+      try {
+        for (const f of files) {
+          progress(n + 1);
+          const name = safePath(f.name).split('/').pop();
+          const out = await (await dir.getFileHandle(name, { create: true })).createWritable();
+          await out.write(f.blob);
+          await out.close();
+          n++;
+        }
+        btn.textContent = t('Saved to the album {name}', { name: dir.name });
+        toast(t('Saved to the album {name}', { name: dir.name }));
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = t('Save to gallery as an album');
+        toast(t('Could not save') + ` (${err.message})`);
+      }
+      return;
+    }
+  }
+  files.forEach((f, i) => setTimeout(() => downloadBlob({ name: safePath(f.name).split('/').pop(), blob: f.blob }), i * 400));
+  btn.textContent = t('Saved to Downloads');
 }
 
 // ---------- Folders ----------
@@ -5064,6 +5137,14 @@ function showReceived(peer, files) {
     showIntact(f);
     item.appendChild(info);
     if (['pdf', 'text'].includes(previewKind(f))) item.appendChild(previewButton(f));
+    // A PDF on a computer: show it as slides (a phone can be the remote)
+    if (previewKind(f) === 'pdf' && !isPhone) {
+      const pres = document.createElement('button');
+      pres.className = 'btn ghost small';
+      pres.textContent = t('Present');
+      pres.onclick = () => { dlg.close(); loadRemote().then(() => window.Remote.present([f], peer), (err) => toast(err.message)); };
+      item.appendChild(pres);
+    }
     if (kind === 'image' && CAN_COPY_IMAGE) {
       const copy = document.createElement('button');
       copy.className = 'btn ghost small';
@@ -5092,6 +5173,12 @@ function showReceived(peer, files) {
   // Several photos or videos: see them one by one, full size
   const media = files.filter(isMediaFile);
   $('[data-act=gallery]', dlg).hidden = media.length < 2;
+  // A phone getting several photos and videos (or a folder of them): straight into its gallery, as one album
+  const albumBtn = $('[data-act=album-save]', dlg);
+  albumBtn.hidden = !isPhone || media.length < 2;
+  albumBtn.disabled = false;
+  albumBtn.textContent = t('Save to gallery as an album');
+  albumBtn.onclick = () => saveAlbum(media, albumBtn);
   dlg.onclick = async (e) => {
     const act = e.target.dataset?.act;
     if (act === 'close') { dlg.querySelectorAll('video, audio').forEach((m) => m.pause()); dlg.close(); }
@@ -5235,6 +5322,8 @@ function openActions(peer) {
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
   $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
   $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
+  // The remote of a computer's slides and videos (a TV has its own remote above)
+  $('[data-act=remote]', dlg).hidden = peer.isTv || IS_TV || deviceType(peer.info.device) === 'mobile';
   updateShrinkUi();
   dlg.onclick = (e) => {
     const act = e.target.closest('[data-act]')?.dataset.act;
@@ -5257,6 +5346,7 @@ function openActions(peer) {
     else if (act === 'browse') loadBrowse().then(() => window.Browse.look(peer), (err) => toast(err.message));
     else if (act === 'pbackup') loadPBackup().then(() => window.PhotoBackup.look(peer), (err) => toast(err.message));
     else if (act === 'tv-remote') openTvRemote(peer);
+    else if (act === 'remote') loadRemote().then(() => window.Remote.open(peer), (err) => toast(err.message));
   };
   if (!dlg.open) dlg.showModal();
 }
@@ -5983,6 +6073,8 @@ try { if (JSON.parse(localStorage.getItem('omnibeam-fsync') || 'null')?.on) setT
 // A folder shared before: pick it up again (Chrome and Edge keep it)
 try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
 // Photo backup (pbackup.js): on computers; picked up again at the start when it was set up before
+$('#btn-present').hidden = isPhone || IS_TV;
+$('#btn-present').onclick = () => loadRemote().then(() => window.Remote.pick(), (err) => toast(err.message));
 $('#btn-notes').hidden = IS_TV;
 $('#btn-notes').onclick = () => openNotes();
 $('#btn-pbackup').hidden = isPhone || !window.crypto?.subtle;
@@ -6790,6 +6882,8 @@ window.addEventListener('storage', (e) => { if (e.key === GROUPS_KEY) { Groups.p
 // change goes to them at once; on meeting, they compare and swap what changed). Nothing is kept on the server.
 const NOTES_KEY = 'omnibeam-notes';
 const loadNotes = () => loadScript('/notes.js?v=1');
+// remote.js: slides (a PDF or photos) on this screen, and a phone as their remote
+const loadRemote = () => loadScript('/remote.js?v=1');
 const notesUsed = () => { try { return !!localStorage.getItem(NOTES_KEY); } catch { return false; } };
 function openNotes() {
   loadNotes().then(() => window.Notes.open(), (err) => toast(err.message));
@@ -7056,7 +7150,7 @@ function scanFromLink(secret, name, needPin) {
 const TV_PIN_KEY = 'omnibeam-tv-pin';
 function tvPin() { try { return localStorage.getItem(TV_PIN_KEY) || ''; } catch { return ''; } }
 // The TV screen itself is in tv.js (the TV page loads it after this script; see server.js tvPage)
-const loadTv = () => loadScript('/tv.js?v=4');
+const loadTv = () => loadScript('/tv.js?v=5');
 
 // ---------- Quick tour ----------
 // Three short steps: open it on the other device, pair if it doesn't show up, tap to send. Opened from the ⋯ menu

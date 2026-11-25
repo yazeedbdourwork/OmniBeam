@@ -340,6 +340,7 @@
         <button type="button" class="menu-item" role="menuitem" data-act="media"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg><span>${escapeHtml(t('Media, files and links'))}</span></button>
         <button type="button" class="menu-item" role="menuitem" data-act="later"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>${escapeHtml(t('Send later'))}</span></button>
         <button type="button" class="menu-item" role="menuitem" data-act="vanish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 22h14M5 2h14M17 22v-4.2a2 2 0 0 0-.6-1.4L12 12l-4.4 4.4a2 2 0 0 0-.6 1.4V22M7 2v4.2a2 2 0 0 0 .6 1.4L12 12l4.4-4.4a2 2 0 0 0 .6-1.4V2"/></svg><span>${escapeHtml(t('Disappearing messages'))}</span></button>
+        <button type="button" class="menu-item" role="menuitem" data-act="screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20v14H2zM8 21h8M12 17v4"/></svg><span>${escapeHtml(t('Share my screen'))}</span></button>
         <button type="button" class="menu-item" role="menuitem" data-act="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>${escapeHtml(t('Ring this device'))}</span></button>
         <button type="button" class="menu-item" role="menuitem" data-act="pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5M9 3h6l-1 6 4 4H6l4-4z"/></svg><span>${escapeHtml(t('Pin a note'))}</span></button>
         <button type="button" class="menu-item" role="menuitem" data-act="sound" aria-pressed="true"></button>
@@ -627,6 +628,8 @@
     // Calls: with the device here now, in a browser with a microphone (not on a TV)
     const canCall = !!peer && !IS_TV && !!navigator.mediaDevices?.getUserMedia && 'RTCPeerConnection' in window;
     $('[data-act=call-voice]', dlg).hidden = $('[data-act=call-video]', dlg).hidden = !canCall;
+    // Share my screen: from a computer, with the device here now
+    $('.chat-head-menu [data-act=screen]', dlg).hidden = !peer || isPhone || IS_TV || !navigator.mediaDevices?.getDisplayMedia;
     $('.chat-head-menu [data-act=later]', dlg).hidden = !canSend;
     $('.chat-head-menu [data-act=vanish]', dlg).hidden = !canSend && !Vanish.of(who);
     // Disappearing messages: a line under the head while the timer is on
@@ -1447,6 +1450,7 @@
         const p = peerOf(current.who);
         if (p) calls('start')(p, act === 'call-video');
       } else if (act === 'clear') clear();
+      else if (act === 'screen') { const p = peerOf(current.who); if (p) media('shareScreen')(p); }
       else if (act === 'ring') { const p = peerOf(current.who); ringDevice(p || pairingOf(current.who)); }
       else if (act === 'pin' || act === 'pin-edit') editPin();
       else if (act === 'unpin') { setPin(current.who, ''); toast(t('Note unpinned')); render(true); }

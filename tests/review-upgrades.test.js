@@ -123,7 +123,22 @@ test('share my screen: the other device is asked, watches it live, and it ends w
   await expect(view.locator('.screen-title')).toHaveText('Test Laptop\'s screen');
   await expect.poll(() => b.page.evaluate(() => document.querySelector('#dlg-screen video').videoWidth), { timeout: 20000 }).toBe(320);
   await expect(a.page.locator('#share-bar')).toContainText('Sharing your screen with Test Phone');
-  await a.page.locator('#share-bar button').click();
+  // Seven upgrades: Pause / Resume, Sharp text / Smooth motion on the bar; zoom on the watching side
+  const bar = a.page.locator('#share-bar');
+  await bar.locator('[data-sb=pause]').click();
+  await expect(bar.locator('[data-sb=pause]')).toHaveText('Resume');
+  expect(await a.page.evaluate(() => document.querySelector('#share-bar').classList.contains('paused'))).toBe(true);
+  await bar.locator('[data-sb=pause]').click();
+  await expect(bar.locator('[data-sb=pause]')).toHaveText('Pause');
+  await expect(bar.locator('[data-sb=mode]')).toHaveText('Sharp text');
+  await bar.locator('[data-sb=mode]').click();
+  await expect(bar.locator('[data-sb=mode]')).toHaveText('Smooth motion');
+  await view.locator('[data-act=zoom-in]').click();
+  await expect(view.locator('[data-act=zoom-out]')).toBeEnabled();
+  expect(await b.page.evaluate(() => document.querySelector('#dlg-screen video').style.transform)).toContain('scale(1.5)');
+  await view.locator('[data-act=zoom-out]').click();
+  await expect(view.locator('[data-act=zoom-out]')).toBeDisabled();
+  await bar.locator('[data-sb=stop]').click();
   await expect(view).toBeHidden();
   await expect(a.page.locator('#share-bar')).toHaveCount(0);
   await expect(b.page.locator('.toast').last()).toContainText('Test Laptop stopped sharing their screen');

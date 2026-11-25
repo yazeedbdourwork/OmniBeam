@@ -317,7 +317,11 @@
       const media = [];
       const songs = [];
       let other = 0;
+      // A PDF: shown as slides (remote.js), worked with the TV remote or the phone's
+      const pdf = !quiet && files.find((f) => f.blob && (f.mime === 'application/pdf' || /\.pdf$/i.test(f.name || '')));
+      if (pdf) loadRemote().then(() => window.Remote.present([pdf], peer), () => {});
       for (const f of files) {
+        if (f === pdf) continue;
         const kind = f.blob ? kindOf(f) : '';
         if (kind === 'audio') songs.push(f);
         else if (kind) media.push({ f, kind });
@@ -913,6 +917,8 @@
       this.remotes.add(peer);
       this.active();
       const c = String(msg.cmd || '');
+      // Slides showing on the TV (remote.js): ◀ ▶ and OK work them, Home closes them
+      if (window.Remote?.presenting() && window.Remote.tvKey(c)) return;
       if (c !== 'hello' && c !== 'bye') this.closeNote();
       if (c === 'next') this.view === 'show' ? this.step(1) : this.show(this.at);
       else if (c === 'prev') this.view === 'show' ? this.step(-1) : this.show(this.at);

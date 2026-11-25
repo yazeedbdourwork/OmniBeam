@@ -301,6 +301,165 @@ test('notes are only swapped with paired devices', async ({ browser }) => {
   expect(a.errors).toEqual([]);
 });
 
+// ---------- A phone as the remote of a computer's slides ----------
+
+const ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36';
+async function moreAct(page, name, act) {
+  const c = await card(page, name);
+  await c.hover();
+  await c.locator('[data-act=more]').click();
+  const dlg = page.locator('#dlg-actions');
+  await expect(dlg).toBeVisible();
+  await dlg.locator(`[data-act=${act}]`).click();
+}
+// A small PDF with `pages` pages
+function pdf(pages) {
+  const objs = ['<</Type/Catalog/Pages 2 0 R>>', `<</Type/Pages/Kids[${Array.from({ length: pages }, (_, i) => `${3 + i} 0 R`).join(' ')}]/Count ${pages}>>`];
+  for (let i = 0; i < pages; i++) objs.push('<</Type/Page/Parent 2 0 R/MediaBox[0 0 400 300]>>');
+  let out = '%PDF-1.4\n';
+  const at = [];
+  objs.forEach((o, i) => { at.push(out.length); out += `${i + 1} 0 obj${o}endobj\n`; });
+  const x = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + at.map((n) => `${String(n).padStart(10, '0')} 00000 n \n`).join('');
+  out += `trailer<</Size ${objs.length + 1}/Root 1 0 R>>\nstartxref\n${x}\n%%EOF\n`;
+  return Buffer.from(out);
+}
+
+test('remote control: a paired phone works the slides on the computer (next, back, black screen)', async ({ browser }) => {
+  const { a, b } = await pairedDevices(browser, ['Slides Laptop', 'Slides Phone'], {});
+  // The computer shows three photos as slides (⋯ → Present slides)
+  const chooser = a.page.waitForEvent('filechooser');
+  await menu(a.page, 'btn-present');
+  await (await chooser).setFiles([1, 2, 3].map((n) => ({ name: `slide ${n}.png`, mimeType: 'image/png', buffer: png(40 + n, 30) })));
+  const show = a.page.locator('#dlg-present');
+  await expect(show).toBeVisible();
+  await expect(show.locator('.pr-n')).toHaveText('1 / 3');
+  await expect(show.locator('.pr-hint')).toContainText('Use your phone as the remote');
+  // The phone: ⋯ → Remote control
+  await moreAct(b.page, 'Slides Laptop', 'remote');
+  const rc = b.page.locator('#dlg-remote');
+  await expect(rc).toBeVisible();
+  await expect(rc.locator('#rc-title')).toHaveText('Remote control · Slides Laptop');
+  // Paired: no question on the computer; the phone shows where the slides are
+  await expect(rc.locator('.rc-state')).toHaveText('Slide 1 of 3', { timeout: 15000 });
+  await rc.locator('[data-rc=next]').click();
+  await expect(show.locator('.pr-n')).toHaveText('2 / 3');
+  await expect(rc.locator('.rc-state')).toHaveText('Slide 2 of 3');
+  await rc.locator('[data-rc=next]').click();
+  await expect(show.locator('.pr-n')).toHaveText('3 / 3');
+  await rc.locator('[data-rc=prev]').click();
+  await expect(show.locator('.pr-n')).toHaveText('2 / 3');
+  await rc.locator('[data-rc=black]').click();
+  await expect(show.locator('.pr-black')).toBeVisible();
+  await expect(rc.locator('.rc-state')).toHaveText('Slide 2 of 3 · Black screen');
+  await expect(rc.locator('[data-rc=black]')).toHaveAttribute('aria-pressed', 'true');
+  // The computer's own keys work too
+  await a.page.keyboard.press('ArrowRight');
+  await expect(show.locator('.pr-n')).toHaveText('3 / 3');
+  await expect(show.locator('.pr-black')).toBeHidden();
+  expect(await a.page.locator('#dlg-rc-ask').count()).toBe(0);
+  expect([...a.errors, ...b.errors]).toEqual([]);
+});
+
+test('remote control: a device that is not paired is asked about first; slides sent from the phone open as a show', async ({ browser }) => {
+  const a = await open(browser, 'Show Laptop');
+  const b = await open(browser, 'Show Phone', { userAgent: ANDROID });
+  await card(a.page, 'Show Phone');
+  await moreAct(b.page, 'Show Laptop', 'remote');
+  const rc = b.page.locator('#dlg-remote');
+  // Not paired: the computer asks first, the phone says it's waiting; "Don't allow" is told to the phone
+  const ask = a.page.locator('#dlg-rc-ask');
+  await expect(ask).toBeVisible({ timeout: 15000 });
+  await expect(ask).toContainText('Show Phone wants to be the remote of this screen');
+  await expect(rc.locator('.rc-state')).toHaveText('Waiting for Show Laptop to accept…');
+  await ask.locator('[data-a=no]').click();
+  await expect(rc.locator('.rc-state')).toHaveText('Show Laptop did not allow the remote.');
+  // Pressing again doesn't ask again
+  await rc.locator('[data-rc=next]').click();
+  await a.page.waitForTimeout(500);
+  await expect(ask).toBeHidden();
+  // Remote control isn't offered for a phone (the computer's ⋯ on the phone's card)
+  const c = await card(a.page, 'Show Phone');
+  await c.hover();
+  await c.locator('[data-act=more]').click();
+  await expect(a.page.locator('#dlg-actions [data-act=remote]')).toBeHidden();
+  await a.page.keyboard.press('Escape');
+  // A PDF sent from the phone with "Show slides from this phone" opens as slides on the computer
+  const chooser = b.page.waitForEvent('filechooser');
+  await rc.locator('[data-rc=send]').click();
+  await (await chooser).setFiles([{ name: 'talk.pdf', mimeType: 'application/pdf', buffer: pdf(2) }]);
+  await expect(a.page.locator('#dlg-request')).toBeVisible({ timeout: 20000 });
+  await a.page.locator('#dlg-request [data-act=accept]').click();
+  const show = a.page.locator('#dlg-present');
+  await expect(show).toBeVisible({ timeout: 30000 });
+  await expect(show.locator('.pr-n')).toHaveText('1 / 2', { timeout: 20000 });
+  await expect(show.locator('.pr-stage canvas')).toHaveCount(1, { timeout: 20000 });
+  await show.locator('[data-pr=next]').click();
+  await expect(show.locator('.pr-n')).toHaveText('2 / 2');
+  await expect(show.locator('[data-pr=next]')).toBeDisabled();
+  expect([...a.errors, ...b.errors]).toEqual([]);
+});
+
+// ---------- A folder of photos to a phone's gallery, as an album ----------
+
+test('album: a folder of photos sent to a phone is saved to its gallery as one album named after the folder', async ({ browser }) => {
+  const a = await open(browser, 'Album Laptop');
+  const b = await open(browser, 'Album Phone', { userAgent: ANDROID });
+  // The phone's folder access: Pictures is picked, the album folder is made in it
+  await b.page.evaluate(() => {
+    window.__album = null;
+    window.showDirectoryPicker = async () => ({
+      name: 'Pictures',
+      getDirectoryHandle: async (name) => {
+        window.__album = { name, files: {} };
+        return {
+          name,
+          getFileHandle: async (n) => ({
+            createWritable: async () => {
+              let size = 0;
+              return { write: async (blob) => { size += blob.size; }, close: async () => { window.__album.files[n] = size; } };
+            },
+          }),
+        };
+      },
+    });
+  });
+  await card(a.page, 'Album Phone');
+  const pics = [1, 2, 3].map((n) => png(20 + n, 20).toString('base64'));
+  await a.page.evaluate((pics) => {
+    const files = pics.map((b64, i) => {
+      const f = new File([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], `${i + 1}.png`, { type: 'image/png' });
+      f.relPath = `Holiday/${i + 1}.png`;
+      return f;
+    });
+    [...peers.values()].find((p) => p.info.name === 'Album Phone').sendFiles(files);
+  }, pics);
+  await expect(b.page.locator('#dlg-request')).toBeVisible({ timeout: 20000 });
+  await b.page.locator('#dlg-request [data-act=accept]').click();
+  const got = b.page.locator('#dlg-received');
+  await expect(got).toBeVisible({ timeout: 30000 });
+  const btn = got.locator('[data-act=album-save]');
+  await expect(btn).toBeVisible();
+  await expect(btn).toHaveText('Save to gallery as an album');
+  await btn.click();
+  await expect(btn).toHaveText('Saved to the album Holiday');
+  const album = await b.page.evaluate(() => window.__album);
+  expect(album.name).toBe('Holiday');
+  expect(Object.keys(album.files).sort()).toEqual(['1.png', '2.png', '3.png']);
+  expect(album.files['1.png']).toBe(png(21, 20).length);
+  // Not on a computer
+  await card(b.page, 'Album Laptop');
+  await b.page.evaluate((pics) => {
+    const files = pics.map((b64, i) => new File([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], `${i + 1}.png`, { type: 'image/png' }));
+    [...peers.values()].find((p) => p.info.name === 'Album Laptop').sendFiles(files);
+  }, pics);
+  await expect(a.page.locator('#dlg-request')).toBeVisible({ timeout: 20000 });
+  await a.page.locator('#dlg-request [data-act=accept]').click();
+  await expect(a.page.locator('#dlg-received')).toBeVisible({ timeout: 30000 });
+  await expect(a.page.locator('#dlg-received [data-act=album-save]')).toBeHidden();
+  expect([...a.errors, ...b.errors]).toEqual([]);
+});
+
 test('the new words are translated in all 15 languages, and are the words the app uses', async () => {
   const keys = JSON.parse(fs.readFileSync(path.join(__dirname, 'seven-upgrades.keys.json'), 'utf8'));
   const src = ['app.js', 'chat.js', 'voice.js', 'group.js', 'notes.js', 'remote.js', 'media.js', 'index.html']
