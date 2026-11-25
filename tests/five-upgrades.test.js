@@ -127,16 +127,16 @@ test('Ring this device: it beeps with a Stop button; Stop tells the device that 
   await expect(ring.locator('h3')).toHaveText('Ring A is ringing this device');
   await expect(a.page.locator('#toast')).toHaveText('Ring B is ringing');
   await expect.poll(() => b.page.evaluate(() => window.__tones)).toBeGreaterThanOrEqual(6); // 3 beeps a second
+  // Again while it still rings: too soon
+  await a.page.evaluate((n) => [...peers.values()].find((p) => p.info.name === n).ring(), b.name);
+  await expect(a.page.locator('#toast')).toHaveText(/You just rang Ring B/);
   await ring.locator('[data-act=stop]').click();
   await expect(ring).toBeHidden();
   await expect(a.page.locator('#toast')).toHaveText('Ring B was found and stopped ringing');
+  await expect(a.page.locator('#dlg-ring-again')).toHaveCount(0); // found: no "Ring again"
   const after = await b.page.evaluate(() => window.__tones);
   await b.page.waitForTimeout(1300);
   expect(await b.page.evaluate(() => window.__tones)).toBe(after);
-  // Again at once: too soon (one ring per 10 s from the same device)
-  await a.page.evaluate((n) => [...peers.values()].find((p) => p.info.name === n).ring(), b.name);
-  await expect(a.page.locator('#toast')).toHaveText(/You just rang Ring B/);
-  await expect(ring).toBeHidden();
   // Sound blocked (the page was never tapped): it still shows, and the ringer is told
   const c = await open(browser, 'Ring C');
   await card(c.page, a.name);
@@ -145,6 +145,38 @@ test('Ring this device: it beeps with a Stop button; Stop tells the device that 
   await expect(c.page.locator('#dlg-ring')).toBeVisible();
   await expect(a.page.locator('#toast')).toHaveText(/browser blocked the sound/);
   expect(a.errors.concat(b.errors, c.errors)).toEqual([]);
+});
+
+test('a ring stops by itself after 5 seconds, and the device that rang can ring again', async ({ browser }) => {
+  const a = await open(browser, 'Again A');
+  const b = await open(browser, 'Again B');
+  await card(b.page, a.name);
+  await fakeAudio(b.page);
+  await card(a.page, b.name);
+  const ringB = () => a.page.evaluate((n) => [...peers.values()].find((p) => p.info.name === n).ring(), b.name);
+  await ringB();
+  const ring = b.page.locator('#dlg-ring');
+  await expect(ring).toBeVisible();
+  const from = Date.now();
+  await expect(ring).toBeHidden({ timeout: 9000 });
+  const took = Date.now() - from;
+  expect(took).toBeGreaterThan(3500);
+  expect(took).toBeLessThan(7000);
+  // 5 beeps (3 tones each), then quiet
+  expect(await b.page.evaluate(() => window.__tones)).toBe(15);
+  const again = a.page.locator('#dlg-ring-again');
+  await expect(again).toBeVisible();
+  await expect(again.locator('h3')).toHaveText('Again B rang for 5 seconds');
+  await expect(again.locator('[data-act=again]')).toHaveText('Ring again');
+  await again.locator('[data-act=again]').click();
+  await expect(again).toBeHidden();
+  await expect(ring).toBeVisible();
+  // Close: no more ringing after the second round
+  await expect(again).toBeVisible({ timeout: 9000 });
+  await expect(ring).toBeHidden();
+  await again.locator('[data-act=close]').click();
+  await expect(again).toBeHidden();
+  expect(a.errors.concat(b.errors)).toEqual([]);
 });
 
 test('Ring from the chat, and a paired device that is offline rings when it opens OmniBeam', async ({ browser }) => {

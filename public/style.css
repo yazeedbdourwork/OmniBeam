@@ -356,6 +356,7 @@ html.tv .empty-qr { display: none !important; }
 .ring-dialog h3 { margin: 6px 0 4px; unicode-bidi: plaintext; }
 .ring-dialog .row { justify-content: center; }
 .ring-dialog .btn { min-width: 9em; font-size: 1.05rem; }
+.ring-dialog .ring-bell.still, .ring-dialog .ring-bell.still svg { animation: none; }
 @keyframes ring-pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); } 50% { box-shadow: 0 0 0 18px transparent; } }
 @keyframes ring-shake { 0%, 50%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(-14deg); } 20%, 40% { transform: rotate(14deg); } }
 @media (prefers-reduced-motion: reduce) { .ring-dialog .ring-bell, .ring-dialog .ring-bell svg { animation: none; } }

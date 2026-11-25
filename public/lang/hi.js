@@ -1633,5 +1633,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} अभी जवाब नहीं दे रहा। आप जो भेजेंगे वह स्क्रीन पर वापस आने पर जाएगा (यह पेज खुला रखें)।",
     "Waiting for {name}…": "{name} की प्रतीक्षा…",
     "Not answering": "जवाब नहीं दे रहा",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} 5 सेकंड तक बजा",
+    "Didn't find it? Ring it again.": "नहीं मिला? इसे फिर से बजाएँ।",
+    "Ring again": "फिर से बजाएँ",
   },
 });

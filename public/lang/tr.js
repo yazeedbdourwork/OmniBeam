@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} şu anda yanıt vermiyor. Gönderdikleriniz ekrana geri döndüğünde gider (bu sayfayı açık tutun).",
     "Waiting for {name}…": "{name} bekleniyor…",
     "Not answering": "Yanıt vermiyor",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} 5 saniye çaldı",
+    "Didn't find it? Ring it again.": "Bulamadın mı? Tekrar çaldır.",
+    "Ring again": "Tekrar çaldır",
   },
 });

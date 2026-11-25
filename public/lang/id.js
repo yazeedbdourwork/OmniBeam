@@ -1633,5 +1633,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} sedang tidak menjawab. Yang Anda kirim akan terkirim saat kembali ke layar (biarkan halaman ini terbuka).",
     "Waiting for {name}…": "Menunggu {name}…",
     "Not answering": "Tidak menjawab",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} berdering selama 5 detik",
+    "Didn't find it? Ring it again.": "Belum ketemu? Bunyikan lagi.",
+    "Ring again": "Bunyikan lagi",
   },
 });
