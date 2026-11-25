@@ -2073,6 +2073,18 @@ class Peer {
       case 'clip':
         onClip(this, msg);
         break;
+      // Group chat of a room (group.js): a message to everyone in it
+      case 'gtext':
+        if (typeof msg.g === 'string' && typeof msg.text === 'string' && msg.text.trim()) {
+          Groups.arrived(this, msg.g, { id: typeof msg.id === 'string' ? msg.id.slice(0, 24) : randomHex(8), text: msg.text.slice(0, 5000) });
+        }
+        break;
+      // Notes and to-dos (notes.js): only with a paired device
+      case 'nt-hi':
+      case 'nt-put':
+      case 'nt-want':
+        if (this.pairSecret && !IS_TV) loadNotes().then(() => window.Notes.onMsg(this, msg)).catch(() => {});
+        break;
       // A voice message or a copied picture, in pieces (see sendBlobNote)
       case 'bl':
         BlobIn.start(this, msg);
@@ -3536,7 +3548,12 @@ const VoiceStore = {
 setTimeout(() => { if (!IS_TV) VoiceStore.prune().catch(() => {}); }, 8000);
 async function onVoice(peer, blob, meta) {
   const ms = Math.max(0, Math.min(10 * 60000, Number(meta.ms) || 0));
-  if (meta.g) return; // a group chat's (group.js)
+  if (meta.g) { // a group chat's (group.js)
+    if (typeof meta.g !== 'string' || !Groups.mine.has(meta.g) || !peer.groups?.has(meta.g)) return;
+    if (Groups.items(meta.g).some((m) => m.id === meta.id)) return;
+    await VoiceStore.put(meta.id, blob);
+    return Groups.arrived(peer, meta.g, { id: meta.id, text: voiceLabel(ms), voice: { ms, mime: blob.type } });
+  }
   if (Messages.items.some((m) => m.id === meta.id && m.voice)) return;
   await VoiceStore.put(meta.id, blob);
   const label = voiceLabel(ms);
@@ -3670,7 +3687,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=12');
+const loadChat = () => loadScript('/chat.js?v=13');
 // voice.js: recording and playing voice messages in a chat (loaded with the chat)
 const loadVoice = () => loadScript('/voice.js?v=1');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
@@ -5603,6 +5620,8 @@ async function onPairHello(from, proofs, data = {}) {
   renderPairedList();
   renderOffline(); // (updates the chat badges too: the card is now known by its pairing)
   sendWaiting(peer);
+  // Notes and to-dos: compare with this paired device (only when this device has some; else it asks when it has)
+  if (notesUsed() && !IS_TV) setTimeout(() => { if (peers.get(peer.info.id) === peer) loadNotes().then(() => window.Notes.hello(peer), () => {}); }, 1500);
 }
 async function onPairForget(from, proof) {
   const pair = await matchPairing(from, [proof]);
@@ -5964,6 +5983,8 @@ try { if (JSON.parse(localStorage.getItem('omnibeam-fsync') || 'null')?.on) setT
 // A folder shared before: pick it up again (Chrome and Edge keep it)
 try { if (localStorage.getItem('omnibeam-fshare')) setTimeout(() => loadBrowse().then(() => window.Browse.restore()).catch(() => {}), 1500); } catch {}
 // Photo backup (pbackup.js): on computers; picked up again at the start when it was set up before
+$('#btn-notes').hidden = IS_TV;
+$('#btn-notes').onclick = () => openNotes();
 $('#btn-pbackup').hidden = isPhone || !window.crypto?.subtle;
 $('#btn-pbackup').onclick = () => loadPBackup().then(() => window.PhotoBackup.open(), (err) => toast(err.message));
 try { if (localStorage.getItem('omnibeam-pbackup')) setTimeout(() => loadPBackup().then(() => window.PhotoBackup.restore()).catch(() => {}), 1500); } catch {}
@@ -5986,6 +6007,7 @@ function addPeer(info) {
   if (Date.now() - wokeAt < 30000) wsSend({ type: 'signal', to: info.id, data: { awake: true } });
   sendPairHello(p).catch(() => {});
   sendQrHello(p).catch(() => {});
+  if (Groups?.mine.size) Groups.tell(p).catch(() => {});
   tellExtension();
   updateChatBadges();
 }
@@ -6083,6 +6105,7 @@ function removePeer(id) {
   p.destroy();
   peers.delete(id);
   announce(t('{name} left', { name: p.info.name }));
+  if (p.groups?.size) { Groups?.paint(); window.Group?.refresh?.(); }
   window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing (media.js) and webcam (webcam.js) with it
   updateSendAll();
   tellExtension();
@@ -6326,6 +6349,7 @@ function connectSocket() {
         else if (msg.data && msg.data.screen) onScreenSignal(msg.from, msg.data.screen);
         else if (msg.data && msg.data.cam) onCamSignal(msg.from, msg.data.cam);
         else if (msg.data && msg.data.call) onCallSignal(msg.from, msg.data.call);
+        else if (msg.data && Array.isArray(msg.data.grp)) Groups.onSignal(msg.from, msg.data).catch(() => {});
         else if (msg.data && msg.data.e2e) peers.get(msg.from)?.onE2E(msg.data);
         else if (msg.data && msg.data.resume) peers.get(msg.from)?.onResume(msg.data.resume);
         else if (msg.data && msg.data.resumeOffer) AutoResume.onOffer(msg.from, msg.data.resumeOffer).catch(() => {});
@@ -6492,7 +6516,7 @@ const Teams = {
       return (JSON.parse(localStorage.getItem(TEAMS_KEY)) || []).filter((x) => /^[0-9a-f]{64}$/.test(x?.secret || '') && /^[0-9a-f]{64}$/.test(x?.id || ''));
     } catch { return []; }
   },
-  save(list) { try { localStorage.setItem(TEAMS_KEY, JSON.stringify(list)); } catch {} },
+  save(list) { try { localStorage.setItem(TEAMS_KEY, JSON.stringify(list)); } catch {} Groups?.refresh(); },
   update(secret, change) { this.save(this.list().map((x) => (x.secret === secret ? { ...x, ...change } : x))); },
   link: (team) => `${location.origin}/#team=${team.secret}&n=${encodeURIComponent(team.name)}`,
   // Teams this device shares with another one (the server lists the rooms they're both in)
@@ -6620,6 +6644,155 @@ function updatePublicUi() {
   $('#public-show').textContent = publicRoom ? publicRoom.toUpperCase() : '';
   $('#public-lock').hidden = !publicRoom || !publicLocked;
   setOffline(!ws || ws.readyState !== WebSocket.OPEN);
+  Groups?.refresh();
+}
+
+// ---------- Group chat of a room (group.js) ----------
+// Everyone in the same public room, or in the same team room, can write to all of them at once, once there are
+// three devices or more. Who is in which room: each device tells the others a proof for each of its rooms
+// (made from the room's code or team secret and both devices' ids, signal {grp}), which only a device that knows
+// the room can check; nobody can claim a room it isn't in, and the server learns nothing new. The messages
+// themselves go to each member over its own encrypted connection ({t:'gtext'} and voice messages with g). Kept on
+// this device (Keep history), like a chat with one device. Only the devices in the room right now get them.
+const GROUPS_KEY = 'omnibeam-groups';
+const GROUP_MAX = 200; // messages kept per group
+const loadGroup = () => loadScript('/group.js?v=1');
+var Groups = { // (var: updatePublicUi and Teams may run before this line)
+  mine: new Map(), // group id -> { name, secret }
+  timer: 0,
+  refresh() {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.update().catch(() => {}), 300);
+  },
+  async update() {
+    const next = new Map();
+    if (publicRoom) next.set('g' + (await sha256Hex('omnibeam-group:room:' + publicRoom)).slice(0, 16), { name: t('Room {code}', { code: publicRoom.toUpperCase() }), secret: 'room:' + publicRoom });
+    for (const team of Teams.list()) next.set('g' + (await sha256Hex('omnibeam-group:team:' + team.secret)).slice(0, 16), { name: team.name, secret: 'team:' + team.secret });
+    const changed = [...next.keys()].join() !== [...this.mine.keys()].join();
+    this.mine = next;
+    if (changed) for (const p of peers.values()) this.tell(p);
+    this.paint();
+  },
+  proof: (secret, from, to) => sha256Hex(`omnibeam-group:${secret}:${from}:${to}`).then((h) => h.slice(0, 32)),
+  async tell(p, answer = false) {
+    if (IS_TV || !me.id || !p) return;
+    p.grpTold = true;
+    const proofs = await Promise.all([...this.mine.values()].map((g) => this.proof(g.secret, me.id, p.info.id)));
+    wsSend({ type: 'signal', to: p.info.id, data: { grp: proofs, ...(answer ? { grpAns: 1 } : {}) } });
+  },
+  async onSignal(from, data) {
+    const p = peers.get(from);
+    if (!p || IS_TV) return;
+    const got = new Set([].concat(data.grp).filter((x) => typeof x === 'string').slice(0, 20));
+    p.groups = new Set();
+    for (const [id, g] of this.mine) if (got.has(await this.proof(g.secret, from, me.id))) p.groups.add(id);
+    // Always answered (an answer isn't), so both sides know each other's rooms whoever joined first
+    if (!data.grpAns) this.tell(p, true);
+    this.paint();
+    window.Group?.refresh?.();
+  },
+  members(gid) { return [...peers.values()].filter((p) => p.groups?.has(gid)); },
+  // ---- Messages, kept on this device ----
+  all() { try { return JSON.parse(localStorage.getItem(GROUPS_KEY)) || {}; } catch { return {}; } },
+  save(all) {
+    try { localStorage.setItem(GROUPS_KEY, JSON.stringify(all)); } catch {}
+    this.paint();
+    window.Group?.refresh?.();
+  },
+  items(gid) {
+    const cutoff = keepCutoff();
+    return (this.all()[gid]?.items || []).filter((m) => m.at >= cutoff);
+  },
+  add(gid, item) {
+    const all = this.all();
+    const g = all[gid] || (all[gid] = { items: [], read: 0 });
+    if (item.id && g.items.some((m) => m.id === item.id)) return false;
+    g.name = this.mine.get(gid)?.name || g.name;
+    g.items.push(item);
+    const cutoff = keepCutoff();
+    g.items = g.items.filter((m) => m.at >= cutoff).slice(-GROUP_MAX);
+    this.save(all);
+    return true;
+  },
+  read(gid) {
+    if (!this.unread(gid)) return;
+    const all = this.all();
+    all[gid].read = Date.now();
+    try { localStorage.setItem(GROUPS_KEY, JSON.stringify(all)); } catch {}
+    this.paint();
+  },
+  unread(gid) {
+    const g = this.all()[gid];
+    return g ? g.items.filter((m) => !m.mine && m.at > (g.read || 0) && m.at >= keepCutoff()).length : 0;
+  },
+  // A message (or a voice message) from a member of a group this device is in
+  arrived(peer, gid, item) {
+    if (!this.mine.has(gid) || !peer.groups?.has(gid)) return;
+    if (!this.add(gid, { ...item, from: peer.info.name, at: Date.now() })) return;
+    if (window.Group?.showing?.(gid)) { this.read(gid); return messageSound(); }
+    messageSound();
+    const title = `${peer.info.name} · ${this.mine.get(gid).name}`;
+    if (document.hidden) notify(title, item.text.slice(0, 100));
+    else toast(`${title}: ${item.text.slice(0, 80)}`, 4000);
+  },
+  // The bar above the devices: one button per group with three devices or more (this one included)
+  paint() {
+    if (!peersEl || IS_TV) return;
+    let bar = document.getElementById('groups');
+    const list = [...this.mine].filter(([gid]) => this.members(gid).length >= 2);
+    if (!list.length) { bar?.remove(); return; }
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'groups';
+      bar.className = 'groups-bar';
+      bar.onclick = (e) => {
+        const gid = e.target.closest('[data-group]')?.dataset.group;
+        if (gid) openGroup(gid);
+      };
+      peersEl.before(bar);
+    }
+    bar.innerHTML = '';
+    for (const [gid, g] of list) {
+      const n = this.members(gid).length + 1;
+      const unread = this.unread(gid);
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'group-chip';
+      b.dataset.group = gid;
+      b.innerHTML = '<span class="gi" aria-hidden="true">👥</span><span class="gt"><b></b><small></small></span>';
+      $('b', b).textContent = t('Group chat') + ' · ' + g.name;
+      $('small', b).textContent = t('{n} devices', { n });
+      if (unread) {
+        const badge = document.createElement('span');
+        badge.className = 'chat-badge';
+        badge.textContent = unread > 99 ? '99+' : String(unread);
+        b.appendChild(badge);
+      }
+      b.setAttribute('aria-label', `${t('Group chat')} · ${g.name} · ${t('{n} devices', { n })}` + (unread ? ` · ${unread}` : ''));
+      bar.appendChild(b);
+    }
+  },
+};
+Groups.refresh();
+async function openGroup(gid) {
+  try {
+    await Promise.all([loadGroup(), loadChat(), loadVoice().catch(() => {})]); // (chat.js: its look)
+  } catch (err) {
+    return toast(err.message);
+  }
+  wsSend({ type: 'stat', kind: 'chat' });
+  window.Group.open(gid);
+}
+window.addEventListener('storage', (e) => { if (e.key === GROUPS_KEY) { Groups.paint(); window.Group?.refresh?.(); } });
+
+// ---------- Notes and to-dos (notes.js) ----------
+// Notes and to-do lists kept on this device and synced with its paired devices whenever both are online (each
+// change goes to them at once; on meeting, they compare and swap what changed). Nothing is kept on the server.
+const NOTES_KEY = 'omnibeam-notes';
+const loadNotes = () => loadScript('/notes.js?v=1');
+const notesUsed = () => { try { return !!localStorage.getItem(NOTES_KEY); } catch { return false; } };
+function openNotes() {
+  loadNotes().then(() => window.Notes.open(), (err) => toast(err.message));
 }
 
 // Phones drop sockets when locked or in the background: reconnect as soon as we're back
