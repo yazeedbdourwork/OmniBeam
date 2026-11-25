@@ -7903,7 +7903,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=8`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=9`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');

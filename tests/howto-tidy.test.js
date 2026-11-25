@@ -53,10 +53,11 @@ test('How to Use window: topics, search and the full guide link, translated', as
     await expect(how.locator('.how-group[open]')).toHaveCount(0);
     // The search box doesn't take the focus (no keyboard popping up on phones)
     expect(await a.page.evaluate(() => document.activeElement.classList.contains('how-search'))).toBe(false);
+    // Scan to PDF, the link page, Preview and Present slides
     await how.locator('.how-search').fill('pdf');
-    await expect(how.locator('li:visible')).toHaveCount(2);
+    await expect(how.locator('li:visible')).toHaveCount(4);
     await expect(how.locator('li:visible').first()).toContainText('Scan to PDF');
-    await expect(how.locator('.how-group:visible')).toHaveCount(2);
+    await expect(how.locator('.how-group:visible')).toHaveCount(4);
     await how.locator('.how-search').fill('qqqzzz');
     await expect(how.locator('.how-none')).toBeVisible();
     await how.locator('.how-search').fill('');
