@@ -1591,6 +1591,7 @@
   }
   window.Chat = {
     open,
+    style: () => addStyle(), // the group chat (group.js) looks the same
     ask,
     // The chat with this device is open now
     typing,
