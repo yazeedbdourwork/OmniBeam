@@ -198,8 +198,41 @@ test('a tab that crashed and a stuck transfer are reported to /stats and Telegra
   const msgs = instant().trim().split('\n').map((l) => JSON.parse(l));
   const all = msgs.map((m) => m.text).join('\n');
   expect(all).toMatch(/Stuck transfer: receiving at 2%, nothing moved for \d+ s · not connected · 50 MB/);
-  expect(all).toMatch(/Tab crashed: during a transfer, open 5 min · page: tv/);
+  expect(all).toMatch(/Tab crashed: during a transfer, open 5 min(, memory \d+ MB[^·]*)? · page: tv/);
   expect(all).toContain('/admin');
+});
+
+test('a tab that really crashed and was never reopened is reported from the next OmniBeam tab, with the last taps', async ({ browser, request }) => {
+  const a = await open(browser, 'Crash Laptop', { path: '/?reports=on' });
+  const before = (await stats(request)).errors.filter((e) => e.k === 'crash').length;
+  // Something tapped first (code names of the buttons, never what is typed): the ⋯ menu, then Settings
+  await a.page.locator('#btn-menu').click();
+  await a.page.keyboard.press('Escape');
+  await expect.poll(() => a.page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('omnibeam-alive-tabs') || '{}'))[0]?.d || ''))
+    .toMatch(/last taps: btn-menu/);
+  // The renderer of this tab crashes for real; the tab is never reopened
+  const cdp = await a.context.newCDPSession(a.page);
+  cdp.send('Page.crash').catch(() => {});
+  await new Promise((r) => setTimeout(r, 1000));
+  // Later, OmniBeam in a new tab
+  const next = await a.context.newPage();
+  await next.goto('/?reports=on');
+  let crash = [];
+  await expect.poll(async () => { crash = (await stats(request)).errors.filter((e) => e.k === 'crash'); return crash.length; }, { timeout: 15000 }).toBe(before + 1);
+  const c = crash[crash.length - 1];
+  expect(c.page).toBe('app');
+  expect(c.d).toMatch(/^found in a new tab, .*last taps: btn-menu/);
+  // Reported once: a third tab finds nothing more
+  const third = await a.context.newPage();
+  await third.goto('/?reports=on');
+  await third.waitForTimeout(2500);
+  expect((await stats(request)).errors.filter((e) => e.k === 'crash').length).toBe(before + 1);
+  // Tabs closed normally, or still open in the background, are not crashes
+  await next.close();
+  const fourth = await a.context.newPage();
+  await fourth.goto('/?reports=on');
+  await fourth.waitForTimeout(2500);
+  expect((await stats(request)).errors.filter((e) => e.k === 'crash').length).toBe(before + 1);
 });
 
 test('new script errors go to Telegram once; /stats shows crashes and stuck transfers', async ({ page, request }) => {
