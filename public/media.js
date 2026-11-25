@@ -391,15 +391,38 @@
       bar.id = 'share-bar';
       bar.className = 'share-bar';
       bar.setAttribute('role', 'status');
-      bar.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="share-who"></span><button type="button" class="btn small">${esc(t('Stop sharing'))}</button>`;
-      $('button', bar).onclick = () => stopSharing();
+      bar.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="share-who"></span>`
+        + `<button type="button" class="btn ghost small" data-sb="mode"></button><button type="button" class="btn ghost small" data-sb="pause"></button>`
+        + `<button type="button" class="btn small" data-sb="stop">${esc(t('Stop sharing'))}</button>`;
+      bar.onclick = (e) => {
+        const a = e.target.closest('[data-sb]')?.dataset.sb;
+        if (!share) return;
+        if (a === 'stop') stopSharing();
+        // Pause: the others see the last picture until Resume (to look something up without showing it)
+        if (a === 'pause') { share.paused = !share.paused; share.stream.getVideoTracks().forEach((tr) => { tr.enabled = !share.paused; }); renderShareBar(); }
+        // Sharp text (slides, documents) or smooth motion (a video, a game)
+        if (a === 'mode') { share.motion = !share.motion; tune(); renderShareBar(); }
+      };
       document.body.appendChild(bar);
     }
+    $('[data-sb=pause]', bar).textContent = share.paused ? t('Resume') : t('Pause');
+    $('[data-sb=mode]', bar).textContent = share.motion ? t('Smooth motion') : t('Sharp text');
+    $('[data-sb=mode]', bar).title = t('Sharp text for documents and slides, smooth motion for videos and games');
+    bar.classList.toggle('paused', !!share.paused);
     const watching = [...share.viewers.values()].filter((v) => v.state === 'on').map((v) => v.name);
     const asking = [...share.viewers.values()].filter((v) => v.state !== 'on').map((v) => v.name);
     $('.share-who', bar).textContent = watching.length
       ? t('Sharing your screen with {names}', { names: watching.join(', ') })
       : t('Waiting for {names} to accept…', { names: asking.join(', ') });
+  }
+
+  // Sharp text: up to 15 pictures a second at full detail; smooth motion: 30 a second, the picture may soften
+  function tune() {
+    if (!share) return;
+    for (const tr of share.stream.getVideoTracks()) {
+      try { tr.contentHint = share.motion ? 'motion' : 'detail'; } catch {}
+      tr.applyConstraints({ frameRate: { ideal: share.motion ? 30 : 15, max: 30 } }).catch(() => {});
+    }
   }
 
   // The window that shows another device's screen
@@ -411,6 +434,10 @@
       <div class="row screen-bar">
         <b class="screen-title"></b>
         <button type="button" class="btn ghost small" data-act="sound" hidden>${esc(t('Turn on sound'))}</button>
+        <button type="button" class="btn ghost small" data-act="zoom-out" title="${esc(t('Zoom out'))}" aria-label="${esc(t('Zoom out'))}" disabled>−</button>
+        <button type="button" class="btn ghost small" data-act="zoom-in" title="${esc(t('Zoom in'))}" aria-label="${esc(t('Zoom in'))}">+</button>
+        <button type="button" class="btn ghost small" data-act="shot">${esc(t('Save picture'))}</button>
+        <button type="button" class="btn ghost small" data-act="pip"${document.pictureInPictureEnabled ? '' : ' hidden'}>${esc(t('Picture in picture'))}</button>
         <button type="button" class="btn ghost small" data-act="full">${esc(t('Full screen'))}</button>
         <button type="button" class="btn small" data-act="stop">${esc(t('Stop watching'))}</button>
       </div>`);
@@ -420,11 +447,62 @@
       if (act === 'stop') dlg.close();
       if (act === 'full') (video.requestFullscreen || video.webkitEnterFullscreen || (() => {})).call(video)?.catch?.(() => {});
       if (act === 'sound') { video.muted = false; video.play().catch(() => {}); e.target.hidden = true; }
+      if (act === 'zoom-in' || act === 'zoom-out') zoomTo(dlg, zoom.k * (act === 'zoom-in' ? 1.5 : 1 / 1.5));
+      if (act === 'pip') video.requestPictureInPicture?.().catch(() => toast(t('This browser can\'t do that here')));
+      if (act === 'shot') snapshot(video);
     };
+    // Zoom to read small text: + and −, the mouse wheel, a double click; drag to look around
+    const stage = $('.screen-stage', dlg);
+    const video0 = $('video', dlg);
+    stage.addEventListener('wheel', (e) => { if (!dlg.open) return; e.preventDefault(); zoomTo(dlg, zoom.k * (e.deltaY < 0 ? 1.25 : 0.8)); }, { passive: false });
+    video0.addEventListener('dblclick', () => zoomTo(dlg, zoom.k > 1 ? 1 : 2));
+    let drag = null;
+    video0.addEventListener('pointerdown', (e) => { if (zoom.k > 1) { drag = { x: e.clientX, y: e.clientY, ox: zoom.x, oy: zoom.y }; video0.setPointerCapture?.(e.pointerId); } });
+    video0.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      zoom.x = drag.ox + (e.clientX - drag.x);
+      zoom.y = drag.oy + (e.clientY - drag.y);
+      paintZoom(dlg);
+    });
+    video0.addEventListener('pointerup', () => { drag = null; });
+    video0.addEventListener('pointercancel', () => { drag = null; });
     dlg.addEventListener('close', () => {
       if (watch) { signal(watch.from, { t: 'stop', sid: watch.sid }); endWatch(); }
     });
     return dlg;
+  }
+  const zoom = { k: 1, x: 0, y: 0 };
+  function zoomTo(dlg, k) {
+    zoom.k = Math.max(1, Math.min(5, k));
+    if (zoom.k === 1) { zoom.x = 0; zoom.y = 0; }
+    paintZoom(dlg);
+  }
+  function paintZoom(dlg) {
+    const video = $('video', dlg);
+    const stage = $('.screen-stage', dlg);
+    // Not further than the picture's edges
+    const mx = (stage.clientWidth * (zoom.k - 1)) / 2;
+    const my = (stage.clientHeight * (zoom.k - 1)) / 2;
+    zoom.x = Math.max(-mx, Math.min(mx, zoom.x));
+    zoom.y = Math.max(-my, Math.min(my, zoom.y));
+    video.style.transform = zoom.k === 1 ? '' : `translate(${zoom.x}px, ${zoom.y}px) scale(${zoom.k})`;
+    video.style.cursor = zoom.k > 1 ? 'grab' : '';
+    $('[data-act=zoom-out]', dlg).disabled = zoom.k === 1;
+    $('[data-act=zoom-in]', dlg).disabled = zoom.k >= 5;
+  }
+  // The picture on screen right now, saved as a PNG (to Photos on iPhone)
+  function snapshot(video) {
+    if (!video.videoWidth) return;
+    const c = document.createElement('canvas');
+    c.width = video.videoWidth;
+    c.height = video.videoHeight;
+    c.getContext('2d').drawImage(video, 0, 0);
+    c.toBlob((blob) => {
+      if (!blob) return;
+      const f = { name: `${t('Screen')} ${stamp()}.png`, mime: 'image/png', blob };
+      if (canSaveToPhotos([f])) saveToPhotos([f]); else downloadBlob(f);
+      toast(t('Picture saved'));
+    }, 'image/png');
   }
   function endWatch(message) {
     const w = watch;
@@ -434,6 +512,8 @@
     const dlg = document.getElementById('dlg-screen');
     if (dlg) {
       const video = $('video', dlg);
+      zoomTo(dlg, 1);
+      if (document.pictureInPictureElement === video) document.exitPictureInPicture().catch(() => {});
       video.srcObject = null;
       if (dlg.open) dlg.close();
     }
@@ -548,10 +628,7 @@
       });
       for (const track of share.stream.getTracks()) v.pc.addTrack(track, share.stream);
       // Prefer a sharp picture over smoothness: text on a shared screen must stay readable
-      for (const s of v.pc.getSenders()) {
-        if (s.track?.kind !== 'video') continue;
-        try { s.track.contentHint = 'detail'; } catch {}
-      }
+      tune();
       try {
         await v.pc.setLocalDescription(await v.pc.createOffer());
         signal(from, { t: 'sdp', sid, sdp: v.pc.localDescription });
