@@ -1626,5 +1626,9 @@
     "Choose a folder": "Klasör seç",
     "Someone downloaded your share link": "Biri paylaşım bağlantınızı indirdi",
     "Downloads: {n}": "İndirmeler: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "Yanıt vermiyor (uykuda veya arka planda)",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} şu anda yanıt vermiyor. Gönderdikleriniz ekrana geri döndüğünde gider (bu sayfayı açık tutun).",
+    "Waiting for {name}…": "{name} bekleniyor…",
   },
 });

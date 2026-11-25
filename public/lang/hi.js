@@ -1628,5 +1628,9 @@
     "Choose a folder": "फ़ोल्डर चुनें",
     "Someone downloaded your share link": "किसी ने आपका शेयर लिंक डाउनलोड किया",
     "Downloads: {n}": "डाउनलोड: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "जवाब नहीं दे रहा (स्लीप में या बैकग्राउंड में)",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} अभी जवाब नहीं दे रहा। आप जो भेजेंगे वह स्क्रीन पर वापस आने पर जाएगा (यह पेज खुला रखें)।",
+    "Waiting for {name}…": "{name} की प्रतीक्षा…",
   },
 });

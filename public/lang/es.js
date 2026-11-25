@@ -1626,5 +1626,9 @@
     "Choose a folder": "Elegir una carpeta",
     "Someone downloaded your share link": "Alguien descargó tu enlace compartido",
     "Downloads: {n}": "Descargas: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "No responde (en reposo o en segundo plano)",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} no responde ahora mismo. Lo que envíes se enviará cuando vuelva a estar en pantalla (mantén esta página abierta).",
+    "Waiting for {name}…": "Esperando a {name}…",
   },
 });

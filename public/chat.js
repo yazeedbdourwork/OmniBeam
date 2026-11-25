@@ -147,6 +147,9 @@
 .chat-dialog .shrink-toggle button { padding: 2px 8px; box-shadow: none; background: transparent; font-weight: 600; }
 .chat-dialog .shrink-toggle button[aria-pressed="true"] { box-shadow: none; text-decoration: underline; text-underline-offset: 3px; }
 .bubble.chat-ask .chat-acts .btn { min-width: 6em; }
+.chat-xfer-bar { height: 4px; margin: 6px 10px 2px; border-radius: 2px; background: rgba(255,255,255,.25); overflow: hidden; }
+.chat-xfer-bar span { display: block; height: 100%; width: 0; background: #fff; transition: width .3s; }
+.chat-state.away { color: #f5b14c; }
 .chat-head .icon-btn[data-act=sound][aria-pressed="false"] { opacity: .6; }
 .chat-notif { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 12px 6px; padding: 8px 10px; border-radius: 12px; font-size: 13px; background: var(--accent-soft, rgba(124,92,255,.14)); }
 .chat-notif span { flex: 1; min-width: 12em; }
@@ -586,12 +589,18 @@
     const av = $('.chat-head .avatar', dlg);
     av.style.background = colorFor(name);
     av.innerHTML = avatarHtml(peer ? peer.info.avatar : pairing?.avatar, peer ? peer.info.device : pairing?.device || '');
-    $('.chat-state', dlg).textContent = peer ? t('Online now') : pairing?.seen ? t('Last seen {time}', { time: timeAgo(pairing.seen) }) : t('Offline');
+    // "Online now" only while its page answers (see Presence in app.js): a sleeping laptop or a phone with OmniBeam in
+    // the background still looks online to the server
+    const away = peer && peer.answering === false;
+    $('.chat-state', dlg).textContent = away ? t('Not answering (asleep or in the background)') : peer ? t('Online now')
+      : pairing?.seen ? t('Last seen {time}', { time: timeAgo(pairing.seen) }) : t('Offline');
+    $('.chat-state', dlg).classList.toggle('away', !!away);
     // What the box at the bottom can do now
     const canSend = !!peer || !!pairing;
     const note = $('.chat-note', dlg);
-    note.hidden = !!peer;
-    note.textContent = pairing ? t('{name} is offline. What you send now goes as soon as it opens OmniBeam (keep this page open).', { name })
+    note.hidden = !!peer && !away;
+    note.textContent = away ? t('{name} is not answering right now. What you send goes when it is back on screen (keep this page open).', { name })
+      : pairing ? t('{name} is offline. What you send now goes as soon as it opens OmniBeam (keep this page open).', { name })
       : t('{name} is not here right now. Open OmniBeam on it to send.', { name });
     for (const el of dlg.querySelectorAll('.chat-compose textarea, .chat-compose button')) el.disabled = !canSend;
     // The speaker: message sound on or off (the same as Settings -> Message sound)
@@ -714,6 +723,7 @@
     if (current.q) markHits(thread);
     // A transfer from this device waiting for an answer stays at the end of the thread
     if (current.ask) thread.appendChild(current.ask.el);
+    if (current.xfer) thread.appendChild(current.xfer);
     // "typing…": three moving dots at the end
     if (current.typingUntil > Date.now()) {
       const dots = document.createElement('div');
@@ -1258,6 +1268,11 @@
     addStyle();
     const dlg = dialog();
     current = { who, dlg, urls: [], observer: null };
+    // Is it really there? Asked now and every 20 s while this chat is open (see Presence in app.js)
+    const probe = () => { const p = current && !document.hidden && peerOf(current.who); if (p) Presence.ask(p); };
+    probe();
+    current.probeTimer = setInterval(probe, 20000);
+    current.xferTimer = setInterval(paintXfer, 400);
     const ta = $('.chat-compose textarea', dlg);
     ta.value = typeof draft === 'string' ? draft : '';
     ta.oninput = (e) => {
@@ -1443,6 +1458,8 @@
       }
       for (const u of current.urls) URL.revokeObjectURL(u);
       current.observer?.disconnect();
+      clearInterval(current.probeTimer);
+      clearInterval(current.xferTimer);
       clearTimeout(current.typingTimer);
       tellTyping(false);
       current = null;
@@ -1459,6 +1476,53 @@
     paintSend();
     if (ta.value) ta.oninput();
     if (!isPhone || ta.value) ta.focus();
+  }
+  // A file going to this device right now: a bubble at the end of the thread with what it is doing (waiting for an
+  // answer, connecting, the percentage) and Stop, so a send never looks like nothing happened
+  function paintXfer() {
+    if (!current) return;
+    const peer = peerOf(current.who);
+    const job = peer && peer.busy && peer.job?.send && peer.job.list ? peer.job : null;
+    let el = current.xfer;
+    if (!job) {
+      if (el) { el.remove(); current.xfer = null; }
+      return;
+    }
+    const thread = $('.chat-thread', current.dlg);
+    if (!el || el.job !== job) {
+      el?.remove();
+      el = document.createElement('div');
+      el.className = 'bubble out file chat-xfer';
+      el.job = job;
+      el.innerHTML = '<div class="chat-file"><span class="chat-icon" aria-hidden="true">📤</span><span><span class="chat-name"></span><small role="status"></small></span></div>'
+        + '<div class="chat-xfer-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><span></span></div>'
+        + '<div class="chat-acts"><button type="button" class="btn ghost small" data-xfer="stop"></button></div>';
+      const files = job.list;
+      $('.chat-name', el).textContent = files.length === 1 ? pathOf(files[0]).split('/').pop() : t('{n} files', { n: files.length });
+      $('[data-xfer=stop]', el).textContent = t('Stop');
+      $('[data-xfer=stop]', el).onclick = () => peer.cancelTransfer();
+      current.xfer = el;
+      thread.appendChild(el);
+      thread.scrollTop = thread.scrollHeight;
+    } else if (el.parentNode !== thread || thread.lastElementChild !== el) thread.appendChild(el);
+    const p = peer.prog;
+    const total = job.list.reduce((s, f) => s + f.size, 0);
+    let text;
+    let frac = 0;
+    if (p && p.sending) {
+      const done = Math.max(0, Math.min(p.total, p.acked != null ? p.acked : p.done));
+      frac = done / (p.total || 1);
+      text = `${Math.floor(frac * 100)}% · ${formatSize(done)} / ${formatSize(p.total)}`;
+    } else {
+      const status = $('.status', peer.el)?.textContent;
+      text = formatSize(total) + ' · ' + (peer.answering === false ? t('Waiting for {name}…', { name: peer.info.name }) : status || t('Waiting…'));
+    }
+    const small = $('small', el);
+    if (small.textContent !== text) small.textContent = text;
+    const bar = $('.chat-xfer-bar', el);
+    bar.hidden = !(p && p.sending);
+    $('span', bar).style.width = `${(frac * 100).toFixed(1)}%`;
+    bar.setAttribute('aria-valuenow', String(Math.floor(frac * 100)));
   }
   // A device wants to send files while its chat is open: ask in the thread, not in a window over it
   function ask(peer, files) {

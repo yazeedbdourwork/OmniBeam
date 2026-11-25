@@ -1626,5 +1626,9 @@
     "Choose a folder": "フォルダーを選ぶ",
     "Someone downloaded your share link": "誰かがあなたの共有リンクをダウンロードしました",
     "Downloads: {n}": "ダウンロード: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "応答なし（スリープ中またはバックグラウンド）",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} は今応答していません。送ったものは画面に戻ったときに届きます（このページは開いたままにしてください）。",
+    "Waiting for {name}…": "{name} を待っています…",
   },
 });
