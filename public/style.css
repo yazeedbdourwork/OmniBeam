@@ -464,7 +464,10 @@ select.lang-select option { color: var(--fg); background: var(--bg); }
 .github-badge .gh-mark { flex: none; display: block; }
 .featured-badge.github-badge img.gh-stars { width: auto; height: 20px; border-radius: 3px; }
 .saashub-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
-.fazier-badge img { width: auto; height: 40px; max-width: 150px; object-fit: contain; }
+/* Fazier only gives a light-on-transparent SVG (theme=dark): on the light theme it was white on light grey and looked
+   missing, so it sits on its own dark pill (like the LaunchBuff badge) and reads the same in both themes */
+.fazier-badge { align-items: center; height: 40px; padding: 0 10px; box-sizing: border-box; background: #1d1f27; }
+.fazier-badge img { width: auto; height: 34px; max-width: 150px; object-fit: contain; }
 
 /* Phones (app.js: placeFooter): the links, copyright and badges sit at the end of the scrolling page, not in the
    pinned footer, and the "Ready to beam" card is a little tighter so the Pair button shows without scrolling */
