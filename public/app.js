@@ -5486,7 +5486,9 @@ if (tabChannel) {
   tabChannel.onmessage = ({ data }) => {
     if (!data?.id || data.id === me.id) return;
     otherTabs.add(data.id);
-    peers.get(data.id)?.markTab();
+    // Another OmniBeam tab of this browser is this same device: no card for it (an iPhone keeps old Safari
+    // tabs running, and seeing yourself as a device, "Paired" and "Online now", is confusing)
+    if (peers.has(data.id)) removePeer(data.id, true);
     if (data.ask && me.id) tabChannel.postMessage({ id: me.id });
   };
 }
@@ -6084,7 +6086,7 @@ if ($('#share-card')) $('#share-card').onclick = () => openInvite();
 
 // ---------- Signaling ----------
 function addPeer(info) {
-  if (peers.has(info.id)) return;
+  if (peers.has(info.id) || otherTabs.has(info.id)) return;
   const p = new Peer(info);
   peers.set(info.id, p);
   announce(t('{name} is here', { name: info.name }));
@@ -6191,17 +6193,17 @@ function openSendAll(dropped) {
   };
   if (!dlg.open) dlg.showModal();
 }
-function removePeer(id) {
+function removePeer(id, quiet = false) {
   const p = peers.get(id);
   if (!p) return;
   p.destroy();
   peers.delete(id);
-  announce(t('{name} left', { name: p.info.name }));
+  if (!quiet) announce(t('{name} left', { name: p.info.name }));
   if (p.groups?.size) { Groups?.paint(); window.Group?.refresh?.(); }
   window.dispatchEvent(new CustomEvent('omnibeam-peer-left', { detail: id })); // ends screen sharing (media.js) and webcam (webcam.js) with it
   updateSendAll();
   tellExtension();
-  if (p.pairSecret) {
+  if (p.pairSecret && !quiet) {
     updatePairing(p.pairSecret, { seen: Date.now() });
     renderPairedList();
   }
