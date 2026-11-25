@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} 现在没有响应。你发送的内容会在它回到屏幕时发出（请保持此页面打开）。",
     "Waiting for {name}…": "正在等待 {name}…",
     "Not answering": "无响应",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} 已响铃 5 秒",
+    "Didn't find it? Ring it again.": "没找到？再响一次。",
+    "Ring again": "再响一次",
   },
 });

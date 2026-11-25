@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} لا يرد الآن. ما ترسله سيصل عندما يعود إلى الشاشة (أبقِ هذه الصفحة مفتوحة).",
     "Waiting for {name}…": "بانتظار {name}…",
     "Not answering": "لا يرد",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "رنّ {name} لمدة 5 ثوانٍ",
+    "Didn't find it? Ring it again.": "لم تجده؟ اجعله يرنّ مرة أخرى.",
+    "Ring again": "رنّ مرة أخرى",
   },
 });

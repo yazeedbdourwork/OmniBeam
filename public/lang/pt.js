@@ -1633,5 +1633,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} não está respondendo agora. O que você enviar vai quando voltar para a tela (mantenha esta página aberta).",
     "Waiting for {name}…": "Aguardando {name}…",
     "Not answering": "Não responde",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} tocou por 5 segundos",
+    "Didn't find it? Ring it again.": "Não encontrou? Faça tocar de novo.",
+    "Ring again": "Tocar de novo",
   },
 });

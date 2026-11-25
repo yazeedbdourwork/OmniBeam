@@ -468,17 +468,18 @@ function messageSound() {
 }
 
 // Ring my device: another device asked this one to ring, to find it (a phone under a cushion). A loud beep that
-// repeats, a buzz on phones, a window with Stop, and a notification, for up to 30 seconds. It rings even with the
+// repeats, a buzz on phones, a window with Stop, and a notification, for 5 seconds (then the device that rang is
+// asked whether to ring again, see RingAgain). It rings even with the
 // message sound off (that's the point), but it can't get past a phone's own silent switch. Browsers only allow sound
 // on a page that was tapped once, so the other device is told whether the sound could play (ring-ok).
 const Ringer = {
   peer: null,
   timer: 0,
   beeps: 0,
-  last: new Map(), // device id -> when it last rang this one (one ring per 10 s)
+  last: new Map(), // device id -> when it last rang this one (one ring per 3 s, and not while it still rings)
   start(peer) {
     const now = Date.now();
-    if (now - (this.last.get(peer.info.id) || 0) < 10000) return peer.sendJson({ t: 'ring-busy' });
+    if (this.peer === peer || now - (this.last.get(peer.info.id) || 0) < 3000) return peer.sendJson({ t: 'ring-busy' });
     this.last.set(peer.info.id, now);
     this.stop(null, false);
     this.peer = peer;
@@ -505,7 +506,7 @@ const Ringer = {
     notify(t('{name} is ringing this device', { name }), t('Found it? Tap Stop.'), { chat: chatKey(chatWho(peer)), always: true, sticky: true, vibrate: [500, 200, 500, 200, 500], actions: ['stop'] });
     this.beeps = 0;
     const beep = () => {
-      if (++this.beeps > 30) return this.stop(this.peer, false);
+      if (++this.beeps > RING_BEEPS) return this.stop(this.peer, false, true);
       try { navigator.vibrate?.([400, 150, 400]); } catch {}
       if (!audioCtx || audioCtx.state !== 'running') return;
       try {
@@ -528,7 +529,8 @@ const Ringer = {
     this.timer = setInterval(beep, 1000);
   },
   // tell: Stop was tapped here, so the device that rang hears it was found
-  stop(peer, tell) {
+  // done: the 5 seconds are over, so the device that rang is asked whether to ring again
+  stop(peer, tell, done) {
     if (peer && this.peer && peer !== this.peer) return;
     clearInterval(this.timer);
     this.timer = 0;
@@ -537,7 +539,52 @@ const Ringer = {
     this.peer = null;
     const dlg = document.getElementById('dlg-ring');
     if (dlg?.open) dlg.close();
-    if (tell && was && peers.get(was.info.id) === was) was.sendJson({ t: 'ring-found' });
+    if (was) {
+      // The sticky notification of the ring goes too
+      const tag = chatKey(chatWho(was));
+      navigator.serviceWorker?.getRegistration?.().then((reg) => reg?.getNotifications?.({ tag })).then((list) => {
+        for (const n of list || []) if (n.title === t('{name} is ringing this device', { name: was.info.name })) n.close();
+      }).catch(() => {});
+    }
+    if (was && peers.get(was.info.id) === was) {
+      if (tell) was.sendJson({ t: 'ring-found' });
+      else if (done) was.sendJson({ t: 'ring-done' });
+    }
+  },
+};
+// A ring lasts 5 beeps, one a second
+const RING_BEEPS = 5;
+// The device that rang: the ring is over (5 seconds) and nobody tapped Stop, so ask whether to ring it again
+const RingAgain = {
+  peer: null,
+  show(peer) {
+    this.peer = peer;
+    let dlg = document.getElementById('dlg-ring-again');
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.id = 'dlg-ring-again';
+      dlg.className = 'ring-dialog';
+      dlg.setAttribute('aria-labelledby', 'ring-again-title');
+      dlg.innerHTML = '<div class="ring-bell still" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>'
+        + '<h3 id="ring-again-title"></h3><p class="muted"></p><div class="row"><button type="button" class="btn ghost" data-act="close"></button><button type="button" class="btn" data-act="again"></button></div>';
+      dlg.onclick = (e) => {
+        const b = e.target.closest('[data-act]');
+        if (!b) return;
+        dlg.close();
+        if (b.dataset.act === 'again' && this.peer) ringDevice(this.peer);
+      };
+      document.body.appendChild(dlg);
+    }
+    $('h3', dlg).textContent = t('{name} rang for 5 seconds', { name: peer.info.name });
+    $('p', dlg).textContent = t("Didn't find it? Ring it again.");
+    $('[data-act=close]', dlg).textContent = t('Close');
+    $('[data-act=again]', dlg).textContent = t('Ring again');
+    if (!dlg.open) dlg.showModal();
+    $('[data-act=again]', dlg).focus();
+  },
+  hide(peer) {
+    const dlg = document.getElementById('dlg-ring-again');
+    if (dlg?.open && (!peer || this.peer === peer)) dlg.close();
   },
 };
 // Ring a device from its card, its chat or the list of actions. A paired device that is offline gets a notification
@@ -1597,7 +1644,7 @@ class Peer {
     }
   }
 
-  // Ring this device (to find it): it beeps loudly, vibrates and shows a Stop button for up to 30 seconds
+  // Ring this device (to find it): it beeps loudly, vibrates and shows a Stop button for 5 seconds
   async ring() {
     try {
       this.setStatus('Connecting…');
@@ -2011,7 +2058,11 @@ class Peer {
       case 'ring-stop':
         Ringer.stop(this, false);
         break;
+      case 'ring-done':
+        RingAgain.show(this);
+        break;
       case 'ring-found':
+        RingAgain.hide(this);
         toast(t('{name} was found and stopped ringing', { name: this.info.name }));
         break;
       case 'secret':

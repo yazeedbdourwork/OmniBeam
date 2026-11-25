@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} は今応答していません。送ったものは画面に戻ったときに届きます（このページは開いたままにしてください）。",
     "Waiting for {name}…": "{name} を待っています…",
     "Not answering": "応答なし",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} を5秒間鳴らしました",
+    "Didn't find it? Ring it again.": "見つかりませんか？もう一度鳴らしましょう。",
+    "Ring again": "もう一度鳴らす",
   },
 });

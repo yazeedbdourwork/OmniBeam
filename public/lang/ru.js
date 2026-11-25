@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} сейчас не отвечает. Отправленное уйдёт, когда устройство снова будет на экране (не закрывайте эту страницу).",
     "Waiting for {name}…": "Ожидание {name}…",
     "Not answering": "Не отвечает",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name} звонил 5 секунд",
+    "Didn't find it? Ring it again.": "Не нашли? Позвоните ещё раз.",
+    "Ring again": "Позвонить ещё раз",
   },
 });

@@ -1631,5 +1631,9 @@
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name}이(가) 지금 응답하지 않습니다. 보낸 것은 화면으로 돌아오면 전송됩니다 (이 페이지를 열어 두세요).",
     "Waiting for {name}…": "{name} 기다리는 중…",
     "Not answering": "응답 없음",
+    // Ring device: 5 seconds, then Ring again (2026-11-25)
+    "{name} rang for 5 seconds": "{name}이(가) 5초 동안 울렸습니다",
+    "Didn't find it? Ring it again.": "못 찾았나요? 다시 울려 보세요.",
+    "Ring again": "다시 울리기",
   },
 });
