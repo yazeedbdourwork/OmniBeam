@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} 已响铃 5 秒",
     "Didn't find it? Ring it again.": "没找到？再响一次。",
     "Ring again": "再响一次",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "录制语音消息",
+    "Release to send, slide to the side to cancel": "松开发送，滑向一侧取消",
+    "Let go to delete": "松开删除",
+    "Playback speed": "播放速度",
+    "This browser can't play this voice message": "此浏览器无法播放这条语音消息",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "未发送：图片超过 {size}。请改为以文件发送。",
+    "Pictures you copy, like a screenshot, are sent too.": "你复制的图片（例如截图）也会发送。",
   },
 });

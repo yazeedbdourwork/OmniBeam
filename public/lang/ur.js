@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} 5 سیکنڈ تک بجا",
     "Didn't find it? Ring it again.": "نہیں ملا؟ اسے دوبارہ بجائیں۔",
     "Ring again": "دوبارہ بجائیں",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "صوتی پیغام ریکارڈ کریں",
+    "Release to send, slide to the side to cancel": "بھیجنے کے لیے چھوڑیں، منسوخ کرنے کے لیے ایک طرف کھسکائیں",
+    "Let go to delete": "حذف کرنے کے لیے چھوڑیں",
+    "Playback speed": "چلانے کی رفتار",
+    "This browser can't play this voice message": "یہ براؤزر یہ صوتی پیغام نہیں چلا سکتا",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "نہیں بھیجی گئی: تصویر {size} سے بڑی ہے۔ اسے فائل کے طور پر بھیجیں۔",
+    "Pictures you copy, like a screenshot, are sent too.": "آپ جو تصویریں کاپی کرتے ہیں، جیسے اسکرین شاٹ، وہ بھی بھیجی جاتی ہیں۔",
   },
 });

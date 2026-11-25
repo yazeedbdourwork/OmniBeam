@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} 5 saniye çaldı",
     "Didn't find it? Ring it again.": "Bulamadın mı? Tekrar çaldır.",
     "Ring again": "Tekrar çaldır",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "Sesli mesaj kaydet",
+    "Release to send, slide to the side to cancel": "Göndermek için bırakın, iptal için yana kaydırın",
+    "Let go to delete": "Silmek için bırakın",
+    "Playback speed": "Oynatma hızı",
+    "This browser can't play this voice message": "Bu tarayıcı bu sesli mesajı oynatamıyor",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "Gönderilmedi: resim {size} boyutundan büyük. Dosya olarak gönderin.",
+    "Pictures you copy, like a screenshot, are sent too.": "Kopyaladığınız resimler, örneğin ekran görüntüsü, de gönderilir.",
   },
 });

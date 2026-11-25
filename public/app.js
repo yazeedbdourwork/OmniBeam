@@ -2073,6 +2073,13 @@ class Peer {
       case 'clip':
         onClip(this, msg);
         break;
+      // A voice message or a copied picture, in pieces (see sendBlobNote)
+      case 'bl':
+        BlobIn.start(this, msg);
+        break;
+      case 'blp':
+        BlobIn.part(this, msg);
+        break;
       case 'ping':
         this.sendJson({ t: 'pong' });
         break;
@@ -2397,6 +2404,50 @@ class Peer {
       if (peers.get(this.info.id) === this) this.sendJson({ t: 'clip', text, proofs });
     } catch (err) {
       console.info(`Clipboard not sent to ${this.info.name}: ${err.message}`);
+    }
+  }
+  // A copied picture (a screenshot): in pieces inside the chat connection, with the pairing proof like text
+  async sendClipImage(blob) {
+    try {
+      const proofs = await pairProofs(me.id, this.info.id);
+      if (peers.get(this.info.id) === this) await this.sendBlobNote('clip', blob, { proofs });
+    } catch (err) {
+      console.info(`Clipboard picture not sent to ${this.info.name}: ${err.message}`);
+    }
+  }
+
+  // --- Small files inside chat notes (voice messages, copied pictures) ---
+  // {t:'bl', k, id, n, size, mime, …} then n × {t:'blp', id, i, d (base64)}: no request to accept, no progress
+  // bar, they arrive like a message (see BlobIn). Big files still go the usual way.
+  async sendBlobNote(kind, blob, meta = {}) {
+    await this.connect();
+    const id = meta.id || randomHex(8);
+    const buf = new Uint8Array(await blob.arrayBuffer());
+    const n = Math.max(1, Math.ceil(buf.length / BLOB_PART));
+    this.sendJson({ ...meta, t: 'bl', k: kind, id, n, size: buf.length, mime: blob.type || '' });
+    for (let i = 0; i < n; i++) {
+      await this.waitForBuffer();
+      if (peers.get(this.info.id) !== this) throw new Error('Connection lost');
+      this.sendJson({ t: 'blp', id, i, d: bytesToB64(buf.subarray(i * BLOB_PART, (i + 1) * BLOB_PART)) });
+    }
+    return id;
+  }
+  // A voice message in the chat (voice.js records it). opts.g: the group chat it belongs to (group.js)
+  async sendVoice(blob, ms, opts = {}) {
+    const id = opts.id || randomHex(8);
+    try {
+      if (!opts.g) this.setStatus('Connecting…');
+      await this.sendBlobNote('vm', blob, { id, ms: Math.round(ms), ...(opts.g ? { g: opts.g } : {}) });
+      if (opts.g) return true;
+      this.setStatus('');
+      await VoiceStore.put(id, blob); // this device's copy, to play it back in the chat
+      Sent.add(this, { text: voiceLabel(ms), id, voice: { ms: Math.round(ms), mime: blob.type } }, 'ok');
+      if (!chatShowing(this)) toast(t('Message sent to {name}', { name: this.info.name }));
+      wsSend({ type: 'stat', kind: 'voice' });
+      return true;
+    } catch (err) {
+      if (!opts.g) { this.setStatus(''); toast(t(err.message)); }
+      return false;
     }
   }
 
@@ -3291,7 +3342,7 @@ const Messages = {
   add(text, from, pair, extra = {}) {
     this.load();
     const id = extra.id || 'l' + randomHex(6);
-    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), id, ...(extra.id ? {} : { loc: 1 }), ...(extra.re ? { re: extra.re } : {}), ...(extra.fwd ? { fwd: 1 } : {}), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
+    this.items.unshift({ text: text.slice(0, 20000), from, at: Date.now(), id, ...(extra.id ? {} : { loc: 1 }), ...(extra.re ? { re: extra.re } : {}), ...(extra.fwd ? { fwd: 1 } : {}), ...(extra.voice ? { voice: extra.voice } : {}), ...(pair ? { pair: pair.slice(0, 16) } : {}) });
     this.items = this.items.slice(0, MAX_MESSAGES);
     this.save();
     History.onChange?.();
@@ -3354,6 +3405,7 @@ const Sent = {
       if (files.id) entry.id = files.id;
       if (files.re) entry.re = files.re;
       if (files.fwd) entry.fwd = 1;
+      if (files.voice) entry.voice = files.voice;
     } else {
       entry.files = files.slice(0, 50).map((f) => ({ name: pathOf(f), size: f.size }));
       entry.n = files.length;
@@ -3410,6 +3462,90 @@ const Reactions = {
 function chatTell(peer, obj) {
   try { if (peer && (peer.direct || peer.relayed)) { peer.sendJson(obj); return true; } } catch {}
   return false;
+}
+
+// ---------- Small files inside chat notes: voice messages and copied pictures (Peer.sendBlobNote) ----------
+const BLOB_PART = 45000; // bytes per piece (60 KB of base64: one data channel message on every browser)
+const BLOB_MAX = { vm: 6 * 1024 * 1024, clip: 12 * 1024 * 1024 };
+function bytesToB64(u8) {
+  let s = '';
+  for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+const BlobIn = {
+  open: new Map(), // peer id + ':' + note id -> { peer, meta, parts, got, at }
+  start(peer, msg) {
+    const max = BLOB_MAX[msg.k];
+    const id = typeof msg.id === 'string' && /^[0-9a-f]{8,24}$/.test(msg.id) ? msg.id : '';
+    const size = Number(msg.size) || 0;
+    const n = Number(msg.n) || 0;
+    if (!max || !id || size <= 0 || size > max || n !== Math.max(1, Math.ceil(size / BLOB_PART))) return;
+    // Pieces of notes that never finished (the connection dropped) are let go after two minutes
+    for (const [k, v] of this.open) if (Date.now() - v.at > 120000) this.open.delete(k);
+    if (this.open.size > 20) return;
+    this.open.set(`${peer.info.id}:${id}`, { peer, meta: { ...msg, id, size, n }, parts: new Array(n), got: 0, at: Date.now() });
+  },
+  part(peer, msg) {
+    const key = `${peer.info.id}:${msg.id}`;
+    const e = this.open.get(key);
+    const i = Number(msg.i);
+    if (!e || !Number.isInteger(i) || i < 0 || i >= e.meta.n || e.parts[i] || typeof msg.d !== 'string') return;
+    try { e.parts[i] = new Uint8Array(b64ToBuffer(msg.d)); } catch { this.open.delete(key); return; }
+    e.got++;
+    e.at = Date.now();
+    if (e.got < e.meta.n) return;
+    this.open.delete(key);
+    const blob = new Blob(e.parts, { type: String(e.meta.mime || '').slice(0, 80) });
+    if (blob.size !== e.meta.size) return;
+    if (e.meta.k === 'vm') onVoice(peer, blob, e.meta).catch((err) => console.warn('Voice message', err));
+    if (e.meta.k === 'clip') onClipImage(peer, blob, e.meta).catch((err) => console.warn('Clipboard picture', err));
+  },
+};
+// The text a voice message has wherever only text is shown (the history, notifications, a banner)
+const voiceLabel = (ms) => `🎤 ${t('Voice note')} (${formatDuration((Number(ms) || 0) / 1000) || '0s'})`;
+// The sound of voice messages, on this device (ids start with v, so the clean-up of received files leaves them)
+const VoiceStore = {
+  mem: new Map(),
+  key: (id) => 'v' + id,
+  async put(id, blob) {
+    try {
+      const sink = await Store.create(this.key(id));
+      if (sink) {
+        await sink.write(new Uint8Array(await blob.arrayBuffer()));
+        await sink.finish();
+        return;
+      }
+    } catch {}
+    this.mem.set(id, blob);
+  },
+  async get(id, mime) {
+    if (this.mem.has(id)) return this.mem.get(id);
+    const b = await Store.get(this.key(id));
+    return b ? new Blob([b], { type: mime || b.type || 'audio/webm' }) : null;
+  },
+  remove(id) { this.mem.delete(id); Store.remove(this.key(id)); },
+  // Sounds no chat has any more (cleared, deleted, older than Keep history): removed a few seconds after opening
+  async prune() {
+    Messages.load();
+    Sent.load();
+    const keep = new Set([...Messages.items, ...Sent.items].filter((m) => m.voice).map((m) => this.key(m.id)));
+    try { for (const g of Object.values(JSON.parse(localStorage.getItem('omnibeam-groups')) || {})) for (const m of g.items || []) if (m.voice) keep.add(this.key(m.id)); } catch { return; }
+    for (const id of await Store.list()) if (/^v[0-9a-f]{8,24}$/.test(id) && !keep.has(id)) Store.remove(id);
+  },
+};
+setTimeout(() => { if (!IS_TV) VoiceStore.prune().catch(() => {}); }, 8000);
+async function onVoice(peer, blob, meta) {
+  const ms = Math.max(0, Math.min(10 * 60000, Number(meta.ms) || 0));
+  if (meta.g) return; // a group chat's (group.js)
+  if (Messages.items.some((m) => m.id === meta.id && m.voice)) return;
+  await VoiceStore.put(meta.id, blob);
+  const label = voiceLabel(ms);
+  Messages.add(label, peer.info.name, peer.pairSecret, { id: meta.id, voice: { ms, mime: blob.type } });
+  chatTell(peer, { t: 'ack', ids: [meta.id] });
+  if (IS_TV) return;
+  window.Chat?.typing?.(peer, false);
+  messageSound();
+  if (!chatShowing(peer)) messageArrived(peer, label);
 }
 
 // The thread of a chat key (chatKey below): { pair, name }
@@ -3534,7 +3670,9 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=11');
+const loadChat = () => loadScript('/chat.js?v=12');
+// voice.js: recording and playing voice messages in a chat (loaded with the chat)
+const loadVoice = () => loadScript('/voice.js?v=1');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -3675,7 +3813,7 @@ async function openChat(x, draft) {
   if (!who) return;
   hideMessageBanner();
   try {
-    await loadChat();
+    await Promise.all([loadChat(), loadVoice().catch(() => {})]);
   } catch (err) {
     return toast(err.message);
   }
@@ -4346,7 +4484,97 @@ async function readClip(first) {
     // What was already on the clipboard when sync started isn't news: only later copies are sent
     if (first) lastClip = text;
     else sendClip(text);
+    // No text: maybe a picture (a screenshot), where the browser lets OmniBeam look at it
+    if (!text && clipReadable) {
+      const img = await readClipImage();
+      if (img) {
+        const sig = await clipSig(img);
+        if (first) lastClipSig = sig;
+        else if (sig !== lastClipSig) { lastClipSig = sig; sendClipImage(img); }
+      }
+    }
   } catch {}
+}
+// ---------- Pictures in Clipboard sync ----------
+// A picture on the clipboard (a screenshot, a copied photo) goes to the paired devices too: Chrome and Edge once
+// clipboard access is allowed (looked at like text, while OmniBeam is in front), other browsers with Send my
+// clipboard now. It arrives in pieces inside the encrypted connection, with the pairing proof (sendClipImage) and
+// is put on that device's clipboard; where the browser needs a tap for that (iPhone), it shows with Copy and Save.
+let lastClipSig = null; // the last picture sent or received (size and a hash of its start), so it isn't sent twice
+async function clipSig(blob) {
+  const head = new Uint8Array(await blob.slice(0, 65536).arrayBuffer());
+  const hash = await crypto.subtle.digest('SHA-256', head);
+  return blob.size + ':' + [...new Uint8Array(hash).slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+// The picture on the clipboard, if that is what is on it (a copied text with a picture counts as text)
+async function readClipImage() {
+  if (!navigator.clipboard?.read) return null;
+  try {
+    for (const item of await navigator.clipboard.read()) {
+      if (item.types.includes('text/plain')) return null;
+      const type = item.types.find((x) => /^image\//.test(x));
+      if (type) return await item.getType(type);
+    }
+  } catch {}
+  return null;
+}
+function sendClipImage(blob, force) {
+  if (!clipSync && !force) return;
+  if (blob.size > BLOB_MAX.clip) return toast(t('Not sent: the picture is bigger than {size}. Send it as a file instead.', { size: formatSize(BLOB_MAX.clip) }));
+  const targets = [...peers.values()].filter((p) => p.pairSecret);
+  if (!targets.length) return toast(loadPaired().length ? t('Not sent: no paired device is online right now.') : t('Not sent: pair your devices first (link button at the top).'));
+  for (const p of targets) p.sendClipImage(blob);
+  wsSend({ type: 'stat', kind: 'clipimg' });
+  toast(t(targets.length > 1 ? 'Clipboard sent to {n} devices' : 'Clipboard sent to {name}', { n: targets.length, name: targets[0].info.name }));
+}
+async function writeClipImage(blob) {
+  if (document.hidden || !CAN_COPY_IMAGE) return false;
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob.type === 'image/png' ? blob : await toPng(blob) })]);
+    return true;
+  } catch { return false; }
+}
+async function onClipImage(peer, blob, meta) {
+  if (!/^image\//.test(blob.type)) return;
+  const pair = clipSync && (await matchPairing(peer.info.id, [].concat(meta.proofs || []).slice(0, 60)));
+  if (!pair) return console.info(`Clipboard picture from ${peer.info.name} ignored: Clipboard sync is off here, or not paired`);
+  lastClipSig = await clipSig(blob);
+  if (await writeClipImage(blob)) return toast(t('Clipboard from {name} copied', { name: peer.info.name }));
+  pendingClip = { peer, blob };
+  if (document.hidden) notify(t('Clipboard from {name}', { name: peer.info.name }), '🖼️');
+  else showClipImage(peer, blob);
+}
+// Where the browser needs a tap to put a picture on the clipboard (iPhone): the picture with Copy and Save
+function showClipImage(peer, blob) {
+  let dlg = document.getElementById('dlg-clip-img');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'dlg-clip-img';
+    dlg.setAttribute('aria-labelledby', 'clip-img-title');
+    dlg.innerHTML = '<h3 id="clip-img-title"></h3><img class="clip-img" alt="" style="display:block;max-width:100%;max-height:60vh;margin:10px auto;border-radius:12px"><div class="row"><button type="button" class="btn ghost" data-act="close"></button>'
+      + '<button type="button" class="btn ghost" data-act="save"></button><button type="button" class="btn" data-act="copy"></button></div>';
+    document.body.appendChild(dlg);
+  }
+  $('h3', dlg).textContent = t('Clipboard from {name}', { name: peer.info.name });
+  const img = $('img', dlg);
+  if (img.src) URL.revokeObjectURL(img.src);
+  img.src = URL.createObjectURL(blob);
+  $('[data-act=close]', dlg).textContent = t('Close');
+  $('[data-act=save]', dlg).textContent = canSaveToPhotos([{ name: 'clipboard.png', mime: blob.type, blob }]) ? t('Save to Photos') : t('Save');
+  $('[data-act=copy]', dlg).textContent = t('Copy');
+  $('[data-act=copy]', dlg).hidden = !CAN_COPY_IMAGE;
+  dlg.onclick = (e) => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (!act) return;
+    const name = `${t('Clipboard')} ${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')}.${(blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg')}`;
+    if (act === 'copy') copyImage(blob);
+    if (act === 'save') {
+      const f = { name, mime: blob.type, blob };
+      if (canSaveToPhotos([f])) saveToPhotos([f]); else downloadBlob(f);
+    }
+    dlg.close();
+  };
+  if (!dlg.open) dlg.showModal();
 }
 async function watchClipPermission() {
   try {
@@ -4383,9 +4611,12 @@ async function onClip(peer, msg) {
 async function onClipFocus() {
   if (!clipSync) return;
   if (pendingClip && !document.hidden) {
-    const { peer, text } = pendingClip;
+    const { peer, text, blob } = pendingClip;
     pendingClip = null;
-    if (await writeClip(text)) toast(t('Clipboard from {name} copied', { name: peer.info.name }));
+    if (blob) {
+      if (await writeClipImage(blob)) toast(t('Clipboard from {name} copied', { name: peer.info.name }));
+      else showClipImage(peer, blob);
+    } else if (await writeClip(text)) toast(t('Clipboard from {name} copied', { name: peer.info.name }));
     else showText(peer, text);
   }
   readClip(false);
@@ -4408,7 +4639,7 @@ function updateClipUi() {
   box.checked = clipSync;
   const paired = loadPaired().length;
   $('#clip-note').textContent = !paired ? t('Pair your devices first (link button at the top). Clipboard sync only works between paired devices.')
-    : clipReadable ? t('This browser sends anything you copy while OmniBeam is the open tab.')
+    : clipReadable ? t('This browser sends anything you copy while OmniBeam is the open tab.') + (navigator.clipboard?.read ? ' ' + t('Pictures you copy, like a screenshot, are sent too.') : '')
       : t('This browser only shows OmniBeam what you copy on this page. To send other text, tap Send my clipboard now.');
   // What sync would do right now: who gets it, and whether this browser lets OmniBeam read the clipboard
   const online = [...peers.values()].filter((p) => p.pairSecret).map((p) => p.info.name);
@@ -4426,7 +4657,24 @@ function updateClipUi() {
 // Send my clipboard now: a tap lets every browser read the clipboard (iPhone shows a Paste bubble)
 async function sendClipNow() {
   let text;
-  try { text = await navigator.clipboard.readText(); } catch { return toast(t('Could not read the clipboard')); }
+  // Text or a picture: one look at the clipboard (iPhone shows its Paste bubble once), where the browser can
+  try {
+    if (navigator.clipboard?.read && window.ClipboardItem) {
+      for (const item of await navigator.clipboard.read()) {
+        if (item.types.includes('text/plain')) { text = await (await item.getType('text/plain')).text(); break; }
+        const type = item.types.find((x) => /^image\//.test(x));
+        if (type) {
+          const img = await item.getType(type);
+          lastClipSig = await clipSig(img);
+          watchClipPermission();
+          return sendClipImage(img, true);
+        }
+      }
+    }
+  } catch {}
+  if (text === undefined) {
+    try { text = await navigator.clipboard.readText(); } catch { return toast(t('Could not read the clipboard')); }
+  }
   watchClipPermission();
   if (!text?.trim()) return toast(t('Your clipboard is empty'));
   sendClip(text, true);

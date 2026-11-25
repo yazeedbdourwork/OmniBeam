@@ -1637,5 +1637,13 @@
     "{name} rang for 5 seconds": "{name} berdering selama 5 detik",
     "Didn't find it? Ring it again.": "Belum ketemu? Bunyikan lagi.",
     "Ring again": "Bunyikan lagi",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "Rekam pesan suara",
+    "Release to send, slide to the side to cancel": "Lepas untuk mengirim, geser ke samping untuk batal",
+    "Let go to delete": "Lepas untuk menghapus",
+    "Playback speed": "Kecepatan putar",
+    "This browser can't play this voice message": "Browser ini tidak bisa memutar pesan suara ini",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "Tidak terkirim: gambar lebih besar dari {size}. Kirim sebagai file saja.",
+    "Pictures you copy, like a screenshot, are sent too.": "Gambar yang Anda salin, seperti tangkapan layar, juga dikirim.",
   },
 });

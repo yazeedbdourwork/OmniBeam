@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} hat 5 Sekunden geklingelt",
     "Didn't find it? Ring it again.": "Nicht gefunden? Lass es noch einmal klingeln.",
     "Ring again": "Erneut klingeln",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "Sprachnachricht aufnehmen",
+    "Release to send, slide to the side to cancel": "Loslassen zum Senden, zur Seite wischen zum Abbrechen",
+    "Let go to delete": "Loslassen zum Löschen",
+    "Playback speed": "Wiedergabegeschwindigkeit",
+    "This browser can't play this voice message": "Dieser Browser kann diese Sprachnachricht nicht abspielen",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "Nicht gesendet: Das Bild ist größer als {size}. Sende es stattdessen als Datei.",
+    "Pictures you copy, like a screenshot, are sent too.": "Kopierte Bilder wie ein Screenshot werden auch gesendet.",
   },
 });
