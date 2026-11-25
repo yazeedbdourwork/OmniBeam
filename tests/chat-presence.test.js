@@ -51,6 +51,22 @@ test('a device whose page is frozen (asleep) shows "Not answering", and "Online 
   expect(a.errors).toEqual([]);
 });
 
+test('the device card shows "Online now", and "Not answering" when the other page stops', async ({ browser }) => {
+  test.setTimeout(60000);
+  const a = await open(browser, 'Card A');
+  const b = await open(browser, 'Card B');
+  const cardB = await card(a.page, b.name);
+  await card(b.page, a.name);
+  const presence = cardB.locator('.presence');
+  await expect(presence).toHaveText('Online now');
+  await expect(presence).not.toHaveClass(/away/);
+  await b.page.evaluate(() => { ws.onmessage = () => {}; });
+  expect(await ask(a, b.name)).toBe(false);
+  await expect(presence).toHaveText('Not answering');
+  await expect(presence).toHaveClass(/away/);
+  await a.page.screenshot({ path: test.info().outputPath('card.png') });
+});
+
 test('a phone that puts OmniBeam in the background says so: its chat shows "Not answering" at once', async ({ browser }) => {
   test.setTimeout(60000);
   const a = await open(browser, 'Desk A');
@@ -87,7 +103,7 @@ test('a file on its way shows its progress in the chat, and goes when done', asy
 });
 
 test('the new chat words are in all 15 languages', async () => {
-  const keys = ['Not answering (asleep or in the background)', 'Waiting for {name}…',
+  const keys = ['Not answering', 'Not answering (asleep or in the background)', 'Waiting for {name}…',
     '{name} is not answering right now. What you send goes when it is back on screen (keep this page open).'];
   for (const code of ['ar', 'de', 'es', 'fr', 'hi', 'id', 'it', 'ja', 'ko', 'pt', 'ru', 'tr', 'ur', 'zh']) {
     const pack = require(`../public/lang/${code}.js`);

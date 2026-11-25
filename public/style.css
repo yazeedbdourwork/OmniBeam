@@ -881,6 +881,9 @@ header .actions { flex: none; }
 }
 /* Trusted devices: badge on the card, greyed card while offline, online dot in the paired list */
 .peer .tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; color: var(--accent); padding: 1px 8px; border-radius: 999px; box-shadow: var(--inset-sm); }
+.peer .presence { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 600; color: #2fb67c; margin-top: 3px; }
+.peer .presence::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.peer .presence.away { color: #e09a2c; }
 .peer.offline { cursor: pointer; opacity: 0.55; }
 .peer.offline .avatar { filter: grayscale(0.8); }
 .peer.offline:hover, .peer.offline:focus-visible { transform: none; box-shadow: var(--raise); opacity: 0.75; }

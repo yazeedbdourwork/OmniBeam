@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "Antwortet nicht (im Ruhezustand oder im Hintergrund)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} antwortet gerade nicht. Was du sendest, geht los, sobald es wieder auf dem Bildschirm ist (lass diese Seite offen).",
     "Waiting for {name}…": "Warte auf {name}…",
+    "Not answering": "Antwortet nicht",
   },
 });

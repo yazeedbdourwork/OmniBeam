@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "لا يرد (نائم أو في الخلفية)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} لا يرد الآن. ما ترسله سيصل عندما يعود إلى الشاشة (أبقِ هذه الصفحة مفتوحة).",
     "Waiting for {name}…": "بانتظار {name}…",
+    "Not answering": "لا يرد",
   },
 });

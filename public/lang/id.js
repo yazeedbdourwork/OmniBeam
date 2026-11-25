@@ -1632,5 +1632,6 @@
     "Not answering (asleep or in the background)": "Tidak menjawab (tidur atau di latar belakang)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} sedang tidak menjawab. Yang Anda kirim akan terkirim saat kembali ke layar (biarkan halaman ini terbuka).",
     "Waiting for {name}…": "Menunggu {name}…",
+    "Not answering": "Tidak menjawab",
   },
 });
