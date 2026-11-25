@@ -828,7 +828,7 @@
     const last = Math.floor((end - 1) / info.part);
     const from = first * (info.part + 16);
     const to = last * (info.part + 16) + partLen(last) - 1;
-    const r = await fetch(`/api/drop/${id}/data`, { cache: 'no-store', headers: { ...pinHeader, Range: `bytes=${from}-${to}` } });
+    const r = await fetch(`/api/drop/${id}/data`, { cache: 'no-store', headers: { ...pinHeader, 'X-Range': `bytes=${from}-${to}` } }); // not Range: the live host answers that itself
     if (r.status !== 206 || !r.body) { r.body?.cancel().catch(() => {}); throw new Error('range'); }
     const out = [];
     await readParts(r, first, last, (plain, n) => {
