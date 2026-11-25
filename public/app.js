@@ -3687,7 +3687,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=12');
+const loadChat = () => loadScript('/chat.js?v=13');
 // voice.js: recording and playing voice messages in a chat (loaded with the chat)
 const loadVoice = () => loadScript('/voice.js?v=1');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
@@ -6776,7 +6776,7 @@ var Groups = { // (var: updatePublicUi and Teams may run before this line)
 Groups.refresh();
 async function openGroup(gid) {
   try {
-    await Promise.all([loadGroup(), loadVoice().catch(() => {})]);
+    await Promise.all([loadGroup(), loadChat(), loadVoice().catch(() => {})]); // (chat.js: its look)
   } catch (err) {
     return toast(err.message);
   }
