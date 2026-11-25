@@ -53,6 +53,7 @@
   const page = document.documentElement.classList.contains('tv') ? 'tv' : /^\/d\//.test(location.pathname) ? 'link'
     : /^\/r\//.test(location.pathname) ? 'request' : 'app';
   const CRASH_GAP = 2 * 60e3; // "seen" is refreshed every 15 s while on screen
+  const CRASH_GAP_TAB = 15 * 60e3; // a crashed tab whose page is opened again in a new tab
   const id = Math.random().toString(36).slice(2, 10);
   const read = () => { try { return JSON.parse(sessionStorage.getItem(CK) || 'null'); } catch { return null; } };
   // What the page was doing, so a crash report says more than "no transfer running": the file or photo picker
@@ -65,7 +66,21 @@
       const open = [...document.querySelectorAll('dialog[open]')].map((d) => d.id).filter(Boolean);
       if (open.length) parts.push('window: ' + open.slice(-2).join(', '));
     } catch {}
-    return parts.join(', ');
+    // The last buttons tapped (their code names, never what is typed) and how much memory the page used
+    if (taps.length) parts.push('last taps: ' + taps.join(' > '));
+    try {
+      const used = performance.memory && performance.memory.usedJSHeapSize;
+      if (used) parts.push('memory ' + Math.round(used / 1048576) + ' MB' + (navigator.deviceMemory ? ' of ' + navigator.deviceMemory + ' GB' : ''));
+      else if (navigator.deviceMemory) parts.push('device ' + navigator.deviceMemory + ' GB');
+    } catch {}
+    return parts.join(', ').slice(0, 190);
+  };
+  const taps = [];
+  const tapName = (el) => {
+    const b = el && el.closest && el.closest('[data-act], [data-rc], [data-pr], [data-sb], [data-a], button[id], a[id]');
+    if (!b) return '';
+    const n = b.dataset.act || b.dataset.rc || b.dataset.pr || b.dataset.sb || b.dataset.a || b.id;
+    return /^[\w-]{1,24}$/.test(n || '') ? n : '';
   };
   // Phones and tablets only: on a computer the window often has no focus while the page is in plain view
   const touch = (() => { try { return matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches; } catch { return false; } })();
@@ -73,11 +88,27 @@
   const note = (state) => {
     let busy = false;
     try { busy = !!(window.omniBusy && window.omniBusy()); } catch {}
-    try { sessionStorage.setItem(CK, JSON.stringify({ state, at: started, seen: Date.now(), busy, page, v: version, id, d: doing() })); } catch {}
+    const n = { state, at: started, seen: Date.now(), busy, page, v: version, id, d: doing() };
+    try { sessionStorage.setItem(CK, JSON.stringify(n)); } catch {}
+    // A copy for the other tabs of this site: a crashed tab that is never reopened is found by the next OmniBeam
+    // page opened in a new tab (sessionStorage dies with its tab)
+    tabs((all) => { if (state === 'closed') delete all[id]; else all[id] = n; });
   };
+  const TK = 'omnibeam-alive-tabs';
+  function tabs(change) {
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(TK) || '{}') || {}; } catch {}
+    if (typeof all !== 'object' || Array.isArray(all)) all = {};
+    for (const k of Object.keys(all)) if (!all[k] || Date.now() - (all[k].seen || 0) > 864e5) delete all[k];
+    const out = change ? change(all) : all;
+    try { if (Object.keys(all).length) localStorage.setItem(TK, JSON.stringify(all)); else localStorage.removeItem(TK); } catch {}
+    return out;
+  }
   addEventListener('click', (e) => {
     const t = e.target;
     if (t && t.tagName === 'INPUT' && t.type === 'file') picking = Date.now();
+    const n = tapName(t);
+    if (n && taps[taps.length - 1] !== n) { taps.push(n); if (taps.length > 4) taps.shift(); }
     // After the tap has opened or closed a window
     setTimeout(() => { if (shown()) note('visible'); }, 0);
   }, true);
@@ -97,22 +128,36 @@
   const prev = read();
   // Only a page that was on screen (a page in the background can be closed by the system without notice), seen
   // just before this load, and not thrown away by the browser on purpose
-  if (prev && prev.state === 'visible' && Date.now() - (prev.seen || 0) < CRASH_GAP && !document.wasDiscarded) {
-    const send = () => report('crash', 'The page stopped without closing (browser crash or out of memory)', {
-      busy: !!prev.busy, up: Math.round(((prev.seen || prev.at) - prev.at) / 60000), page: prev.page, v: prev.v || version,
-      ...(prev.d ? { d: String(prev.d).slice(0, 120) } : {}),
-    });
+  const crashed = (n, how) => report('crash', 'The page stopped without closing (browser crash or out of memory)', {
+    busy: !!n.busy, up: Math.round(((n.seen || n.at) - n.at) / 60000), page: n.page, v: n.v || version,
+    d: [how, n.d].filter(Boolean).join(', ').slice(0, 200),
+  });
+  // Is the page that wrote this note still running? (it answers on the BroadcastChannel)
+  function stillOpen(nid, then) {
     let ask = null;
-    try { ask = prev.id && new BroadcastChannel(CK); } catch {}
-    if (!ask) send();
-    else {
-      // A new or duplicated tab gets a copy of this tab's sessionStorage: if the page that wrote the note answers,
-      // it is still running
-      let alive = false;
-      ask.onmessage = (e) => { if (e.data && e.data.alive === prev.id) alive = true; };
-      ask.postMessage({ ask: prev.id });
-      setTimeout(() => { ask.close(); if (!alive) send(); }, 1500);
-    }
+    try { ask = nid && new BroadcastChannel(CK); } catch {}
+    if (!ask) return then(false);
+    let alive = false;
+    ask.onmessage = (e) => { if (e.data && e.data.alive === nid) alive = true; };
+    ask.postMessage({ ask: nid });
+    setTimeout(() => { ask.close(); then(alive); }, 1500);
+  }
+  if (prev && prev.state === 'visible' && Date.now() - (prev.seen || 0) < CRASH_GAP && !document.wasDiscarded) {
+    // A new or duplicated tab gets a copy of this tab's sessionStorage: if the page that wrote the note answers,
+    // it is still running
+    stillOpen(prev.id, (alive) => { if (!alive) crashed(prev, ''); });
+  }
+  if (prev && prev.id) tabs((all) => { delete all[prev.id]; });
+  // Other tabs that were on screen a short while ago and stopped without closing: reported from this new tab
+  // ("found in a new tab"). This tab's own earlier note is checked above, from sessionStorage.
+  const others = tabs((all) => Object.keys(all).filter((k) => k !== id && all[k].state === 'visible' && Date.now() - (all[k].seen || 0) < CRASH_GAP_TAB).map((k) => all[k]));
+  for (const o of others) {
+    stillOpen(o.id, (alive) => {
+      if (alive) return;
+      let mine = false;
+      tabs((all) => { if (all[o.id]) { delete all[o.id]; mine = true; } });
+      if (mine) crashed(o, 'found in a new tab');
+    });
   }
   const now = () => (document.hidden ? 'hidden' : shown() ? 'visible' : 'away');
   note(now());
