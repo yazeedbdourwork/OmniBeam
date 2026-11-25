@@ -1626,5 +1626,9 @@
     "Choose a folder": "选择文件夹",
     "Someone downloaded your share link": "有人下载了你的分享链接",
     "Downloads: {n}": "下载次数：{n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "无响应（休眠或在后台）",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} 现在没有响应。你发送的内容会在它回到屏幕时发出（请保持此页面打开）。",
+    "Waiting for {name}…": "正在等待 {name}…",
   },
 });

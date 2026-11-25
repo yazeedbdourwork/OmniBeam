@@ -772,7 +772,8 @@ document.addEventListener('visibilitychange', () => {
     if (!isPhone) return;
     Outgoing.screenOff();
     for (const p of peers.values()) {
-      if (!p.busy) continue;
+      // Not sending or receiving: just say this page is away now, so its chat doesn't show "Online now" (see Presence)
+      if (!p.busy) { wsSend({ type: 'signal', to: p.info.id, data: { away: true } }); continue; }
       // What arrived so far is saved now: a page in the background may be thrown away
       p.saveSoFar();
       // Tell the other side while we still can (the phone gives the page a moment before pausing it). Not while the
@@ -1643,7 +1644,7 @@ class Peer {
     const original = files; // before HEIC conversion and shrinking: what Send again sends
     // Each send owns the peer's transfer state until it ends or is aborted. A cancelled send can still be
     // waking up from an await when the next one starts: it must neither carry on nor tidy up the new one.
-    const job = { send: true }; // (a speed test has a job too)
+    const job = { send: true, list: original }; // (a speed test has a job too); list: shown in the chat while it goes
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
     // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
@@ -3481,7 +3482,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=10');
+const loadChat = () => loadScript('/chat.js?v=11');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
 const chatShowing = (peer) => document.visibilityState === 'visible' && !!window.Chat?.showing?.(peer);
 // { pair, name }: the thread of a Peer, or of a remembered pairing ({ secret, name })
@@ -3552,6 +3553,37 @@ function updateChatBadges() {
 }
 let chatTimer = 0;
 // Something was added to the history: the badges, and the chat view if it is open
+// Is the other device's page really running? A sleeping laptop, or a phone with OmniBeam in the background, can still
+// look online to the server for a long time. The chat asks it now and then (a small note through the server) and it
+// answers within seconds; a phone that goes to the background says so itself ({away}). p.answering: true, false
+// (no answer: asleep or in the background) or undefined (not asked yet).
+const Presence = {
+  waiting: new Map(), // probe id -> { from, done }
+  ask(p, ms = 6000) {
+    if (!p) return Promise.resolve(false);
+    const id = randomHex(6);
+    return new Promise((resolve) => {
+      const done = (ok) => {
+        clearTimeout(timer);
+        this.waiting.delete(id);
+        this.set(p, ok);
+        resolve(ok);
+      };
+      const timer = setTimeout(() => done(false), ms);
+      this.waiting.set(id, { from: p.info.id, done });
+      wsSend({ type: 'signal', to: p.info.id, data: { probe: id } });
+    });
+  },
+  ack(from, id) {
+    const w = this.waiting.get(id);
+    if (w && w.from === from) w.done(true);
+  },
+  set(p, on) {
+    if (!p || p.answering === on) return;
+    p.answering = on;
+    chatChanged();
+  },
+};
 function chatChanged() {
   clearTimeout(chatTimer);
   chatTimer = setTimeout(() => {
@@ -5974,9 +6006,13 @@ function connectSocket() {
         else if (msg.data && msg.data.resume) peers.get(msg.from)?.onResume(msg.data.resume);
         else if (msg.data && msg.data.resumeOffer) AutoResume.onOffer(msg.from, msg.data.resumeOffer).catch(() => {});
         else if (msg.data && msg.data.resumeYes) AutoResume.onYes(msg.from, msg.data).catch(() => {});
+        else if (msg.data && typeof msg.data.probe === 'string') wsSend({ type: 'signal', to: msg.from, data: { probeAck: msg.data.probe.slice(0, 20) } });
+        else if (msg.data && typeof msg.data.probeAck === 'string') Presence.ack(msg.from, msg.data.probeAck);
+        else if (msg.data && msg.data.away) Presence.set(peers.get(msg.from), false);
         else if (msg.data && msg.data.asleep) {
           const p = peers.get(msg.from);
           if (p) p.asleepAt = Date.now();
+          Presence.set(p, false);
           // An iPhone's page stops at once: pause cleanly now rather than send into a connection that's about to die
           if (p && p.busy && msg.data.freeze && (p.job?.send || p.incoming)) p.pause(t(PAUSED_OTHER, { name: p.info.name }));
           else if (p && p.busy) toast(t('The screen of {name} turned off, which pauses the transfer. It continues by itself when {name} is back.', { name: p.info.name }), 6000);
@@ -5984,6 +6020,7 @@ function connectSocket() {
         else if (msg.data && msg.data.awake) {
           // Its screen is back on: continue what we were sending to it
           const p = peers.get(msg.from);
+          Presence.set(p, true);
           if (p) {
             p.asleepAt = 0;
             if ([...AutoResume.jobs.values()].some((e) => e.name === p.info.name)) p.showWaiting(t('Resuming…'), 20000);

@@ -1626,5 +1626,9 @@
     "Choose a folder": "اختر مجلدًا",
     "Someone downloaded your share link": "نزّل أحدهم رابط المشاركة الخاص بك",
     "Downloads: {n}": "التنزيلات: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "لا يرد (نائم أو في الخلفية)",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} لا يرد الآن. ما ترسله سيصل عندما يعود إلى الشاشة (أبقِ هذه الصفحة مفتوحة).",
+    "Waiting for {name}…": "بانتظار {name}…",
   },
 });

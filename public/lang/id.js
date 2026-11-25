@@ -1628,5 +1628,9 @@
     "Choose a folder": "Pilih folder",
     "Someone downloaded your share link": "Seseorang mengunduh tautan berbagi Anda",
     "Downloads: {n}": "Unduhan: {n}",
+    // Chat: is the other device really there, and a file on its way (2026-11-25)
+    "Not answering (asleep or in the background)": "Tidak menjawab (tidur atau di latar belakang)",
+    "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} sedang tidak menjawab. Yang Anda kirim akan terkirim saat kembali ke layar (biarkan halaman ini terbuka).",
+    "Waiting for {name}…": "Menunggu {name}…",
   },
 });
