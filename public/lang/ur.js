@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "جواب نہیں دے رہا (سویا ہوا یا پس منظر میں)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} ابھی جواب نہیں دے رہا۔ آپ جو بھیجیں گے وہ اسکرین پر واپس آنے پر جائے گا (یہ صفحہ کھلا رکھیں)۔",
     "Waiting for {name}…": "{name} کا انتظار…",
+    "Not answering": "جواب نہیں دے رہا",
   },
 });

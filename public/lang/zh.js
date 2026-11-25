@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "无响应（休眠或在后台）",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} 现在没有响应。你发送的内容会在它回到屏幕时发出（请保持此页面打开）。",
     "Waiting for {name}…": "正在等待 {name}…",
+    "Not answering": "无响应",
   },
 });

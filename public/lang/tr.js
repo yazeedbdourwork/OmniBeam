@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "Yanıt vermiyor (uykuda veya arka planda)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} şu anda yanıt vermiyor. Gönderdikleriniz ekrana geri döndüğünde gider (bu sayfayı açık tutun).",
     "Waiting for {name}…": "{name} bekleniyor…",
+    "Not answering": "Yanıt vermiyor",
   },
 });

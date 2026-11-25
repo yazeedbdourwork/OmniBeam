@@ -1630,5 +1630,6 @@
     "Not answering (asleep or in the background)": "Не отвечает (спит или в фоне)",
     "{name} is not answering right now. What you send goes when it is back on screen (keep this page open).": "{name} сейчас не отвечает. Отправленное уйдёт, когда устройство снова будет на экране (не закрывайте эту страницу).",
     "Waiting for {name}…": "Ожидание {name}…",
+    "Not answering": "Не отвечает",
   },
 });

@@ -2460,6 +2460,7 @@ class Peer {
 
   // Trusted / paired badge on the card
   markTrusted() {
+    Presence.card(this);
     const pair = this.pairSecret && loadPaired().find((p) => p.secret === this.pairSecret);
     this.el.classList.toggle('trusted', !!pair?.trusted);
     // A device met through a team room shows the team's name
@@ -2469,7 +2470,7 @@ class Peer {
     if (!tag) {
       tag = document.createElement('span');
       tag.className = 'tag';
-      $('.status', this.el).before(tag);
+      ($('.presence', this.el) || $('.status', this.el)).before(tag);
     }
     tag.textContent = pair ? (pair.trusted ? t('Trusted') : t('Paired')) : teams.join(' · ');
     tag.classList.toggle('team-tag', !pair);
@@ -3581,9 +3582,33 @@ const Presence = {
   set(p, on) {
     if (!p || p.answering === on) return;
     p.answering = on;
+    this.card(p);
     chatChanged();
   },
+  // On its card too: a green "Online now" or an amber "Not answering". Asked a moment after the card shows up.
+  card(p) {
+    if (!p?.el) return;
+    let el = $('.presence', p.el);
+    if (!el) {
+      el = document.createElement('span');
+      el.className = 'presence';
+      $('.status', p.el).before(el);
+    }
+    const away = p.answering === false;
+    el.classList.toggle('away', away);
+    el.textContent = away ? t('Not answering') : t('Online now');
+    if (!p.probed) {
+      p.probed = true;
+      setTimeout(() => { if (peers.get(p.info.id) === p && !document.hidden) this.ask(p); }, 1500);
+    }
+  },
 };
+// Every device on the screen is asked again every 30 s while this page is in front (not during a transfer: its
+// progress says enough)
+setInterval(() => {
+  if (document.hidden) return;
+  for (const p of peers.values()) if (!p.busy && p.el) Presence.ask(p);
+}, 30000);
 function chatChanged() {
   clearTimeout(chatTimer);
   chatTimer = setTimeout(() => {
