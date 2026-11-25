@@ -36,9 +36,29 @@
   }
   window.omniReport = report;
 
+  // One of our scripts didn't load (a dropped connection, a hiccup between Cloudflare and the server): the scripts
+  // after it then fail with "Can't find variable: $" and the page does nothing. Load the page again, once a minute at
+  // most, and report the file that didn't load instead of those errors (2026-11-25: iPhone, drop.js:1, app.js missing).
+  let missing = '';
+  addEventListener('error', (e) => {
+    const el = e.target;
+    if (!el || el.tagName !== 'SCRIPT' || !el.src || !el.src.startsWith(location.origin)) return;
+    const file = el.src.slice(location.origin.length).split('?')[0];
+    if (missing) return;
+    missing = file;
+    report('js', 'Script did not load: ' + file, { src: file });
+    if (!/^\/(app|get|i18n)\.js$/.test(file)) return; // the page works without the others
+    let last = 0;
+    try { last = Number(sessionStorage.getItem('omnibeam-reloaded')) || 0; } catch {}
+    if (Date.now() - last < 60e3) return;
+    try { sessionStorage.setItem('omnibeam-reloaded', String(Date.now())); } catch { return; }
+    setTimeout(() => location.reload(), 300);
+  }, true);
+
   // Script errors in our own files (not in browser extensions or other sites' scripts)
   addEventListener('error', (e) => {
     if (!e.filename || !e.filename.startsWith(location.origin)) return;
+    if (missing) return; // follows from the script that didn't load
     report('js', e.message, { src: e.filename.slice(location.origin.length), line: e.lineno });
   });
   addEventListener('unhandledrejection', (e) => {
