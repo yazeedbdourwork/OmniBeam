@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name}이(가) 5초 동안 울렸습니다",
     "Didn't find it? Ring it again.": "못 찾았나요? 다시 울려 보세요.",
     "Ring again": "다시 울리기",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "음성 메시지 녹음",
+    "Release to send, slide to the side to cancel": "손을 떼면 전송, 옆으로 밀면 취소",
+    "Let go to delete": "손을 떼면 삭제",
+    "Playback speed": "재생 속도",
+    "This browser can't play this voice message": "이 브라우저에서는 이 음성 메시지를 재생할 수 없습니다",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "전송되지 않음: 사진이 {size}보다 큽니다. 파일로 보내 주세요.",
+    "Pictures you copy, like a screenshot, are sent too.": "복사한 사진(스크린샷 등)도 전송됩니다.",
   },
 });

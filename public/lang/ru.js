@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} звонил 5 секунд",
     "Didn't find it? Ring it again.": "Не нашли? Позвоните ещё раз.",
     "Ring again": "Позвонить ещё раз",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "Записать голосовое сообщение",
+    "Release to send, slide to the side to cancel": "Отпустите, чтобы отправить, проведите в сторону для отмены",
+    "Let go to delete": "Отпустите, чтобы удалить",
+    "Playback speed": "Скорость воспроизведения",
+    "This browser can't play this voice message": "Этот браузер не может воспроизвести это голосовое сообщение",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "Не отправлено: картинка больше {size}. Отправьте её как файл.",
+    "Pictures you copy, like a screenshot, are sent too.": "Скопированные картинки, например снимок экрана, тоже отправляются.",
   },
 });

@@ -373,6 +373,7 @@
         <button type="button" class="icon-btn" data-act="emoji" aria-expanded="false" title="${escapeHtml(t('Emoji'))}" aria-label="${escapeHtml(t('Emoji'))}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></button>
         <textarea rows="1" maxlength="20000" aria-label="${escapeHtml(t('Message'))}" placeholder="${escapeHtml(t('Message'))}"></textarea>
         <button type="button" class="icon-btn" data-act="attach" title="${escapeHtml(t('Send files'))}" aria-label="${escapeHtml(t('Send files'))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <button type="button" class="icon-btn" data-act="voice" hidden title="${escapeHtml(t('Record a voice message'))}" aria-label="${escapeHtml(t('Record a voice message'))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg></button>
         <button type="button" class="icon-btn round" data-act="send" title="${escapeHtml(t('Send'))}" aria-label="${escapeHtml(t('Send'))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
       </div>
       <div class="chat-menu" hidden role="menu" aria-label="${escapeHtml(t('Message options'))}">
@@ -540,6 +541,13 @@
       el.appendChild(f);
     }
     if (entry.item.re) el.appendChild(quoteEl(entry.item.re));
+    // A voice message: its player (voice.js), the sound read from this device's copy
+    const vm = entry.item.voice;
+    if (vm && window.Voice) {
+      el.classList.add('voice');
+      el.appendChild(window.Voice.player({ id: entry.item.id, ms: vm.ms, load: () => VoiceStore.get(entry.item.id, vm.mime) }));
+      return el;
+    }
     const p = document.createElement('div');
     p.className = 'msg-text';
     p.innerHTML = linkify(text);
@@ -801,6 +809,23 @@
     const attach = $('[data-act=attach]', dlg);
     send.hidden = !has;
     attach.classList.toggle('round', !has);
+    // The microphone while the box is empty (voice messages, voice.js)
+    const mic = $('[data-act=voice]', dlg);
+    if (mic) mic.hidden = has || !window.Voice?.can() || IS_TV;
+  }
+  // A voice message to the device of this chat: now if it is here, else (a paired one that is offline) as a voice
+  // note file that goes as soon as it opens OmniBeam
+  function sendVoice(blob, ms) {
+    if (!current) return;
+    const peer = peerOf(current.who);
+    if (peer) return peer.sendVoice(blob, ms);
+    const pairing = pairingOf(current.who);
+    if (!pairing) return;
+    const ext = /mp4/.test(blob.type) ? 'm4a' : /ogg/.test(blob.type) ? 'ogg' : 'webm';
+    const d = new Date();
+    const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}.${String(d.getMinutes()).padStart(2, '0')}`;
+    sendWhenOnline(pairing, [new File([blob], `${t('Voice note')} ${stamp}.${ext}`, { type: blob.type, lastModified: Date.now() })]);
+    toast(t('{n} file(s) waiting to send', { n: 1 }));
   }
   // ---- Reply ----
   function replyTo(entry) {
@@ -831,12 +856,13 @@
     row.hidden = !mid;
     for (const btn of row.children) btn.setAttribute('aria-pressed', String(r.me === btn.dataset.react));
     $('[data-menu=reply]', menu).hidden = !mid;
-    $('[data-menu=copy]', menu).hidden = !isText;
-    $('[data-menu=forward]', menu).hidden = isText ? !it_text(entry) : !(entry.dir === 'in' || sentFiles.has(entry.item.id));
+    const voice = !!entry.item.voice; // a voice message: react, reply and delete only
+    $('[data-menu=copy]', menu).hidden = !isText || voice;
+    $('[data-menu=forward]', menu).hidden = voice || (isText ? !it_text(entry) : !(entry.dir === 'in' || sentFiles.has(entry.item.id)));
     const tr = $('[data-menu=translate]', menu);
-    tr.hidden = !(isText && entry.dir === 'in' && mid && self.Translator);
+    tr.hidden = voice || !(isText && entry.dir === 'in' && mid && self.Translator);
     $('span:last-child', tr).textContent = current.trans?.has(mid) ? t('Show original') : t('Translate');
-    $('[data-menu=pin]', menu).hidden = !isText;
+    $('[data-menu=pin]', menu).hidden = !isText || voice;
     menu.hidden = false;
     // Next to the bubble, inside the screen
     const box = b.getBoundingClientRect();
@@ -1351,6 +1377,15 @@
       // Enter sends on computers; Shift+Enter (and Enter on phones) is a new line
       if (e.key === 'Enter' && !e.shiftKey && !isPhone && !e.isComposing) { e.preventDefault(); sendText(); }
     };
+    // Hold the microphone to record a voice message (voice.js)
+    const mic = $('[data-act=voice]', dlg);
+    if (window.Voice && !mic.wired) {
+      mic.wired = true;
+      window.Voice.wire(mic, $('.chat-compose', dlg), {
+        allowed: () => !!current && !mic.disabled && !!(peerOf(current.who) || pairingOf(current.who)),
+        send: (blob, ms) => sendVoice(blob, ms),
+      });
+    }
     const emojiBox = $('.chat-emoji', dlg);
     const closeEmoji = () => {
       if (emojiBox.hidden) return false;

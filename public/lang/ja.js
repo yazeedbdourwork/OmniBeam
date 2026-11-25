@@ -1635,5 +1635,13 @@
     "{name} rang for 5 seconds": "{name} を5秒間鳴らしました",
     "Didn't find it? Ring it again.": "見つかりませんか？もう一度鳴らしましょう。",
     "Ring again": "もう一度鳴らす",
+    // Voice messages in the chat, pictures in Clipboard sync (2026-11-25)
+    "Record a voice message": "ボイスメッセージを録音",
+    "Release to send, slide to the side to cancel": "指を離すと送信、横にスライドでキャンセル",
+    "Let go to delete": "指を離すと削除",
+    "Playback speed": "再生速度",
+    "This browser can't play this voice message": "このブラウザーではこのボイスメッセージを再生できません",
+    "Not sent: the picture is bigger than {size}. Send it as a file instead.": "送信されませんでした：画像が {size} を超えています。ファイルとして送ってください。",
+    "Pictures you copy, like a screenshot, are sent too.": "コピーした画像（スクリーンショットなど）も送られます。",
   },
 });
