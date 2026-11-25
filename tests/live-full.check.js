@@ -519,7 +519,8 @@ test('secret note to a device: hidden until Show, gone after closing, never stor
   await dlg.locator('[data-act=show]').click();
   await expect(dlg.locator('pre')).toHaveText(`wifi: hunter2-${run}`);
   await dlg.locator('[data-act=close]').click();
-  expect(await b.page.evaluate(() => document.getElementById('dlg-secret').innerHTML)).toBe('');
+  // The dialog's close event (which wipes the note) comes a moment after close(), so wait for it
+  await expect.poll(() => b.page.evaluate(() => document.getElementById('dlg-secret').innerHTML)).toBe('');
   expect(await b.page.evaluate(() => JSON.stringify(localStorage))).not.toContain('hunter2');
   expect(await a.page.evaluate(() => JSON.stringify(localStorage))).not.toContain('hunter2');
   expect([...a.errors, ...b.errors]).toEqual([]);

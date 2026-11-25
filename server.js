@@ -1891,7 +1891,9 @@ function handleDrop(req, res, urlPath) {
     if (!pinOk(d)) return;
     // Part of it (Range: bytes=a-b): the download page shows one file of a link before the whole download, a preview
     // or a small picture. Only links without a download limit, and it isn't counted as a download.
-    const range = !d.max && !d.req ? /^bytes=(\d{1,12})-(\d{1,12})$/.exec(String(req.headers.range || '')) : null;
+    // X-Range too: the live host answers a Range header itself (from the whole file, which then counts as a download),
+    // so the download page sends X-Range, which reaches this server
+    const range = !d.max && !d.req ? /^bytes=(\d{1,12})-(\d{1,12})$/.exec(String(req.headers['x-range'] || req.headers.range || '')) : null;
     if (range) {
       const file = dropFile(d.id, 'bin');
       let total;

@@ -143,6 +143,11 @@ test('share link server: parts of a link for previews, not counted, and not for 
   const part = await request.get(`/api/drop/${free.id}/data`, { headers: { Range: 'bytes=10-19' } });
   expect(part.status()).toBe(206);
   expect((await part.body()).length).toBe(10);
+  // X-Range, which the download page sends (the live host answers a Range header itself, from the whole file)
+  const xpart = await request.get(`/api/drop/${free.id}/data`, { headers: { 'X-Range': 'bytes=20-29' } });
+  expect(xpart.status()).toBe(206);
+  expect(xpart.headers()['content-range']).toBe('bytes 20-29/116');
+  expect((await xpart.body()).length).toBe(10);
   let info = await (await request.get(`/api/drop/${free.id}`)).json();
   expect(info).toMatchObject({ downloads: 0, views: 1 });
   expect(info.created).toBeGreaterThan(Date.now() - 60000);
