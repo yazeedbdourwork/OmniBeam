@@ -16,6 +16,7 @@ async function openDevice(browser, name, { relayOnly = false, clipboard = false,
   });
   await context.addInitScript(({ name, storage }) => {
     if (window !== top) return; // (frames, e.g. the TV's sandboxed HEIC frame, have no storage of their own)
+    if (window.opener) return; // (a tab the page opened, e.g. a link, shares its storage: left as it is)
     localStorage.setItem('omnibeam-name', name);
     if (!localStorage.getItem('omnibeam-lang')) localStorage.setItem('omnibeam-lang', 'en');
     // The first-visit walkthrough would cover the page: seen already, unless a test sets it

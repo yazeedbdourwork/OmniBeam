@@ -861,7 +861,7 @@
     $('[data-menu=reply]', menu).hidden = !mid;
     const voice = !!entry.item.voice; // a voice message: react, reply and delete only
     $('[data-menu=copy]', menu).hidden = !isText || voice;
-    $('[data-menu=forward]', menu).hidden = voice || (isText ? !it_text(entry) : !(entry.dir === 'in' || sentFiles.has(entry.item.id)));
+    $('[data-menu=forward]', menu).hidden = voice || (isText ? !it_text(entry) : !(entry.dir === 'in' || sentFiles.has(entry.item.id) || entry.item.kept));
     const tr = $('[data-menu=translate]', menu);
     tr.hidden = voice || !(isText && entry.dir === 'in' && mid && self.Translator);
     $('span:last-child', tr).textContent = current.trans?.has(mid) ? t('Show original') : t('Translate');
@@ -1074,7 +1074,7 @@
       if (!blob) return toast(t('This file is no longer available'));
       return peer.sendFiles([new File([blob], it.name.split('/').pop(), { type: blob.type || it.mime || '' })]);
     }
-    const kept = sentFiles.get(it.id);
+    const kept = await sentFilesOf(it);
     if (kept) return peer.sendFiles(kept);
     toast(t('Choose the same files again: they are only kept while this page is open'), 5000);
   }
@@ -1235,10 +1235,10 @@
     };
     dlg.showModal();
   }
-  function resend(entry) {
+  async function resend(entry) {
     const peer = peerOf(current.who);
     if (!peer) return toast(t('{name} is not here right now. Open OmniBeam on it to send.', { name: current.who.name }));
-    const files = sentFiles.get(entry.id);
+    const files = await sentFilesOf(entry);
     if (files) return peer.sendFiles(files);
     toast(t('Choose the same files again: they are only kept while this page is open'), 5000);
     pickFiles();
