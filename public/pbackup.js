@@ -11,6 +11,10 @@
 // Messages over the device connection: bk-check { id, part, last, items: [{ h, n, s }] } (in parts of 300) ->
 // bk-need { id, need: [index], want, have } or bk-no { id, why: off | denied | paused | busy | many };
 // then a normal transfer with { want } in its request.
+// When the phone's window opens it asks first: bk-hi { id } -> bk-state { id, why, folder } (why '' = ready), so
+// the phone says straight away whether the computer is ready. When it isn't (no folder yet, this phone not ticked,
+// or the folder needs allowing again after a restart), the computer shows a card: one tap there fixes it, and the
+// computer sends bk-state again.
 // Automatic (on the phone, in the same window: Back up new photos by themselves): new photos go to that computer
 // whenever both have OmniBeam open, without choosing them. Where the browser lets a page read a folder (Chrome on
 // Android), the phone's camera folder is picked once and looked at when the computer shows up and every few
@@ -134,6 +138,7 @@
       if (!box || !cfg) return;
       if (box.checked) cfg.allowed.add(box.dataset.secret); else cfg.allowed.delete(box.dataset.secret);
       persist();
+      tellAsked();
     });
     document.body.append(dlg);
     return dlg;
@@ -188,6 +193,7 @@
     }
     persist();
     render();
+    tellAsked();
     wsSend({ type: 'stat', kind: 'pbk' });
     toast(cfg.kind === 'handle' ? t('Photo backup on: new photos go into {name}', { name: cfg.name }) : t('Photo backup on'));
   }
@@ -195,6 +201,7 @@
     if (!cfg?.root) return pick();
     try { cfg.on = (await cfg.root.requestPermission({ mode: 'readwrite' })) === 'granted'; } catch { cfg.on = false; }
     render();
+    tellAsked();
   }
   function stop() {
     cfg = null;
@@ -202,6 +209,7 @@
     saveHandle(null);
     clearIndex();
     render();
+    tellAsked();
     toast(t('Photo backup turned off'));
   }
 
@@ -258,11 +266,47 @@
     }
     return { need: uniq, want, have: items.length - need.length };
   }
+  // A phone opened its backup window: say whether it can back up here, and if not, offer the fix on this screen
+  const asked = new Map(); // peer id -> when it last asked (it's told again when the setup changes)
+  function stateFor(peer) {
+    const why = allowedFor(peer);
+    return { t: 'bk-state', why, folder: !why && cfg.kind === 'handle' ? cfg.name : '' };
+  }
+  function hi(peer, msg) {
+    const id = typeof msg.id === 'string' && /^[0-9a-f]{16,32}$/.test(msg.id) ? msg.id : '';
+    asked.set(peer.info.id, Date.now());
+    const st = stateFor(peer);
+    peer.sendJson({ ...st, id });
+    if (st.why) askCard(peer, st.why);
+  }
+  function tellAsked() {
+    for (const [id, at] of asked) {
+      const p = peers.get(id);
+      if (!p || Date.now() - at > 30 * 60000) { asked.delete(id); continue; }
+      p.sendJson(stateFor(p));
+    }
+  }
+  const cardAt = new Map(); // peer id -> when its card was shown (not again for 2 minutes after Later)
+  function askCard(peer, why) {
+    if (!peer.pairSecret || Date.now() - (cardAt.get(peer.info.id) || 0) < 120000) return;
+    cardAt.set(peer.info.id, Date.now());
+    const yes = why === 'off' && CAN_HANDLE ? t('Choose backup folder') : t('Allow');
+    card(t('{name} wants to back up its photos on this computer.', { name: peer.info.name }), yes, async () => {
+      cardAt.delete(peer.info.id);
+      // One tap: a folder when there's none, the folder allowed again after a restart, and this phone ticked
+      if (!cfg) await pick();
+      else if (!cfg.on) await again();
+      if (!cfg) return;
+      if (!cfg.allowed.has(peer.pairSecret)) { cfg.allowed.add(peer.pairSecret); persist(); render(); }
+      asked.set(peer.info.id, Date.now());
+      tellAsked();
+    });
+  }
   async function answer(peer, msg) {
     const id = typeof msg.id === 'string' && /^[0-9a-f]{16,32}$/.test(msg.id) ? msg.id : null;
     if (!id) return;
     const why = allowedFor(peer);
-    if (why) return peer.sendJson({ t: 'bk-no', id, why });
+    if (why) { askCard(peer, why); return peer.sendJson({ t: 'bk-no', id, why }); }
     for (const [k, v] of checks) if (Date.now() - v.at > 10 * 60000) checks.delete(k);
     let c = checks.get(id);
     if (!c) { c = { peer: peer.info.id, items: [], at: Date.now() }; checks.set(id, c); }
@@ -347,20 +391,21 @@
     pdlg.setAttribute('aria-labelledby', 'pbk-title');
     pdlg.innerHTML = `<h3 id="pbk-title"></h3>
       <p class="muted" data-k="about"></p>
-      <p class="muted small" data-k="last"></p>
+      <p class="pbk-ready" data-k="ready" role="status" aria-live="polite" hidden></p>
+      <button type="button" class="btn pbk-go" data-act="pick"></button>
       <p class="fs-state pbk-msg" role="status" aria-live="polite"></p>
-      <progress max="1" value="0" hidden></progress>
-      <div class="row">
-        <button type="button" class="btn ghost" data-act="close"></button>
-        <button type="button" class="btn" data-act="pick"></button>
-      </div>
+      <progress class="pbk-bar" max="1" value="0" hidden></progress>
+      <p class="muted small" data-k="last"></p>
       <div class="pbk-auto">
-        <label class="auto-toggle"><input type="checkbox" data-k="auto"> <span data-k="auto-label"></span></label>
+        <h4 data-k="auto-title"></h4>
+        <label class="pbk-switch"><input type="checkbox" data-k="auto"> <span data-k="auto-label"></span></label>
         <p class="muted small" data-k="auto-note"></p>
         <button type="button" class="btn ghost small" data-act="cam" hidden></button>
-      </div>`;
+      </div>
+      <div class="row pbk-end"><button type="button" class="btn ghost" data-act="close"></button></div>`;
     $('[data-act=close]', pdlg).textContent = t('Close');
     $('[data-act=pick]', pdlg).textContent = t('Choose photos');
+    $('[data-k=auto-title]', pdlg).textContent = t('Automatic backup');
     $('[data-k=auto-label]', pdlg).textContent = t('Back up new photos by themselves');
     $('[data-act=cam]', pdlg).textContent = t('Choose another camera folder');
     pdlg.addEventListener('change', (e) => {
@@ -396,9 +441,51 @@
     bar(0, 0);
     paintAuto(peer);
     if (!pdlg.open) pdlg.showModal();
+    hello(peer);
+  }
+  // Ask the computer whether it's ready before anything is chosen (a computer with an older OmniBeam doesn't
+  // answer: then nothing is shown and the old way still works)
+  let helloId = '';
+  async function hello(peer) {
+    const id = helloId = randomHex(16);
+    ready(t('Checking {name}…', { name: peer.info.name }), 'wait');
+    try { await peer.connect(); peer.sendJson({ t: 'bk-hi', id }); } catch {}
+    setTimeout(() => { if (helloId === id && job?.peer === peer && $('[data-k=ready]', pdlg).dataset.s === 'wait') ready('', ''); }, 8000);
+  }
+  function ready(text, s) {
+    if (!pdlg) return;
+    const el = $('[data-k=ready]', pdlg);
+    el.textContent = text;
+    el.dataset.s = s;
+    el.hidden = !text;
+  }
+  function onState(peer, msg) {
+    if (!pdlg?.open || job?.peer !== peer) return;
+    helloId = '';
+    const name = peer.info.name;
+    const why = typeof msg.why === 'string' ? msg.why : '';
+    const busy = !!job.files && !job.cancelled && !job.done;
+    if (!why) {
+      const folder = typeof msg.folder === 'string' ? msg.folder.slice(0, 120) : '';
+      ready(folder ? t('Ready: photos go into {folder} on {name}.', { folder, name }) : t('Ready: {name} takes your photos.', { name }), 'ok');
+      if (!busy) $('[data-act=pick]', pdlg).disabled = false;
+      return;
+    }
+    ready(`${whyText(why, name)} ${t('Or tap the card that just appeared on {name}.', { name })}`, 'no');
+    if (!busy) $('[data-act=pick]', pdlg).disabled = true;
+  }
+  function whyText(why, name) {
+    return why === 'off' ? t('{name} isn\'t set up for photo backup. On {name}: ⋯ menu > Photo backup, choose a folder.', { name })
+      : why === 'denied' ? t('{name} takes backups, but not from this device. On {name}: ⋯ > Photo backup, tick this device.', { name })
+        : why === 'paused' ? t('{name} paused photo backup. On {name}: ⋯ > Photo backup > Allow again.', { name })
+          : why === 'many' ? t('Choose up to {n} photos at a time.', { n: MAX_PICK })
+            : t('{name} didn\'t answer. Keep OmniBeam open on it and try again.', { name });
   }
   async function choose(peer) {
-    const input = Object.assign(document.createElement('input'), { type: 'file', multiple: true, accept: 'image/*,video/*' });
+    // On iPhone and iPad no accept: as with Send files, so photos come as they are (an accept of image/* or video/*
+    // makes iOS change HEIC photos into JPEG and shrink videos first, which is slow and not a backup)
+    const input = Object.assign(document.createElement('input'), { type: 'file', multiple: true });
+    if (!isIOS) input.accept = 'image/*,video/*';
     const files = await new Promise((resolve) => {
       input.onchange = () => resolve([...input.files]);
       input.addEventListener('cancel', () => resolve([]));
@@ -438,11 +525,7 @@
       const name = peer.info.name;
       if (msg.t === 'bk-no') {
         const why = msg.why;
-        say(why === 'off' ? t('{name} isn\'t set up for photo backup. On {name}: ⋯ menu > Photo backup, choose a folder.', { name })
-          : why === 'denied' ? t('{name} takes backups, but not from this device. On {name}: ⋯ > Photo backup, tick this device.', { name })
-            : why === 'paused' ? t('{name} paused photo backup. On {name}: ⋯ > Photo backup > Allow again.', { name })
-              : why === 'many' ? t('Choose up to {n} photos at a time.', { n: MAX_PICK })
-                : t('{name} didn\'t answer. Keep OmniBeam open on it and try again.', { name }));
+        say(whyText(why, name));
         return { why: why || 'late' };
       }
       const need = (Array.isArray(msg.need) ? msg.need : []).filter((i) => Number.isInteger(i) && i >= 0 && i < files.length);
@@ -462,17 +545,33 @@
       me.sending = true;
       last[peer.pairSecret] = { at: Date.now(), sent: need.length, skipped };
       writeLs(LAST, last);
-      // As they are: no shrinking or HEIC change (the request carries want, see sendFiles)
-      await peer.sendFiles(need.map((i) => files[i]), { want: msg.want });
+      // As they are: no shrinking or HEIC change (the request carries want, see sendFiles). The bar here follows
+      // the transfer (the device card behind this window has its own)
+      peer.lastSendResult = '';
+      const tick = setInterval(() => {
+        const p = peer.prog;
+        if (!p?.sending || !p.total) return;
+        bar(p.done, p.total);
+        say(t('Sending {n} new photos… {pct}%', { n: need.length, pct: Math.min(99, Math.floor((100 * p.done) / p.total)) }));
+      }, 400);
+      try { await peer.sendFiles(need.map((i) => files[i]), { want: msg.want }); } finally { clearInterval(tick); bar(0, 0); }
+      me.done = true;
+      if (peer.lastSendResult !== 'ok') {
+        say(t('The backup didn\'t finish. Tap Choose photos to try again: photos already on {name} are skipped.', { name }));
+        return { why: 'stopped' };
+      }
+      say(t('Done: {n} new photos backed up to {name}.', { n: need.length, name }));
       return { sent: need.length, skipped };
     } catch (err) {
       say(t(err.message || 'Connection lost'));
       return { why: 'error' };
     } finally {
-      if (job === me && pdlg) $('[data-act=pick]', pdlg).disabled = false;
+      me.done = true;
+      if (job === me && pdlg && $('[data-k=ready]', pdlg).dataset.s !== 'no') $('[data-act=pick]', pdlg).disabled = false;
     }
   }
   function onReply(peer, msg) {
+    if (msg.t === 'bk-state') return onState(peer, msg);
     if (job && job.peer === peer && job.id === msg.id && job.resolve) {
       const r = job.resolve;
       job.resolve = null;
@@ -552,7 +651,7 @@
     if (!h) return;
     let perm = 'denied';
     try { perm = await h.queryPermission({ mode: 'read' }); } catch {}
-    if (perm !== 'granted') return allowCard(peer, h);
+    if (perm !== 'granted') return Date.now() - allowLater < 3600000 || document.getElementById('pbk-card') ? undefined : allowCard(peer, h);
     autoRunning = true;
     try {
       const seen = new Set(readLs(AUTO_SEEN) || []);
@@ -590,22 +689,21 @@
     }
   }
   // A card at the bottom: a tap is needed (to choose photos, or to let the page read the folder again)
-  function card(text, yes, onYes) {
+  function card(text, yes, onYes, onLater) {
     document.getElementById('pbk-card')?.remove();
     const el = document.createElement('div');
     el.id = 'pbk-card';
-    el.className = 'resume-banner pbk-card';
+    el.className = 'pbk-card';
     el.setAttribute('role', 'status');
-    el.innerHTML = '<span></span><button type="button" class="btn small" data-v="1"></button><button type="button" class="btn ghost small" data-v="0"></button>';
-    el.style.cssText = 'position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px);padding:10px 14px;border-radius:16px;background:var(--card, #fff);color:inherit;box-shadow:0 4px 18px rgba(0,0,0,.25)';
-    $('span', el).textContent = text;
+    el.innerHTML = '<p></p><div class="row"><button type="button" class="btn ghost small" data-v="0"></button><button type="button" class="btn small" data-v="1"></button></div>';
+    $('p', el).textContent = text;
     $('[data-v="1"]', el).textContent = yes;
     $('[data-v="0"]', el).textContent = t('Later');
     el.onclick = (e) => {
       const v = e.target.closest('[data-v]')?.dataset.v;
       if (!v) return;
       el.remove();
-      if (v === '1') onYes();
+      if (v === '1') onYes(); else onLater?.();
     };
     document.body.append(el);
   }
@@ -617,10 +715,11 @@
       choose(peer);
     });
   }
+  let allowLater = 0;
   function allowCard(peer, h) {
     card(t('Allow OmniBeam to see your camera folder again, to back up new photos to {name}.', { name: peer.info.name }), t('Allow'), async () => {
       try { if ((await h.requestPermission({ mode: 'read' })) === 'granted') autoHere(peer); } catch {}
-    });
+    }, () => { allowLater = Date.now(); });
   }
 
   window.PhotoBackup = {
@@ -632,6 +731,7 @@
     run, // tests
     onMsg(peer, msg) {
       if (msg.t === 'bk-check') return answer(peer, msg).catch((err) => console.warn('Photo backup', err));
+      if (msg.t === 'bk-hi') return hi(peer, msg);
       onReply(peer, msg);
     },
     // app.js: an incoming transfer this computer asked for. Returns what it said it needs, or null.
