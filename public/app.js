@@ -1696,8 +1696,8 @@ class Peer {
     const job = { send: true, list: original }; // (a speed test has a job too); list: shown in the chat while it goes
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
-    // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
-    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid, result === 'failed' ? job.reason : '', !opts.want); };
+    // The Sent list, and lastSendResult (read by sync.js and photo backup); a synced folder's files aren't listed
+    const log = (result) => { this.lastSendResult = result; if (!opts.sync) Sent.add(this, original, result, job.xid, result === 'failed' ? job.reason : '', !opts.want); };
     try {
       // Files the other device asked for (Browse files) go as they are
       if (!opts.want) {
@@ -2136,6 +2136,8 @@ class Peer {
       case 'bk-check':
       case 'bk-need':
       case 'bk-no':
+      case 'bk-hi':
+      case 'bk-state':
         loadPBackup().then(() => window.PhotoBackup.onMsg(this, msg)).catch(() => {});
         break;
       case 'pong':
@@ -6374,7 +6376,7 @@ $('#menu-invite').onclick = () => openInvite();
 const loadAlbum = () => loadScript('/album.js?v=1');
 const loadBrowse = () => loadScript('/browse.js?v=2');
 const loadSync = () => loadScript('/sync.js?v=1');
-const loadPBackup = () => loadScript('/pbackup.js?v=2');
+const loadPBackup = () => loadScript('/pbackup.js?v=3');
 // Safety code (safety.js), shared whiteboard (board.js) and file tools: PDF merge, picture resize (ftools.js)
 const loadSafety = () => loadScript('/safety.js?v=1');
 const loadBoard = () => loadScript('/board.js?v=1');

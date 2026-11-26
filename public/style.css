@@ -1806,6 +1806,30 @@ main:focus { outline: none; }
 .fs-dir .fs-n { font-weight: 700; }
 .fs-s { flex: none; color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .fs-dev { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.fs-dev input { flex: none; width: 18px; height: 18px; accent-color: var(--accent); }
+/* Photo backup on the phone (pbackup.js #dlg-pbk): the computer's state, one big button, then the automatic part */
+#dlg-pbk { width: min(94vw, 460px); }
+.pbk-ready { margin: 12px 0; padding: 10px 14px; border-radius: 14px; background: var(--bg); box-shadow: var(--inset-sm, inset 2px 2px 5px rgba(0,0,0,.15)); font-size: .92rem; font-weight: 600; overflow-wrap: anywhere; }
+.pbk-ready[data-s="ok"]::before { content: "✓ "; color: #1f9d55; }
+.pbk-ready[data-s="no"] { color: var(--fg); }
+.pbk-ready[data-s="wait"] { color: var(--muted); font-weight: 400; }
+.pbk-go { display: block; width: 100%; margin: 14px 0 4px; }
+.pbk-go:disabled { opacity: .5; }
+.pbk-msg:empty { display: none; }
+.pbk-bar { display: block; width: 100%; height: 10px; accent-color: var(--accent); }
+.pbk-bar[hidden] { display: none; }
+#dlg-pbk [data-k=last]:empty { display: none; }
+.pbk-auto { margin-top: 16px; padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--muted) 30%, transparent); }
+.pbk-auto h4 { margin: 0 0 8px; }
+.pbk-switch { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
+.pbk-switch input { flex: none; width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
+.pbk-auto p { margin: 6px 0 0; }
+.pbk-auto [data-act=cam] { margin-top: 8px; }
+.pbk-end { justify-content: flex-end; margin-top: 14px; }
+/* Its card at the bottom (the phone: back up new photos; the computer: a phone wants to back up here) */
+.pbk-card { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50; width: min(calc(100vw - 24px), 440px); padding: 14px 16px; border-radius: 18px; background: var(--bg); color: var(--fg); box-shadow: var(--raise), 0 6px 24px rgba(0,0,0,.25); }
+.pbk-card p { margin: 0 0 10px; font-weight: 600; }
+.pbk-card .row { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 /* Event photo album (album.js): the same fields as Request files */
 #dlg-album select { padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--raise-sm); font: inherit; }
 #dlg-album .field input { flex: 0 1 260px; min-width: 0; padding: 8px 14px; border: 0; border-radius: 999px; background: var(--bg); color: var(--fg); box-shadow: var(--inset-sm); font: inherit; font-weight: 400; }

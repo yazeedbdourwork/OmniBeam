@@ -74,13 +74,20 @@ test('photo backup: the phone sends only the photos the computer doesn\'t have, 
   await expect((await card(pc.page, 'Test Phone')).locator('.tag')).toHaveText('Trusted');
 
   const laptop = await card(phone.page, 'Test Laptop');
-  const pick = async (files) => {
+  // The window asks the computer first and says whether it's ready (data-s ok or no)
+  const openDlg = async () => {
     await laptop.hover();
     await laptop.locator('[data-act=more]').click();
     await phone.page.locator('#dlg-actions [data-act=pbackup]').click();
     const dlg = phone.page.locator('#dlg-pbk');
     await expect(dlg).toBeVisible();
     await expect(dlg.locator('#pbk-title')).toHaveText('Back up photos to Test Laptop');
+    await expect(dlg.locator('[data-k=ready]')).toHaveAttribute('data-s', /^(ok|no)$/);
+    return dlg;
+  };
+  const pick = async (files) => {
+    const dlg = await openDlg();
+    await expect(dlg.locator('[data-k=ready]')).toHaveText('Ready: photos go into Backups on Test Laptop.');
     const chooser = phone.page.waitForEvent('filechooser');
     await dlg.locator('[data-act=pick]').click();
     await (await chooser).setFiles(files);
@@ -93,9 +100,12 @@ test('photo backup: the phone sends only the photos the computer doesn\'t have, 
     { name: 'IMG_0004.HEIC', mimeType: 'image/heic', buffer: D },
   ];
 
-  // Not set up on the computer yet: the phone is told how
-  let dlg = await pick(photos);
-  await expect(dlg.locator('.pbk-msg')).toContainText('isn\'t set up for photo backup');
+  // Not set up on the computer yet: the phone says so before anything is chosen, and the computer offers the fix
+  let dlg = await openDlg();
+  await expect(dlg.locator('[data-k=ready]')).toContainText('isn\'t set up for photo backup');
+  await expect(dlg.locator('[data-act=pick]')).toBeDisabled();
+  await expect(pc.page.locator('#pbk-card')).toContainText('Test Phone wants to back up its photos on this computer.');
+  await pc.page.locator('#pbk-card [data-v="0"]').click(); // Later: here it's turned on from the menu instead
   await dlg.locator('[data-act=close]').click();
 
   // The computer turns it on: its trusted phone is ticked already
@@ -109,7 +119,7 @@ test('photo backup: the phone sends only the photos the computer doesn\'t have, 
 
   // Only C and D go (D once), as they are, and the computer saves them without asking or showing them
   dlg = await pick([...photos, { name: 'IMG_0004.HEIC', mimeType: 'image/heic', buffer: D }]);
-  await expect(dlg.locator('.pbk-msg')).toHaveText('Sending 2 new photos. 3 are already on Test Laptop.');
+  await expect(dlg.locator('.pbk-msg')).toHaveText('Done: 2 new photos backed up to Test Laptop.', { timeout: 30000 });
   await expect(pc.page.locator('#toast')).toContainText('Backed up 2 new photos from Test Phone into Backups/Test Phone', { timeout: 30000 });
   await expect(pc.page.locator('#dlg-request')).toBeHidden();
   await expect(pc.page.locator('#dlg-received')).toBeHidden();
@@ -139,12 +149,43 @@ test('photo backup: the phone sends only the photos the computer doesn\'t have, 
   await expect(set.locator('[data-k=kept]')).toHaveText('2 photos backed up here so far');
   await set.locator('input[data-secret]').uncheck();
   await set.locator('[data-act=close]').click();
-  dlg = await pick(photos);
-  await expect(dlg.locator('.pbk-msg')).toContainText('but not from this device');
+  dlg = await openDlg();
+  await expect(dlg.locator('[data-k=ready]')).toContainText('but not from this device');
+  await expect(dlg.locator('[data-act=pick]')).toBeDisabled();
 
   // A file the computer didn't ask for still needs a tap: a made-up want is not accepted by itself
   const auto = await pc.page.evaluate(() => window.PhotoBackup.wanted([...peers.values()][0].info.id, 'f'.repeat(32), [{ size: 1 }]));
   expect(auto).toBeNull();
+  for (const x of [pc, phone]) expect(x.errors).toEqual([]);
+});
+
+test('photo backup: one tap on the computer\'s card sets it up, and the phone shows it ready, the progress and Done', async ({ browser }) => {
+  const secret = crypto.randomBytes(32).toString('hex');
+  const paired = (name) => JSON.stringify([{ secret, name, at: Date.now(), seen: Date.now(), auto: false, trusted: true }]);
+  const pc = await open(browser, 'Card Laptop', { storage: { 'omnibeam-paired': paired('Card Phone') } });
+  await pc.page.evaluate(fakeFolder, {});
+  const phone = await open(browser, 'Card Phone', { storage: { 'omnibeam-paired': paired('Card Laptop') } });
+  const laptop = await card(phone.page, 'Card Laptop');
+  await laptop.hover();
+  await laptop.locator('[data-act=more]').click();
+  await phone.page.locator('#dlg-actions [data-act=pbackup]').click();
+  const dlg = phone.page.locator('#dlg-pbk');
+  await expect(dlg.locator('[data-k=ready]')).toContainText('Or tap the card that just appeared on Card Laptop.');
+  await expect(dlg.locator('[data-act=pick]')).toBeDisabled();
+  // On the computer: Choose backup folder on the card (no folder yet); the phone is ticked and told at once
+  const c = pc.page.locator('#pbk-card');
+  await expect(c.locator('[data-v="1"]')).toHaveText('Choose backup folder');
+  await c.locator('[data-v="1"]').click();
+  await expect(c).toBeHidden();
+  await expect(dlg.locator('[data-k=ready]')).toHaveText('Ready: photos go into Backups on Card Laptop.');
+  await expect(dlg.locator('[data-act=pick]')).toBeEnabled();
+  const chooser = phone.page.waitForEvent('filechooser');
+  await dlg.locator('[data-act=pick]').click();
+  await (await chooser).setFiles([{ name: 'IMG_0100.JPG', mimeType: 'image/jpeg', buffer: crypto.randomBytes(400000) }]);
+  await expect(dlg.locator('.pbk-msg')).toHaveText('Done: 1 new photos backed up to Card Laptop.', { timeout: 30000 });
+  await expect(dlg.locator('progress')).toBeHidden();
+  await expect.poll(() => pc.page.evaluate(() => Object.keys(window.fakeTree['Card Phone'] || {}))).toEqual(['IMG_0100.JPG']);
+  await dlg.locator('[data-act=close]').click();
   for (const x of [pc, phone]) expect(x.errors).toEqual([]);
 });
 
