@@ -188,7 +188,8 @@ function minifyAll() {
       const ext = path.extname(e.name);
       if (ext !== '.js' && ext !== '.css') continue;
       // Already minified, keep their licence notices: mediabunny.js (MPL-2.0), heic2any.js (MIT, LGPL-3.0 libheif)
-      if (e.name === 'mediabunny.js' || e.name === 'heic2any.js') continue;
+      // and pdf-lib.js (MIT, PDF merge in ftools.js)
+      if (e.name === 'mediabunny.js' || e.name === 'heic2any.js' || e.name === 'pdf-lib.js') continue;
       const src = fs.readFileSync(p);
       const key = sha1(src);
       wanted.add(key + ext);

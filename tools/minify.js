@@ -84,7 +84,7 @@ async function minifyJs(code) {
 // themselves and may read them) and not the page sources
 // mediabunny.js (MPL-2.0) and heic2any.js (MIT, with LGPL-3.0 libheif) are already minified and keep their licence notices: shipped as they are
 // pdfjs/ (PDF.js 3.11 legacy build, Apache-2.0, for showing slides: remote.js) too
-const wanted = (rel) => /^public\/(?!tools\/|pages\/|media\/|store\/|pdfjs\/).+\.(js|css)$/.test(rel) && !/^public\/(mediabunny|heic2any)\.js$/.test(rel);
+const wanted = (rel) => /^public\/(?!tools\/|pages\/|media\/|store\/|pdfjs\/).+\.(js|css)$/.test(rel) && !/^public\/(mediabunny|heic2any|pdf-lib)\.js$/.test(rel);
 
 async function shipped(rel, buf) {
   rel = rel.split(path.sep).join('/');
