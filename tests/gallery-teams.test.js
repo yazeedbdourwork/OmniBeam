@@ -121,14 +121,25 @@ test('history: Sent tab, Send again (also after a reload) and export as CSV', as
   await a.page.locator('#btn-history').click();
   await expect(hist.locator('.sent-list .item').first()).toContainText('Declined');
 
-  // After a reload the files are chosen again (the list stays)
+  // After a reload the files still go right away: a copy is kept on this device (SentStore, up to 50 MB a send)
+  await expect.poll(() => a.page.evaluate(() => { Sent.load(); return Sent.items.filter((e) => e.kept).length; })).toBe(2);
   await a.page.reload();
   await expect(a.page.locator('#me-name')).toHaveText('Again Laptop');
   await card(a.page, b.name);
   await a.page.locator('#btn-history').click();
   await expect(hist.locator('[data-tab=sent]')).toHaveAttribute('aria-selected', 'true');
-  const chooser = a.page.waitForEvent('filechooser');
+  let chose = false;
+  a.page.on('filechooser', () => { chose = true; });
   await hist.locator('.sent-list .item').nth(2).locator('[data-again]').click();
+  await expect(b.page.locator('#dlg-request')).toBeVisible();
+  await expect(b.page.locator('#dlg-request .file-list')).toContainText('=report.pdf');
+  expect(chose).toBe(false);
+  // Without the kept copy (deleted, or too big to keep) the files are chosen again
+  await b.page.locator('#dlg-request [data-act=decline]').click();
+  await a.page.evaluate(async () => { Sent.load(); for (const e of Sent.items) delete e.kept; Sent.save(); });
+  await a.page.locator('#btn-history').click();
+  const chooser = a.page.waitForEvent('filechooser');
+  await hist.locator('.sent-list .item').nth(3).locator('[data-again]').click();
   await (await chooser).setFiles([makeFile('=report.pdf', 40 * 1024, 'application/pdf')]);
   await expect(b.page.locator('#dlg-request')).toBeVisible();
   await b.page.locator('#dlg-request [data-act=accept]').click();
