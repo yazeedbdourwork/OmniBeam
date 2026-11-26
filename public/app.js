@@ -1270,6 +1270,7 @@ class Peer {
       this.detectRoute();
       this.openWaiters.forEach((w) => w.resolve());
       this.openWaiters = [];
+      Fav.mark(this);
     };
     // Ignore messages still queued on a channel we already dropped (we may have resumed via the server)
     dc.onmessage = (e) => {
@@ -1281,6 +1282,7 @@ class Peer {
     };
     dc.onclose = () => {
       if (this.dc === dc) this.onDirectLost('Connection closed');
+      Fav.mark(this);
     };
   }
   // The direct connection dropped (phones switching networks, flaky Wi-Fi, VPNs...). During a transfer, carry on
@@ -1695,7 +1697,7 @@ class Peer {
     this.job = job;
     const gone = () => this.cancelled || this.job !== job;
     // The Sent list (and lastSendResult); a synced folder's files (sync.js) aren't listed
-    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid, result === 'failed' ? job.reason : ''); };
+    const log = (result) => { if (opts.sync) this.lastSendResult = result; else Sent.add(this, original, result, job.xid, result === 'failed' ? job.reason : '', !opts.want); };
     try {
       // Files the other device asked for (Browse files) go as they are
       if (!opts.want) {
@@ -2594,6 +2596,7 @@ class Peer {
     Presence.card(this);
     const pair = this.pairSecret && loadPaired().find((p) => p.secret === this.pairSecret);
     this.el.classList.toggle('trusted', !!pair?.trusted);
+    this.el.classList.toggle('fav', !!pair?.fav);
     // A device met through a team room shows the team's name
     const teams = pair ? [] : Teams.shared(this.info).map((x) => x.name);
     let tag = $('.tag', this.el);
@@ -2603,7 +2606,7 @@ class Peer {
       tag.className = 'tag';
       ($('.presence', this.el) || $('.status', this.el)).before(tag);
     }
-    tag.textContent = pair ? (pair.trusted ? t('Trusted') : t('Paired')) : teams.join(' · ');
+    tag.textContent = pair ? (pair.fav ? '★ ' : '') + (pair.trusted ? t('Trusted') : t('Paired')) : teams.join(' · ');
     tag.classList.toggle('team-tag', !pair);
   }
 
@@ -3400,6 +3403,77 @@ const Messages = {
 const SENT_KEY = 'omnibeam-sent';
 const MAX_SENT = 200;
 const sentFiles = new Map(); // entry id -> the File objects (this page only)
+// Copies of what was sent (up to 50 MB a send, 300 MB in all, the oldest go first), so Send again still works after
+// the page is closed: kept in this browser only (IndexedDB omnibeam-sent), for as long as Keep history says, and
+// deleted with their entry (Delete, Clear all). Not for files another device asked for (shared folder, photo backup).
+const SentStore = {
+  ONE: 50 * 1048576,
+  ALL: 300 * 1048576,
+  dbp: null,
+  open() {
+    if (!this.dbp) {
+      this.dbp = new Promise((resolve, reject) => {
+        if (!window.indexedDB) return reject(new Error('No IndexedDB'));
+        const r = indexedDB.open('omnibeam-sent', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('f');
+        r.onsuccess = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+      });
+      this.dbp.catch(() => {});
+    }
+    return this.dbp;
+  },
+  async run(mode, fn) {
+    const db = await this.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('f', mode);
+      const req = fn(tx.objectStore('f'));
+      tx.oncomplete = () => resolve(req?.result);
+      tx.onerror = tx.onabort = () => reject(tx.error);
+    });
+  },
+  // Room for this one: the oldest kept entries are let go first
+  async put(entry, files) {
+    if (!entry.bytes || entry.bytes > this.ONE) return;
+    try {
+      let total = entry.bytes;
+      const drop = [];
+      for (const e of Sent.items) {
+        if (!e.kept || e.id === entry.id) continue;
+        if (total + e.bytes > this.ALL) drop.push(e); else total += e.bytes;
+      }
+      const rec = files.map((f) => ({ name: f.name, path: pathOf(f), type: f.type, lm: f.lastModified, blob: f }));
+      await this.run('readwrite', (st) => { for (const e of drop) st.delete(e.id); return st.put(rec, entry.id); });
+      Sent.load();
+      for (const e of Sent.items) { if (e.id === entry.id) e.kept = 1; if (drop.some((d) => d.id === e.id)) delete e.kept; }
+      Sent.save();
+    } catch {}
+  },
+  async get(id) {
+    try {
+      const rec = await this.run('readonly', (st) => st.get(id));
+      if (!Array.isArray(rec) || !rec.length) return null;
+      return rec.map((r) => {
+        const f = new File([r.blob], r.name, { type: r.type || '', lastModified: r.lm || Date.now() });
+        if (r.path && r.path !== r.name) f.relPath = r.path;
+        return f;
+      });
+    } catch { return null; }
+  },
+  del(ids) { if (ids.length) this.run('readwrite', (st) => { ids.forEach((id) => st.delete(id)); }).catch(() => {}); },
+  // Copies whose entry is gone (older than Keep history, deleted in another tab)
+  async tidy() {
+    try {
+      const keys = await this.run('readonly', (st) => st.getAllKeys());
+      const have = new Set(Sent.items.map((e) => e.id));
+      this.del((keys || []).filter((k) => !have.has(k)));
+    } catch {}
+  },
+};
+// The files of a Sent entry: from this visit, or the copy kept on this device; null when they must be chosen again
+async function sentFilesOf(e) {
+  return sentFiles.get(e.id) || (e.kept ? await SentStore.get(e.id) : null);
+}
 const Sent = {
   items: [], // { id, at, to, device, pair?, files: [{ name, size }], n, bytes, result, xid?, text? }, newest first
   load() {
@@ -3415,7 +3489,8 @@ const Sent = {
   // files: the File objects sent, or { text } for a message. result: ok, declined, failed or cancelled.
   // xid: a transfer that continued by itself after a drop updates its first entry instead of adding one.
   // why: what went wrong, for a result of failed (shown under "Not finished")
-  add(peer, files, result, xid, why) {
+  // keep: false for files another device asked for (no copy is kept for Send again)
+  add(peer, files, result, xid, why, keep = true) {
     if (files.text === undefined) peer.lastSendResult = result; // for Auto-send a folder
     this.load();
     const old = xid && this.items.find((e) => e.xid === xid);
@@ -3444,11 +3519,13 @@ const Sent = {
     }
     this.items.unshift(entry);
     this.save();
+    if (keep && entry.files && window.indexedDB) SentStore.put(entry, files);
   },
   remove(id) {
     this.load();
     this.items = this.items.filter((e) => e.id !== id);
     sentFiles.delete(id);
+    SentStore.del([id]);
     this.save();
   },
   // The ticks of sent messages: st 'd' arrived, 'r' read (never back from read to arrived)
@@ -3463,11 +3540,13 @@ const Sent = {
     if (changed) this.save();
   },
   clear() {
+    SentStore.del(this.items.filter((e) => e.kept).map((e) => e.id));
     this.items = [];
     sentFiles.clear();
     this.save();
   },
 };
+setTimeout(() => { try { if (window.indexedDB && localStorage.getItem(SENT_KEY)) { Sent.load(); SentStore.tidy(); } } catch {} }, 8000);
 window.addEventListener('storage', (e) => { if (e.key === SENT_KEY) History.onChange?.(); });
 
 // ---------- Reactions to chat messages: { message id: { me: '❤️', them: '👍' } }, on this device ----------
@@ -3632,7 +3711,7 @@ const Vanish = {
       Messages.items = Messages.items.filter((x) => !old(x, 'from'));
       msgs ||= Messages.items.length !== m;
       const n = Sent.items.length;
-      Sent.items = Sent.items.filter((x) => { const gone = old(x, 'to'); if (gone) sentFiles.delete(x.id); return !gone; });
+      Sent.items = Sent.items.filter((x) => { const gone = old(x, 'to'); if (gone) { sentFiles.delete(x.id); if (x.kept) SentStore.del([x.id]); } return !gone; });
       sent ||= Sent.items.length !== n;
       for (const f of History.items.filter((x) => old(x, 'from'))) History.remove(f);
     }
@@ -3704,7 +3783,7 @@ window.addEventListener('storage', (e) => { if (e.key === LATER_KEY) { Later.arm
 // thread survives a new name); any other device by its name. The view itself is in chat.js, loaded when opened;
 // here: which items belong to a device, and the unread count on its card (received since the chat was last open).
 const CHAT_READ_KEY = 'omnibeam-chat-read';
-const loadChat = () => loadScript('/chat.js?v=14');
+const loadChat = () => loadScript('/chat.js?v=15');
 // voice.js: recording and playing voice messages in a chat (loaded with the chat)
 const loadVoice = () => loadScript('/voice.js?v=1');
 // The chat with this device is open and on screen: its messages, files and requests show up there, not in windows
@@ -3885,6 +3964,7 @@ function messageBanner(peer, text, link) {
     el.className = 'msg-banner';
     el.setAttribute('role', 'status');
     el.innerHTML = '<button type="button" class="msg-banner-open"><b></b> <span class="msg-banner-text"></span> <span class="msg-banner-act"></span></button>'
+      + '<button type="button" class="msg-banner-always" hidden></button>'
       + '<button type="button" class="msg-banner-chat" hidden></button>'
       + '<button type="button" class="msg-banner-x"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
     $('.msg-banner-x', el).onclick = hideMessageBanner;
@@ -3899,6 +3979,12 @@ function messageBanner(peer, text, link) {
   const toChat = () => { hideMessageBanner(); openChat(peers.get(peer.info.id) === peer ? peer : who); };
   el.classList.toggle('is-link', !!link);
   $('.msg-banner-open', el).onclick = link ? () => { hideMessageBanner(); if (!openLink(link)) toChat(); } : toChat;
+  // A link from a paired device that didn't open by itself: Always open (opens this one, and the next ones by themselves)
+  const always = $('.msg-banner-always', el);
+  always.hidden = !link || !peer.pairSecret || openLinksAuto || linksFrom(peer) || IS_TV;
+  always.textContent = t('Always open');
+  always.title = t('Open links from {name} by themselves from now on', { name: peer.info.name });
+  always.onclick = () => { hideMessageBanner(); setLinksFrom(peer, true); openLink(link); };
   const chatBtn = $('.msg-banner-chat', el);
   chatBtn.hidden = !link;
   chatBtn.textContent = t('Chat');
@@ -3907,10 +3993,21 @@ function messageBanner(peer, text, link) {
   clearTimeout(bannerTimer);
   bannerTimer = setTimeout(hideMessageBanner, link ? 20000 : 9000);
 }
+// The video of a YouTube link (youtube.com/watch?v=, youtu.be/, /shorts/, /live/, m. and music.), else ''
+function youTubeId(u) {
+  const host = u.host.replace(/^(www|m|music)\./, '');
+  const ok = (id) => (/^[\w-]{6,20}$/.test(id || '') ? id : '');
+  if (host === 'youtu.be') return ok(u.pathname.slice(1));
+  if (host !== 'youtube.com' && host !== 'youtube-nocookie.com') return '';
+  if (u.pathname === '/watch') return ok(u.searchParams.get('v'));
+  const m = u.pathname.match(/^\/(shorts|live|embed)\/([^/?#]+)/);
+  return m ? ok(m[2]) : '';
+}
 // A link shown short: the site and the start of the path (example.com/watch?v=…)
 function linkLabel(url) {
   try {
     const u = new URL(url);
+    if (youTubeId(u)) return '▶ ' + t('YouTube video') + (u.searchParams.get('t') ? ` (${u.searchParams.get('t')})` : '');
     const rest = (u.pathname === '/' ? '' : u.pathname) + u.search;
     return u.host.replace(/^www\./, '') + (rest.length > 40 ? rest.slice(0, 40) + '…' : rest);
   } catch { return url; }
@@ -3939,13 +4036,78 @@ function messageArrived(peer, text) {
   if (busy) return messageBanner(peer, text);
   openChat(peer);
 }
+// Links from this paired device open by themselves (Always open on the banner, or More… on its card), even with
+// Settings -> Open links off. Kept with the pairing (links: true).
+function linksFrom(peer) {
+  return !!(peer?.pairSecret && loadPaired().find((p) => p.secret === peer.pairSecret)?.links);
+}
+function setLinksFrom(peer, on) {
+  if (!peer?.pairSecret) return;
+  updatePairing(peer.pairSecret, { links: !!on });
+  toast(on ? t('Links from {name} now open by themselves', { name: peer.info.name }) : t('Links from {name} wait for a tap again', { name: peer.info.name }), 4000);
+}
+// Send a link (More… on a device): type or paste a web address; the other device opens it (by itself where it
+// allows that, else with one tap). It goes as a normal message, so older versions show it with Open link too.
+function openSendLink(peer) {
+  let dlg = document.getElementById('dlg-send-link');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'dlg-send-link';
+    dlg.className = 'info-dialog send-link-dialog';
+    dlg.setAttribute('aria-labelledby', 'send-link-title');
+    dlg.innerHTML = `<div role="heading" aria-level="3" class="h3" id="send-link-title"></div>
+      <p class="muted small send-link-note"></p>
+      <input type="url" class="send-link-url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://">
+      <p class="muted small send-link-err" role="alert" hidden></p>
+      <div class="row">
+        <button type="button" class="btn ghost" data-act="paste" hidden></button>
+        <button type="button" class="btn ghost" data-act="close"></button>
+        <button type="button" class="btn" data-act="send"></button>
+      </div>`;
+    document.body.appendChild(dlg);
+  }
+  const input = $('.send-link-url', dlg);
+  const err = $('.send-link-err', dlg);
+  $('#send-link-title', dlg).textContent = t('Open a link on {name}', { name: peer.info.name });
+  $('.send-link-note', dlg).textContent = t('Paste a web page or YouTube link. It opens on {name} by itself if it allows that, or with one tap.', { name: peer.info.name });
+  input.setAttribute('aria-label', t('Web address'));
+  $('[data-act=paste]', dlg).textContent = t('Paste');
+  $('[data-act=paste]', dlg).hidden = !navigator.clipboard?.readText;
+  $('[data-act=close]', dlg).textContent = t('Cancel');
+  $('[data-act=send]', dlg).textContent = t('Send link');
+  input.value = '';
+  err.hidden = true;
+  const clean = (v) => {
+    v = String(v || '').trim();
+    if (v && !/^[a-z][a-z0-9+.-]*:/i.test(v) && /^[^\s/]+\.[^\s]{2,}/.test(v)) v = 'https://' + v; // example.com/page
+    return linkOnly(v);
+  };
+  const send = () => {
+    const url = clean(input.value);
+    if (!url) { err.textContent = t('That is not a web address. It should look like https://example.com'); err.hidden = false; input.focus(); return; }
+    if (peers.get(peer.info.id) !== peer) { dlg.close(); return toast(t('{name} is no longer available', { name: peer.info.name })); }
+    dlg.close();
+    peer.sendText(url);
+    toast(t('Link sent to {name}', { name: peer.info.name }));
+  };
+  input.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); send(); } };
+  input.oninput = () => { err.hidden = true; };
+  dlg.onclick = (e) => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act === 'close') dlg.close();
+    if (act === 'send') send();
+    if (act === 'paste') navigator.clipboard.readText().then((v) => { input.value = String(v || '').trim().slice(0, 4000); input.focus(); }, () => toast(t('Could not paste. Long-press the box and choose Paste.')));
+  };
+  dlg.showModal();
+  setTimeout(() => input.focus(), 50);
+}
 // A message that is only a link, while its chat isn't on screen: opened by itself when Settings -> Open links allows it
 // (paired devices only, page on screen, the browser lets the page open tabs), else the banner "Name: example.com ·
 // Open link" (one tap opens it), and a notification whose tap opens it when the page is hidden. Never the chat
 // window over the page: the link is in the chat anyway, with an Open link button.
 function linkArrived(peer, link) {
   const name = peer.info.name;
-  if (openLinksAuto && !AppLock.locked && peer.pairSecret && document.visibilityState === 'visible' && !userBusy()) {
+  if ((openLinksAuto || linksFrom(peer)) && !AppLock.locked && peer.pairSecret && document.visibilityState === 'visible' && !userBusy()) {
     if (openLink(link)) return toast(t('Opened a link from {name}', { name }));
     toast(t('Your browser blocked opening the link by itself. Allow pop-ups for {host} to open links right away.', { host: location.host }), 7000);
   }
@@ -3973,7 +4135,7 @@ function clearChat(who) {
   Sent.save();
   History.onChange?.();
   let undone = false;
-  const forget = setTimeout(() => { if (!undone) files.forEach((f) => f.id && Store.remove(f.id)); }, 6500);
+  const forget = setTimeout(() => { if (!undone) { files.forEach((f) => f.id && Store.remove(f.id)); SentStore.del(sent.filter((e) => e.kept).map((e) => e.id)); } }, 6500);
   undoToast(t('Chat with {name} cleared', { name: who.name }), () => {
     undone = true;
     clearTimeout(forget);
@@ -4105,6 +4267,16 @@ document.addEventListener('click', (e) => {
   toast(shrinkMode === 'off' ? t('Photos are sent in their original size') : t('Photos are made smaller before sending (up to 2048 px)'));
 });
 
+// A received file from the history, sent on to a device chosen from those here
+async function forwardReceived(f, gone) {
+  const peer = await chooseDevice();
+  if (!peer || peers.get(peer.info.id) !== peer) return;
+  const blob = await History.blobOf(f);
+  if (!blob) { toast(t('This file is no longer available')); return gone?.(); }
+  $('#dlg-history').close();
+  wsSend({ type: 'stat', kind: 'again' });
+  peer.sendFiles([new File([blob], f.name.split('/').pop(), { type: blob.type || f.mime || '' })]);
+}
 // Send again: to the same device if it's here (a paired device is recognised even with a new name), otherwise
 // to one picked from the devices here. Files from this visit go straight away; after a reload they're chosen again.
 async function sendAgain(entry) {
@@ -4116,7 +4288,7 @@ async function sendAgain(entry) {
   $('#dlg-history').close();
   wsSend({ type: 'stat', kind: 'again' });
   if (entry.text !== undefined) return openChat(peer, entry.text);
-  const files = sentFiles.get(entry.id);
+  const files = await sentFilesOf(entry);
   if (files) return peer.sendFiles(files);
   toast(t('Choose the same files again: they are only kept while this page is open'), 5000);
   pickAndSend(fileInput, [peer]);
@@ -4805,6 +4977,13 @@ function openHistory() {
   if (openHistory.tab) { tab = openHistory.tab; openHistory.tab = ''; }
   let galleryItems = [];
   let galleryCounted = false;
+  // Search: names of files, devices and the words of messages, on the tab that is open (case and accents ignored)
+  const search = $('.history-search input', dlg);
+  search.value = '';
+  let words = [];
+  const fold = (x) => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const hit = (...parts) => { const all = fold(parts.flat().join(' ')); return words.every((w) => all.includes(w)); };
+  let shownCount = 0;
   const when = (at) => new Date(at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   const renderReceived = () => {
     box.innerHTML = '';
@@ -4812,7 +4991,11 @@ function openHistory() {
     Messages.load();
     $('.empty-history', dlg).hidden = History.items.length + Messages.items.length > 0;
     $('.messages-title', dlg).hidden = Messages.items.length === 0;
-    for (const m of Messages.items) {
+    const msgs = Messages.items.filter((m) => hit(m.text, m.from));
+    const recv = History.items.filter((f) => hit(f.name, f.from));
+    shownCount = msgs.length + recv.length;
+    $('.messages-title', dlg).hidden = msgs.length === 0;
+    for (const m of msgs) {
       const item = document.createElement('div');
       item.className = 'item message';
       const info = document.createElement('div');
@@ -4840,7 +5023,7 @@ function openHistory() {
       item.append(info, chat, copy, del);
       msgBox.appendChild(item);
     }
-    for (const f of History.items) {
+    for (const f of recv) {
       const item = document.createElement('div');
       item.className = 'item';
       const info = document.createElement('div');
@@ -4863,23 +5046,32 @@ function openHistory() {
         toast(t('This file is no longer available')); History.remove(f); render();
         return null;
       })));
-      item.append(save, del);
+      // Send it on to a device here (or back)
+      const fwd = document.createElement('button');
+      fwd.className = 'btn ghost small';
+      fwd.dataset.fwd = f.id || '';
+      fwd.textContent = t('Send to…');
+      fwd.onclick = () => forwardReceived(f, () => { History.remove(f); render(); });
+      item.append(save, fwd, del);
       box.appendChild(item);
     }
   };
   const renderGallery = () => {
     Gallery.clear();
-    const items = History.items.map((f) => ({ name: f.name, mime: f.mime, size: f.size, blob: f.blob, load: () => History.blobOf(f) }));
+    const items = History.items.filter((f) => hit(f.name, f.from)).map((f) => ({ name: f.name, mime: f.mime, size: f.size, blob: f.blob, load: () => History.blobOf(f) }));
     galleryItems = Gallery.render(galleryBox, items);
     if (!galleryCounted && galleryItems.length) { galleryCounted = true; wsSend({ type: 'stat', kind: 'gallery' }); }
-    $('.empty-gallery', dlg).hidden = galleryItems.length > 0;
+    $('.empty-gallery', dlg).hidden = galleryItems.length > 0 || words.length > 0;
+    shownCount = galleryItems.length;
   };
   const results = { ok: '✓ ' + t('Sent'), declined: t('Declined'), failed: t('Not finished'), cancelled: t('Cancelled') };
   const renderSent = () => {
     Sent.load();
     sentBox.innerHTML = '';
     $('.empty-sent', dlg).hidden = Sent.items.length > 0;
-    for (const e of Sent.items) {
+    const list = Sent.items.filter((e) => hit(e.text, e.to, (e.files || []).map((f) => f.name)));
+    shownCount = list.length;
+    for (const e of list) {
       const item = document.createElement('div');
       item.className = 'item sent ' + (e.result || '');
       const info = document.createElement('div');
@@ -4895,7 +5087,7 @@ function openHistory() {
       again.className = 'btn small';
       again.dataset.again = e.id;
       again.textContent = t('Send again');
-      again.title = e.text !== undefined || sentFiles.has(e.id) ? '' : t('You will choose the files again');
+      again.title = e.text !== undefined || sentFiles.has(e.id) || e.kept ? '' : t('You will choose the files again');
       again.onclick = () => sendAgain(e);
       const del = document.createElement('button');
       del.className = 'btn ghost small';
@@ -4909,7 +5101,9 @@ function openHistory() {
     ClipHistory.load();
     clipBox.innerHTML = '';
     $('.empty-clips', dlg).hidden = ClipHistory.items.length > 0;
-    for (const c of ClipHistory.items) {
+    const clips = ClipHistory.items.filter((c) => hit(c.text, c.who));
+    shownCount = clips.length;
+    for (const c of clips) {
       const item = document.createElement('div');
       item.className = 'item message clip ' + c.dir;
       const info = document.createElement('div');
@@ -4945,17 +5139,29 @@ function openHistory() {
     $('.history-note', dlg).textContent = tab === 'clips'
       ? (ClipHistory.on ? t('The last {n} texts sent or received with Clipboard sync, kept only on this device.', { n: CLIPS_MAX }) : t('Clipboard history is off (Settings).'))
       : tab === 'sent'
-      ? t('Names and sizes are kept for {time}. The files themselves only while this page is open.', { time: keepText() })
+      ? (window.indexedDB ? t('Kept on this device for {time}, with the files themselves up to 50 MB a send, so Send again works after a reload.', { time: keepText() })
+        : t('Names and sizes are kept for {time}. The files themselves only while this page is open.', { time: keepText() }))
       : Store.kind === 'memory'
       ? t('This browser can\'t store files, so this list is cleared when you close or reload the page.')
       : t('Files are kept on this device for {time}.', { time: keepText() });
     $('[data-act=clear]', dlg).hidden = tab === 'gallery' || count === 0;
+    // The search box once there is something to search; "No matches" when nothing fits the words
+    const anything = History.items.length + Messages.items.length + Sent.items.length + ClipHistory.items.length > 0;
+    $('.history-search', dlg).hidden = !anything && !words.length;
+    const none = $('.history-none', dlg);
+    none.hidden = !words.length || shownCount > 0 || (tab !== 'gallery' && count === 0);
+    none.textContent = t('Nothing matches “{q}”', { q: search.value.trim() });
     $('[data-act=gallery-save]', dlg).hidden = tab !== 'gallery' || galleryItems.length === 0;
     $('[data-act=gallery-save]', dlg).textContent = canSaveToPhotos(galleryItems.filter((f) => f.blob)) && galleryItems.every((f) => f.blob)
       ? t('Save all to Photos') : t('Save all');
     Sent.load();
     $('[data-act=export]', dlg).hidden = History.items.length + Messages.items.length + Sent.items.length === 0;
   };
+  search.oninput = () => {
+    words = fold(search.value).split(/\s+/).filter(Boolean);
+    render();
+  };
+  search.onkeydown = (e) => { if (e.key === 'Escape' && search.value) { e.preventDefault(); e.stopPropagation(); search.value = ''; search.oninput(); } };
   render();
   History.onChange = () => { if (tab !== 'gallery') render(); };
   ClipHistory.onChange = () => { if (tab === 'clips') render(); };
@@ -5329,6 +5535,16 @@ function openActions(peer) {
   // Looking in a folder another device shares: only between paired devices
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
   $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
+  // Send a link that opens there; and, for a paired device, whether its links open here by themselves
+  $('[data-act=link]', dlg).hidden = peer.isTv || IS_TV;
+  const linksBtn = $('[data-act=links]', dlg);
+  linksBtn.hidden = !peer.pairSecret || IS_TV || openLinksAuto;
+  $('span', linksBtn).textContent = linksFrom(peer) ? t('Stop opening its links') : t('Open its links by themselves');
+  // Favorite: paired devices only
+  const favBtn = $('[data-act=fav]', dlg);
+  favBtn.hidden = !peer.pairSecret || IS_TV;
+  $('span', favBtn).textContent = Fav.has(peer) ? t('Remove from favorites') : t('Add to favorites');
+  favBtn.classList.toggle('on', Fav.has(peer));
   $('[data-act=safety]', dlg).hidden = !window.crypto?.subtle || IS_TV;
   $('[data-act=board]', dlg).hidden = peer.isTv || IS_TV || !window.PointerEvent;
   $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
@@ -5359,6 +5575,9 @@ function openActions(peer) {
     else if (act === 'remote') loadRemote().then(() => window.Remote.open(peer), (err) => toast(err.message));
     else if (act === 'safety') loadSafety().then(() => window.Safety.open(peer), (err) => toast(err.message));
     else if (act === 'board') loadBoard().then(() => window.Board.open(peer), (err) => toast(err.message));
+    else if (act === 'link') openSendLink(peer);
+    else if (act === 'links') setLinksFrom(peer, !linksFrom(peer));
+    else if (act === 'fav') { if (peer.pairSecret) Fav.set(peer.pairSecret, !Fav.has(peer)); }
     else if (act === 'ftools') loadFileTools().then(() => window.FileTools.open(peer), (err) => toast(err.message));
   };
   if (!dlg.open) dlg.showModal();
@@ -5660,7 +5879,7 @@ function renderPairedList() {
     row.innerHTML = `<i class="dot" aria-hidden="true"></i><span class="paired-name" dir="auto"></span>`
       + `<label class="auto-toggle" title="${t('Your own device: always shown here, files accepted without asking')}"><input type="checkbox" data-k="trusted"> ${t('Trusted')}</label>`
       + `<label class="auto-toggle" title="${t('Accept files from this device without asking')}"><input type="checkbox" data-k="auto"> ${t('Auto-accept')}</label>`
-      + `<span class="paired-acts"><button class="btn ghost small" data-chat>${t('Chat')}</button>`
+      + `<span class="paired-acts"><button type="button" class="btn ghost small fav-star" data-fav aria-pressed="false">☆</button><button class="btn ghost small" data-chat>${t('Chat')}</button>`
       + `<button class="btn ghost small" data-forget>${t('Forget')}</button></span>`;
     $('.paired-name', row).textContent = p.name;
     const isOn = online.has(p.secret);
@@ -5681,6 +5900,12 @@ function renderPairedList() {
     };
     auto.onchange = () => updatePairing(p.secret, { auto: auto.checked });
     $('[data-forget]', row).onclick = () => forgetPairing(p.secret);
+    const star = $('[data-fav]', row);
+    star.textContent = p.fav ? '★' : '☆';
+    star.setAttribute('aria-pressed', String(!!p.fav));
+    star.title = p.fav ? t('Remove from favorites') : t('Add to favorites');
+    star.setAttribute('aria-label', star.title);
+    star.onclick = () => Fav.set(p.secret, !p.fav);
     $('[data-chat]', row).onclick = () => { $('#dlg-pair')?.close?.(); openChat(p); };
     box.appendChild(row);
   }
@@ -5725,6 +5950,7 @@ async function onPairHello(from, proofs, data = {}) {
   renderPairedList();
   renderOffline(); // (updates the chat badges too: the card is now known by its pairing)
   sendWaiting(peer);
+  Fav.meet(peer); // a favorite connects by itself
   // Notes and to-dos: compare with this paired device (only when this device has some; else it asks when it has)
   if (notesUsed() && !IS_TV) setTimeout(() => { if (peers.get(peer.info.id) === peer) loadNotes().then(() => window.Notes.hello(peer), () => {}); }, 1500);
   // Automatic photo backup from this phone to this computer
@@ -5741,13 +5967,81 @@ async function onPairForget(from, proof) {
   renderOffline();
   toast(t('{name} removed the pairing', { name: pair.name }));
 }
+// ---------- Favorite devices ----------
+// A paired device marked as a favorite (Add to favorites in its More… window, or ☆ in the list of paired devices)
+// comes first in the list, keeps a greyed card while it is offline (like a Trusted one), and connects by itself
+// whenever both are open: the direct connection is made as soon as they meet, and made again if it drops, so files
+// and messages start right away. Only one side starts it (the one whose id sorts first, the other one only if they
+// are still not connected a few seconds later), so two offers never cross. Kept with the pairing (fav: true).
+const Fav = {
+  timer: null,
+  tries: new Map(), // peer id -> { n, next }: a little longer to wait after each attempt that didn't connect
+  greeted: new WeakSet(),
+  of(peer) { return peer?.pairSecret ? loadPaired().find((p) => p.secret === peer.pairSecret) : null; },
+  has(peer) { return !!this.of(peer)?.fav; },
+  set(secret, on) {
+    updatePairing(secret, { fav: !!on });
+    renderPairedList();
+    renderOffline();
+    for (const p of peers.values()) {
+      if (p.pairSecret !== secret) continue;
+      p.markTrusted();
+      if (on) this.meet(p, true); else this.mark(p);
+    }
+    const name = loadPaired().find((p) => p.secret === secret)?.name || '';
+    toast(on ? t('{name} is a favorite: it connects by itself whenever both are open', { name }) : t('{name} is no longer a favorite', { name }), 4000);
+  },
+  // Favorites first: before the first online card that isn't one
+  place(peer) {
+    if (!this.has(peer) || !peer.el.isConnected) return;
+    const first = [...peersEl.querySelectorAll('.peer:not(.offline)')].find((el) => el === peer.el || !el.classList.contains('fav'));
+    if (first && first !== peer.el) peersEl.insertBefore(peer.el, first);
+  },
+  meet(peer, now = false) {
+    if (!this.has(peer) || IS_TV) return;
+    this.place(peer);
+    this.mark(peer);
+    const first = String(me.id) < String(peer.info.id);
+    setTimeout(() => this.link(peer), now ? 300 : first ? 800 : 4500);
+    if (!this.timer) this.timer = setInterval(() => this.tick(), 10000);
+  },
+  link(peer) {
+    if (peers.get(peer.info.id) !== peer || !this.has(peer) || peer.busy || peer.direct || peer.connecting) return;
+    if (peer.pc && ['new', 'connecting'].includes(peer.pc.connectionState)) return; // the other side is connecting us
+    const tr = this.tries.get(peer.info.id) || { n: 0, next: 0 };
+    if (Date.now() < tr.next) return;
+    tr.n++;
+    tr.next = Date.now() + Math.min(10 * 60000, 15000 * 2 ** tr.n);
+    this.tries.set(peer.info.id, tr);
+    peer.connect().catch(() => {}).finally(() => {
+      if (peer.direct) this.tries.delete(peer.info.id);
+      this.mark(peer);
+    });
+  },
+  // The green dot on the card: connected and ready (straight to each other, or through the server)
+  mark(peer) {
+    const fav = this.has(peer);
+    const ready = fav && (peer.direct || peer.relayed);
+    peer.el.classList.toggle('fav', fav);
+    peer.el.classList.toggle('linked', ready);
+    if (ready && !this.greeted.has(peer)) {
+      this.greeted.add(peer);
+      if (document.visibilityState === 'visible') announce(t('{name} is connected and ready', { name: peer.info.name }));
+    }
+  },
+  tick() {
+    const favs = [...peers.values()].filter((p) => this.has(p));
+    if (!favs.length) { clearInterval(this.timer); this.timer = null; return; }
+    for (const p of favs) { this.mark(p); if (!p.direct && !p.relayed) this.link(p); }
+  },
+};
 // Greyed cards for trusted devices that aren't online. Shown a moment after connecting, so devices that are
 // online have time to say hello first.
 let offlineReady = false;
 function renderOffline() {
   const online = new Set([...peers.values()].map((p) => p.pairSecret).filter(Boolean));
   const want = offlineReady && ws && ws.readyState === WebSocket.OPEN
-    ? loadPaired().filter((p) => (p.trusted || p.push || waiting.has(p.secret)) && !online.has(p.secret)) : [];
+    ? loadPaired().filter((p) => (p.trusted || p.fav || p.push || waiting.has(p.secret)) && !online.has(p.secret)) : [];
   const keep = new Set(want.map((p) => p.secret.slice(0, 16)));
   for (const el of peersEl.querySelectorAll('.peer.offline')) if (!keep.has(el.dataset.pair)) el.remove();
   for (const p of want) {
@@ -5778,13 +6072,15 @@ function renderOffline() {
       };
       el.onkeydown = (e) => { if (e.target === el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(); } };
       el.title = t('{name} is offline. Choose files: they go as soon as it opens OmniBeam.', { name: p.name });
-      peersEl.appendChild(el);
+      // Favorites first among the offline cards too
+      if (p.fav) peersEl.insertBefore(el, peersEl.querySelector('.peer.offline')); else peersEl.appendChild(el);
     }
+    el.classList.toggle('fav', !!p.fav);
     $('.name', el).textContent = p.name;
     $('.avatar', el).style.background = colorFor(p.name);
     $('.avatar', el).innerHTML = avatarHtml(p.avatar, p.device);
     $('.device', el).textContent = p.seen ? `${t('Offline')} · ${timeAgo(p.seen)}` : t('Offline');
-    $('.tag', el).textContent = p.trusted ? t('Trusted') : t('Paired');
+    $('.tag', el).textContent = (p.fav ? '★ ' : '') + (p.trusted ? t('Trusted') : t('Paired'));
     const w = waiting.get(p.secret);
     $('.status', el).textContent = w ? t('{n} file(s) waiting to send', { n: w.files.length }) : '';
     el.classList.toggle('waiting', !!w);
@@ -7927,7 +8223,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=10`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=11`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');
