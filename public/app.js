@@ -2122,6 +2122,14 @@ class Peer {
       case 'sy-busy':
         loadSync().then(() => window.Sync.onMsg(this, msg)).catch(() => {});
         break;
+      // Safety code (safety.js): the other device asks to show the code here too
+      case 'sf-show':
+        loadSafety().then(() => window.Safety.onMsg(this, msg)).catch(() => {});
+        break;
+      // Shared whiteboard (board.js)
+      case 'wb':
+        if (typeof msg.a === 'string') loadBoard().then(() => window.Board.onMsg(this, msg)).catch(() => {});
+        break;
       // Photo backup that skips repeats (pbackup.js)
       case 'bk-check':
       case 'bk-need':
@@ -5321,6 +5329,8 @@ function openActions(peer) {
   // Looking in a folder another device shares: only between paired devices
   $('[data-act=browse]', dlg).hidden = !peer.pairSecret;
   $('[data-act=pbackup]', dlg).hidden = !peer.pairSecret || !window.crypto?.subtle;
+  $('[data-act=safety]', dlg).hidden = !window.crypto?.subtle || IS_TV;
+  $('[data-act=board]', dlg).hidden = peer.isTv || IS_TV || !window.PointerEvent;
   $('[data-act=tv-remote]', dlg).hidden = !peer.isTv;
   // The remote of a computer's slides and videos (a TV has its own remote above)
   $('[data-act=remote]', dlg).hidden = peer.isTv || IS_TV || deviceType(peer.info.device) === 'mobile';
@@ -5347,6 +5357,9 @@ function openActions(peer) {
     else if (act === 'pbackup') loadPBackup().then(() => window.PhotoBackup.look(peer), (err) => toast(err.message));
     else if (act === 'tv-remote') openTvRemote(peer);
     else if (act === 'remote') loadRemote().then(() => window.Remote.open(peer), (err) => toast(err.message));
+    else if (act === 'safety') loadSafety().then(() => window.Safety.open(peer), (err) => toast(err.message));
+    else if (act === 'board') loadBoard().then(() => window.Board.open(peer), (err) => toast(err.message));
+    else if (act === 'ftools') loadFileTools().then(() => window.FileTools.open(peer), (err) => toast(err.message));
   };
   if (!dlg.open) dlg.showModal();
 }
@@ -5714,6 +5727,8 @@ async function onPairHello(from, proofs, data = {}) {
   sendWaiting(peer);
   // Notes and to-dos: compare with this paired device (only when this device has some; else it asks when it has)
   if (notesUsed() && !IS_TV) setTimeout(() => { if (peers.get(peer.info.id) === peer) loadNotes().then(() => window.Notes.hello(peer), () => {}); }, 1500);
+  // Automatic photo backup from this phone to this computer
+  if (pbkAuto() && !IS_TV) setTimeout(() => { if (peers.get(peer.info.id) === peer) loadPBackup().then(() => window.PhotoBackup.autoHere(peer), () => {}); }, 4000);
 }
 async function onPairForget(from, proof) {
   const pair = await matchPairing(from, [proof]);
@@ -6063,7 +6078,11 @@ $('#menu-invite').onclick = () => openInvite();
 const loadAlbum = () => loadScript('/album.js?v=1');
 const loadBrowse = () => loadScript('/browse.js?v=2');
 const loadSync = () => loadScript('/sync.js?v=1');
-const loadPBackup = () => loadScript('/pbackup.js?v=1');
+const loadPBackup = () => loadScript('/pbackup.js?v=2');
+// Safety code (safety.js), shared whiteboard (board.js) and file tools: PDF merge, picture resize (ftools.js)
+const loadSafety = () => loadScript('/safety.js?v=1');
+const loadBoard = () => loadScript('/board.js?v=1');
+const loadFileTools = () => loadScript('/ftools.js?v=1');
 let albumCfg = null;
 $('#btn-album').onclick = () => loadAlbum().then(() => window.Album.open(albumCfg), (err) => toast(err.message));
 $('#btn-fshare').hidden = isPhone || !(typeof window.showDirectoryPicker === 'function' || CAN_PICK_FOLDER);
@@ -6082,6 +6101,11 @@ $('#btn-notes').onclick = () => openNotes();
 $('#btn-pbackup').hidden = isPhone || !window.crypto?.subtle;
 $('#btn-pbackup').onclick = () => loadPBackup().then(() => window.PhotoBackup.open(), (err) => toast(err.message));
 try { if (localStorage.getItem('omnibeam-pbackup')) setTimeout(() => loadPBackup().then(() => window.PhotoBackup.restore()).catch(() => {}), 1500); } catch {}
+// The phone backs up new photos by itself (pbackup.js): looks again whenever its computer shows up
+const pbkAuto = () => { try { return !!localStorage.getItem('omnibeam-pbk-auto'); } catch { return false; } };
+if (pbkAuto() && !IS_TV) setTimeout(() => loadPBackup().then(() => window.PhotoBackup.autoStart()).catch(() => {}), 2500);
+$('#btn-ftools').hidden = IS_TV;
+$('#btn-ftools').onclick = () => loadFileTools().then(() => window.FileTools.open(), (err) => toast(err.message));
 if ($('#share-card')) $('#share-card').onclick = () => openInvite();
 
 // ---------- Signaling ----------
@@ -7903,7 +7927,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=9`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=10`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');

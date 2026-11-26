@@ -11,6 +11,11 @@
 // Messages over the device connection: bk-check { id, part, last, items: [{ h, n, s }] } (in parts of 300) ->
 // bk-need { id, need: [index], want, have } or bk-no { id, why: off | denied | paused | busy | many };
 // then a normal transfer with { want } in its request.
+// Automatic (on the phone, in the same window: Back up new photos by themselves): new photos go to that computer
+// whenever both have OmniBeam open, without choosing them. Where the browser lets a page read a folder (Chrome on
+// Android), the phone's camera folder is picked once and looked at when the computer shows up and every few
+// minutes; only photos taken after it was turned on, each once. Elsewhere (iPhone, iPad) a web page can't see new
+// photos by itself, so a card offers "Back up new photos" when the computer shows up (at most every 12 hours).
 'use strict';
 (function () {
   const LS = 'omnibeam-pbackup'; // { name, kind: 'handle' | 'index', allowed: [pairing secrets] }
@@ -20,6 +25,11 @@
   const MAX_SCAN = 60000; // files looked at in the backup folder
   const SLICE = 65536;
   const CAN_HANDLE = typeof window.showDirectoryPicker === 'function';
+  const AUTO = 'omnibeam-pbk-auto';      // phone: { secret (the computer's pairing), name, mode: 'folder' | 'remind', since, folder, asked }
+  const AUTO_SEEN = 'omnibeam-pbk-seen'; // phone: photos of the camera folder already backed up: "path|size|date"
+  const AUTO_EVERY = 5 * 60000;
+  const REMIND_EVERY = 12 * 3600000;
+  const MEDIA = /\.(jpe?g|png|heic|heif|webp|gif|dng|avif|mp4|mov|m4v|3gp|webm|mkv)$/i;
   let cfg = null;   // { name, kind, allowed: Set, root (handle), on }
   const wants = new Map();   // want id -> { peer id, at, items: [{ h, n, s }] }: what this computer said it needs
   const checks = new Map();  // phone's check id -> { peer id, items, at } (parts still arriving)
@@ -343,13 +353,24 @@
       <div class="row">
         <button type="button" class="btn ghost" data-act="close"></button>
         <button type="button" class="btn" data-act="pick"></button>
+      </div>
+      <div class="pbk-auto">
+        <label class="auto-toggle"><input type="checkbox" data-k="auto"> <span data-k="auto-label"></span></label>
+        <p class="muted small" data-k="auto-note"></p>
+        <button type="button" class="btn ghost small" data-act="cam" hidden></button>
       </div>`;
     $('[data-act=close]', pdlg).textContent = t('Close');
     $('[data-act=pick]', pdlg).textContent = t('Choose photos');
+    $('[data-k=auto-label]', pdlg).textContent = t('Back up new photos by themselves');
+    $('[data-act=cam]', pdlg).textContent = t('Choose another camera folder');
+    pdlg.addEventListener('change', (e) => {
+      if (e.target.matches('[data-k=auto]') && job?.peer) autoToggle(job.peer, e.target.checked, e.target);
+    });
     pdlg.addEventListener('click', (e) => {
       const act = e.target.closest('[data-act]')?.dataset.act;
       if (act === 'close') pdlg.close();
       else if (act === 'pick' && job?.peer) choose(job.peer);
+      else if (act === 'cam' && job?.peer) pickCamera(job.peer);
     });
     pdlg.addEventListener('close', () => { if (job && !job.sending) job.cancelled = true; });
     document.body.append(pdlg);
@@ -357,6 +378,7 @@
   }
   const say = (text) => { if (pdlg) $('.pbk-msg', pdlg).textContent = text; };
   function bar(done, total) {
+    if (!pdlg) return;
     const p = $('progress', pdlg);
     p.hidden = !total;
     p.max = total || 1;
@@ -372,6 +394,7 @@
     $('[data-act=pick]', pdlg).disabled = false;
     say('');
     bar(0, 0);
+    paintAuto(peer);
     if (!pdlg.open) pdlg.showModal();
   }
   async function choose(peer) {
@@ -383,18 +406,19 @@
     });
     if (files.length) run(peer, files);
   }
+  // Resolves to { sent, skipped } when the computer answered, or { why } when it didn't take them
   async function run(peer, files) {
-    if (!files.length) return;
-    if (files.length > MAX_PICK) { say(t('Choose up to {n} photos at a time.', { n: MAX_PICK })); return; }
-    if (peer.busy) { say(t('Transfer in progress…')); return; }
+    if (!files.length) return { sent: 0, skipped: 0 };
+    if (files.length > MAX_PICK) { say(t('Choose up to {n} photos at a time.', { n: MAX_PICK })); return { why: 'many' }; }
+    if (peer.busy) { say(t('Transfer in progress…')); return { why: 'busy' }; }
     const me = { peer, files, id: randomHex(16), cancelled: false };
     job = me;
-    $('[data-act=pick]', pdlg).disabled = true;
+    if (pdlg) $('[data-act=pick]', pdlg).disabled = true;
     try {
       // Fingerprints, a few at a time
       const items = [];
       for (let i = 0; i < files.length; i += 8) {
-        if (me.cancelled) return;
+        if (me.cancelled) return { why: 'cancelled' };
         say(t('Checking {i} of {n}…', { i: Math.min(files.length, i + 8), n: files.length }));
         bar(i, files.length);
         const got = await Promise.all(files.slice(i, i + 8).map((f) => fingerprint(f)));
@@ -410,7 +434,7 @@
       const timer = setTimeout(() => me.resolve?.({ t: 'bk-no', why: 'late' }), 180000);
       const msg = await reply;
       clearTimeout(timer);
-      if (me.cancelled && msg.t !== 'bk-need') return;
+      if (me.cancelled && msg.t !== 'bk-need') return { why: 'cancelled' };
       const name = peer.info.name;
       if (msg.t === 'bk-no') {
         const why = msg.why;
@@ -419,7 +443,7 @@
             : why === 'paused' ? t('{name} paused photo backup. On {name}: ⋯ > Photo backup > Allow again.', { name })
               : why === 'many' ? t('Choose up to {n} photos at a time.', { n: MAX_PICK })
                 : t('{name} didn\'t answer. Keep OmniBeam open on it and try again.', { name }));
-        return;
+        return { why: why || 'late' };
       }
       const need = (Array.isArray(msg.need) ? msg.need : []).filter((i) => Number.isInteger(i) && i >= 0 && i < files.length);
       const skipped = files.length - need.length;
@@ -429,10 +453,10 @@
         last[peer.pairSecret] = { at: Date.now(), sent: 0, skipped };
         writeLs(LAST, last);
         say(t('All {n} are already on {name}. Nothing to send.', { n: files.length, name }));
-        return;
+        return { sent: 0, skipped };
       }
-      if (typeof msg.want !== 'string' || !/^[0-9a-f]{32}$/.test(msg.want)) return say(t('{name} didn\'t answer. Keep OmniBeam open on it and try again.', { name }));
-      if (peer.busy) return say(t('Transfer in progress…'));
+      if (typeof msg.want !== 'string' || !/^[0-9a-f]{32}$/.test(msg.want)) { say(t('{name} didn\'t answer. Keep OmniBeam open on it and try again.', { name })); return { why: 'late' }; }
+      if (peer.busy) { say(t('Transfer in progress…')); return { why: 'busy' }; }
       say(skipped ? t('Sending {n} new photos. {skip} are already on {name}.', { n: need.length, skip: skipped, name })
         : t('Sending {n} new photos.', { n: need.length }));
       me.sending = true;
@@ -440,8 +464,10 @@
       writeLs(LAST, last);
       // As they are: no shrinking or HEIC change (the request carries want, see sendFiles)
       await peer.sendFiles(need.map((i) => files[i]), { want: msg.want });
+      return { sent: need.length, skipped };
     } catch (err) {
       say(t(err.message || 'Connection lost'));
+      return { why: 'error' };
     } finally {
       if (job === me && pdlg) $('[data-act=pick]', pdlg).disabled = false;
     }
@@ -454,8 +480,153 @@
     }
   }
 
+  // ---- The phone: backing up new photos by themselves ----
+  let autoTimer = 0;
+  let autoRunning = false;
+  const autoCfg = () => readLs(AUTO);
+  let camHandle = null; // (kept here too: the page has it even if it can't be kept in IndexedDB)
+  const saveCam = (h) => { camHandle = h; return idb('h', 'readwrite', (s) => (h ? s.put(h, 'cam') : s.delete('cam'))).catch(() => {}); };
+  const loadCam = async () => camHandle || (camHandle = await idb('h', 'readonly', (s) => s.get('cam')).catch(() => null));
+  function paintAuto(peer) {
+    if (!pdlg) return;
+    const a = autoCfg();
+    const on = !!a && a.secret === peer.pairSecret;
+    $('[data-k=auto]', pdlg).checked = on;
+    $('[data-act=cam]', pdlg).hidden = !on || a.mode !== 'folder';
+    $('[data-k=auto-note]', pdlg).textContent = on
+      ? (a.mode === 'folder' ? t('On: new photos in {folder} go to {name} whenever OmniBeam is open on both.', { folder: a.folder || 'Camera', name: peer.info.name })
+        : t('On: when {name} is online, OmniBeam offers to back up your new photos with one tap.', { name: peer.info.name }))
+      : (CAN_HANDLE ? t('Pick your camera folder once (DCIM, then Camera). New photos then go to {name} by themselves whenever OmniBeam is open on both.', { name: peer.info.name })
+        : t('On iPhone and iPad a web page can\'t see new photos by itself: OmniBeam offers a one-tap backup when {name} is online.', { name: peer.info.name }));
+  }
+  async function pickCamera(peer) {
+    let h;
+    try { h = await window.showDirectoryPicker({ id: 'omnibeam-camera', mode: 'read', startIn: 'pictures' }); } catch { return false; }
+    await saveCam(h);
+    writeLs(AUTO, { secret: peer.pairSecret, name: peer.info.name, mode: 'folder', folder: h.name, since: Date.now() - 60000 });
+    writeLs(AUTO_SEEN, null);
+    paintAuto(peer);
+    return true;
+  }
+  async function autoToggle(peer, on, box) {
+    if (!on) {
+      writeLs(AUTO, null);
+      writeLs(AUTO_SEEN, null);
+      saveCam(null);
+      clearInterval(autoTimer);
+      autoTimer = 0;
+      paintAuto(peer);
+      return toast(t('Automatic photo backup turned off'));
+    }
+    if (!peer.pairSecret) return;
+    if (CAN_HANDLE) {
+      if (!(await pickCamera(peer))) { box.checked = false; return; }
+    } else {
+      writeLs(AUTO, { secret: peer.pairSecret, name: peer.info.name, mode: 'remind', since: Date.now(), asked: Date.now() });
+      paintAuto(peer);
+    }
+    wsSend({ type: 'stat', kind: 'pbkauto' });
+    toast(t('Automatic photo backup on: new photos go to {name}', { name: peer.info.name }), 4000);
+    autoStart();
+    autoHere(peer);
+  }
+  // At the start (app.js, when it was turned on before), and whenever a paired device shows up
+  function autoStart() {
+    const a = autoCfg();
+    if (!a || a.mode !== 'folder' || autoTimer) return;
+    autoTimer = setInterval(() => {
+      if (document.hidden) return;
+      const p = [...peers.values()].find((x) => x.pairSecret === autoCfg()?.secret);
+      if (p) autoHere(p);
+    }, AUTO_EVERY);
+  }
+  async function autoHere(peer) {
+    const a = autoCfg();
+    if (!a || !peer.pairSecret || a.secret !== peer.pairSecret || document.hidden) return;
+    if (a.mode === 'remind') {
+      if (Date.now() - (a.asked || 0) < REMIND_EVERY) return;
+      return remindCard(peer);
+    }
+    if (autoRunning || peer.busy) return;
+    const h = await loadCam();
+    if (!h) return;
+    let perm = 'denied';
+    try { perm = await h.queryPermission({ mode: 'read' }); } catch {}
+    if (perm !== 'granted') return allowCard(peer, h);
+    autoRunning = true;
+    try {
+      const seen = new Set(readLs(AUTO_SEEN) || []);
+      const found = [];
+      const walk = async (dir, path, depth) => {
+        for await (const [name, e] of dir.entries()) {
+          if (name.startsWith('.') || found.length >= MAX_PICK) continue;
+          if (e.kind === 'directory') { if (depth < 2 && !/^(\.thumbnails|thumbnails|trash)$/i.test(name)) await walk(e, path + name + '/', depth + 1); continue; }
+          if (!MEDIA.test(name)) continue;
+          let f;
+          try { f = await e.getFile(); } catch { continue; }
+          const key = `${path}${name}|${f.size}|${f.lastModified}`;
+          // Not one still being written (a video being recorded), and only photos taken after it was turned on
+          if (f.lastModified < a.since || seen.has(key) || Date.now() - f.lastModified < 5000) continue;
+          found.push({ f, key });
+        }
+      };
+      await walk(h, '', 0);
+      if (!found.length) return;
+      const r = await run(peer, found.map((x) => x.f));
+      if (r && !r.why) {
+        for (const x of found) seen.add(x.key);
+        writeLs(AUTO_SEEN, [...seen].slice(-5000));
+        if (r.sent) toast(t('Backing up {n} new photos to {name}', { n: r.sent, name: peer.info.name }), 4000);
+      } else if (r && ['off', 'denied', 'paused'].includes(r.why) && !autoHere.told) {
+        autoHere.told = true;
+        toast(r.why === 'off' ? t('{name} isn\'t set up for photo backup. On {name}: ⋯ menu > Photo backup, choose a folder.', { name: peer.info.name })
+          : r.why === 'denied' ? t('{name} takes backups, but not from this device. On {name}: ⋯ > Photo backup, tick this device.', { name: peer.info.name })
+            : t('{name} paused photo backup. On {name}: ⋯ > Photo backup > Allow again.', { name: peer.info.name }), 8000);
+      }
+    } catch (err) {
+      console.warn('Automatic photo backup', err);
+    } finally {
+      autoRunning = false;
+    }
+  }
+  // A card at the bottom: a tap is needed (to choose photos, or to let the page read the folder again)
+  function card(text, yes, onYes) {
+    document.getElementById('pbk-card')?.remove();
+    const el = document.createElement('div');
+    el.id = 'pbk-card';
+    el.className = 'resume-banner pbk-card';
+    el.setAttribute('role', 'status');
+    el.innerHTML = '<span></span><button type="button" class="btn small" data-v="1"></button><button type="button" class="btn ghost small" data-v="0"></button>';
+    el.style.cssText = 'position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px);padding:10px 14px;border-radius:16px;background:var(--card, #fff);color:inherit;box-shadow:0 4px 18px rgba(0,0,0,.25)';
+    $('span', el).textContent = text;
+    $('[data-v="1"]', el).textContent = yes;
+    $('[data-v="0"]', el).textContent = t('Later');
+    el.onclick = (e) => {
+      const v = e.target.closest('[data-v]')?.dataset.v;
+      if (!v) return;
+      el.remove();
+      if (v === '1') onYes();
+    };
+    document.body.append(el);
+  }
+  function remindCard(peer) {
+    const a = autoCfg();
+    writeLs(AUTO, { ...a, asked: Date.now() });
+    card(t('{name} is online. Back up your new photos?', { name: peer.info.name }), t('Back up new photos'), () => {
+      open(peer);
+      choose(peer);
+    });
+  }
+  function allowCard(peer, h) {
+    card(t('Allow OmniBeam to see your camera folder again, to back up new photos to {name}.', { name: peer.info.name }), t('Allow'), async () => {
+      try { if ((await h.requestPermission({ mode: 'read' })) === 'granted') autoHere(peer); } catch {}
+    });
+  }
+
   window.PhotoBackup = {
     restore,
+    autoStart,
+    autoHere,
     open() { dialog(); render(); if (!dlg.open) dlg.showModal(); },
     look: open,
     run, // tests

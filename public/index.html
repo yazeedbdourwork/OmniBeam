@@ -60,7 +60,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=112" as="script">
+  <link rel="preload" href="/app.js?v=113" as="script">
   <script src="/look.js?v=3"></script>
   <link rel="stylesheet" href="/style.css?v=99">
 </head>
@@ -129,6 +129,7 @@
           <button type="button" class="menu-item" role="menuitem" id="btn-tg" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.5 3.5-19 7.3 6.2 2.2 2.3 6.5 3.4-4.4 4.9 3.6z"/><path d="m8.7 13 12.8-9.5"/></svg><span>Send to Telegram</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-sendto" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Send to email or phone</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-present" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20v13H2zM12 16v5M8 21h8"/><path d="m10 7 5 2.5-5 2.5z"/></svg><span>Present slides</span></button>
+          <button type="button" class="menu-item" role="menuitem" id="btn-ftools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M12 12v6"/></svg><span>File tools</span></button>
           <button type="button" class="menu-item" role="menuitem" id="btn-notes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Notes and to-dos</span></button>
           <a class="menu-item bar-twin bar-twin-wide" role="menuitem" id="menu-tv" href="/tv"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>TV mode</span></a>
           <button type="button" class="menu-item" role="menuitem" id="menu-speed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14l4-4M3.5 18a9 9 0 1 1 17 0"/></svg><span>Test speed</span></button>
@@ -1210,6 +1211,9 @@
       <button type="button" data-act="chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.9-5.1A8.4 8.4 0 1 1 21 11.5z"/></svg><span>Chat</span></button>
       <button type="button" data-act="ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Ring this device</span></button>
       <button type="button" data-act="browse" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><circle cx="11.5" cy="13.5" r="2.5"/><path d="m13.5 15.5 2 2"/></svg><span>Browse files</span></button>
+      <button type="button" data-act="safety" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Safety code</span></button>
+      <button type="button" data-act="board" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 12c2-3 4 1 6-2s3 0 5-2"/></svg><span>Whiteboard</span></button>
+      <button type="button" data-act="ftools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M12 12v6"/></svg><span>File tools</span></button>
       <button type="button" data-act="pbackup" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/><path d="M16 3v6M13 6l3 3 3-3"/></svg><span>Back up photos</span></button>
     </div>
     <div class="shrink-toggle" role="group" aria-labelledby="shrink-toggle-label">
@@ -1264,7 +1268,7 @@
 
   <script src="/report.js?v=7" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=112" defer></script>
+  <script src="/app.js?v=113" defer></script>
   <script src="/drop.js?v=14" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>
