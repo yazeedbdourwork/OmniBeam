@@ -501,6 +501,8 @@
     const me = { peer, files, id: randomHex(16), cancelled: false };
     job = me;
     if (pdlg) $('[data-act=pick]', pdlg).disabled = true;
+    // Checking hundreds of photos takes a while before anything is sent: keep the phone's screen on from the start
+    window.keepAwake?.('pbackup', true);
     try {
       // Fingerprints, a few at a time
       const items = [];
@@ -567,6 +569,7 @@
       return { why: 'error' };
     } finally {
       me.done = true;
+      window.keepAwake?.('pbackup', false);
       if (job === me && pdlg && $('[data-k=ready]', pdlg).dataset.s !== 'no') $('[data-act=pick]', pdlg).disabled = false;
     }
   }

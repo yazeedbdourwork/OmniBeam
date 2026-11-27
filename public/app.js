@@ -629,9 +629,10 @@ const iosVersion = (() => {
 const wakeLockBroken = () => isIOS && iosVersion > 0 && iosVersion < 1804
   && (navigator.standalone === true || matchMedia('(display-mode: standalone)').matches);
 // Where the Wake Lock API is missing or does nothing, a tiny black video (1 KB, made for this: 16×16 pixels, 2 s)
-// playing muted in a loop keeps the screen on, as any playing video does. It isn't added to the page. Phones may only
-// start it from a tap, so a tap readies it (see the pointerdown listener) and it plays only while something needs the
-// screen on.
+// playing muted in a loop keeps the screen on, as any playing video does. On iPhones it plays as well as the wake
+// lock, which Safari doesn't always keep. It must be in the page (a video that isn't in the page doesn't keep an
+// iPhone awake): 1 pixel in a corner, nearly see-through, never in the way. Phones may only start it from a tap, so
+// a tap readies it (see the pointerdown listener) and it plays only while something needs the screen on.
 const KEEP_AWAKE_MP4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAK4bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAkR0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAHgbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAD6AAAB9BVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABi21pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUtzdGJsAAAAg3N0c2QAAAAAAAAAAQAAAHNhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGP//AAAAHWF2Y0MBQsAK/+EABmdCwAraeQEABGjOPIAAAAAYc3R0cwAAAAAAAAABAAAAFAAAAGQAAAAUc3RzcwAAAAAAAAABAAAAAQAAABxzdHNjAAAAAAAAAAEAAAABAAAAFAAAAAEAAABkc3RzegAAAAAAAAAAAAAAFAAAAYoAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAAFHN0Y28AAAAAAAAAAQAAAuAAAAIqbWRhdAAAAYZliISg0BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAAAAAEQZoilAAAAARBmkKUAAAABEGaYpQAAAAEQZqClAAAAARBmqKUAAAABEGawpQAAAAEQZrilAAAAARBmwKUAAAABEGbIpQAAAAEQZtClAAAAARBm2KUAAAABEGbgpQAAAAEQZuilAAAAARBm8KUAAAABEGb4pQAAAAEQZoClAAAAARBmiKUAAAABEGaQpQAAAAEQZpilA==';
 const KeepAwakeVideo = {
   el: null,
@@ -642,6 +643,10 @@ const KeepAwakeVideo = {
       v.loop = true;
       v.playsInline = true;
       for (const a of ['muted', 'playsinline', 'loop']) v.setAttribute(a, '');
+      v.setAttribute('aria-hidden', 'true');
+      v.tabIndex = -1;
+      v.className = 'keep-awake';
+      v.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:.01;pointer-events:none;z-index:-1';
       v.src = KEEP_AWAKE_MP4;
       this.el = v;
     }
@@ -649,6 +654,7 @@ const KeepAwakeVideo = {
   },
   start() {
     const v = this.element();
+    if (!v.isConnected) document.body.appendChild(v);
     if (v.paused) v.play().catch(() => {});
   },
   stop() {
@@ -660,10 +666,11 @@ const KeepAwakeVideo = {
     if (this.readied) return;
     this.readied = true;
     const v = this.element();
+    if (!v.isConnected) document.body.appendChild(v);
     v.play().then(() => { if (!needAwake()) v.pause(); }, () => { this.readied = false; });
   },
 };
-const needsVideo = () => wakeLockOk === false || wakeLockBroken() || !navigator.wakeLock;
+const needsVideo = () => isIOS || wakeLockOk === false || wakeLockBroken() || !navigator.wakeLock;
 const transferActive = () => [...peers.values()].some((p) => p.busy);
 window.omniBusy = transferActive; // for the crash check in report.js
 // Other work that must not stop when the screen turns off: a link upload, sharing or watching a screen, a voice
@@ -720,6 +727,11 @@ document.addEventListener('pointerdown', () => {
   }
   BgAudio.ready();
 }, { passive: true });
+// A wake lock that was refused or let go (battery saver, a moment in the background) is asked for again every few
+// seconds while something still needs the screen on, not only on the next tap
+setInterval(() => {
+  if (needAwake() && !wakeLock && !wakeLockAsking && document.visibilityState === 'visible') updateWakeLock();
+}, 5000);
 
 // ---------- Keep going with the screen off (iPhone, experimental) ----------
 // Settings → "Keep transfers going with the screen off". Safari lets a page run on while it plays sound, even with the
@@ -1093,6 +1105,9 @@ class Peer {
   get busy() { return this._busy; }
   set busy(v) {
     this._busy = v;
+    // From the moment a send or receive starts, not only once bytes move: getting photos ready, making videos
+    // smaller and waiting for the other device to accept can take minutes, and a phone that locks then stops it
+    setTimeout(updateWakeLock, 0);
     if (this.el) this.el.classList.toggle('busy', v);
     if (v) this.showWaiting('');
     if (!v && this.queue.length) {
@@ -6376,7 +6391,7 @@ $('#menu-invite').onclick = () => openInvite();
 const loadAlbum = () => loadScript('/album.js?v=1');
 const loadBrowse = () => loadScript('/browse.js?v=2');
 const loadSync = () => loadScript('/sync.js?v=1');
-const loadPBackup = () => loadScript('/pbackup.js?v=3');
+const loadPBackup = () => loadScript('/pbackup.js?v=4');
 // Safety code (safety.js), shared whiteboard (board.js) and file tools: PDF merge, picture resize (ftools.js)
 const loadSafety = () => loadScript('/safety.js?v=1');
 const loadBoard = () => loadScript('/board.js?v=1');
