@@ -183,6 +183,11 @@ test('llms.txt and the app data name the newer features; guides carry visible an
     const art = ld(html).find((n) => n['@type'] === 'Article');
     expect(art.datePublished, p).toMatch(/^\d{4}-\d\d-\d\d$/);
   }
+  // The FAQ answers questions about calls, the safety code and photo backup, in its FAQPage data too
+  for (const [p, q] of [['/faq', 'Can I chat or call with OmniBeam?'], ['/ar/faq', 'هل يمكنني الدردشة أو الاتصال عبر OmniBeam؟']]) {
+    const faq = ld(await (await request.get(p)).text()).find((n) => n['@type'] === 'FAQPage');
+    expect(faq.mainEntity.map((e) => e.name), p).toContain(q);
+  }
   for (const p of ['/it/', '/ru/', '/it/blog', '/ru/blog']) {
     const html = await (await request.get(p)).text();
     expect(html.match(/<title>([^<]*)<\/title>/)[1].length, p).toBeLessThanOrEqual(65);
