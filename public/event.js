@@ -7,6 +7,59 @@
 // ?poster=1 shows a page to print with the QR code.
 'use strict';
 (function () {
+  // Keep the phone's screen on while this page uploads or downloads: a phone that locks its screen stops it. The Wake
+  // Lock API where there is one (asked for again when the page is back in front or the phone let it go), and on
+  // iPhones, or without it, a tiny muted video playing in a corner of the page, as on the main page (app.js:
+  // KeepAwakeVideo). Awake.on() when the work starts, Awake.off() when it ends.
+  const Awake = (() => {
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    let n = 0;
+    let lock = null;
+    let asking = false;
+    let video = null;
+    function play() {
+      if (!video) {
+        video = document.createElement('video');
+        video.muted = video.loop = video.playsInline = true;
+        for (const a of ['muted', 'playsinline', 'loop']) video.setAttribute(a, '');
+        video.setAttribute('aria-hidden', 'true');
+        video.tabIndex = -1;
+        video.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:.01;pointer-events:none;z-index:-1';
+        video.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAK4bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAkR0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAHgbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAD6AAAB9BVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABi21pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUtzdGJsAAAAg3N0c2QAAAAAAAAAAQAAAHNhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGP//AAAAHWF2Y0MBQsAK/+EABmdCwAraeQEABGjOPIAAAAAYc3R0cwAAAAAAAAABAAAAFAAAAGQAAAAUc3RzcwAAAAAAAAABAAAAAQAAABxzdHNjAAAAAAAAAAEAAAABAAAAFAAAAAEAAABkc3RzegAAAAAAAAAAAAAAFAAAAYoAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAAFHN0Y28AAAAAAAAAAQAAAuAAAAIqbWRhdAAAAYZliISg0BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAAAAAEQZoilAAAAARBmkKUAAAABEGaYpQAAAAEQZqClAAAAARBmqKUAAAABEGawpQAAAAEQZrilAAAAARBmwKUAAAABEGbIpQAAAAEQZtClAAAAARBm2KUAAAABEGbgpQAAAAEQZuilAAAAARBm8KUAAAABEGb4pQAAAAEQZoClAAAAARBmiKUAAAABEGaQpQAAAAEQZpilA==';
+      }
+      if (!video.isConnected) document.body.appendChild(video);
+      if (video.paused) video.play().catch(() => {});
+    }
+    async function grab() {
+      if (!n || document.visibilityState !== 'visible') return;
+      if (ios || !navigator.wakeLock) play(); // first, while still in the tap that started it
+      if (lock || asking || !navigator.wakeLock) return;
+      asking = true;
+      try {
+        const got = await navigator.wakeLock.request('screen');
+        got.addEventListener('release', () => { if (lock === got) lock = null; });
+        lock = got;
+        if (!n) { lock = null; got.release().catch(() => {}); }
+      } catch {
+        if (n) play();
+      } finally {
+        asking = false;
+      }
+    }
+    document.addEventListener('visibilitychange', grab);
+    setInterval(() => { if (n && !lock) grab(); }, 5000);
+    return {
+      on() { n++; grab(); },
+      off() {
+        n = Math.max(0, n - 1);
+        if (n) return;
+        const had = lock;
+        lock = null;
+        had?.release().catch(() => {});
+        video?.pause();
+      },
+    };
+  })();
   const TEXT = {
     "ar": {
       "Event album": "ألبوم المناسبة",
@@ -1239,6 +1292,7 @@
     await refresh();
     if (!info.open) { $('#ev-input').value = ''; return closedNotice(); }
     adding = true;
+    Awake.on();
     const bar = $('#ev-bar');
     const from = $('#ev-from').value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 40);
     let ok = 0;
@@ -1281,6 +1335,7 @@
       }
     } finally {
       adding = false;
+      Awake.off();
       bar.hidden = true;
       $('#ev-input').value = '';
     }
