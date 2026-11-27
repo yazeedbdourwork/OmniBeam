@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "Копирование не завершилось. Нажмите «Выбрать фото», чтобы попробовать снова: фото, которые уже есть на {name}, пропускаются.",
     "Done: {n} new photos backed up to {name}.": "Готово: новых фото сохранено на {name}: {n}.",
     "{name} wants to back up its photos on this computer.": "{name} хочет сохранить свои фото на этом компьютере.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "Рядом",
+    "On the same Wi‑Fi as this device": "В той же сети Wi‑Fi, что и это устройство",
+    "Devices on this Wi‑Fi can see this device again": "Устройства в этой сети Wi‑Fi снова видят это устройство",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Скрыто от устройств в этой сети Wi‑Fi. Сопряжённые устройства по-прежнему подключаются.",
+    "Hidden from Nearby": "Скрыто из «Рядом»",
+    "Show this device to others on the same Wi‑Fi": "Показывать это устройство другим в той же сети Wi‑Fi",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Устройства в одной сети Wi‑Fi находят друг друга без кода и QR, а на их карточке написано «Рядом». Выключите это в общественной или гостиничной сети Wi‑Fi, чтобы остаться скрытым. Сопряжённые устройства, команды и комнаты продолжают работать.",
+    "Nearby:": "Рядом:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Устройства в одной сети Wi‑Fi появляются сами, без кода и QR, а на их карточке написано «Рядом». Чтобы остаться скрытым в общественной или гостиничной сети Wi‑Fi, выключите «Рядом» в Настройки, Конфиденциальность.",
   },
 });

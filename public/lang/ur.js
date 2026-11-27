@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "بیک اپ مکمل نہیں ہوا۔ دوبارہ کوشش کے لیے تصاویر منتخب کریں پر ٹیپ کریں: جو تصاویر {name} پر پہلے سے ہیں وہ چھوڑ دی جاتی ہیں۔",
     "Done: {n} new photos backed up to {name}.": "ہو گیا: {n} نئی تصاویر کا {name} پر بیک اپ ہو گیا۔",
     "{name} wants to back up its photos on this computer.": "{name} اپنی تصاویر کا بیک اپ اس کمپیوٹر پر لینا چاہتا ہے۔",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "قریب",
+    "On the same Wi‑Fi as this device": "اس ڈیوائس والے Wi‑Fi پر",
+    "Devices on this Wi‑Fi can see this device again": "اس Wi‑Fi کی ڈیوائسز اب اس ڈیوائس کو پھر سے دیکھ سکتی ہیں",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "اس Wi‑Fi کی ڈیوائسز سے چھپا ہوا ہے۔ جوڑی گئی ڈیوائسز اب بھی جڑتی ہیں۔",
+    "Hidden from Nearby": "قریب سے چھپا ہوا",
+    "Show this device to others on the same Wi‑Fi": "اس ڈیوائس کو اسی Wi‑Fi پر دوسروں کو دکھائیں",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "ایک ہی Wi‑Fi پر ڈیوائسز کوڈ یا QR کے بغیر ایک دوسرے کو ڈھونڈ لیتی ہیں، اور ان کے کارڈ پر قریب لکھا ہوتا ہے۔ عوامی یا ہوٹل کے Wi‑Fi پر چھپے رہنے کے لیے اسے بند کریں۔ جوڑی گئی ڈیوائسز، ٹیمیں اور رومز کام کرتے رہتے ہیں۔",
+    "Nearby:": "قریب:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "ایک ہی Wi‑Fi پر ڈیوائسز خود ہی نظر آتی ہیں، کوڈ یا QR کے بغیر، اور ان کے کارڈ پر قریب لکھا ہوتا ہے۔ عوامی یا ہوٹل کے Wi‑Fi پر چھپے رہنے کے لیے سیٹنگز، رازداری میں قریب بند کریں۔",
   },
 });

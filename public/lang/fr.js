@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "La sauvegarde n'est pas allée au bout. Touchez Choisir des photos pour réessayer : les photos déjà sur {name} sont ignorées.",
     "Done: {n} new photos backed up to {name}.": "Terminé : {n} nouvelles photos sauvegardées sur {name}.",
     "{name} wants to back up its photos on this computer.": "{name} veut sauvegarder ses photos sur cet ordinateur.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "À proximité",
+    "On the same Wi‑Fi as this device": "Sur le même Wi‑Fi que cet appareil",
+    "Devices on this Wi‑Fi can see this device again": "Les appareils de ce Wi‑Fi voient à nouveau cet appareil",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Masqué pour les appareils de ce Wi‑Fi. Les appareils associés se connectent toujours.",
+    "Hidden from Nearby": "Masqué de « À proximité »",
+    "Show this device to others on the same Wi‑Fi": "Montrer cet appareil aux autres sur le même Wi‑Fi",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Les appareils sur le même Wi‑Fi se trouvent sans code ni QR, et leur carte indique À proximité. Désactivez ceci sur un Wi‑Fi public ou d’hôtel pour rester masqué. Les appareils associés, les équipes et les salons fonctionnent toujours.",
+    "Nearby:": "À proximité :",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Les appareils sur le même Wi‑Fi apparaissent tout seuls, sans code ni QR, et leur carte indique À proximité. Pour rester masqué sur un Wi‑Fi public ou d’hôtel, désactivez À proximité dans Paramètres, Confidentialité.",
   },
 });

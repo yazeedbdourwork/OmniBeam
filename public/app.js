@@ -2616,15 +2616,19 @@ class Peer {
     this.el.classList.toggle('fav', !!pair?.fav);
     // A device met through a team room shows the team's name
     const teams = pair ? [] : Teams.shared(this.info).map((x) => x.name);
+    // Found on the same Wi‑Fi, with no pairing or team: Nearby
+    const nearby = !pair && !teams.length && !!this.info.sameNet;
     let tag = $('.tag', this.el);
-    if (!pair && !teams.length) { tag?.remove(); return; }
+    if (!pair && !teams.length && !nearby) { tag?.remove(); return; }
     if (!tag) {
       tag = document.createElement('span');
       tag.className = 'tag';
       ($('.presence', this.el) || $('.status', this.el)).before(tag);
     }
-    tag.textContent = pair ? (pair.fav ? '★ ' : '') + (pair.trusted ? t('Trusted') : t('Paired')) : teams.join(' · ');
-    tag.classList.toggle('team-tag', !pair);
+    tag.textContent = pair ? (pair.fav ? '★ ' : '') + (pair.trusted ? t('Trusted') : t('Paired')) : nearby ? t('Nearby') : teams.join(' · ');
+    tag.classList.toggle('team-tag', !pair && !nearby);
+    tag.classList.toggle('nearby-tag', nearby);
+    if (nearby) tag.title = t('On the same Wi‑Fi as this device'); else tag.removeAttribute('title');
   }
 
   destroy() {
@@ -6550,6 +6554,26 @@ function removePeer(id, quiet = false) {
 let socketFailures = 0;
 let myPublicIp = null;   // this device's public address as the server sees it (for the connection check)
 let myNetworkId = null;
+// Nearby: devices on the same Wi‑Fi (the same public address, as the server sees it) find each other with no code
+// or QR, and their cards say Nearby. Settings → Privacy can hide this device from them; pairing, teams and rooms
+// still work. Kept as omnibeam-nearby = 'off'.
+const Nearby = {
+  KEY: 'omnibeam-nearby',
+  on: (() => { try { return localStorage.getItem('omnibeam-nearby') !== 'off'; } catch { return true; } })(),
+  set(on) {
+    this.on = !!on;
+    try { if (this.on) localStorage.removeItem(this.KEY); else localStorage.setItem(this.KEY, 'off'); } catch {}
+    wsSend({ type: 'nearby', on: this.on });
+    this.paintMe();
+    toast(this.on ? t('Devices on this Wi‑Fi can see this device again') : t('Hidden from devices on this Wi‑Fi. Paired devices still connect.'), 4000);
+  },
+  paintMe() {
+    const el = document.getElementById('me-network');
+    if (!el) return;
+    el.textContent = !this.on ? ` · ${t('Hidden from Nearby')}`
+      : myNetworkId ? ` · ${t('ID')} ${myNetworkId}` : ` · ${t('use Pair to connect')}`;
+  },
+};
 let build = null; // frontend version reported by the server on connect
 const PAGE_BUILD = document.querySelector('meta[name="omnibeam-build"]')?.content || null; // version this page was built from
 let reconnectTimer = null;
@@ -6664,7 +6688,7 @@ function connectSocket() {
     if (!usePolling) wsFailsBeforeOpen = 0;
     socketFailures = 0;
     setOffline(false);
-    wsSend({ type: 'intro', device: deviceName(), name: customName(), avatar: customAvatar() || undefined, tab: tabKey, supporter: Supporter.code() || undefined });
+    wsSend({ type: 'intro', device: deviceName(), name: customName(), avatar: customAvatar() || undefined, tab: tabKey, supporter: Supporter.code() || undefined, nearby: Nearby.on ? undefined : false });
     const secrets = loadPaired().map((p) => p.secret);
     for (const q of [qrPair, qrScan]) if (q && q.until > Date.now()) secrets.push(q.secret);
     if (secrets.length) wsSend({ type: 'join-secrets', secrets });
@@ -6711,9 +6735,7 @@ function connectSocket() {
         av.innerHTML = avatarHtml(customAvatar(), deviceName());
         showMyAvatar();
         setTabTitle(me.name);
-        $('#me-network').textContent = msg.networkId
-          ? ` · ${t('ID')} ${msg.networkId}`
-          : ` · ${t('use Pair to connect')}`;
+        Nearby.paintMe();
         break;
       }
       case 'pong':
@@ -8124,6 +8146,8 @@ $('#open-links').onchange = (e) => {
   toast(openLinksAuto ? t('Links from your paired devices open by themselves') : t('Links show an Open link button'));
 };
 $('#msg-sound').checked = msgSound;
+$('#nearby-on').checked = Nearby.on;
+$('#nearby-on').onchange = (e) => Nearby.set(e.target.checked);
 $('#msg-sound').onchange = (e) => { setMsgSound(e.target.checked); if (e.target.checked) { unlockAudio(); chime(); } };
 Messages.load();
 setTimeout(() => { Vanish.sweep(); Later.arm(); }, 1500);
@@ -8240,7 +8264,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=11`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=12`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');

@@ -1865,5 +1865,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "Pencadangan belum selesai. Ketuk Pilih foto untuk mencoba lagi: foto yang sudah ada di {name} dilewati.",
     "Done: {n} new photos backed up to {name}.": "Selesai: {n} foto baru dicadangkan ke {name}.",
     "{name} wants to back up its photos on this computer.": "{name} ingin mencadangkan fotonya di komputer ini.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "Terdekat",
+    "On the same Wi‑Fi as this device": "Di Wi‑Fi yang sama dengan perangkat ini",
+    "Devices on this Wi‑Fi can see this device again": "Perangkat di Wi‑Fi ini bisa melihat perangkat ini lagi",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Tersembunyi dari perangkat di Wi‑Fi ini. Perangkat yang dipasangkan tetap terhubung.",
+    "Hidden from Nearby": "Tersembunyi dari Terdekat",
+    "Show this device to others on the same Wi‑Fi": "Tampilkan perangkat ini ke orang lain di Wi‑Fi yang sama",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Perangkat di Wi‑Fi yang sama saling menemukan tanpa kode atau QR, dan kartunya bertuliskan Terdekat. Matikan ini di Wi‑Fi umum atau hotel agar tetap tersembunyi. Perangkat yang dipasangkan, tim, dan ruang tetap berfungsi.",
+    "Nearby:": "Terdekat:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Perangkat di Wi‑Fi yang sama muncul sendiri, tanpa kode atau QR, dan kartunya bertuliskan Terdekat. Agar tetap tersembunyi di Wi‑Fi umum atau hotel, matikan Terdekat di Pengaturan, Privasi.",
   },
 });

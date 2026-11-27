@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "백업이 끝나지 않았습니다. 사진 선택을 눌러 다시 시도하세요. {name}에 이미 있는 사진은 건너뜁니다.",
     "Done: {n} new photos backed up to {name}.": "완료: 새 사진 {n}장을 {name}에 백업했습니다.",
     "{name} wants to back up its photos on this computer.": "{name}이(가) 이 컴퓨터에 사진을 백업하려고 합니다.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "근처",
+    "On the same Wi‑Fi as this device": "이 기기와 같은 Wi‑Fi",
+    "Devices on this Wi‑Fi can see this device again": "이 Wi‑Fi의 기기에서 이 기기가 다시 보입니다",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "이 Wi‑Fi의 기기에서 숨겨졌습니다. 페어링된 기기는 계속 연결됩니다.",
+    "Hidden from Nearby": "근처에서 숨김",
+    "Show this device to others on the same Wi‑Fi": "같은 Wi‑Fi의 다른 기기에 이 기기 표시",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "같은 Wi‑Fi의 기기는 코드나 QR 없이 서로를 찾고, 카드에 근처라고 표시됩니다. 공용 또는 호텔 Wi‑Fi에서는 이 기능을 꺼서 숨길 수 있습니다. 페어링된 기기, 팀, 방은 계속 작동합니다.",
+    "Nearby:": "근처:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "같은 Wi‑Fi의 기기는 코드나 QR 없이 저절로 나타나고, 카드에 근처라고 표시됩니다. 공용 또는 호텔 Wi‑Fi에서 숨기려면 설정, 개인정보에서 근처를 끄세요.",
   },
 });

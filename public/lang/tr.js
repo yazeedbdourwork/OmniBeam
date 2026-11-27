@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "Yedekleme bitmedi. Yeniden denemek için Fotoğraf seç'e dokunun: {name} üzerinde zaten olan fotoğraflar atlanır.",
     "Done: {n} new photos backed up to {name}.": "Tamam: {n} yeni fotoğraf {name} üzerine yedeklendi.",
     "{name} wants to back up its photos on this computer.": "{name} fotoğraflarını bu bilgisayara yedeklemek istiyor.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "Yakında",
+    "On the same Wi‑Fi as this device": "Bu cihazla aynı Wi‑Fi’da",
+    "Devices on this Wi‑Fi can see this device again": "Bu Wi‑Fi’daki cihazlar bu cihazı yeniden görebilir",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Bu Wi‑Fi’daki cihazlardan gizlendi. Eşleştirilmiş cihazlar bağlanmaya devam eder.",
+    "Hidden from Nearby": "Yakında’dan gizli",
+    "Show this device to others on the same Wi‑Fi": "Bu cihazı aynı Wi‑Fi’daki diğerlerine göster",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Aynı Wi‑Fi’daki cihazlar kod veya QR olmadan birbirini bulur ve kartlarında Yakında yazar. Gizli kalmak için halka açık veya otel Wi‑Fi’ında bunu kapatın. Eşleştirilmiş cihazlar, ekipler ve odalar çalışmaya devam eder.",
+    "Nearby:": "Yakında:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Aynı Wi‑Fi’daki cihazlar kod veya QR olmadan kendiliğinden görünür ve kartlarında Yakında yazar. Halka açık veya otel Wi‑Fi’ında gizli kalmak için Ayarlar, Gizlilik’te Yakında’yı kapatın.",
   },
 });
