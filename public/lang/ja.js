@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "バックアップが完了しませんでした。「写真を選ぶ」をタップしてもう一度お試しください。{name} にすでにある写真はスキップされます。",
     "Done: {n} new photos backed up to {name}.": "完了: 新しい写真 {n} 枚を {name} にバックアップしました。",
     "{name} wants to back up its photos on this computer.": "{name} がこのコンピューターに写真をバックアップしようとしています。",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "近く",
+    "On the same Wi‑Fi as this device": "このデバイスと同じWi‑Fi",
+    "Devices on this Wi‑Fi can see this device again": "このWi‑Fiのデバイスから再び見えるようになりました",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "このWi‑Fiのデバイスから見えなくなりました。ペアリング済みのデバイスは引き続きつながります。",
+    "Hidden from Nearby": "「近く」に非表示",
+    "Show this device to others on the same Wi‑Fi": "同じWi‑Fiの他のデバイスにこのデバイスを表示する",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "同じWi‑Fiのデバイスはコードや QR なしでお互いを見つけ、カードに「近く」と表示されます。公共やホテルの Wi‑Fi では、オフにすると見えなくなります。ペアリング済みのデバイス、チーム、ルームは引き続き使えます。",
+    "Nearby:": "近く:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "同じWi‑Fiのデバイスはコードや QR なしで自動的に表示され、カードに「近く」と表示されます。公共やホテルの Wi‑Fi で見えなくするには、設定のプライバシーで「近く」をオフにします。",
   },
 });

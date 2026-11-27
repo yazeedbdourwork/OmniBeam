@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "Il backup non è finito. Tocca Scegli foto per riprovare: le foto già su {name} vengono saltate.",
     "Done: {n} new photos backed up to {name}.": "Fatto: {n} nuove foto salvate su {name}.",
     "{name} wants to back up its photos on this computer.": "{name} vuole fare il backup delle sue foto su questo computer.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "Vicini",
+    "On the same Wi‑Fi as this device": "Sulla stessa rete Wi‑Fi di questo dispositivo",
+    "Devices on this Wi‑Fi can see this device again": "I dispositivi di questa rete Wi‑Fi vedono di nuovo questo dispositivo",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Nascosto ai dispositivi di questa rete Wi‑Fi. I dispositivi associati si collegano comunque.",
+    "Hidden from Nearby": "Nascosto in Vicini",
+    "Show this device to others on the same Wi‑Fi": "Mostra questo dispositivo agli altri sulla stessa rete Wi‑Fi",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "I dispositivi sulla stessa rete Wi‑Fi si trovano senza codice né QR, e la loro scheda dice Vicini. Disattivalo su reti Wi‑Fi pubbliche o d’albergo per restare nascosto. Dispositivi associati, team e stanze funzionano comunque.",
+    "Nearby:": "Vicini:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "I dispositivi sulla stessa rete Wi‑Fi compaiono da soli, senza codice né QR, e la loro scheda dice Vicini. Per restare nascosto su una rete Wi‑Fi pubblica o d’albergo, disattiva Vicini in Impostazioni, Privacy.",
   },
 });

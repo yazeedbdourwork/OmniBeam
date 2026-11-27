@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "لم يكتمل النسخ الاحتياطي. اضغط «اختر الصور» للمحاولة مجددًا: الصور الموجودة على {name} تُتخطى.",
     "Done: {n} new photos backed up to {name}.": "تم: نُسخت {n} صورة جديدة احتياطيًا إلى {name}.",
     "{name} wants to back up its photos on this computer.": "يريد {name} نسخ صوره احتياطيًا على هذا الكمبيوتر.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "قريب",
+    "On the same Wi‑Fi as this device": "على نفس شبكة Wi‑Fi مع هذا الجهاز",
+    "Devices on this Wi‑Fi can see this device again": "يمكن للأجهزة على شبكة Wi‑Fi هذه رؤية هذا الجهاز مرة أخرى",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "هذا الجهاز مخفي عن الأجهزة على شبكة Wi‑Fi هذه. الأجهزة المقترنة ما زالت تتصل.",
+    "Hidden from Nearby": "مخفي عن «قريب»",
+    "Show this device to others on the same Wi‑Fi": "أظهر هذا الجهاز للآخرين على نفس شبكة Wi‑Fi",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "الأجهزة على نفس شبكة Wi‑Fi تجد بعضها بدون رمز أو QR، وتظهر على بطاقاتها كلمة «قريب». أوقف هذا على شبكات Wi‑Fi العامة أو في الفنادق لتبقى مخفيًا. الأجهزة المقترنة والفرق والغرف تبقى تعمل.",
+    "Nearby:": "قريب:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "الأجهزة على نفس شبكة Wi‑Fi تظهر وحدها، بدون رمز أو QR، وتظهر على بطاقاتها كلمة «قريب». لتبقى مخفيًا على شبكة Wi‑Fi عامة أو في فندق، أوقف «قريب» من الإعدادات، الخصوصية.",
   },
 });

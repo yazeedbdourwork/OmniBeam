@@ -4165,9 +4165,18 @@ function onConnection(ws, req) {
         }
         client.avatar = cleanAvatar(msg.avatar, client);
         send(ws, { type: 'name', name: client.name });
-        joinRoom(client, networkRoom);
+        // Nearby (Settings > Privacy): a device can stay hidden from the others on its network (same public address).
+        // Pairing, team rooms and public rooms still work; it just isn't shown to, and doesn't see, the network.
+        if (msg.nearby !== false) joinRoom(client, networkRoom);
+        else send(ws, { type: 'peers', peers: [] });
         count('connections');
         countNetwork(networkRoom);
+        break;
+      case 'nearby':
+        // Nearby turned on or off in Settings while connected (a limited number of times per connection)
+        if (typeof msg.on !== 'boolean' || (client.nearbyFlips = (client.nearbyFlips || 0) + 1) > 30) return;
+        if (msg.on) joinRoom(client, networkRoom);
+        else leaveRoom(client, networkRoom);
         break;
       case 'ping':
         // A phone back from a locked screen checks that this connection still works (see checkSocketAlive in app.js)

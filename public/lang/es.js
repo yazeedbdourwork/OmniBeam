@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "La copia no terminó. Toca Elegir fotos para intentarlo de nuevo: las fotos que ya están en {name} se omiten.",
     "Done: {n} new photos backed up to {name}.": "Listo: {n} fotos nuevas copiadas en {name}.",
     "{name} wants to back up its photos on this computer.": "{name} quiere hacer una copia de sus fotos en este ordenador.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "Cerca",
+    "On the same Wi‑Fi as this device": "En la misma red Wi‑Fi que este dispositivo",
+    "Devices on this Wi‑Fi can see this device again": "Los dispositivos de esta red Wi‑Fi vuelven a ver este dispositivo",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Oculto para los dispositivos de esta red Wi‑Fi. Los dispositivos vinculados siguen conectando.",
+    "Hidden from Nearby": "Oculto en Cerca",
+    "Show this device to others on the same Wi‑Fi": "Mostrar este dispositivo a otros en la misma red Wi‑Fi",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Los dispositivos de la misma red Wi‑Fi se encuentran sin código ni QR, y su tarjeta dice Cerca. Desactívalo en redes Wi‑Fi públicas o de hotel para quedar oculto. Los dispositivos vinculados, los equipos y las salas siguen funcionando.",
+    "Nearby:": "Cerca:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Los dispositivos de la misma red Wi‑Fi aparecen solos, sin código ni QR, y su tarjeta dice Cerca. Para quedar oculto en una red Wi‑Fi pública o de hotel, desactiva Cerca en Ajustes, Privacidad.",
   },
 });

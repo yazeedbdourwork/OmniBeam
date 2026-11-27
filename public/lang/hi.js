@@ -1865,5 +1865,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "बैकअप पूरा नहीं हुआ। फिर से कोशिश करने के लिए फ़ोटो चुनें पर टैप करें: {name} पर पहले से मौजूद फ़ोटो छोड़ दी जाती हैं।",
     "Done: {n} new photos backed up to {name}.": "हो गया: {n} नई फ़ोटो का {name} पर बैकअप हुआ।",
     "{name} wants to back up its photos on this computer.": "{name} अपनी फ़ोटो का बैकअप इस कंप्यूटर पर लेना चाहता है।",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "आस-पास",
+    "On the same Wi‑Fi as this device": "इस डिवाइस वाले Wi‑Fi पर ही",
+    "Devices on this Wi‑Fi can see this device again": "इस Wi‑Fi के डिवाइस अब इस डिवाइस को फिर से देख सकते हैं",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "इस Wi‑Fi के डिवाइस से छिपा है। जोड़े गए डिवाइस अब भी कनेक्ट होते हैं।",
+    "Hidden from Nearby": "आस-पास से छिपा",
+    "Show this device to others on the same Wi‑Fi": "इस डिवाइस को उसी Wi‑Fi पर दूसरों को दिखाएँ",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "उसी Wi‑Fi पर डिवाइस बिना कोड या QR के एक-दूसरे को ढूँढ लेते हैं, और उनके कार्ड पर आस-पास लिखा होता है। सार्वजनिक या होटल के Wi‑Fi पर छिपे रहने के लिए इसे बंद करें। जोड़े गए डिवाइस, टीमें और रूम काम करते रहते हैं।",
+    "Nearby:": "आस-पास:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "उसी Wi‑Fi पर डिवाइस अपने-आप दिखते हैं, बिना कोड या QR के, और उनके कार्ड पर आस-पास लिखा होता है। सार्वजनिक या होटल के Wi‑Fi पर छिपे रहने के लिए सेटिंग्स, निजता में आस-पास बंद करें।",
   },
 });

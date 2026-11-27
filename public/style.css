@@ -1087,6 +1087,8 @@ dialog.viewer { width: min(960px, calc(100vw - 24px)); padding: 16px; }
 .team-new input { font-size: 1rem; font-weight: 600; letter-spacing: normal; text-align: start; }
 [dir=rtl] .team-new input { direction: rtl; }
 .peer .tag.team-tag { color: var(--fg); }
+/* Found on the same Wi-Fi (app.js Nearby) */
+.peer .tag.nearby-tag { color: var(--ok); }
 
 /* Device chooser (Send again) */
 .choose-list { display: grid; gap: 10px; max-height: 50vh; overflow: auto; padding: 4px; }

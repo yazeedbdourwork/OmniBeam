@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "备份未完成。点按“选择照片”重试：{name} 上已有的照片会被跳过。",
     "Done: {n} new photos backed up to {name}.": "完成：已将 {n} 张新照片备份到 {name}。",
     "{name} wants to back up its photos on this computer.": "{name} 想把照片备份到这台电脑。",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "附近",
+    "On the same Wi‑Fi as this device": "与此设备在同一 Wi‑Fi",
+    "Devices on this Wi‑Fi can see this device again": "此 Wi‑Fi 上的设备又能看到此设备了",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "已对此 Wi‑Fi 上的设备隐藏。已配对的设备仍可连接。",
+    "Hidden from Nearby": "已在“附近”中隐藏",
+    "Show this device to others on the same Wi‑Fi": "向同一 Wi‑Fi 上的其他设备显示此设备",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "同一 Wi‑Fi 上的设备无需代码或二维码即可互相找到，卡片上会显示“附近”。在公共或酒店 Wi‑Fi 上可关闭此项以保持隐藏。已配对的设备、团队和房间仍可使用。",
+    "Nearby:": "附近：",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "同一 Wi‑Fi 上的设备会自动出现，无需代码或二维码，卡片上会显示“附近”。要在公共或酒店 Wi‑Fi 上保持隐藏，请在设置的隐私中关闭“附近”。",
   },
 });

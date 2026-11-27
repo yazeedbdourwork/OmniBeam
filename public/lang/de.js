@@ -1863,5 +1863,15 @@
     "The backup didn't finish. Tap Choose photos to try again: photos already on {name} are skipped.": "Die Sicherung wurde nicht fertig. Tippe auf „Fotos wählen“, um es erneut zu versuchen: Fotos, die schon auf {name} sind, werden übersprungen.",
     "Done: {n} new photos backed up to {name}.": "Fertig: {n} neue Fotos auf {name} gesichert.",
     "{name} wants to back up its photos on this computer.": "{name} möchte seine Fotos auf diesem Computer sichern.",
+    // Nearby: devices on the same Wi-Fi, and hiding from them (2026-11-27)
+    "Nearby": "In der Nähe",
+    "On the same Wi‑Fi as this device": "Im selben WLAN wie dieses Gerät",
+    "Devices on this Wi‑Fi can see this device again": "Geräte in diesem WLAN sehen dieses Gerät wieder",
+    "Hidden from devices on this Wi‑Fi. Paired devices still connect.": "Für Geräte in diesem WLAN unsichtbar. Gekoppelte Geräte verbinden sich weiter.",
+    "Hidden from Nearby": "Für „In der Nähe“ unsichtbar",
+    "Show this device to others on the same Wi‑Fi": "Dieses Gerät anderen im selben WLAN zeigen",
+    "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Geräte im selben WLAN finden sich ohne Code oder QR, und auf ihrer Karte steht „In der Nähe“. Schalte das in öffentlichen oder Hotel-WLANs aus, um unsichtbar zu bleiben. Gekoppelte Geräte, Teams und Räume funktionieren weiter.",
+    "Nearby:": "In der Nähe:",
+    "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Geräte im selben WLAN erscheinen von selbst, ohne Code oder QR, und auf ihrer Karte steht „In der Nähe“. Um in einem öffentlichen oder Hotel-WLAN unsichtbar zu bleiben, schalte „In der Nähe“ unter Einstellungen, Datenschutz aus.",
   },
 });

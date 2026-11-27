@@ -215,7 +215,7 @@ test('team room: a fixed link, the team name on cards, kept after a reload, auto
   await b.page.locator('#btn-pair').click();
   await b.page.locator('#dlg-pair [data-team=leave]').click();
   await expect(b.page.locator('#dlg-pair .team-row')).toHaveCount(0);
-  await expect(onA.locator('.tag')).toHaveCount(0);
+  await expect(onA.locator('.tag')).toHaveText('Nearby'); // still on the same Wi‑Fi
   expect([...a.errors, ...b.errors]).toEqual([]);
 });
 
