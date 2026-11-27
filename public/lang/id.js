@@ -1875,5 +1875,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Perangkat di Wi‑Fi yang sama saling menemukan tanpa kode atau QR, dan kartunya bertuliskan Terdekat. Matikan ini di Wi‑Fi umum atau hotel agar tetap tersembunyi. Perangkat yang dipasangkan, tim, dan ruang tetap berfungsi.",
     "Nearby:": "Terdekat:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Perangkat di Wi‑Fi yang sama muncul sendiri, tanpa kode atau QR, dan kartunya bertuliskan Terdekat. Agar tetap tersembunyi di Wi‑Fi umum atau hotel, matikan Terdekat di Pengaturan, Privasi.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Jam tangan pintar",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Menampilkan progres pengiriman dan \"Terkirim\" sebagai notifikasi di ponsel ini, jadi jam tangan pintar yang menampilkan notifikasi ponsel Anda juga menampilkannya.",
+    "Send progress and \"Sent\" in notifications": "Progres pengiriman dan \"Terkirim\" di notifikasi",
+    "Sending to {name}": "Mengirim ke {name}",
+    "Paused: sending to {name}": "Dijeda: mengirim ke {name}",
+    "Not sent to {name}": "Tidak terkirim ke {name}",
+    "It continues by itself when both devices are back.": "Akan lanjut sendiri saat kedua perangkat kembali.",
+    "Uploading a share link": "Mengunggah tautan berbagi",
+    "Share link ready": "Tautan berbagi siap",
+    "Smartwatch:": "Jam tangan pintar:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "Di ponsel, progres pengiriman dan \"Terkirim\" muncul sebagai notifikasi, jadi jam tangan pintar yang menampilkan notifikasi ponsel Anda juga menampilkannya. Matikan di Pengaturan, Transfer, Jam tangan pintar.",
+    "Send progress on a smartwatch": "Progres pengiriman di jam tangan pintar",
   },
 });

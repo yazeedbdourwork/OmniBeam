@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Les appareils sur le même Wi‑Fi se trouvent sans code ni QR, et leur carte indique À proximité. Désactivez ceci sur un Wi‑Fi public ou d’hôtel pour rester masqué. Les appareils associés, les équipes et les salons fonctionnent toujours.",
     "Nearby:": "À proximité :",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Les appareils sur le même Wi‑Fi apparaissent tout seuls, sans code ni QR, et leur carte indique À proximité. Pour rester masqué sur un Wi‑Fi public ou d’hôtel, désactivez À proximité dans Paramètres, Confidentialité.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Montre connectée",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Affiche la progression de l’envoi et « Envoyé » en notifications sur ce téléphone, pour qu’une montre connectée qui affiche les notifications de votre téléphone les affiche aussi.",
+    "Send progress and \"Sent\" in notifications": "Progression de l’envoi et « Envoyé » dans les notifications",
+    "Sending to {name}": "Envoi à {name}",
+    "Paused: sending to {name}": "En pause : envoi à {name}",
+    "Not sent to {name}": "Non envoyé à {name}",
+    "It continues by itself when both devices are back.": "Il reprend tout seul quand les deux appareils sont de retour.",
+    "Uploading a share link": "Envoi d’un lien de partage",
+    "Share link ready": "Lien de partage prêt",
+    "Smartwatch:": "Montre connectée :",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "Sur un téléphone, la progression de l’envoi et « Envoyé » s’affichent en notifications, pour qu’une montre connectée qui affiche les notifications de votre téléphone les affiche aussi. Désactivez-le dans Réglages, Transferts, Montre connectée.",
+    "Send progress on a smartwatch": "Progression de l’envoi sur une montre connectée",
   },
 });

@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "同一 Wi‑Fi 上的设备无需代码或二维码即可互相找到，卡片上会显示“附近”。在公共或酒店 Wi‑Fi 上可关闭此项以保持隐藏。已配对的设备、团队和房间仍可使用。",
     "Nearby:": "附近：",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "同一 Wi‑Fi 上的设备会自动出现，无需代码或二维码，卡片上会显示“附近”。要在公共或酒店 Wi‑Fi 上保持隐藏，请在设置的隐私中关闭“附近”。",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "智能手表",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "在这部手机上以通知显示发送进度和“已发送”，这样显示手机通知的智能手表也会显示。",
+    "Send progress and \"Sent\" in notifications": "在通知中显示发送进度和“已发送”",
+    "Sending to {name}": "正在发送到 {name}",
+    "Paused: sending to {name}": "已暂停：发送到 {name}",
+    "Not sent to {name}": "未发送到 {name}",
+    "It continues by itself when both devices are back.": "两台设备都回来后会自动继续。",
+    "Uploading a share link": "正在上传分享链接",
+    "Share link ready": "分享链接已就绪",
+    "Smartwatch:": "智能手表：",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "在手机上，发送进度和“已发送”会以通知显示，这样显示手机通知的智能手表也会显示。可在 设置、传输、智能手表 中关闭。",
+    "Send progress on a smartwatch": "在智能手表上查看发送进度",
   },
 });

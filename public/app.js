@@ -353,6 +353,59 @@ function notify(title, body, opts = {}) {
     navigator.serviceWorker.ready.then((reg) => reg.showNotification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png', data, ...(actions.length ? { actions } : {}), ...(opts.chat ? { tag: opts.chat, renotify: true, vibrate: opts.vibrate || [70] } : {}), ...(opts.sticky ? { requireInteraction: true } : {}) })).catch(show);
   } else show();
 }
+// ---------- Send progress on a smartwatch ----------
+// A watch (Wear OS, Galaxy Watch, Apple Watch…) shows the notifications of the phone it is paired with. So while a
+// phone sends files or uploads a share link, it shows the progress as a notification (updated every 10%, silently),
+// replaced at the end by "Sent to …" (which buzzes), or by what went wrong. Phones only, whether OmniBeam is on screen
+// or not, when notifications are allowed. Settings, Transfers, "Smartwatch" turns it off (localStorage omnibeam-watch-notes).
+// iPhone shows notifications of websites only in OmniBeam added to the Home Screen.
+const WATCH_KEY = 'omnibeam-watch-notes';
+const WatchNotes = {
+  shown: new Map(), // tag -> { step, at } of the progress notification on screen
+  supported: () => isPhone && 'Notification' in window && 'serviceWorker' in navigator,
+  wanted() { try { return localStorage.getItem(WATCH_KEY) !== 'off'; } catch { return true; } },
+  on() { return this.supported() && this.wanted() && Notification.permission === 'granted'; },
+  set(on) {
+    try { localStorage.setItem(WATCH_KEY, on ? 'on' : 'off'); } catch {}
+    if (on && Notification.permission === 'default') Notification.requestPermission().then(() => this.ui());
+    this.ui();
+  },
+  ui() {
+    const box = document.getElementById('watch-notes');
+    if (!box) return;
+    $('#watch-section').hidden = !this.supported();
+    box.checked = this.wanted();
+    const blocked = this.supported() && Notification.permission === 'denied';
+    $('#watch-note').textContent = blocked ? t('Notifications are blocked for this site. Allow them in the browser\'s site settings, then try again.')
+      : isIOS && !isStandalone() ? t('On iPhone and iPad this works in OmniBeam added to the Home Screen (iOS 16.4 or later).') : '';
+    $('#watch-note').hidden = !$('#watch-note').textContent;
+  },
+  show(tag, title, body, loud) {
+    if (typeof AppLock !== 'undefined' && AppLock.locked) body = t('Open OmniBeam to see it.');
+    navigator.serviceWorker.getRegistration().then((reg) => reg && reg.showNotification(title, {
+      body, tag, icon: '/icon-192.png', badge: '/icon-192.png', data: { url: '/' }, silent: !loud, renotify: !!loud, ...(loud ? { vibrate: [90, 60, 90] } : {}),
+    })).catch(() => {});
+  },
+  // frac 0…1; a new notification only at each 10% (and at least 3 s apart), so the watch isn't flooded
+  progress(tag, title, frac, body) {
+    if (!this.on()) return;
+    const step = Math.min(9, Math.floor(frac * 10));
+    const last = this.shown.get(tag);
+    if (last && (last.step === step || Date.now() - last.at < 3000)) return;
+    this.shown.set(tag, { step, at: Date.now() });
+    this.show(tag, title, `${Math.floor(frac * 100)}% · ${body}`, false);
+  },
+  done(tag, title, body) {
+    this.shown.delete(tag);
+    if (this.on()) this.show(tag, title, body, true);
+  },
+  // Stopped early: says so only where a progress notification was showing
+  stopped(tag, title, body) {
+    if (this.shown.has(tag)) this.done(tag, title, body);
+  },
+};
+window.WatchNotes = WatchNotes;
+
 // The device of a thread key (chatKey), if it is here now
 function peerOfKey(key) {
   if (typeof key !== 'string' || !/^[pn]:/.test(key)) return null;
@@ -1206,6 +1259,7 @@ class Peer {
     $('.xfer-speed', this.el).textContent = speed > 0 ? `${formatSize(speed)}/s` : '';
     const left = speed > 0 && done < p.total ? formatDuration((p.total - done) / speed) : '';
     $('.xfer-sub', this.el).textContent = `${formatSize(done)} / ${formatSize(p.total)}${left ? ` · ${t('{time} left', { time: left })}` : ''}`;
+    if (p.sending) WatchNotes.progress('ob-send-' + this.info.id, t('Sending to {name}', { name: this.info.name }), frac, $('.xfer-sub', this.el).textContent);
     const route = this.direct ? this.route
       : this.useRelay ? `${t('OmniBeam server')} · ${t('end-to-end encrypted')}` + (this.directFailInfo ? ` (${t('direct failed')}: ${this.directFailInfo})` : '')
       : null;
@@ -1799,6 +1853,9 @@ class Peer {
       }
       this.endProgress(true);
       toast(t(files.length > 1 ? 'Sent {n} files to {name}' : 'Sent 1 file to {name}', { n: files.length, name: this.info.name }));
+      job.ok = true;
+      WatchNotes.done('ob-send-' + this.info.id, '✓ ' + t('Sent to {name}', { name: this.info.name }),
+        `${files.length > 1 ? t('{n} files', { n: files.length }) : files[0].name} · ${formatSize(total)}`);
       this.reportStat({ bytes: total - skipped, files: files.length, ...(opts.xid ? { resumed: 1 } : {}) });
       if (big) wsSend({ type: 'stat', kind: 'bigfile' });
       log('ok');
@@ -1814,6 +1871,11 @@ class Peer {
         job.logged = true;
       }
     } finally {
+      // The watch: paused (it continues by itself later) or not sent
+      if (!job.ok) {
+        WatchNotes.stopped('ob-send-' + this.info.id, t(job.kept ? 'Paused: sending to {name}' : 'Not sent to {name}', { name: this.info.name }),
+          job.kept ? t('It continues by itself when both devices are back.') : job.reason || t(this.cancelled ? 'Cancelled' : 'Not finished'));
+      }
       // Stopped with ✕ (here or on the other device) or the connection went away: still in the Sent list
       if (!job.logged && job.xid) log(this.cancelled && !job.kept && (!job.why || job.why === 'cancel') ? 'cancelled' : 'failed');
       // Not to be continued any more (otherwise AutoResume continues it)
@@ -5430,7 +5492,7 @@ function showReceived(peer, files) {
   // Save on the notification saves these (the newest ones from this device)
   const key = chatKey(chatWho(peer));
   lastReceived.set(key, files);
-  notify(t('Received files from {name}', { name: peer.info.name }), files.map((f) => f.name).join(', '), { chat: key, actions: ['save', 'open'] });
+  notify(t('Received files from {name}', { name: peer.info.name }), files.map((f) => f.name).join(', '), { chat: key, actions: ['save', 'open'], always: WatchNotes.on() });
 }
 
 // "Worked well? Tell a friend" card in the received-files dialog: from the second time files arrive, then at most
@@ -8146,6 +8208,8 @@ $('#open-links').onchange = (e) => {
   toast(openLinksAuto ? t('Links from your paired devices open by themselves') : t('Links show an Open link button'));
 };
 $('#msg-sound').checked = msgSound;
+WatchNotes.ui();
+$('#watch-notes').onchange = (e) => WatchNotes.set(e.target.checked);
 $('#nearby-on').checked = Nearby.on;
 $('#nearby-on').onchange = (e) => Nearby.set(e.target.checked);
 $('#msg-sound').onchange = (e) => { setMsgSound(e.target.checked); if (e.target.checked) { unlockAudio(); chime(); } };
@@ -8264,7 +8328,7 @@ document.addEventListener('click', (e) => {
 const INFO_DIALOGS = ['dlg-how', 'dlg-terms', 'dlg-privacy', 'dlg-about'];
 let infoLoad = null;
 function loadInfoDialogs() {
-  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=12`)
+  infoLoad ||= fetch(`/info-dialogs?lang=${(window.I18N && I18N.lang) || 'en'}&v=13`)
     .then((r) => { if (!r.ok) throw new Error(); return r.text(); })
     .then((html) => {
       const tpl = document.createElement('template');

@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Los dispositivos de la misma red Wi‑Fi se encuentran sin código ni QR, y su tarjeta dice Cerca. Desactívalo en redes Wi‑Fi públicas o de hotel para quedar oculto. Los dispositivos vinculados, los equipos y las salas siguen funcionando.",
     "Nearby:": "Cerca:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Los dispositivos de la misma red Wi‑Fi aparecen solos, sin código ni QR, y su tarjeta dice Cerca. Para quedar oculto en una red Wi‑Fi pública o de hotel, desactiva Cerca en Ajustes, Privacidad.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Reloj inteligente",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Muestra el progreso del envío y «Enviado» como notificaciones en este teléfono, así un reloj inteligente que muestra las notificaciones de tu teléfono también los muestra.",
+    "Send progress and \"Sent\" in notifications": "Progreso del envío y «Enviado» en las notificaciones",
+    "Sending to {name}": "Enviando a {name}",
+    "Paused: sending to {name}": "En pausa: enviando a {name}",
+    "Not sent to {name}": "No se envió a {name}",
+    "It continues by itself when both devices are back.": "Continúa solo cuando los dos dispositivos vuelvan.",
+    "Uploading a share link": "Subiendo un enlace para compartir",
+    "Share link ready": "Enlace para compartir listo",
+    "Smartwatch:": "Reloj inteligente:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "En un teléfono, el progreso del envío y «Enviado» aparecen como notificaciones, así un reloj inteligente que muestra las notificaciones de tu teléfono también los muestra. Desactívalo en Ajustes, Envíos, Reloj inteligente.",
+    "Send progress on a smartwatch": "Progreso del envío en un reloj inteligente",
   },
 });

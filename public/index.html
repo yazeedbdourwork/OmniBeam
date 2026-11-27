@@ -60,7 +60,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="OmniBeam">
   <link rel="preload" href="/fonts/plus-jakarta-sans-latin.woff2?v=1" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/app.js?v=117" as="script">
+  <link rel="preload" href="/app.js?v=118" as="script">
   <script src="/look.js?v=3"></script>
   <link rel="stylesheet" href="/style.css?v=102">
 </head>
@@ -637,6 +637,14 @@
         <div class="choice">
           <label><input type="checkbox" id="msg-sound" checked> <span>Play a sound (and vibrate on phones) when a message or file arrives</span></label>
         </div>
+      </section>
+      <section class="set-sec" id="watch-section" hidden>
+        <p class="step"><b>Smartwatch</b></p>
+        <p class="muted small">Shows send progress and "Sent" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.</p>
+        <div class="choice">
+          <label><input type="checkbox" id="watch-notes" checked> <span>Send progress and "Sent" in notifications</span></label>
+        </div>
+        <p class="muted small" id="watch-note" hidden></p>
       </section>
       <section class="set-sec">
         <p class="step"><b>Links</b></p>
@@ -1280,8 +1288,8 @@
 
   <script src="/report.js?v=7" defer></script>
   <script src="/i18n.js?v=9" defer></script>
-  <script src="/app.js?v=117" defer></script>
-  <script src="/drop.js?v=14" defer></script>
+  <script src="/app.js?v=118" defer></script>
+  <script src="/drop.js?v=15" defer></script>
   <script src="/request.js?v=3" defer></script>
   <script src="/install.js?v=2" defer></script>
   <script src="/share.js?v=3" defer></script>

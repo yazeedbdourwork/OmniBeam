@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "같은 Wi‑Fi의 기기는 코드나 QR 없이 서로를 찾고, 카드에 근처라고 표시됩니다. 공용 또는 호텔 Wi‑Fi에서는 이 기능을 꺼서 숨길 수 있습니다. 페어링된 기기, 팀, 방은 계속 작동합니다.",
     "Nearby:": "근처:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "같은 Wi‑Fi의 기기는 코드나 QR 없이 저절로 나타나고, 카드에 근처라고 표시됩니다. 공용 또는 호텔 Wi‑Fi에서 숨기려면 설정, 개인정보에서 근처를 끄세요.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "스마트워치",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "이 휴대폰에서 보내기 진행 상황과 \"보냄\"을 알림으로 보여 줍니다. 휴대폰 알림을 표시하는 스마트워치에도 표시됩니다.",
+    "Send progress and \"Sent\" in notifications": "알림에 보내기 진행 상황과 \"보냄\" 표시",
+    "Sending to {name}": "{name}에게 보내는 중",
+    "Paused: sending to {name}": "일시 중지됨: {name}에게 보내기",
+    "Not sent to {name}": "{name}에게 보내지 못함",
+    "It continues by itself when both devices are back.": "두 기기가 다시 연결되면 자동으로 계속됩니다.",
+    "Uploading a share link": "공유 링크 업로드 중",
+    "Share link ready": "공유 링크 준비됨",
+    "Smartwatch:": "스마트워치:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "휴대폰에서는 보내기 진행 상황과 \"보냄\"이 알림으로 표시되므로, 휴대폰 알림을 표시하는 스마트워치에도 표시됩니다. 설정, 전송, 스마트워치에서 끌 수 있습니다.",
+    "Send progress on a smartwatch": "스마트워치에서 보내기 진행 상황",
   },
 });
