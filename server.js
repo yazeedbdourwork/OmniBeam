@@ -396,6 +396,13 @@ function translateHtml(html, strings) {
 // The person behind OmniBeam (Organization founder, article author), with a link to his public profile
 const FOUNDER = { '@type': 'Person', '@id': `${SITE_URL}/#founder`, name: 'Yazeed Bdour', url: 'https://github.com/yazeedbdourwork',
   sameAs: ['https://github.com/yazeedbdourwork'] };
+// What the app does, for the home page's WebApplication data (search engines and AI assistants read it)
+const APP_FEATURES = ['Send files, photos, videos and text between any devices in the browser', 'End-to-end encryption, direct peer-to-peer (WebRTC) transfers',
+  'No file size limit for direct transfers; resumes after a dropped connection', 'Pair devices on different networks with a 6-digit code or QR code',
+  'Encrypted share links that expire, with password and folder links', 'Request files link', 'Chat, voice messages, group chat and voice or video calls',
+  'Clipboard sync, notes and to-do lists', 'Screen sharing, shared whiteboard and phone as a slide remote', 'Phone as a webcam or microphone',
+  'Event photo album with one QR code', 'Automatic phone photo backup and folder sync', 'TV mode', 'Merge PDFs, resize photos, scan to PDF',
+  'Safety code to verify a paired device', 'Available in 15 languages'];
 // JSON-LD for search engines, built from the page itself so the FAQ always matches what visitors see
 function structuredData(html, lang, url) {
   const text = (h) => normText(decodeHtml(h.replace(/<[^>]+>/g, '')));
@@ -424,7 +431,8 @@ function structuredData(html, lang, url) {
     { '@type': 'WebApplication', name: 'OmniBeam', url, description, inLanguage: lang, applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Any (web browser): iOS, Android, Windows, macOS, Linux, ChromeOS', browserRequirements: 'Requires a modern browser with WebRTC',
       isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }, image: `${SITE_URL}/og.png`, publisher: { '@id': `${SITE_URL}/#org` },
-      author: { '@id': FOUNDER['@id'] }, creator: { '@id': FOUNDER['@id'] } },
+      author: { '@id': FOUNDER['@id'] }, creator: { '@id': FOUNDER['@id'] }, license: 'https://www.gnu.org/licenses/gpl-3.0.html',
+      screenshot: `${SITE_URL}/og.png`, featureList: APP_FEATURES },
     { '@type': 'WebPage', '@id': url, url, name: title, inLanguage: lang, isPartOf: { '@id': `${SITE_URL}/#site` }, author: { '@id': FOUNDER['@id'] } },
     // The maker, named in the page's byline (index.html: learn-byline) and meta author
     FOUNDER,
@@ -644,8 +652,12 @@ function pageParts(page) {
   const related = article ? sortedKind(pages, lang, page.kind).filter((p) => p.slug !== slug).slice(0, 8) : [];
   const relatedHtml = related.length ? `\n      <h2>${ui(lang, page.kind === 'post' ? 'morePosts' : page.kind === 'compare' ? 'moreCompare' : 'moreGuides')}</h2>\n      <ul class="guide-list">\n${related
     .map((g) => `        <li><a href="${langPath(lang, g.slug)}">${g.short}</a></li>`).join('\n')}\n      </ul>` : '';
+  // Posts show when they were published; guides and comparisons show when they were last checked (readers,
+  // search engines and AI assistants look for a visible date as well as the one in the page's data)
   const dateLine = page.kind === 'post' && page.published
-    ? `<p class="post-date">${ui(lang, 'published')} <time datetime="${page.published}">${prettyDate(page.published, lang)}</time></p>\n      ` : '';
+    ? `<p class="post-date">${ui(lang, 'published')} <time datetime="${page.published}">${prettyDate(page.published, lang)}</time></p>\n      `
+    : (page.kind === 'guide' || page.kind === 'compare') && page.updated
+      ? `<p class="post-date">${ui(lang, 'pageUpdated')} <time datetime="${page.updated}">${prettyDate(page.updated, lang)}</time></p>\n      ` : '';
   const crumbs = [{ name: 'OmniBeam', item: SITE_URL + homeUrl }];
   if (page.kind === 'guide') crumbs.push({ name: ui(lang, 'guides'), item: SITE_URL + link('guides') });
   if (page.kind === 'post') crumbs.push({ name: ui(lang, 'blog'), item: SITE_URL + link('blog') });
@@ -655,7 +667,7 @@ function pageParts(page) {
     '@context': 'https://schema.org',
     '@graph': [
       { '@type': page.kind === 'post' ? 'BlogPosting' : page.kind === 'guide' || page.kind === 'compare' ? 'Article' : 'WebPage', '@id': url, url, name: page.title, headline: page.short, description: page.description,
-        inLanguage: lang, ...(page.updated ? { dateModified: page.updated } : {}), ...(page.kind === 'post' && page.published ? { datePublished: page.published } : {}), image: `${SITE_URL}/og.png`,
+        inLanguage: lang, ...(page.updated ? { dateModified: page.updated } : {}), ...(article && page.published ? { datePublished: page.published } : {}), image: `${SITE_URL}/og.png`,
         ...(article ? { author: FOUNDER } : {}),
         isPartOf: { '@id': `${SITE_URL}/#site` }, publisher: { '@id': `${SITE_URL}/#org` } },
       { '@type': 'BreadcrumbList', itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, ...c })) },
@@ -903,6 +915,8 @@ Full text of the English pages, for AI assistants: ${SITE_URL}/llms-full.txt
 - Size: no file size limit set by OmniBeam; photos and videos are sent in full quality (HEIC can be saved as JPG). Dropped transfers resume.
 - When the other person is offline: share an encrypted link that expires (7 days by default, up to 30; links have a size cap shown in the app, direct sends have none), or a "Request files" link others upload to.
 - Also: chat and clipboard sync between paired devices, public and team rooms, send to everyone, TV mode (/tv), phone as a webcam or mic, event photo album with one QR code, scan to PDF, syncing a folder between two computers, photo backup that skips repeats.
+- Chat and calls: voice and video calls between paired devices, group chat, voice messages, reactions and replies, chat search, forward, translate, disappearing messages and "send later"; screen sharing; a shared whiteboard; shared notes and to-do lists; a phone as a remote for slides.
+- More tools: a 6-digit safety code to check a pairing is really your device, favorite devices that connect by themselves, transfer history search with "Send again", merge PDFs and resize photos before sending, a simple photo editor, share links for whole folders, links protected by a password, automatic phone photo backup to a computer, "Ring device" to find a phone, and sending a web link that the other device can open at once.
 - Limits: both devices need a modern browser and an internet connection to find each other; on iPhone, Safari must stay open (screen on) during a transfer.
 - Best for: iPhone to Windows PC, Android to iPhone or Mac, sending large videos without WhatsApp compression, replacing WeTransfer for files you send to your own devices or to someone online at the same time.
 

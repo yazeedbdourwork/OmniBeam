@@ -168,3 +168,29 @@ test('home page: author meta, visible byline, Person author in JSON-LD, and a tr
     expect(table).toContain(`<td>${yes}</td>`);
   }
 });
+
+// Full check 2026-11-27: llms.txt names the newer features, the app data lists them, guides show a visible
+// "Updated" date with datePublished in their data, and the Italian/Russian titles and descriptions fit search results
+test('llms.txt and the app data name the newer features; guides carry visible and structured dates', async ({ request }) => {
+  const llms = await (await request.get('/llms.txt')).text();
+  for (const w of ['video calls', 'group chat', 'whiteboard', 'safety code', 'merge PDFs', 'favorite devices']) expect(llms).toContain(w);
+  const app = ld(await (await request.get('/')).text()).find((n) => n['@type'] === 'WebApplication');
+  expect(app.featureList.length).toBeGreaterThan(8);
+  expect(app.license).toContain('gpl-3.0');
+  for (const [p, word] of [['/send-files-iphone-to-pc', 'Updated'], ['/de/omnibeam-vs-airdrop', 'Aktualisiert am']]) {
+    const html = await (await request.get(p)).text();
+    expect(html, p).toMatch(new RegExp(`<p class="post-date">${word} <time datetime="\\d{4}-\\d\\d-\\d\\d">`));
+    const art = ld(html).find((n) => n['@type'] === 'Article');
+    expect(art.datePublished, p).toMatch(/^\d{4}-\d\d-\d\d$/);
+  }
+  // The FAQ answers questions about calls, the safety code and photo backup, in its FAQPage data too
+  for (const [p, q] of [['/faq', 'Can I chat or call with OmniBeam?'], ['/ar/faq', 'هل يمكنني الدردشة أو الاتصال عبر OmniBeam؟']]) {
+    const faq = ld(await (await request.get(p)).text()).find((n) => n['@type'] === 'FAQPage');
+    expect(faq.mainEntity.map((e) => e.name), p).toContain(q);
+  }
+  for (const p of ['/it/', '/ru/', '/it/blog', '/ru/blog']) {
+    const html = await (await request.get(p)).text();
+    expect(html.match(/<title>([^<]*)<\/title>/)[1].length, p).toBeLessThanOrEqual(65);
+    expect(html.match(/<meta name="description" content="([^"]*)"/)[1].length, p).toBeLessThanOrEqual(160);
+  }
+});
