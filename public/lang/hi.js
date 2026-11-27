@@ -1875,5 +1875,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "उसी Wi‑Fi पर डिवाइस बिना कोड या QR के एक-दूसरे को ढूँढ लेते हैं, और उनके कार्ड पर आस-पास लिखा होता है। सार्वजनिक या होटल के Wi‑Fi पर छिपे रहने के लिए इसे बंद करें। जोड़े गए डिवाइस, टीमें और रूम काम करते रहते हैं।",
     "Nearby:": "आस-पास:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "उसी Wi‑Fi पर डिवाइस अपने-आप दिखते हैं, बिना कोड या QR के, और उनके कार्ड पर आस-पास लिखा होता है। सार्वजनिक या होटल के Wi‑Fi पर छिपे रहने के लिए सेटिंग्स, निजता में आस-पास बंद करें।",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "स्मार्टवॉच",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "इस फ़ोन पर भेजने की प्रगति और \"भेज दिया\" को सूचनाओं के रूप में दिखाता है, ताकि आपके फ़ोन की सूचनाएँ दिखाने वाली स्मार्टवॉच भी उन्हें दिखाए।",
+    "Send progress and \"Sent\" in notifications": "सूचनाओं में भेजने की प्रगति और \"भेज दिया\"",
+    "Sending to {name}": "{name} को भेजा जा रहा है",
+    "Paused: sending to {name}": "रुका हुआ: {name} को भेजना",
+    "Not sent to {name}": "{name} को नहीं भेजा गया",
+    "It continues by itself when both devices are back.": "दोनों डिवाइस वापस आने पर यह अपने आप जारी रहेगा।",
+    "Uploading a share link": "शेयर लिंक अपलोड हो रहा है",
+    "Share link ready": "शेयर लिंक तैयार है",
+    "Smartwatch:": "स्मार्टवॉच:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "फ़ोन पर, भेजने की प्रगति और \"भेज दिया\" सूचनाओं के रूप में दिखते हैं, ताकि आपके फ़ोन की सूचनाएँ दिखाने वाली स्मार्टवॉच भी उन्हें दिखाए। इसे सेटिंग, ट्रांसफ़र, स्मार्टवॉच में बंद करें।",
+    "Send progress on a smartwatch": "स्मार्टवॉच पर भेजने की प्रगति",
   },
 });

@@ -1,0 +1,13 @@
+[
+ "Smartwatch",
+ "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.",
+ "Send progress and \"Sent\" in notifications",
+ "Sending to {name}",
+ "Paused: sending to {name}",
+ "Not sent to {name}",
+ "It continues by itself when both devices are back.",
+ "Uploading a share link",
+ "Share link ready",
+ "Smartwatch:",
+ "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch."
+]

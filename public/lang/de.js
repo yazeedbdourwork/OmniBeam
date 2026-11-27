@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Geräte im selben WLAN finden sich ohne Code oder QR, und auf ihrer Karte steht „In der Nähe“. Schalte das in öffentlichen oder Hotel-WLANs aus, um unsichtbar zu bleiben. Gekoppelte Geräte, Teams und Räume funktionieren weiter.",
     "Nearby:": "In der Nähe:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Geräte im selben WLAN erscheinen von selbst, ohne Code oder QR, und auf ihrer Karte steht „In der Nähe“. Um in einem öffentlichen oder Hotel-WLAN unsichtbar zu bleiben, schalte „In der Nähe“ unter Einstellungen, Datenschutz aus.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Smartwatch",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Zeigt den Sendefortschritt und „Gesendet“ als Benachrichtigungen auf diesem Handy, sodass eine Smartwatch, die die Benachrichtigungen deines Handys zeigt, sie auch zeigt.",
+    "Send progress and \"Sent\" in notifications": "Sendefortschritt und „Gesendet“ in Benachrichtigungen",
+    "Sending to {name}": "Sende an {name}",
+    "Paused: sending to {name}": "Pausiert: Senden an {name}",
+    "Not sent to {name}": "Nicht an {name} gesendet",
+    "It continues by itself when both devices are back.": "Es geht von selbst weiter, wenn beide Geräte wieder da sind.",
+    "Uploading a share link": "Freigabelink wird hochgeladen",
+    "Share link ready": "Freigabelink bereit",
+    "Smartwatch:": "Smartwatch:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "Auf einem Handy erscheinen Sendefortschritt und „Gesendet“ als Benachrichtigungen, sodass eine Smartwatch, die die Benachrichtigungen deines Handys zeigt, sie auch zeigt. Ausschalten unter Einstellungen, Übertragung, Smartwatch.",
+    "Send progress on a smartwatch": "Sendefortschritt auf der Smartwatch",
   },
 });

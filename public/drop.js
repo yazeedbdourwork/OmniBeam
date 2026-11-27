@@ -486,11 +486,13 @@
         shown = now;
         const frac = done / total;
         setBar(frac, `${t('Encrypting and uploading…')} ${Math.floor(frac * 100)}% · ${formatSize(Math.min(done, size))} / ${formatSize(size)}`);
+        window.WatchNotes?.progress('ob-link', t('Uploading a share link'), frac, `${formatSize(Math.min(done, size))} / ${formatSize(size)}`);
       }, () => current.cancelled);
       const url = `${location.origin}/d/${created.id}#${b64u(raw)}`;
       const names = opts.note ? `🔒 ${t('Secret note')}` : opts.folder ? `📁 ${opts.folder} (${t('{n} files', { n: files.length })})` : files.length > 1 ? t('{name} and {n} more', { name: files[0].name, n: files.length - 1 }) : files[0].name;
       const link = { id: created.id, token: created.token, url, names, size, expires: created.expires, once, max, downloads: 0, pin: !!pin, note: !!opts.note };
       saveLinks([...loadLinks(), link]);
+      window.WatchNotes?.done('ob-link', '✓ ' + t('Share link ready'), `${names} · ${formatSize(size)}`);
       if (notifyOn()) window.sendPushSub?.(); // the server learns this link may send download notifications
       $('#link-url').textContent = url;
       $('#link-summary').textContent = `${names} · ${formatSize(size)} · ${timeLeft(created.expires - Date.now())}${max ? ' · ' + (max === 1 ? t('one download') : t('{max} downloads', { max })) : ''}${pin ? ' · ' + t('PIN') + ' ' + pinText : ''}`;
@@ -521,6 +523,8 @@
     } catch (err) {
       if (current.id) fetch(`/api/drop/${current.id}`, { method: 'DELETE', headers: { 'X-Drop-Token': current.token } }).catch(() => {});
       show('new');
+      if (err.message === 'cancelled') window.WatchNotes?.shown.delete('ob-link');
+      else window.WatchNotes?.stopped('ob-link', t('Upload failed. Check the connection and try again.'), '');
       if (err.message !== 'cancelled') window.omniReport?.('link', 'Upload failed: ' + (err.message || err.name), { size });
       if (err.message !== 'cancelled') toast(err.message === 'rejected' || err instanceof TypeError ? t('Upload failed. Check the connection and try again.') : err.message);
     } finally {

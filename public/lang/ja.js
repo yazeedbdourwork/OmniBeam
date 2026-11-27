@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "同じWi‑Fiのデバイスはコードや QR なしでお互いを見つけ、カードに「近く」と表示されます。公共やホテルの Wi‑Fi では、オフにすると見えなくなります。ペアリング済みのデバイス、チーム、ルームは引き続き使えます。",
     "Nearby:": "近く:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "同じWi‑Fiのデバイスはコードや QR なしで自動的に表示され、カードに「近く」と表示されます。公共やホテルの Wi‑Fi で見えなくするには、設定のプライバシーで「近く」をオフにします。",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "スマートウォッチ",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "このスマホで送信の進み具合と「送信しました」を通知として表示します。スマホの通知を表示するスマートウォッチにも表示されます。",
+    "Send progress and \"Sent\" in notifications": "送信の進み具合と「送信しました」を通知に表示",
+    "Sending to {name}": "{name} に送信中",
+    "Paused: sending to {name}": "一時停止中：{name} への送信",
+    "Not sent to {name}": "{name} に送信できませんでした",
+    "It continues by itself when both devices are back.": "両方のデバイスが戻ると自動で続きます。",
+    "Uploading a share link": "共有リンクをアップロード中",
+    "Share link ready": "共有リンクの準備ができました",
+    "Smartwatch:": "スマートウォッチ：",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "スマホでは、送信の進み具合と「送信しました」が通知として表示されるので、スマホの通知を表示するスマートウォッチにも表示されます。オフにするには 設定、転送、スマートウォッチ へ。",
+    "Send progress on a smartwatch": "スマートウォッチで送信の進み具合",
   },
 });

@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Устройства в одной сети Wi‑Fi находят друг друга без кода и QR, а на их карточке написано «Рядом». Выключите это в общественной или гостиничной сети Wi‑Fi, чтобы остаться скрытым. Сопряжённые устройства, команды и комнаты продолжают работать.",
     "Nearby:": "Рядом:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Устройства в одной сети Wi‑Fi появляются сами, без кода и QR, а на их карточке написано «Рядом». Чтобы остаться скрытым в общественной или гостиничной сети Wi‑Fi, выключите «Рядом» в Настройки, Конфиденциальность.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Смарт-часы",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Показывает ход отправки и «Отправлено» в уведомлениях на этом телефоне, поэтому их видят и смарт-часы, которые показывают уведомления телефона.",
+    "Send progress and \"Sent\" in notifications": "Ход отправки и «Отправлено» в уведомлениях",
+    "Sending to {name}": "Отправка: {name}",
+    "Paused: sending to {name}": "Пауза: отправка на {name}",
+    "Not sent to {name}": "Не отправлено на {name}",
+    "It continues by itself when both devices are back.": "Продолжится само, когда оба устройства вернутся.",
+    "Uploading a share link": "Загрузка ссылки для обмена",
+    "Share link ready": "Ссылка для обмена готова",
+    "Smartwatch:": "Смарт-часы:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "На телефоне ход отправки и «Отправлено» показываются в уведомлениях, поэтому их видят и смарт-часы, которые показывают уведомления телефона. Отключается в Настройках, Передача, Смарт-часы.",
+    "Send progress on a smartwatch": "Ход отправки на смарт-часах",
   },
 });

@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "الأجهزة على نفس شبكة Wi‑Fi تجد بعضها بدون رمز أو QR، وتظهر على بطاقاتها كلمة «قريب». أوقف هذا على شبكات Wi‑Fi العامة أو في الفنادق لتبقى مخفيًا. الأجهزة المقترنة والفرق والغرف تبقى تعمل.",
     "Nearby:": "قريب:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "الأجهزة على نفس شبكة Wi‑Fi تظهر وحدها، بدون رمز أو QR، وتظهر على بطاقاتها كلمة «قريب». لتبقى مخفيًا على شبكة Wi‑Fi عامة أو في فندق، أوقف «قريب» من الإعدادات، الخصوصية.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "الساعة الذكية",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "يعرض تقدّم الإرسال و\"تم الإرسال\" كإشعارات على هذا الهاتف، فتعرضها أيضًا الساعة الذكية التي تُظهر إشعارات هاتفك.",
+    "Send progress and \"Sent\" in notifications": "تقدّم الإرسال و\"تم الإرسال\" في الإشعارات",
+    "Sending to {name}": "جارٍ الإرسال إلى {name}",
+    "Paused: sending to {name}": "متوقف مؤقتًا: الإرسال إلى {name}",
+    "Not sent to {name}": "لم يُرسَل إلى {name}",
+    "It continues by itself when both devices are back.": "يكمل وحده عندما يعود الجهازان.",
+    "Uploading a share link": "جارٍ رفع رابط مشاركة",
+    "Share link ready": "رابط المشاركة جاهز",
+    "Smartwatch:": "الساعة الذكية:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "على الهاتف، يظهر تقدّم الإرسال و\"تم الإرسال\" كإشعارات، فتعرضها أيضًا الساعة الذكية التي تُظهر إشعارات هاتفك. أوقفه من الإعدادات، النقل، الساعة الذكية.",
+    "Send progress on a smartwatch": "تقدّم الإرسال على الساعة الذكية",
   },
 });

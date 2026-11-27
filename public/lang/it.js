@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "I dispositivi sulla stessa rete Wi‑Fi si trovano senza codice né QR, e la loro scheda dice Vicini. Disattivalo su reti Wi‑Fi pubbliche o d’albergo per restare nascosto. Dispositivi associati, team e stanze funzionano comunque.",
     "Nearby:": "Vicini:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "I dispositivi sulla stessa rete Wi‑Fi compaiono da soli, senza codice né QR, e la loro scheda dice Vicini. Per restare nascosto su una rete Wi‑Fi pubblica o d’albergo, disattiva Vicini in Impostazioni, Privacy.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Smartwatch",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Mostra l’avanzamento dell’invio e «Inviato» come notifiche su questo telefono, così anche uno smartwatch che mostra le notifiche del telefono li mostra.",
+    "Send progress and \"Sent\" in notifications": "Avanzamento dell’invio e «Inviato» nelle notifiche",
+    "Sending to {name}": "Invio a {name}",
+    "Paused: sending to {name}": "In pausa: invio a {name}",
+    "Not sent to {name}": "Non inviato a {name}",
+    "It continues by itself when both devices are back.": "Riprende da solo quando entrambi i dispositivi tornano.",
+    "Uploading a share link": "Caricamento di un link di condivisione",
+    "Share link ready": "Link di condivisione pronto",
+    "Smartwatch:": "Smartwatch:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "Su un telefono, l’avanzamento dell’invio e «Inviato» compaiono come notifiche, così anche uno smartwatch che mostra le notifiche del telefono li mostra. Disattivalo in Impostazioni, Trasferimenti, Smartwatch.",
+    "Send progress on a smartwatch": "Avanzamento dell’invio sullo smartwatch",
   },
 });

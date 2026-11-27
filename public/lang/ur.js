@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "ایک ہی Wi‑Fi پر ڈیوائسز کوڈ یا QR کے بغیر ایک دوسرے کو ڈھونڈ لیتی ہیں، اور ان کے کارڈ پر قریب لکھا ہوتا ہے۔ عوامی یا ہوٹل کے Wi‑Fi پر چھپے رہنے کے لیے اسے بند کریں۔ جوڑی گئی ڈیوائسز، ٹیمیں اور رومز کام کرتے رہتے ہیں۔",
     "Nearby:": "قریب:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "ایک ہی Wi‑Fi پر ڈیوائسز خود ہی نظر آتی ہیں، کوڈ یا QR کے بغیر، اور ان کے کارڈ پر قریب لکھا ہوتا ہے۔ عوامی یا ہوٹل کے Wi‑Fi پر چھپے رہنے کے لیے سیٹنگز، رازداری میں قریب بند کریں۔",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "اسمارٹ واچ",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "اس فون پر بھیجنے کی پیش رفت اور \"بھیج دیا\" کو اطلاعات کے طور پر دکھاتا ہے، تاکہ آپ کے فون کی اطلاعات دکھانے والی اسمارٹ واچ بھی انہیں دکھائے۔",
+    "Send progress and \"Sent\" in notifications": "اطلاعات میں بھیجنے کی پیش رفت اور \"بھیج دیا\"",
+    "Sending to {name}": "{name} کو بھیجا جا رہا ہے",
+    "Paused: sending to {name}": "رکا ہوا: {name} کو بھیجنا",
+    "Not sent to {name}": "{name} کو نہیں بھیجا گیا",
+    "It continues by itself when both devices are back.": "دونوں آلات واپس آنے پر یہ خود جاری رہے گا۔",
+    "Uploading a share link": "شیئر لنک اپ لوڈ ہو رہا ہے",
+    "Share link ready": "شیئر لنک تیار ہے",
+    "Smartwatch:": "اسمارٹ واچ:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "فون پر بھیجنے کی پیش رفت اور \"بھیج دیا\" اطلاعات کے طور پر دکھتے ہیں، تاکہ آپ کے فون کی اطلاعات دکھانے والی اسمارٹ واچ بھی انہیں دکھائے۔ اسے سیٹنگز، منتقلی، اسمارٹ واچ میں بند کریں۔",
+    "Send progress on a smartwatch": "اسمارٹ واچ پر بھیجنے کی پیش رفت",
   },
 });

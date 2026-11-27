@@ -1847,6 +1847,7 @@ function handleDrop(req, res, urlPath) {
     if (req.method === 'GET') {
       d.views = (d.views || 0) + 1;
       count('linkViews');
+      linkStat(d, req, false);
       saveDrop(d);
     }
     return json(200, { size: d.size, part: DROP_PART, meta: d.meta, expires: d.expires, once: d.once, max: d.max || 0, left: left(d), pin: !!d.pinHash,
@@ -1894,6 +1895,7 @@ function handleDrop(req, res, urlPath) {
       d.downloads++;
       count('linkDownloads');
       count('linkBytes', d.size);
+      linkStat(d, req, true);
       saveDrop(d);
       dropDownloaded(d);
     }
@@ -1941,6 +1943,7 @@ function handleDrop(req, res, urlPath) {
         if (!d.req) {
           count('linkDownloads');
           count('linkBytes', d.size);
+          linkStat(d, req, true);
           dropDownloaded(d);
         }
         if (d.max && d.downloads >= d.max) return deleteDrop(d.id);
@@ -2038,6 +2041,34 @@ function unwatchRequests(client) {
   }
   client.reqs = [];
 }
+// Share link stats for the admin panel (Transfers, Share links): for each link, by its id, the size, when it was
+// made, its title if the sender chose chat previews (the server can't read the file names of the others), page views,
+// and downloads per day and country. Kept in data/stats.json after the link expires, for the last 500 links used.
+// Downloads by country are also counted per day as lc_<country>.
+const LINK_STATS_MAX = 500;
+function linkStat(d, req, download) {
+  if (d.req) return;
+  let cc = String(req.headers['cf-ipcountry'] || '').toUpperCase();
+  if (!/^[A-Z][A-Z0-9]$/.test(cc)) cc = 'XX';
+  const all = stats.links || (stats.links = {});
+  const l = all[d.id] || (all[d.id] = { s: d.size, c: d.created, v: 0, dl: {} });
+  l.s = d.size;
+  l.e = d.expires;
+  if (d.title) l.t = d.title;
+  else delete l.t;
+  l.last = Date.now();
+  if (download) {
+    const day = (l.dl[today()] = l.dl[today()] || {});
+    day[cc] = (day[cc] || 0) + 1;
+    count('lc_' + cc);
+  } else l.v = (l.v || 0) + 1;
+  const ids = Object.keys(all);
+  if (ids.length > LINK_STATS_MAX) for (const id of ids.sort((a, b) => all[a].last - all[b].last).slice(0, ids.length - LINK_STATS_MAX)) delete all[id];
+  statsDirty = true;
+}
+// For /api/stats: the links, each marked live while it can still be downloaded
+const linkList = () => Object.entries(stats.links || {}).map(([id, l]) => ({ id, ...l, live: drops.has(id) }));
+
 // Someone downloaded a share link: a notification on the devices of the person who made it (if they asked for one,
 // see links in push-sub). At most one a minute per link; the server can't read the file names, so the title is shown
 // only when the sender chose chat previews (d.title).
@@ -2960,6 +2991,7 @@ function handleStats(req, res) {
     turn: { provider: turnProvider(), ...turnState },
     alerts: alertInfo(),
     weekly: weeklyInfo(),
+    links: linkList(),
     first: Object.keys(stats.days).sort()[0] || null,
     cleared: clearedInfo(),
   }));
@@ -2997,6 +3029,15 @@ function handleStatsClear(req, res) {
       const day = stats.days[d] || (stats.days[d] = {});
       for (const [f, n] of Object.entries(fields)) day[f] = typeof n === 'number' && typeof day[f] === 'number' ? day[f] + n : (day[f] ?? n);
     }
+    for (const [id, l] of Object.entries(c.links || {})) {
+      const all = stats.links || (stats.links = {});
+      const cur = all[id] || (all[id] = { ...l, dl: {} });
+      for (const [d, byCc] of Object.entries(l.dl || {})) {
+        const day = (cur.dl[d] = cur.dl[d] || {});
+        for (const [cc, n] of Object.entries(byCc)) day[cc] = (day[cc] || 0) + n;
+      }
+      cur.v = Math.max(cur.v || 0, l.v || 0);
+    }
     if (Array.isArray(c.errors) && c.errors.length) {
       errors = [...c.errors, ...errors].sort((a, b) => a.t - b.t).slice(-MAX_ERRORS);
       errorsDirty = true;
@@ -3021,6 +3062,17 @@ function handleStatsClear(req, res) {
       fields++;
     }
     if (!Object.keys(day).length && d !== today()) delete stats.days[d];
+  }
+  // Share links (linkStat): their downloads on the cleared days. Clearing every day forgets the links too.
+  if (what === 'all' || what === 'transfers') {
+    const everyDay = from === '0000-00-00' && to === '9999-99-99';
+    saved.links = {};
+    for (const [id, l] of Object.entries(stats.links || {})) {
+      const gone = {};
+      for (const d of Object.keys(l.dl || {})) if (d >= from && d <= to) { gone[d] = l.dl[d]; delete l.dl[d]; }
+      if (Object.keys(gone).length || everyDay) saved.links[id] = { ...l, dl: gone };
+      if (everyDay) delete stats.links[id];
+    }
   }
   if (what === 'all' || what === 'problems') {
     const lo = Date.parse(from + 'T00:00:00Z') || 0;
@@ -3765,6 +3817,7 @@ function weeklySummary() {
     `Links: ${n(w.links)} made${change('links')} · ${n(w.linkDownloads)} downloads · ${n(w.emailsSent)} emailed`,
     `Clipboard: ${n(w.clipResend)} sent again from history · Auto-send folder: ${n(w.autoSend)} files · Big files: ${n(w.bigFiles)}`,
     `Problem reports: ${n(weekErrors)}`,
+    `Share links: ${n(w.links)} made${change('links')} · ${n(w.linkDownloads)} downloads${change('linkDownloads')} · ${sizeText(w.linkBytes || 0)} downloaded`,
   ];
   const countries = top('uc_');
   const pagesTop = top('vp_');
@@ -3772,6 +3825,12 @@ function weeklySummary() {
   if (countries) lines.push(`Top countries: ${countries}`);
   if (pagesTop) lines.push(`Top pages: ${pagesTop}`);
   if (sources) lines.push(`Top sources: ${sources}`);
+  const linkCountries = top('lc_');
+  if (linkCountries) lines.push(`Link downloads from: ${linkCountries}`);
+  // The share links downloaded most in the week (a title only for links with chat previews)
+  const inWeek = (l) => Object.entries(l.dl || {}).filter(([d]) => d >= from && d <= to).reduce((s, [, c]) => s + Object.values(c).reduce((a, b) => a + b, 0), 0);
+  const topLinks = linkList().map((l) => [l, inWeek(l)]).filter(([, c]) => c).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  if (topLinks.length) lines.push(`Most downloaded links: ${topLinks.map(([l, c]) => `${l.t ? `"${l.t.slice(0, 40)}"` : `/d/${l.id.slice(0, 4)}…`} (${sizeText(l.s || 0)}) ${n(c)}`).join(', ')}`);
   return { subject: `OmniBeam weekly: ${n(w.visitors)} visitors, ${n(done)} transfers (${from} to ${to})`, text: `${lines.join('\n')}\n\nDetails: ${SITE_URL}/admin` };
 }
 async function sendWeekly() {

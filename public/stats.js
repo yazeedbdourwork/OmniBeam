@@ -329,6 +329,7 @@
       .map((d) => `<tr>${cols.map(([, f]) => `<td>${esc(f(d))}</td>`).join('')}</tr>`).join('')}</tbody>`;
 
     renderSuccess(days, before);
+    renderLinks(data, days, before);
     renderFeatures(days, before);
     renderOverview(data, days, before);
     renderStatus();
@@ -401,6 +402,43 @@
     $('#undo-info').textContent = c
       ? `Last clear: ${CLEARED[c.what] || c.what}, ${c.from ? `${niceDay(c.from)} – ${niceDay(c.to)}` : 'all days'}, on ${when(c.at)}. Undo adds those numbers back (anything counted since stays).`
       : 'Nothing cleared yet, or the last clear was undone.';
+  }
+
+  // Share links: links made and downloaded in the period, the links downloaded most and where downloads came from.
+  // data.links (server: linkStat) has each link's downloads per day and country; lc_<country> the same per day.
+  function renderLinks(data, days, before) {
+    const sum = (f) => sumOf(days, f);
+    const prev = (f) => sumOf(before, f);
+    const first = days[0].date, end = days[days.length - 1].date;
+    const inRange = (l) => {
+      let n = 0;
+      const cc = {};
+      for (const [d, by] of Object.entries(l.dl || {})) {
+        if (d < first || d > end) continue;
+        for (const [c, k] of Object.entries(by)) { n += k; cc[c] = (cc[c] || 0) + k; }
+      }
+      return { n, cc };
+    };
+    $('#link-tiles').innerHTML = [
+      tile(`Links made, ${label()}`, num(sum('links')), `${num(sum('linkPins'))} with a password · ${num(sum('noteLinks'))} secret notes`, change(sum('links'), prev('links'))),
+      tile(`Downloads, ${label()}`, num(sum('linkDownloads')), `${size(sum('linkBytes'))} downloaded`, change(sum('linkDownloads'), prev('linkDownloads'))),
+      tile(`Link pages opened, ${label()}`, num(sum('linkViews')), `${num(sum('linkPreviews'))} previews`, change(sum('linkViews'), prev('linkViews'))),
+      tile('Links now', num(data.now.links), `${num(data.now.linkMb)} of ${num(data.now.linkMaxMb)} MB used`),
+    ].join('');
+    const rows = (data.links || []).map((l) => ({ l, ...inRange(l) })).filter((r) => r.n).sort((a, b) => b.n - a.n || (b.l.v || 0) - (a.l.v || 0));
+    $('#links-lead').textContent = rows.length ? `${num(rows.length)} links were downloaded ${inPeriod()}.` : `No link was downloaded ${inPeriod()}.`;
+    const top = Math.max(1, ...rows.map((r) => r.n));
+    const where = (cc) => Object.entries(cc).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, n]) => `${flag(c)} ${num(n)}`).join(' ');
+    $('#link-top').innerHTML = rows.length ? `<thead><tr><th>Link</th><th>Size</th><th>Downloads</th><th class="share">Share</th><th>Page views</th><th>From</th><th>Made</th></tr></thead><tbody>${rows.slice(0, 20)
+      .map(({ l, n, cc }) => `<tr><td>${l.t ? `<b>${esc(l.t)}</b>` : '<span title="Encrypted name">🔒 Private file</span>'} <small>/d/${esc(String(l.id).slice(0, 4))}… · ${l.live ? 'live' : 'expired'}</small></td><td>${esc(size(l.s))}</td><td>${num(n)}</td><td class="share"><i style="width:${((n / top) * 100).toFixed(1)}%"></i></td><td>${num(l.v)}</td><td>${where(cc)}</td><td>${l.c ? esc(when(l.c)) : '–'}</td></tr>`).join('')}</tbody>`
+      : '<tbody><tr><td class="empty">No share link was downloaded in this period yet.</td></tr></tbody>';
+    const lc = group(days, 'lc_');
+    const total = Object.values(lc).reduce((s, v) => s + v, 0);
+    const countries = Object.entries(lc).sort((a, b) => b[1] - a[1]);
+    const topC = Math.max(1, ...countries.map(([, v]) => v));
+    $('#link-countries').innerHTML = countries.length ? `<thead><tr><th>Country</th><th>Downloads</th><th class="share">Share</th></tr></thead><tbody>${countries.slice(0, 20)
+      .map(([c, v]) => `<tr><td>${flag(c)} ${esc(country(c))}</td><td>${num(v)} <small>(${Math.round((v / total) * 100)}%)</small></td><td class="share"><i style="width:${((v / topC) * 100).toFixed(1)}%"></i></td></tr>`).join('')}</tbody>`
+      : '<tbody><tr><td class="empty">No link downloads counted in this period yet.</td></tr></tbody>';
   }
 
   // How many sends finished, by route and by browser, and why the others stopped. Counted since the
@@ -844,7 +882,7 @@
     if (!last) return;
     const days = period(last, range, endBack);
     const fields = ['visitors', 'views', 'time', 'engaged', 'timed', 'app', 'connections', 'networks', 'transfers', 't_lan', 't_internet', 't_turn',
-      't_relay', 'texts', 'files', 'bytes', 'relayBytes', 'links', 'linkDownloads', 'err', 'tfail', 'tcancel', 'tresumed',
+      't_relay', 'texts', 'files', 'bytes', 'relayBytes', 'links', 'linkDownloads', 'linkBytes', 'linkViews', 'err', 'tfail', 'tcancel', 'tresumed',
       'thandoff', 'ask_shown', 'ask_rate', 'ask_share', 'ask_no', 'linkPins', 'linkLimited', 'linkLong', 'linkSendTo', 'linkViews', 'linkPreviews', 'linkPublic',
       'teamRooms', 'teamNew', 'sendAgain', 'histExport', 'galleryOpen', 'emailsSent', 'emailsFailed', 'clipResend', 'autoSend', 'bigFiles', 'requests', 'requestFiles', 'requestBytes',
       'rings', 'linksOpened', 'sendAll', 'inviteCards', 'chatOpen', 'pins', 'scans', 'videoShrunk', 'videoSaved', 'telegramOut', 'telegramIn',

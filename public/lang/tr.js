@@ -1873,5 +1873,18 @@
     "Devices on the same Wi‑Fi find each other with no code or QR, and their cards say Nearby. Turn this off on public or hotel Wi‑Fi to stay hidden. Paired devices, teams and rooms still work.": "Aynı Wi‑Fi’daki cihazlar kod veya QR olmadan birbirini bulur ve kartlarında Yakında yazar. Gizli kalmak için halka açık veya otel Wi‑Fi’ında bunu kapatın. Eşleştirilmiş cihazlar, ekipler ve odalar çalışmaya devam eder.",
     "Nearby:": "Yakında:",
     "Devices on the same Wi‑Fi show up by themselves, with no code or QR, and their cards say Nearby. To stay hidden on public or hotel Wi‑Fi, turn off Nearby in Settings, Privacy.": "Aynı Wi‑Fi’daki cihazlar kod veya QR olmadan kendiliğinden görünür ve kartlarında Yakında yazar. Halka açık veya otel Wi‑Fi’ında gizli kalmak için Ayarlar, Gizlilik’te Yakında’yı kapatın.",
+    // Smartwatch: send progress in notifications (2026-11-27)
+    "Smartwatch": "Akıllı saat",
+    "Shows send progress and \"Sent\" as notifications on this phone, so a smartwatch that shows your phone's notifications shows them too.": "Gönderim ilerlemesini ve \"Gönderildi\"yi bu telefonda bildirim olarak gösterir; böylece telefonunuzun bildirimlerini gösteren akıllı saat de bunları gösterir.",
+    "Send progress and \"Sent\" in notifications": "Bildirimlerde gönderim ilerlemesi ve \"Gönderildi\"",
+    "Sending to {name}": "{name} cihazına gönderiliyor",
+    "Paused: sending to {name}": "Duraklatıldı: {name} cihazına gönderim",
+    "Not sent to {name}": "{name} cihazına gönderilmedi",
+    "It continues by itself when both devices are back.": "İki cihaz da geri geldiğinde kendiliğinden devam eder.",
+    "Uploading a share link": "Paylaşım bağlantısı yükleniyor",
+    "Share link ready": "Paylaşım bağlantısı hazır",
+    "Smartwatch:": "Akıllı saat:",
+    "On a phone, send progress and Sent show as notifications, so a smartwatch that shows your phone's notifications shows them too. Turn it off in Settings, Transfers, Smartwatch.": "Telefonda gönderim ilerlemesi ve \"Gönderildi\" bildirim olarak görünür; böylece telefonunuzun bildirimlerini gösteren akıllı saat de bunları gösterir. Ayarlar, Aktarım, Akıllı saat bölümünden kapatın.",
+    "Send progress on a smartwatch": "Akıllı saatte gönderim ilerlemesi",
   },
 });
