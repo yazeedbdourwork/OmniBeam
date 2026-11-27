@@ -533,8 +533,8 @@
     "OmniBeam video: every feature, step by step": "Video di OmniBeam: ogni funzione, passo dopo passo",
 
     // SEO update 2026-10-29: title, description and the new home page sections
-    "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Invia file a qualsiasi dispositivo: iPhone, Android, PC | OmniBeam",
-    "Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.": "Invia file, foto e testi da qualsiasi dispositivo a qualsiasi dispositivo con OmniBeam: iPhone, Android, Windows, Mac. Crittografia end-to-end, gratis, senza app né registrazione.",
+    "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Invia file a ogni dispositivo: iPhone, Android, PC | OmniBeam",
+    "Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.": "Invia file, foto e testi tra iPhone, Android, Windows e Mac con OmniBeam. Crittografia end-to-end, gratis, senza app né registrazione.",
     "OmniBeam app icon": "Icona dell'app OmniBeam",
     "Send files from any device to any device": "Invia file da qualsiasi dispositivo a qualsiasi dispositivo",
     "Before OmniBeam I tried the usual tricks. Emailing myself ran into the 25 MB attachment limit. The cable was always the wrong one. Cloud folders made me upload a file, then download the same file again. Now the file goes from one device to the other, over your own Wi‑Fi when it can, so a 12 MP iPhone photo is usually on the Windows PC before I've put the phone down. A PDF from a laptop reaches an Android phone the same way.": "Prima di OmniBeam ho provato i soliti trucchi. Mandarmi un'email si scontrava con il limite di 25 MB per gli allegati. Il cavo era sempre quello sbagliato. Le cartelle cloud mi facevano caricare un file e poi riscaricare lo stesso file. Ora il file va da un dispositivo all'altro, sulla tua Wi‑Fi quando si può, quindi una foto iPhone da 12 MP di solito è sul PC Windows prima che io abbia posato il telefono. Un PDF dal portatile arriva su un telefono Android allo stesso modo.",

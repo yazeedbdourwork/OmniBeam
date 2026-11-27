@@ -533,8 +533,8 @@
     "OmniBeam video: every feature, step by step": "Видео об OmniBeam: каждая функция шаг за шагом",
 
     // SEO update 2026-10-29: title, description and the new home page sections
-    "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Отправка файлов на любое устройство: iPhone, Android, ПК | OmniBeam",
-    "Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.": "Отправляйте файлы, фото и текст с любого устройства на любое с помощью OmniBeam: iPhone, Android, Windows, Mac. Сквозное шифрование, бесплатно, без приложения и регистрации.",
+    "Send Files to Any Device: iPhone, Android, PC | OmniBeam": "Файлы на любое устройство: iPhone, Android, ПК | OmniBeam",
+    "Send files, photos and text from any device to any device with OmniBeam: iPhone, Android, Windows, Mac. Encrypted end to end, free, no app or sign-up.": "Отправляйте файлы, фото и текст между iPhone, Android, Windows и Mac с OmniBeam. Сквозное шифрование, бесплатно, без приложения и регистрации.",
     "OmniBeam app icon": "Значок приложения OmniBeam",
     "Send files from any device to any device": "Отправляйте файлы с любого устройства на любое",
     "Before OmniBeam I tried the usual tricks. Emailing myself ran into the 25 MB attachment limit. The cable was always the wrong one. Cloud folders made me upload a file, then download the same file again. Now the file goes from one device to the other, over your own Wi‑Fi when it can, so a 12 MP iPhone photo is usually on the Windows PC before I've put the phone down. A PDF from a laptop reaches an Android phone the same way.": "До OmniBeam я пробовал обычные способы. Письмо самому себе упиралось в лимит вложений 25 МБ. Кабель всегда оказывался не тот. Облачные папки заставляли загрузить файл, а потом скачать тот же файл снова. Теперь файл идёт с одного устройства на другое, по вашему собственному Wi‑Fi, когда это возможно, так что фото с iPhone на 12 Мп обычно уже на ПК с Windows, пока я ещё не положил телефон. PDF с ноутбука так же попадает на Android-телефон.",
