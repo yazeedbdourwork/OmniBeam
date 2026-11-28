@@ -47,7 +47,8 @@ test('the upload zip: minified scripts parse, keep their addresses, and the site
     if (rel.startsWith('public/media/') || rel.endsWith('.zip')) continue; // big files nobody minifies
     const raw = fs.readFileSync(f);
     const out = await shipped(rel, raw);
-    if (/^public\/(?!tools\/|pages\/|pdfjs\/|mediabunny\.js|heic2any\.js|pdf-lib\.js).+\.js$/.test(rel)) { before += raw.length; after += out.length; }
+    // (translations, lang/*.js, are nearly all text and barely shrink: not counted, so the ratio is about the code)
+    if (/^public\/(?!tools\/|pages\/|lang\/|pdfjs\/|mediabunny\.js|heic2any\.js|pdf-lib\.js).+\.js$/.test(rel)) { before += raw.length; after += out.length; }
     fs.mkdirSync(path.dirname(path.join(dir, rel)), { recursive: true });
     fs.writeFileSync(path.join(dir, rel), out);
   }

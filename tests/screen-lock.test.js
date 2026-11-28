@@ -261,7 +261,7 @@ test('the screen-off texts are in every language', async () => {
     'Plays a near-silent sound during transfers, which may keep Safari going while the screen is off. It pauses any music that is playing, and it may not work on every iPhone.',
     'Keep transfers going with the screen off (iPhone, experimental)'];
   const files = fs.readdirSync(path.join(__dirname, '..', 'public', 'lang'));
-  expect(files.length).toBe(14);
+  expect(files.length).toBe(19);
   for (const f of files) {
     const lang = require(`../public/lang/${f}`);
     for (const k of keys) {
