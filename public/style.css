@@ -447,6 +447,10 @@ footer {
 a.footer-link-btn { text-decoration: none; }
 select.lang-select { font-family: inherit; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; }
 select.lang-select option { color: var(--fg); background: var(--bg); }
+/* The visitor's country flag beside the language menu (i18n.js) */
+.lang-flag { display: inline-flex; align-items: center; margin-inline-end: 4px; vertical-align: middle; cursor: pointer; }
+.lang-flag + select.lang-select { text-align: start; text-align-last: start; padding-inline-start: 2px; }
+.lang-flag img { width: 20px; height: 15px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(127, 127, 127, .35); object-fit: cover; }
 
 .footer-link-btn:hover {
   color: var(--accent);
