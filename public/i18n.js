@@ -6,7 +6,8 @@
 // Text in {braces} is filled in by the app (a name, a number, a code) and must be kept as is.
 (function () {
   const LANGUAGES = { en: 'English', ar: 'العربية', fr: 'Français', es: 'Español', tr: 'Türkçe', de: 'Deutsch', pt: 'Português', hi: 'हिन्दी', id: 'Bahasa Indonesia',
-    ru: 'Русский', ja: '日本語', zh: '简体中文', ko: '한국어', it: 'Italiano', ur: 'اردو' };
+    ru: 'Русский', ja: '日本語', zh: '简体中文', ko: '한국어', it: 'Italiano', ur: 'اردو',
+    fa: 'فارسی', bn: 'বাংলা', vi: 'Tiếng Việt', th: 'ไทย', pl: 'Polski' };
 
   // The server reads the same translations to send pages like /ar/ already translated
   if (typeof module === 'object' && module.exports) {
@@ -33,7 +34,7 @@
   }
   const loaded = window.OB_LANGS || {};
   const lang = pathLang || (loaded[wanted] ? wanted : 'en');
-  const pack = (lang !== 'en' && loaded[lang]) || { strings: {}, dir: lang === 'ar' || lang === 'ur' ? 'rtl' : 'ltr' };
+  const pack = (lang !== 'en' && loaded[lang]) || { strings: {}, dir: ['ar', 'ur', 'fa'].includes(lang) ? 'rtl' : 'ltr' };
   const strings = pack.strings;
   const dir = pack.dir;
 

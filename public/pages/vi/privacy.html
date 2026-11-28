@@ -1,0 +1,51 @@
+<!--
+title: Chính sách quyền riêng tư: OmniBeam xử lý tệp của bạn thế nào
+description: Cách OmniBeam xử lý tệp của bạn: từ thiết bị đến thiết bị, mã hóa đầu cuối, không lưu gì ngoài các liên kết được mã hóa do bạn tạo.
+short: Chính sách quyền riêng tư
+updated: 2026-11-06
+-->
+<h1>Chính sách quyền riêng tư: tệp và tin nhắn của bạn</h1>
+<p class="updated">Cập nhật lần cuối: ngày 6 tháng 11 năm 2026</p>
+<h2>Tệp và tin nhắn của bạn</h2>
+<p>OmniBeam gửi tệp và tin nhắn của bạn trực tiếp giữa các thiết bị bất cứ khi nào có thể, được mã hóa đầu cuối bằng WebRTC. Khi đó, chúng không bao giờ đến máy chủ của chúng tôi.</p>
+<p>Khi không thể kết nối trực tiếp (ví dụ sau tường lửa nghiêm ngặt hoặc VPN), chúng sẽ đi qua máy chủ của chúng tôi. Chúng vẫn được mã hóa đầu cuối: hai thiết bị thống nhất một khóa mà máy chủ không bao giờ thấy, nên máy chủ chỉ chuyển tiếp dữ liệu mà nó không đọc được, và không lưu lại. Mỗi lượt truyền đều phải được chấp nhận trên thiết bị nhận trước.</p>
+<h2>Tệp chia sẻ qua liên kết</h2>
+<p>Khi bạn chia sẻ tệp qua liên kết, trình duyệt của bạn mã hóa tệp (kể cả tên tệp) trước khi tải lên. Khóa chỉ nằm trong phần liên kết sau dấu “#”, phần mà trình duyệt không bao giờ gửi đến máy chủ, nên chúng tôi lưu dữ liệu mà chúng tôi không đọc được. Tệp chia sẻ tự động bị xóa khi liên kết hết hạn (tối đa 3 ngày), sau lượt tải đầu tiên nếu bạn chọn như vậy, hoặc khi bạn xóa liên kết. Bất kỳ ai bạn đưa liên kết đều có thể tải tệp xuống, vì vậy chỉ chia sẻ với người bạn muốn.</p>
+<h2>Tệp gửi đến liên kết yêu cầu của bạn</h2>
+<p>Khi ai đó gửi tệp đến liên kết yêu cầu bạn đã tạo, trình duyệt của họ mã hóa tệp và tên tệp trước khi tải lên, bằng một khóa mà chỉ thiết bị của bạn và liên kết có (phần sau dấu “#”, không bao giờ đến máy chủ). Chúng tôi lưu dữ liệu mà chúng tôi không đọc được cho đến khi thiết bị của bạn nhận về, rồi xóa ngay. Tệp không ai nhận sẽ bị xóa sau tối đa 7 ngày, và xóa liên kết sẽ xóa mọi thứ còn đang chờ. Chỉ thiết bị của bạn mới tải được những gì được gửi đến liên kết của bạn.</p>
+<h2>Ô “Gửi tệp cho tôi” trên các trang web khác</h2>
+<p>Người khác có thể đặt một ô từ OmniBeam lên trang web của họ để khách truy cập gửi tệp cho họ (xem <a href="/vi/embed">cách hoạt động</a>). Tệp gửi qua ô này được mã hóa trong trình duyệt của bạn và được niêm phong để chỉ thiết bị của người tạo ô mới mở được; OmniBeam không đọc được. Ô này không đặt cookie và không tải công cụ phân tích nào. Những gì được ghi trong ô (họ yêu cầu gì, tên thiết bị của họ) là công khai, như phần còn lại của trang.</p>
+<h2>Bot Telegram</h2>
+<p>Nếu bạn liên kết một thiết bị với bot OmniBeam trên Telegram, máy chủ sẽ giữ số định danh cuộc trò chuyện của bạn với bot, tên của bạn trên Telegram, tên thiết bị được liên kết và liên kết yêu cầu mà nó dùng, cho đến khi bạn hủy liên kết. Tệp và văn bản bạn gửi cho bot đi qua Telegram và máy chủ OmniBeam, nên không được mã hóa đầu cuối. Máy chủ chỉ giữ chúng cho đến khi thiết bị của bạn nhận về, được niêm phong để chỉ thiết bị của bạn mở được, rồi xóa đi (muộn nhất sau 7 ngày). Tệp bạn gửi từ OmniBeam sang Telegram đi qua máy chủ mà không bị lưu lại. Chính sách quyền riêng tư của Telegram áp dụng cho các cuộc trò chuyện của bạn ở đó.</p>
+<h2>Trang trạng thái</h2>
+<p>Trang trạng thái chỉ cho biết các phần của OmniBeam có hoạt động không, thời gian hoạt động mỗi ngày và khi nào xảy ra sự cố. Trang được tạo từ các lần kiểm tra tự động mỗi 5 phút, từ bên ngoài (Cloudflare) và bởi chính máy chủ, và không chứa gì về khách truy cập hay tệp của họ.</p>
+<h2>Dữ liệu kết nối</h2>
+<p>Để các thiết bị tìm thấy nhau, máy chủ thấy địa chỉ IP của bạn, tên thiết bị ngẫu nhiên hiển thị trong ứng dụng, và các thông tin kỹ thuật cần để kết nối hai trình duyệt. Chúng chỉ được giữ trong bộ nhớ khi bạn đang trực tuyến và không được ghi ra ổ đĩa hay chia sẻ.</p>
+<p>Máy chủ cũng giữ các tổng số đơn giản theo ngày (ví dụ số lượt kết nối, số lượt truyền và cách chúng được gửi). Đây chỉ là các con số, không có địa chỉ IP, tên hay thông tin tệp. Lượt truy cập trang cũng được đếm theo cách đó: trang nào được mở, quốc gia (suy ra từ địa chỉ IP, địa chỉ này không được giữ), loại thiết bị và trình duyệt, trang đã dẫn đến, và trang được mở trong bao lâu. Không dùng cookie cho việc này và không có gì được lưu trên thiết bị của bạn. Nếu bạn chọn Không, cảm ơn trên biểu ngữ cookie, lượt truy cập của bạn sẽ không được đếm.</p>
+<h2>Những gì ở lại trên thiết bị của bạn</h2>
+<p>Tên thiết bị, giao diện, ngôn ngữ, các thiết bị đã ghép nối, các liên kết bạn đã tạo và lịch sử tệp đã nhận (giữ trong 7 ngày) được lưu trong chính trình duyệt của bạn. Bạn có thể xóa lịch sử trong ứng dụng hoặc bằng cách xóa dữ liệu trang. Để mở nhanh và hoạt động không cần internet, OmniBeam cũng giữ một bản sao các tệp ứng dụng của chính nó (không bao giờ là tệp của bạn) trong trình duyệt, được thay mới sau mỗi lần cập nhật.</p>
+<h2>Thống kê truy cập</h2>
+<p>Nếu bạn cho phép khi trang hỏi, OmniBeam dùng Google Analytics để đếm lượt truy cập và xem trang được sử dụng thế nào (ví dụ trang đã xem, quốc gia, loại thiết bị và trình duyệt). Tập lệnh Google Analytics chỉ được tải sau khi bạn nhấn Cho phép, và chỉ khi trang đã tải xong. Cho đến khi bạn chọn, và nếu bạn chọn Không, cảm ơn, hoàn toàn không có gì được gửi đến Google. Google nhận địa chỉ IP của bạn qua các yêu cầu này. Tệp và tin nhắn bạn gửi không bao giờ được tính vào. Bạn có thể thay đổi lựa chọn bất cứ lúc nào: <a href="#" data-cookie-settings hidden>cài đặt cookie</a>. Xem <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">cách Google sử dụng dữ liệu này</a>.</p>
+<h2>Báo cáo sự cố</h2>
+<p>Khi có sự cố, ví dụ một lượt truyền thất bại hoặc kết nối trực tiếp không hoạt động, trang sẽ gửi cho chúng tôi một báo cáo ẩn danh ngắn để chúng tôi khắc phục: cái gì bị lỗi, đường kết nối, cùng loại trình duyệt và hệ điều hành của bạn. Báo cáo không bao giờ chứa tên tệp, nội dung tệp, tin nhắn, mã ghép nối hay địa chỉ, và chỉ vài trăm báo cáo gần nhất được giữ lại. Nếu nhiều sự cố được báo cùng lúc, một bản tóm tắt (bao nhiêu, loại gì và trình duyệt nào) sẽ được gửi cho chủ trang qua email hoặc Telegram để khắc phục nhanh. Một thẻ trình duyệt bị sập khi OmniBeam đang mở, và một lượt truyền bị kẹt, cũng được báo riêng từng cái cho chủ trang qua Telegram, với cùng các thông tin đó và không gì hơn.</p>
+<h2>Thông báo</h2>
+<p>Thông báo luôn tắt trừ khi bạn bật trong Cài đặt. Khi bật, máy chủ giữ địa chỉ nhận thông báo mà trình duyệt cung cấp (nó trỏ đến dịch vụ đẩy của hãng làm trình duyệt, như Apple, Google, Microsoft hoặc Mozilla), ngôn ngữ của bạn, và các mã đã được xáo trộn của các lần ghép nối, để biết thông báo nào dành cho bạn. Một thông báo cho biết thiết bị nào muốn gửi gì đó cho bạn và bao nhiêu tệp, và đến với bạn qua dịch vụ đẩy đó. Không bao giờ có nội dung tệp hay tin nhắn. Tất cả sẽ bị xóa khi bạn tắt thông báo, hoặc khi trình duyệt ngừng nhận thông báo.</p>
+<h2>Tiện ích trình duyệt</h2>
+<p>Tiện ích OmniBeam cho Chrome và Edge chỉ giao tiếp với thẻ OmniBeam trong trình duyệt của bạn. Khi bạn dùng, nó gửi địa chỉ trang, liên kết, hình ảnh hoặc văn bản đã chọn mà bạn chọn đến thẻ đó, và thẻ gửi đến thiết bị của bạn như mọi lượt truyền khác. Nó không đọc hay thu thập lịch sử duyệt web của bạn, chỉ giữ danh sách thiết bị khi trình duyệt đang mở, và không có quyền truy cập các trang web khác, ngoại trừ đọc văn bản bạn đã chọn khi bạn nhấp vào nút của nó, và hình ảnh bạn nhấp chuột phải (hoặc mọi hình ảnh, nếu bạn bật tùy chọn đó).</p>
+<h2>Ứng dụng OmniBeam cho Windows</h2>
+<p>Ứng dụng OmniBeam từ Microsoft Store mở trang web này trong cửa sổ riêng. Nó hoạt động theo cùng cách và chính sách này áp dụng đầy đủ cho nó.</p>
+<h2>Camera, micro và màn hình</h2>
+<p>OmniBeam chỉ dùng camera, micro hoặc màn hình của bạn khi bạn yêu cầu: để chụp ảnh, ghi âm giọng nói, chia sẻ màn hình, hoặc trong một khoảnh khắc khi bạn bật ⚡ Truyền qua Wi‑Fi nhanh hơn (nó được tắt ngay và không có gì được ghi âm). Trình duyệt sẽ hỏi bạn trước. Ảnh và ghi âm giọng nói được gửi như mọi tệp khác, và màn hình được chia sẻ đi thẳng đến thiết bị bạn chọn, được mã hóa đầu cuối. Không có gì trong số đó được lưu trên máy chủ của chúng tôi.</p>
+<h2>Ghi chú bí mật</h2>
+<p>Ghi chú bí mật gửi đến một thiết bị chỉ hiện ở đó một lần và không được giữ trong lịch sử. Liên kết ghi chú bí mật hoạt động như liên kết tệp: ghi chú được mã hóa trên thiết bị của bạn, máy chủ không đọc được, và nó bị xóa khỏi máy chủ ngay sau khi được đọc một lần.</p>
+<h2>Quét thành PDF, chế độ xem trò chuyện và kích thước ảnh</h2>
+<p>Quét thành PDF tìm các cạnh của trang và tạo tệp PDF ngay trên thiết bị của bạn: hình ảnh không được tải lên để tạo PDF, và tệp PDF sau đó được gửi như mọi tệp khác. Chế độ xem trò chuyện chỉ hiển thị lịch sử đã có trên thiết bị của bạn; không có gì thêm được lưu lại. Ảnh bạn gửi ở chế độ “Nhỏ hơn” được thu nhỏ trên thiết bị của bạn trước khi gửi.</p>
+<h2>Mã người ủng hộ</h2>
+<p>Nếu bạn nhận được mã người ủng hộ sau khi quyên góp, máy chủ giữ danh sách các mã nó đã tạo, mỗi mã kèm ngày tạo và một ghi chú ngắn mà chủ trang có thể viết (như tên), để có thể thu hồi mã. Trình duyệt giữ mã của bạn và đưa cho máy chủ khi kết nối, để các thiết bị khác thấy ♥ trên thẻ thiết bị của bạn; máy chủ chỉ giữ thông tin đó trong bộ nhớ khi bạn đang trực tuyến. Bản thân việc quyên góp do trang thanh toán bạn chọn (như PayPal) xử lý, không phải OmniBeam.</p>
+<h2>Không quảng cáo</h2>
+<p>OmniBeam không có tài khoản, quảng cáo hay trình theo dõi quảng cáo. Phông chữ của trang do chính omnibeam.site cung cấp, không phải Google Fonts.</p>
+<h2>Lưu trữ</h2>
+<p>Trang chạy trên một dịch vụ lưu trữ web có thể giữ nhật ký máy chủ tiêu chuẩn (như địa chỉ IP và thời gian yêu cầu) vì lý do bảo mật.</p>
+<h2>Liên hệ</h2>
+<p>Câu hỏi về quyền riêng tư: <a href="https://www.facebook.com/jordanian.1988" target="_blank" rel="noopener noreferrer">nhắn tin trên Facebook</a>.</p>
+<p>Chính sách này giải thích cách OmniBeam xử lý tệp và tin nhắn của bạn, và những gì nó không bao giờ giữ lại.</p>

@@ -2,7 +2,7 @@
 // WeTransfer and PC to Android pages in all 15 languages, and FAQPage / HowTo structured data
 const { test, expect } = require('@playwright/test');
 
-const LANGS = ['', 'ar/', 'fr/', 'es/', 'tr/', 'de/', 'pt/', 'hi/', 'id/', 'ru/', 'ja/', 'zh/', 'ko/', 'it/', 'ur/'];
+const LANGS = ['', 'ar/', 'fr/', 'es/', 'tr/', 'de/', 'pt/', 'hi/', 'id/', 'ru/', 'ja/', 'zh/', 'ko/', 'it/', 'ur/', 'fa/', 'bn/', 'vi/', 'th/', 'pl/'];
 const NEW = ['faq', 'omnibeam-vs-wetransfer', 'send-files-pc-to-android'];
 const ld = (html) => JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
 
@@ -29,7 +29,7 @@ test('llms.txt has the key facts and llms-full.txt has the text of every English
   expect(full).not.toMatch(/<(p|li|h\d|a)\b/);
 });
 
-test('the new answer pages exist in all 15 languages, with Q&A, enough text, hreflang and sitemap entries', async ({ page, request }) => {
+test('the new answer pages exist in all 20 languages, with Q&A, enough text, hreflang and sitemap entries', async ({ page, request }) => {
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const l of LANGS) {
     for (const slug of NEW) {
@@ -45,9 +45,9 @@ test('the new answer pages exist in all 15 languages, with Q&A, enough text, hre
       expect(info.title.length, `/${l}${slug} title`).toBeLessThanOrEqual(65);
       expect(info.desc.length, `/${l}${slug} description`).toBeLessThanOrEqual(165);
       expect(info.qa, `/${l}${slug} Q&A`).toBeGreaterThanOrEqual(5);
-      expect(info.hreflang, `/${l}${slug} hreflang`).toBe(16);
+      expect(info.hreflang, `/${l}${slug} hreflang`).toBe(21);
       expect(info.amp).toBe(true);
-      if (['ja/', 'zh/', 'ko/'].includes(l)) expect(info.chars, `/${l}${slug} characters`).toBeGreaterThan(1000);
+      if (['ja/', 'zh/', 'ko/', 'th/'].includes(l)) expect(info.chars, `/${l}${slug} characters`).toBeGreaterThan(1000);
       else expect(info.words, `/${l}${slug} words`).toBeGreaterThan(500);
       expect(sitemap).toContain(`/${l}${slug}<`);
       expect((await request.get(`/amp/${l}${slug}`)).status(), `/amp/${l}${slug}`).toBe(200);

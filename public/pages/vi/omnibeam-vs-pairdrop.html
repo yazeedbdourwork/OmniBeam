@@ -1,0 +1,55 @@
+<!--
+title: OmniBeam so với PairDrop: Nên dùng cái nào
+description: PairDrop và OmniBeam đều gửi tệp giữa các thiết bị trên trình duyệt. So sánh thẳng thắn về ghép nối, mã hóa, liên kết, tiếp tục truyền, ứng dụng và tự host.
+short: OmniBeam so với PairDrop
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam so với PairDrop</h1>
+<p class="lead">PairDrop phát triển từ Snapdrop và là một công cụ mã nguồn mở tốt. OmniBeam hoạt động theo cách tương tự trên trình duyệt, nên lựa chọn chỉ phụ thuộc vào một vài tính năng. Dưới đây là so sánh song song thẳng thắn.</p>
+
+<div class="table-wrap compare-wrap" tabindex="0"><table class="compare">
+<thead><tr><td></td><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>Cùng Wi‑Fi, không cần cài gì</th><td>Có</td><td>Có</td></tr>
+<tr><th>Ghép nối thiết bị bằng mã hoặc QR</th><td>Có</td><td>Có</td></tr>
+<tr><th>Phòng công khai</th><td>Có, tùy chọn kèm mật khẩu</td><td>Có</td></tr>
+<tr><th>Khi kết nối trực tiếp thất bại</th><td>Chuyển tiếp qua máy chủ, mã hóa đầu cuối, tiếp tục truyền sau khi mất kết nối</td><td>Máy chủ TURN</td></tr>
+<tr><th>Gửi cho người khác sau</th><td>Liên kết được mã hóa, bị xóa sau khi hết hạn</td><td>Không</td></tr>
+<tr><th>Đồng bộ bộ nhớ tạm, và thông báo khi ứng dụng đang đóng</th><td>Có, giữa các thiết bị đã ghép nối</td><td>Không</td></tr>
+<tr><th>Menu chuột phải Send to (Windows, Mac, Linux) và tiện ích trình duyệt</th><td>Có</td><td>Công cụ dòng lệnh và hướng dẫn cách làm</td></tr>
+<tr><th>Mã nguồn mở và tự host</th><td>Mã nguồn mở (GPL-3.0); chạy trên Node.js, không có sẵn Docker image</td><td>Có (Docker hoặc Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>Chọn PairDrop nếu</h2>
+<p>Bạn muốn có sẵn Docker image để chạy máy chủ riêng, hoặc cần một ngôn ngữ mà OmniBeam chưa có. PairDrop là phần mềm tự do và rất dễ tự host.</p>
+
+<h2>Chọn OmniBeam nếu</h2>
+<ul>
+  <li>Tệp lớn qua kết nối kém: lượt truyền bị ngắt sẽ tiếp tục từ chỗ đã dừng thay vì thất bại.</li>
+  <li>Bạn muốn gửi cho người hiện không trực tuyến, bằng một liên kết được mã hóa trên thiết bị của bạn.</li>
+  <li>Bạn chuyển tệp giữa cùng các thiết bị mỗi ngày: thiết bị đã ghép nối nhận được thông báo và có thể chia sẻ bộ nhớ tạm, Windows có ứng dụng trên Microsoft Store, còn Chrome và Edge có tiện ích.</li>
+  <li>Bạn muốn ảnh và video được thu nhỏ trước khi gửi, hoặc kiểm tra tốc độ giữa hai thiết bị.</li>
+</ul>
+
+<h2>Thử cả hai</h2>
+<p>Không cái nào cần tài khoản, nên cách nhanh nhất để quyết định là mở <a href="/vi/">omnibeam.site</a> trên hai thiết bị và gửi một video lớn. <a href="/vi/how-to-use">Trang hướng dẫn</a> liệt kê mọi tính năng.</p>
+<p>Nên dùng cái nào? Nếu bạn muốn mã hóa đầu cuối, liên kết và một ứng dụng có thể cài đặt, OmniBeam phù hợp hơn; PairDrop ổn cho những lần gửi nhanh trên cùng một mạng.</p>
+<section class="qa">
+<h2>Hỏi và đáp</h2>
+<h3>OmniBeam và PairDrop có liên quan với nhau không?</h3>
+<p>Cả hai đều chạy trên trình duyệt và lấy cảm hứng từ cùng ý tưởng với Snapdrop: mở một trang trên hai thiết bị và gửi. Chúng là các dự án riêng biệt với tính năng và máy chủ khác nhau.</p>
+<h3>Cái nào giữ tệp riêng tư hơn?</h3>
+<p>Cả hai đều gửi trực tiếp giữa các thiết bị khi có thể. OmniBeam còn mã hóa đầu cuối mọi lượt truyền trên thiết bị của bạn, kể cả khi dữ liệu phải đi qua trạm chuyển tiếp, nên trạm chuyển tiếp không đọc được.</p>
+<h3>Tôi có thể chia sẻ liên kết bằng cả hai không?</h3>
+<p>OmniBeam có thể chia sẻ tệp qua một liên kết được mã hóa tự hết hạn, hữu ích khi người kia không trực tuyến cùng lúc. Hãy kiểm tra tính năng hiện tại của PairDrop nếu bạn cần điều tương tự.</p>
+<h3>Cái nào có ứng dụng?</h3>
+<p>OmniBeam còn có trên Microsoft Store, dưới dạng tiện ích Chrome và ứng dụng Android, nhưng bản trình duyệt chạy ở mọi nơi mà không cần chúng.</p>
+<h3>Cái nào hoạt động giữa các mạng khác nhau?</h3>
+<p>Cả hai đều có thể ghép nối thiết bị để chúng tìm thấy nhau trên các mạng khác nhau. OmniBeam dùng mã 6 chữ số hoặc mã QR, và các thiết bị đã ghép nối tự xuất hiện mỗi khi OmniBeam mở trên cả hai.</p>
+<h3>Cái nào tốt hơn cho một nhóm?</h3>
+<p>Cả hai đều có phòng công khai. OmniBeam còn có “Gửi cho tất cả”, gửi cùng các tệp đến mọi thiết bị đang mở chỉ trong một bước.</p>
+<h3>Tôi nên chọn cái nào?</h3>
+<p>Hãy thử cả hai: không cái nào cần tài khoản, nên bạn có thể so sánh trên chính thiết bị của mình trong vài phút và giữ lại cái kết nối tốt nhất trên mạng của bạn.</p>
+</section>

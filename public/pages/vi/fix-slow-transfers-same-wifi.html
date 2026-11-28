@@ -1,0 +1,46 @@
+<!--
+title: Cùng Wi-Fi mà truyền chậm? Cách khắc phục
+description: Vì sao hai thiết bị cùng Wi-Fi lại gửi qua máy chủ thay vì trực tiếp, và cách khắc phục: VPN, cấu hình mạng, router.
+short: Khắc phục truyền chậm trên cùng Wi‑Fi
+kind: guide
+order: 5
+updated: 2026-10-26
+-->
+<h1>Cùng Wi‑Fi, nhưng truyền chậm hoặc đi qua máy chủ</h1>
+<p class="lead">Trên cùng Wi‑Fi, OmniBeam lẽ ra phải kết nối trực tiếp hai thiết bị và đường truyền dưới thanh tiến trình phải ghi “cùng mạng”. Nếu nó ghi “internet”, “qua router” hoặc “Đang gửi qua máy chủ”, nguyên nhân thường là một trong những điều sau.</p>
+
+<h2>1. Chạy kiểm tra kết nối</h2>
+<p>Nhấn vào ID mạng cạnh tên thiết bị ở cuối màn hình OmniBeam. Phần kiểm tra cho biết thiết bị này có chia sẻ địa chỉ cục bộ không, có VPN cản trở không và các lượt truyền gần đây đi theo đường nào, kèm mẹo cho những gì nó phát hiện.</p>
+
+<h2>2. Cho phép kết nối cục bộ (⚡)</h2>
+<p>Trình duyệt ẩn địa chỉ mạng cục bộ của thiết bị khỏi các trang web. Khi đó thiết bị kia phải tìm nó bằng cách tra tên cục bộ (mDNS), điều mà nhiều mạng chặn, và lượt truyền phải đi đường vòng qua router. Hãy nhấn <b>⚡ Truyền qua Wi‑Fi nhanh hơn</b> và cho phép micro một lần trên một hoặc cả hai thiết bị: không có gì được ghi âm, nhưng trình duyệt sẽ chia sẻ địa chỉ cục bộ và các thiết bị có thể kết nối trực tiếp.</p>
+
+<h2>3. Tắt VPN và chuyển tiếp riêng tư</h2>
+<ul>
+  <li>Tắt các ứng dụng VPN, kể cả tính năng “kết nối an toàn” của phần mềm diệt virus, trên cả hai thiết bị trong lúc gửi.</li>
+  <li>Trên iPhone, tắt iCloud Private Relay, và trong Cài đặt → Wi‑Fi → mạng của bạn, tắt “Giới hạn theo dõi địa chỉ IP”.</li>
+</ul>
+
+<h2>4. Windows: dùng mạng Riêng tư</h2>
+<p>Trên mạng “Công cộng”, Windows chặn việc tra cứu cục bộ mà các thiết bị dùng để tìm nhau. Mở Cài đặt → Mạng &amp; internet → Wi‑Fi (hoặc Ethernet) → mạng của bạn, và chọn <b>Mạng riêng tư</b>. Tường lửa của bạn cũng phải cho phép trình duyệt trên mạng riêng tư.</p>
+
+<h2>5. Kiểm tra router</h2>
+<ul>
+  <li>Mạng khách và “AP isolation” hoặc “client isolation” ngăn các thiết bị cùng Wi‑Fi kết nối với nhau. Hãy dùng mạng chính, hoặc tắt chế độ cách ly trong cài đặt router.</li>
+  <li>Một số router có mạng 2,4 GHz và 5 GHz riêng biệt và bị cách ly; hãy kết nối cả hai thiết bị vào cùng một mạng.</li>
+</ul>
+
+<h2>Vẫn chưa trực tiếp?</h2>
+<p>Việc truyền vẫn hoạt động: OmniBeam gửi qua máy chủ của mình, được mã hóa đầu cuối, chỉ là chậm hơn. Bạn cũng có thể ghép nối các thiết bị bằng mã; điều đó không làm đường truyền nhanh hơn, nhưng chúng sẽ luôn tìm thấy nhau.</p>
+<p>Khi truyền trên cùng Wi‑Fi bị chậm hoặc đi qua máy chủ, các bước trên thường khắc phục được trong vài phút.</p>
+<section class="qa">
+<h2>Hỏi và đáp</h2>
+<h3>Làm sao biết lượt truyền có đang đi qua máy chủ không?</h3>
+<p>OmniBeam hiển thị loại kết nối trên lượt truyền. Kết nối trực tiếp trên cùng Wi‑Fi thường đạt nhiều megabyte mỗi giây; kết nối chuyển tiếp bị giới hạn bởi tốc độ tải lên internet của bạn và thường chậm hơn nhiều.</p>
+<h3>Mạng khách có gây ra chuyện này không?</h3>
+<p>Thường là có. Mạng khách và một số router mesh tách các thiết bị ra vì lý do an toàn, buộc lượt truyền phải đi qua trạm chuyển tiếp. Hãy đưa cả hai thiết bị vào mạng chính để cho phép kết nối trực tiếp.</p>
+<h3>Khởi động lại router có giúp được không?</h3>
+<p>Đôi khi. Nếu cài đặt router ổn, khởi động lại có thể gỡ một trạng thái bị kẹt, nhưng VPN trên một thiết bị hoặc cấu hình mạng công cộng trên Windows sẽ tiếp tục gây ra vấn đề cho đến khi bạn thay đổi nó.</p>
+<h3>Vì sao kết nối trực tiếp mà vẫn truyền chậm?</h3>
+<p>Lượt truyền trực tiếp chỉ nhanh bằng phần chậm nhất trên đường đi. Điện thoại cũ, sóng Wi‑Fi yếu ở phòng khác hay mạng 2,4 GHz đông đúc đều có thể giới hạn tốc độ. Hãy đến gần router hơn hoặc dùng mạng 5 GHz cho tệp lớn.</p>
+</section>

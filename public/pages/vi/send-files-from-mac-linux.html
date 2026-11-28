@@ -1,0 +1,52 @@
+<!--
+title: Gửi tệp từ Mac hoặc Linux bằng chuột phải
+description: Thêm OmniBeam vào menu chuột phải trên Mac và Linux, rồi gửi tệp và văn bản sang iPhone hoặc điện thoại Android. Miễn phí, không cần đăng ký.
+short: Gửi từ menu chuột phải trên Mac và Linux
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Gửi tệp từ Mac hoặc PC Linux sang điện thoại bằng chuột phải</h1>
+<p class="lead">Trình hỗ trợ OmniBeam thêm mục <em>Send with OmniBeam</em> vào menu chuột phải của Finder trên Mac và của trình quản lý tệp trên Linux. Chọn tệp, chọn điện thoại và tệp sẽ được gửi sang, không cần mở trình duyệt trên máy tính.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Tải về cho Mac và Linux (ZIP)</a></p>
+
+<h2>Cài đặt trên Mac</h2>
+<ol>
+  <li>Cài <a href="https://nodejs.org" rel="noopener">Node.js</a>, thứ mà trình hỗ trợ dùng để gửi tệp.</li>
+  <li>Giải nén tệp tải về và nhấp đúp vào <em>install-mac.command</em>. Nếu macOS không cho mở, hãy nhấp chuột phải vào nó, chọn <em>Mở</em> rồi chọn <em>Mở</em> lần nữa.</li>
+  <li>Nhập mã ghép nối từ điện thoại khi được hỏi (xem bên dưới).</li>
+</ol>
+<p>Sau đó nhấp chuột phải vào tệp trong Finder và chọn <em>Tác vụ nhanh</em> rồi <em>Send with OmniBeam</em>. Với văn bản đã chọn trong bất kỳ ứng dụng nào, nhấp chuột phải và chọn <em>Dịch vụ</em> rồi <em>Send text with OmniBeam</em>. Nếu không thấy, hãy bật chúng trong Cài đặt hệ thống, Bàn phím, Phím tắt bàn phím, Dịch vụ.</p>
+
+<h2>Cài đặt trên Linux</h2>
+<ol>
+  <li>Cài Node.js 18 trở lên, ví dụ <code>sudo apt install nodejs</code>, và <code>zenity</code> (hoặc <code>kdialog</code> trên KDE) để chọn thiết bị.</li>
+  <li>Giải nén tệp tải về, mở terminal trong thư mục đó và chạy <code>sh install-linux.sh</code>.</li>
+  <li>Nhập mã ghép nối từ điện thoại khi được hỏi.</li>
+</ol>
+<p>Sau đó nhấp chuột phải vào tệp và chọn <em>Scripts</em> rồi <em>Send with OmniBeam</em> trong Files, Nemo hoặc Caja, hoặc chọn thẳng <em>Send with OmniBeam</em> trong menu của Dolphin và Thunar.</p>
+
+<h2>Ghép nối điện thoại một lần</h2>
+<ol>
+  <li>Trên điện thoại, mở <a href="/vi/">omnibeam.site</a>, nhấn nút liên kết và chọn <em>Tạo mã ghép nối</em>.</li>
+  <li>Nhập mã đó vào trình cài đặt trên máy tính.</li>
+  <li>Trên điện thoại, mở lại màn hình Ghép nối và đánh dấu <em>Tin cậy</em> bên cạnh máy tính, để tệp từ máy tính đến mà không cần hỏi.</li>
+</ol>
+<p>Điện thoại cần mở omnibeam.site để nhận. Tệp đi qua máy chủ OmniBeam, được mã hóa đầu cuối, nên máy chủ không đọc được. Để gỡ các mục khỏi menu, hãy chạy <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Bạn dùng Chrome hoặc Edge? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">Tiện ích OmniBeam</a> gửi trang web, liên kết, hình ảnh hoặc văn bản đã chọn sang điện thoại chỉ bằng chuột phải, trên Mac, Linux và Windows.</p>
+<section class="qa">
+<h2>Hỏi và đáp</h2>
+<h3>Menu chuột phải có hoạt động trên mọi môi trường desktop Linux không?</h3>
+<p>Nó hoạt động trong các trình quản lý tệp phổ biến: Files (Nautilus), Nemo, Caja, Dolphin và Thunar. Trên các desktop khác, bạn vẫn có thể mở omnibeam.site trong trình duyệt và kéo tệp vào.</p>
+<h3>Sau này tôi có thể gỡ các mục menu không?</h3>
+<p>Có. Chạy node omnibeam-send.js --uninstall trong thư mục của trình hỗ trợ, và các mục sẽ biến mất khỏi menu chuột phải.</p>
+<h3>Nó có gửi sang iPhone và Android không?</h3>
+<p>Có. Nó gửi đến điện thoại bạn đã ghép nối bằng mã, dù là iPhone hay điện thoại Android, cùng Wi‑Fi hay dùng dữ liệu di động, miễn là omnibeam.site đang mở trên điện thoại.</p>
+<h3>Vì sao trình hỗ trợ cần Node.js?</h3>
+<p>Trình hỗ trợ là một tập lệnh nhỏ chạy bằng Node.js. Nó ghép nối với điện thoại một lần rồi gửi các tệp bạn chọn mà không cần mở trình duyệt trên máy tính, giúp thao tác chuột phải luôn nhanh.</p>
+<h3>Tôi có thể gửi cả văn bản đã chọn không?</h3>
+<p>Trên Mac thì có: chọn văn bản trong bất kỳ ứng dụng nào, nhấp chuột phải và chọn Dịch vụ, rồi Send text with OmniBeam. Văn bản đến điện thoại, sẵn sàng để sao chép.</p>
+<h3>Tệp có được mã hóa không?</h3>
+<p>Có. Chúng được mã hóa đầu cuối trên máy tính, và máy chủ chỉ chuyển tiếp mà không thể đọc được.</p>
+</section>

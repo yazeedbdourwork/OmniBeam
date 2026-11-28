@@ -1,0 +1,48 @@
+<!--
+title: Okienko „Wyślij mi pliki” na twoją stronę, za darmo | OmniBeam
+description: Dodaj do swojej strony lub bloga darmowe okienko, przez które odwiedzający wyślą ci pliki z szyfrowaniem end-to-end. Jeden fragment kodu, bez konta i wtyczki.
+short: Okienko „Wyślij mi pliki” na twoją stronę
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Okienko „Wyślij mi pliki” na twoją stronę lub bloga</h1>
+<p class="lead">Pozwól odwiedzającym, klientom lub uczniom wysyłać ci pliki prosto z twojej strony. Wklejasz jeden krótki kod; pliki są szyfrowane na ich urządzeniu i trafiają do OmniBeam na twoim.</p>
+
+<h2>Kroki</h2>
+<ol>
+  <li>Otwórz <a href="/pl/">omnibeam.site</a> na urządzeniu, które ma odbierać pliki, i stuknij <b>Poproś o pliki</b> w menu ⋯.</li>
+  <li>Napisz, czego potrzebujesz (opcjonalnie), wybierz <b>1 rok (na stronę internetową)</b> w polu „Link działa przez” i stuknij <b>Utwórz link do prośby</b>.</li>
+  <li>Stuknij <b>Umieść to na swojej stronie</b>, a potem <b>Kopiuj kod</b>.</li>
+  <li>Wklej kod na swojej stronie: w WordPressie w bloku <b>Własny HTML</b>, w Bloggerze w gadżecie <b>HTML/JavaScript</b>, w Wix w elemencie <b>Embed HTML</b>, w Squarespace w bloku <b>Code</b>.</li>
+</ol>
+<p>Odwiedzający widzą małe okienko z przyciskiem „Wybierz pliki”, opcjonalnym polem na imię i przyciskiem Wyślij. Nie potrzebują aplikacji ani konta. Pliki trafiają na twoje urządzenie do Odebranych plików; jeśli OmniBeam jest tam zamknięty, czekają na serwerze i dotrą, gdy go otworzysz, z powiadomieniem, jeśli powiadomienia są włączone.</p>
+
+<h2>WordPress: darmowa wtyczka OmniBeam</h2>
+<p>W WordPressie jest łatwiejszy sposób: <a href="/tools/omnibeam-wordpress.zip">pobierz wtyczkę OmniBeam (omnibeam-wordpress.zip)</a>, a potem w WordPressie przejdź do <b>Wtyczki → Dodaj nową → Wyślij wtyczkę na serwer</b>, wybierz plik zip i stuknij <b>Włącz</b>. Wklej swój kod (albo tylko jego link) w <b>Ustawienia → OmniBeam Box</b>, a potem dodaj blok <b>OmniBeam: Send me files</b> na dowolnej stronie lub shortcode <code>[omnibeam_box]</code>. Okienko z własnym linkiem i wysokością: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Wtyczka akceptuje tylko okienka z omnibeam.site, a pliki nigdy nie przechodzą przez twoją stronę na WordPressie.</p>
+
+<h2>Jak wygląda kod</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=pl#…" title="Wyślij mi pliki" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/pl/"&gt;Działa dzięki OmniBeam&lt;/a&gt; · darmowe udostępnianie plików z szyfrowaniem end-to-end&lt;/p&gt;</pre>
+<p>Zostaw linijkę „Działa dzięki OmniBeam”: dzięki niej okienko pozostaje darmowe.</p>
+
+<h2>Czy to prywatne i bezpieczne?</h2>
+<ul>
+  <li>Każda wysyłka jest szyfrowana w przeglądarce odwiedzającego. Jej klucz jest zabezpieczony kluczem publicznym twojego urządzenia, a pasujący klucz prywatny ma tylko twoje urządzenie, więc ani OmniBeam, ani nikt, kto przeczyta kod twojej strony, nie może otworzyć plików.</li>
+  <li>Kod na twojej stronie jest publiczny. Każdy, kto go zobaczy, może wysyłać ci pliki i przeczytać tekst „czego potrzebujesz” oraz nazwę twojego urządzenia, więc nie pisz tam niczego prywatnego.</li>
+  <li>Tylko twoje urządzenie może pobrać wysyłki, a każda jest usuwana z serwera, gdy tylko urządzenie ją odbierze. Nieodebrane pliki są usuwane po 7 dniach.</li>
+  <li>Zwykłe limity nadal obowiązują: limit rozmiaru na wysyłkę, limit na sieć na godzinę i maksymalnie 100 wysyłek dziennie na okienko.</li>
+  <li>Usuń link do prośby w tym samym oknie w dowolnym momencie, a okienko od razu przestanie działać.</li>
+</ul>
+
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Czy to coś kosztuje?</h3>
+<p>Nie. Okienko jest darmowe, bez konta i bez reklam. Wtyczka do WordPressa też jest darmowa.</p>
+<h3>Czy mogę użyć go na kilku stronach?</h3>
+<p>Tak. Wklej ten sam kod na każdej stronie, na której chcesz; wszystkie wysyłki trafią na to samo urządzenie. Utwórz osobny link do prośby, jeśli chcesz je rozróżniać.</p>
+<h3>Dlaczego okienko po pewnym czasie przestaje działać?</h3>
+<p>Każdy link do prośby wygasa w wybranym czasie. Na stronę internetową wybierz 1 rok i utwórz nowy link oraz kod, zanim wygaśnie.</p>
+<h3>Czy ktoś może użyć mojego okienka do wysyłania mi spamu?</h3>
+<p>Każdy, kto odwiedzi stronę, może wysłać ci pliki, tak jak w przypadku adresu e-mail. Pliki nigdy nie otwierają się same, wysyłki są ograniczone na sieć i na dzień, a link możesz usunąć, aby wyłączyć okienko.</p>
+</section>

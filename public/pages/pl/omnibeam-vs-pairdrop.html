@@ -1,0 +1,55 @@
+<!--
+title: OmniBeam vs PairDrop: którego używać
+description: PairDrop i OmniBeam wysyłają pliki między urządzeniami w przeglądarce. Uczciwe porównanie parowania, szyfrowania, linków, wznawiania, aplikacji i hostingu.
+short: OmniBeam vs PairDrop
+kind: compare
+order: 3
+updated: 2026-10-30
+-->
+<h1>OmniBeam vs PairDrop</h1>
+<p class="lead">PairDrop wyrósł ze Snapdropa i jest dobrym narzędziem open source. OmniBeam działa tak samo w przeglądarce, więc wybór sprowadza się do kilku funkcji. Oto uczciwe zestawienie.</p>
+
+<div class="table-wrap compare-wrap" tabindex="0"><table class="compare">
+<thead><tr><td></td><th>OmniBeam</th><th>PairDrop</th></tr></thead>
+<tbody>
+<tr><th>Ta sama sieć Wi‑Fi, nic do instalowania</th><td>Tak</td><td>Tak</td></tr>
+<tr><th>Parowanie urządzeń kodem lub QR</th><td>Tak</td><td>Tak</td></tr>
+<tr><th>Pokoje publiczne</th><td>Tak, opcjonalnie z hasłem</td><td>Tak</td></tr>
+<tr><th>Gdy połączenie bezpośrednie zawiedzie</th><td>Przekazywanie przez serwer, z szyfrowaniem end‑to‑end i wznawianiem po zerwaniu połączenia</td><td>Serwer TURN</td></tr>
+<tr><th>Wysyłanie komuś na później</th><td>Szyfrowany link, usuwany po wygaśnięciu</td><td>Nie</td></tr>
+<tr><th>Synchronizacja schowka i powiadomienia, gdy aplikacja jest zamknięta</th><td>Tak, między sparowanymi urządzeniami</td><td>Nie</td></tr>
+<tr><th>„Wyślij do” pod prawym przyciskiem (Windows, Mac, Linux) i rozszerzenie przeglądarki</th><td>Tak</td><td>Narzędzie wiersza poleceń i poradniki</td></tr>
+<tr><th>Open source i własny hosting</th><td>Open source (GPL-3.0); działa na Node.js, bez gotowego obrazu Dockera</td><td>Tak (Docker lub Node.js)</td></tr>
+</tbody></table></div>
+
+<h2>Wybierz PairDrop, jeśli</h2>
+<p>Chcesz gotowego obrazu Dockera, aby uruchomić własny serwer, albo potrzebujesz języka, którego OmniBeam jeszcze nie ma. PairDrop to wolne oprogramowanie i bardzo łatwo hostować go samodzielnie.</p>
+
+<h2>Wybierz OmniBeam, jeśli</h2>
+<ul>
+  <li>Wysyłasz duże pliki przez słabe połączenia: przesyłanie, które się zerwie, jest wznawiane od miejsca zatrzymania, zamiast się nie udać.</li>
+  <li>Chcesz wysłać coś komuś, kto nie jest teraz online, linkiem szyfrowanym na twoim urządzeniu.</li>
+  <li>Codziennie przenosisz pliki między tymi samymi urządzeniami: sparowane urządzenia dostają powiadomienia i mogą współdzielić schowek, Windows ma aplikację w sklepie Microsoft Store, a Chrome i Edge mają rozszerzenie.</li>
+  <li>Chcesz, aby zdjęcia i filmy były zmniejszane przed wysłaniem, albo potrzebujesz testu szybkości między dwoma urządzeniami.</li>
+</ul>
+
+<h2>Wypróbuj oba</h2>
+<p>Żaden nie wymaga konta, więc najszybciej zdecydujesz, otwierając <a href="/pl/">omnibeam.site</a> na dwóch urządzeniach i wysyłając duży film. <a href="/pl/how-to-use">Instrukcja</a> opisuje wszystkie funkcje.</p>
+<p>Którego używać? Jeśli chcesz szyfrowania end-to-end, linków i aplikacji do zainstalowania, OmniBeam pasuje lepiej; PairDrop sprawdzi się przy szybkim wysyłaniu w jednej sieci.</p>
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Czy OmniBeam i PairDrop są ze sobą powiązane?</h3>
+<p>Oba działają w przeglądarce i powstały z tego samego pomysłu co Snapdrop: otwórz stronę na dwóch urządzeniach i wysyłaj. To osobne projekty z innymi funkcjami i innymi serwerami.</p>
+<h3>Który lepiej chroni prywatność plików?</h3>
+<p>Oba wysyłają bezpośrednio między urządzeniami, kiedy mogą. OmniBeam dodatkowo szyfruje każde przesyłanie end-to-end na twoim urządzeniu, także wtedy, gdy dane muszą przejść przez przekaźnik, więc przekaźnik nie może ich odczytać.</p>
+<h3>Czy w którymś z nich mogę udostępnić link?</h3>
+<p>OmniBeam może udostępniać pliki szyfrowanym linkiem, który automatycznie wygasa, co przydaje się, gdy druga osoba nie jest online w tym samym czasie. Jeśli potrzebujesz tego samego, sprawdź aktualne funkcje PairDrop.</p>
+<h3>Który ma aplikacje?</h3>
+<p>OmniBeam jest też dostępny w sklepie Microsoft Store, jako rozszerzenie do Chrome i jako aplikacja na Androida, ale wersja w przeglądarce działa wszędzie bez nich.</p>
+<h3>Który działa między różnymi sieciami?</h3>
+<p>Oba potrafią parować urządzenia, aby znajdowały się w różnych sieciach. OmniBeam używa 6‑cyfrowego kodu lub kodu QR, a sparowane urządzenia pojawiają się automatycznie, gdy tylko OmniBeam jest otwarty na obu.</p>
+<h3>Który jest lepszy dla grupy?</h3>
+<p>Oba oferują pokoje publiczne. OmniBeam ma też „Wyślij do wszystkich”, które w jednym kroku wysyła te same pliki na każde otwarte urządzenie.</p>
+<h3>Który wybrać?</h3>
+<p>Wypróbuj oba: żaden nie wymaga konta, więc możesz porównać je na swoich urządzeniach w kilka minut i zostać przy tym, który najlepiej łączy się w twojej sieci.</p>
+</section>

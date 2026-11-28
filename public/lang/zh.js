@@ -1016,8 +1016,8 @@
     "Is OmniBeam working right now? The status page in the footer shows it, with the uptime of the last 30 days.": "OmniBeam 现在正常吗？页脚中的状态页面会显示，并附有最近 30 天的可用率。",
 
     // Eight upgrades (2026-11-06): chat view, Scan to PDF, photo size, supporter perks, six new languages
-    "15 languages": "15 种语言",
-    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian or Urdu.": "可使用中文、英语、阿拉伯语、法语、西班牙语、土耳其语、德语、葡萄牙语、印地语、印尼语、俄语、日语、韩语、意大利语或乌尔都语。",
+    "20 languages": "20 种语言",
+    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian, Urdu, Persian, Bengali, Vietnamese, Thai or Polish.": "可使用中文、英语、阿拉伯语、法语、西班牙语、土耳其语、德语、葡萄牙语、印地语、印尼语、俄语、日语、韩语、意大利语、乌尔都语、波斯语、孟加拉语、越南语、泰语或波兰语。",
     "Supporter": "支持者",
     "Did you donate to OmniBeam? Thank you! Type the supporter code you got: it adds a ♥ to this device's card that other devices see, 4 colour themes and extra pictures. OmniBeam stays free for everyone, with no ads.": "你给 OmniBeam 捐过款吗？谢谢你！输入你收到的支持者代码：它会在这台设备的卡片上加一个其他设备能看到的 ♥，并解锁 4 种配色主题和更多图片。OmniBeam 对所有人保持免费，没有广告。",
     "Unlock": "解锁",
@@ -1063,7 +1063,7 @@
     "Supporter:": "支持者：",
     "If you donated, type your supporter code in Settings for a ♥ on your card, four colour themes and extra pictures.": "如果你捐过款，请在设置中输入支持者代码，即可在卡片上显示 ♥，并获得四种配色主题和更多图片。",
     "In Request files, choose 1 year and tap Put this on your website to add a box to your website or blog where visitors can send you files, end-to-end encrypted. On WordPress, use the free OmniBeam plugin.": "在“请求文件”中选择 1 年并点按“放到你的网站上”，即可在你的网站或博客上添加一个框，访客可以通过它给你发送端到端加密的文件。在 WordPress 上，可以使用免费的 OmniBeam 插件。",
-    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano or اردو.": "在页面底部选择你的语言：English、العربية、Français、Español、Türkçe、Deutsch、Português、हिन्दी、Bahasa Indonesia、Русский、日本語、简体中文、한국어、Italiano 或 اردو。",
+    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو, فارسی, বাংলা, Tiếng Việt, ไทย or Polski.": "在页面底部选择你的语言：English、العربية、Français、Español、Türkçe、Deutsch、Português、हिन्दी、Bahasa Indonesia、Русский、日本語、简体中文、한국어、Italiano、اردو、فارسی、বাংলা、Tiếng Việt、ไทย 或 Polski。",
     "Scan to PDF makes the PDF on your device, and the chat view only shows the history already on it. If you use a supporter code, the server checks it when you connect and keeps a list of the codes it made.": "“扫描为 PDF”在你的设备上生成 PDF，聊天视图只显示设备上已有的历史记录。如果你使用支持者代码，服务器会在你连接时验证它，并保存它创建过的代码列表。",
     "OmniBeam is free, with no ads. People who donate with the ♥ button can get a supporter code as a thank-you: typed in Settings, it adds a ♥ to their device's card, four colour themes and extra pictures.": "OmniBeam 免费且没有广告。通过 ♥ 按钮捐款的人可以获得一个支持者代码作为感谢：在设置中输入后，设备卡片上会显示 ♥，并解锁四种配色主题和更多图片。",
     "Could not check the code. Check the internet connection and try again.": "无法验证代码。请检查网络连接后重试。",
