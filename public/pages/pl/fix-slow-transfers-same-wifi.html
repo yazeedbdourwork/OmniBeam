@@ -1,0 +1,46 @@
+<!--
+title: Ta sama sieć Wi-Fi, a przesyłanie wolne? Jak to naprawić
+description: Dlaczego dwa urządzenia w tej samej sieci Wi-Fi wysyłają przez serwer zamiast bezpośrednio i jak to naprawić: VPN, profil sieci, router.
+short: Wolne przesyłanie w tej samej sieci Wi‑Fi
+kind: guide
+order: 5
+updated: 2026-10-26
+-->
+<h1>Ta sama sieć Wi‑Fi, a przesyłanie jest wolne lub idzie przez serwer</h1>
+<p class="lead">W tej samej sieci Wi‑Fi OmniBeam powinien połączyć oba urządzenia bezpośrednio, a trasa pod paskiem postępu powinna pokazywać „ta sama sieć”. Jeśli pokazuje „internet”, „przez router” lub „Wysyłanie przez serwer”, przyczyną jest zwykle jedna z poniższych rzeczy.</p>
+
+<h2>1. Uruchom sprawdzenie połączenia</h2>
+<p>Stuknij identyfikator sieci obok nazwy swojego urządzenia na dole OmniBeam. Sprawdzenie pokazuje, czy to urządzenie udostępnia swój adres lokalny, czy przeszkadza VPN i jaką trasą szły ostatnie przesyłania, wraz ze wskazówkami dotyczącymi tego, co znajdzie.</p>
+
+<h2>2. Zezwól na połączenia lokalne (⚡)</h2>
+<p>Przeglądarki ukrywają przed stronami lokalny adres sieciowy urządzenia. Drugie urządzenie musi go wtedy znaleźć przez lokalne wyszukiwanie nazwy (mDNS), które wiele sieci blokuje, a przesyłanie idzie okrężną drogą przez router. Stuknij <b>⚡ Szybsze przesyłanie przez Wi‑Fi</b> i raz zezwól na mikrofon na jednym lub obu urządzeniach: nic nie jest nagrywane, ale przeglądarka udostępnia wtedy adres lokalny i urządzenia mogą połączyć się bezpośrednio.</p>
+
+<h2>3. Wyłącz VPN i prywatne przekaźniki</h2>
+<ul>
+  <li>Na czas wysyłania wyłącz na obu urządzeniach aplikacje VPN, w tym funkcje „bezpiecznego połączenia” w antywirusach.</li>
+  <li>Na iPhonie wyłącz Przekaźnik prywatny iCloud, a w Ustawieniach → Wi‑Fi → twoja sieć wyłącz „Ogranicz śledzenie adresu IP”.</li>
+</ul>
+
+<h2>4. Windows: użyj sieci prywatnej</h2>
+<p>W sieci „Publicznej” Windows blokuje lokalne wyszukiwania, dzięki którym urządzenia się znajdują. Otwórz Ustawienia → Sieć i Internet → Wi‑Fi (lub Ethernet) → twoja sieć i wybierz <b>Sieć prywatna</b>. Zapora musi też zezwalać twojej przeglądarce na działanie w sieciach prywatnych.</p>
+
+<h2>5. Sprawdź router</h2>
+<ul>
+  <li>Sieci dla gości oraz „izolacja AP” lub „izolacja klientów” nie pozwalają urządzeniom w tej samej sieci Wi‑Fi łączyć się ze sobą. Użyj głównej sieci albo wyłącz izolację w ustawieniach routera.</li>
+  <li>Niektóre routery mają osobne sieci 2,4 GHz i 5 GHz, które są od siebie odizolowane; połącz oba urządzenia z tą samą.</li>
+</ul>
+
+<h2>Nadal nie bezpośrednio?</h2>
+<p>Przesyłanie nadal działa: OmniBeam wysyła przez swój serwer, z szyfrowaniem end-to-end, tylko wolniej. Możesz też sparować urządzenia kodem; to nie przyspieszy trasy, ale urządzenia zawsze się znajdą.</p>
+<p>Gdy przesyłanie w tej samej sieci Wi‑Fi jest wolne lub idzie przez serwer, powyższe kroki zwykle rozwiązują problem w kilka minut.</p>
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Skąd mam wiedzieć, czy przesyłanie idzie przez serwer?</h3>
+<p>OmniBeam pokazuje typ połączenia przy przesyłaniu. Połączenie bezpośrednie w tej samej sieci Wi‑Fi to zwykle wiele megabajtów na sekundę; połączenie przekazywane jest ograniczone prędkością wysyłania twojego internetu i często jest dużo wolniejsze.</p>
+<h3>Czy przyczyną może być sieć dla gości?</h3>
+<p>Często tak. Sieci dla gości i niektóre routery mesh rozdzielają urządzenia ze względów bezpieczeństwa, przez co przesyłanie musi iść przez przekaźnik. Połącz oba urządzenia z główną siecią, aby umożliwić połączenie bezpośrednie.</p>
+<h3>Czy pomoże ponowne uruchomienie routera?</h3>
+<p>Czasami. Jeśli ustawienia routera są w porządku, restart może usunąć zawieszony stan, ale VPN na jednym urządzeniu lub profil sieci publicznej w Windows będzie powodować problem, dopóki tego nie zmienisz.</p>
+<h3>Dlaczego przesyłanie jest wolne mimo połączenia bezpośredniego?</h3>
+<p>Przesyłanie bezpośrednie może być tylko tak szybkie, jak najwolniejszy fragment drogi. Starszy telefon, słaby sygnał Wi‑Fi w innym pokoju lub zatłoczona sieć 2,4 GHz mogą ograniczać prędkość. Przy dużych plikach podejdź bliżej routera lub użyj sieci 5 GHz.</p>
+</section>

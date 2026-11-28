@@ -1,0 +1,48 @@
+<!--
+title: Đặt ô "Gửi tệp cho tôi" lên trang web, miễn phí | OmniBeam
+description: Thêm ô nhận tệp miễn phí vào trang web hoặc blog để khách gửi tệp cho bạn, mã hóa đầu cuối. Chỉ cần chép một đoạn mã, không cần tài khoản hay plugin.
+short: Ô "Gửi tệp cho tôi" cho trang web của bạn
+kind: guide
+order: 30
+updated: 2026-11-06
+-->
+<h1>Ô “Gửi tệp cho tôi” cho trang web hoặc blog của bạn</h1>
+<p class="lead">Cho khách truy cập, khách hàng hay học viên gửi tệp cho bạn ngay từ trang của chính bạn. Bạn chỉ cần dán một đoạn mã ngắn; tệp được mã hóa trên thiết bị của họ và đến OmniBeam trên thiết bị của bạn.</p>
+
+<h2>Các bước</h2>
+<ol>
+  <li>Mở <a href="/vi/">omnibeam.site</a> trên thiết bị sẽ nhận tệp, và nhấn <b>Yêu cầu tệp</b> trong menu ⋯.</li>
+  <li>Ghi những gì bạn cần (tùy chọn), chọn <b>1 năm (cho trang web)</b> ở mục “Liên kết có hiệu lực trong”, và nhấn <b>Tạo liên kết yêu cầu</b>.</li>
+  <li>Nhấn <b>Đưa lên trang web của bạn</b>, rồi <b>Sao chép mã</b>.</li>
+  <li>Dán mã vào trang của bạn: trong WordPress là khối <b>Custom HTML</b>, trong Blogger là tiện ích <b>HTML/JavaScript</b>, trong Wix là phần tử <b>Embed HTML</b>, trong Squarespace là khối <b>Code</b>.</li>
+</ol>
+<p>Khách truy cập sẽ thấy một ô nhỏ với “Chọn tệp”, một ô nhập tên tùy chọn và nút Gửi. Họ không cần ứng dụng hay tài khoản. Tệp đến thiết bị của bạn trong Tệp đã nhận; nếu OmniBeam đang đóng ở đó, tệp sẽ chờ trên máy chủ và đến khi bạn mở nó, kèm thông báo nếu bạn đã bật thông báo.</p>
+
+<h2>WordPress: plugin OmniBeam miễn phí</h2>
+<p>Trên WordPress có cách dễ hơn: <a href="/tools/omnibeam-wordpress.zip">tải plugin OmniBeam (omnibeam-wordpress.zip)</a>, rồi trong WordPress vào <b>Plugins → Add New → Upload Plugin</b>, chọn tệp zip và nhấn <b>Activate</b>. Dán mã của bạn (hoặc chỉ liên kết của nó) vào <b>Settings → OmniBeam Box</b>, rồi thêm khối <b>OmniBeam: Send me files</b> vào bất kỳ trang nào, hoặc shortcode <code>[omnibeam_box]</code>. Một ô với liên kết và chiều cao riêng: <code>[omnibeam_box url="https://omnibeam.site/embed/r/…" height="520"]</code>. Plugin chỉ chấp nhận các ô từ omnibeam.site, và tệp không bao giờ đi qua trang WordPress của bạn.</p>
+
+<h2>Đoạn mã trông như thế nào</h2>
+<pre class="code-sample">&lt;iframe src="https://omnibeam.site/embed/r/…?lang=vi#…" title="Gửi tệp cho tôi" style="width:100%;max-width:520px;height:470px;border:0" loading="lazy"&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href="https://omnibeam.site/vi/"&gt;Được hỗ trợ bởi OmniBeam&lt;/a&gt; · chia sẻ tệp miễn phí, mã hóa đầu cuối&lt;/p&gt;</pre>
+<p>Hãy giữ dòng “Được hỗ trợ bởi OmniBeam”: nhờ nó mà ô này luôn miễn phí.</p>
+
+<h2>Có riêng tư và an toàn không?</h2>
+<ul>
+  <li>Mỗi lượt tải lên đều được mã hóa trong trình duyệt của khách. Khóa của nó được niêm phong bằng khóa công khai của thiết bị bạn, và chỉ thiết bị của bạn có khóa riêng tương ứng, nên cả OmniBeam lẫn bất kỳ ai đọc mã trang của bạn đều không mở được tệp.</li>
+  <li>Đoạn mã trên trang của bạn là công khai. Bất kỳ ai thấy nó đều có thể gửi tệp cho bạn và đọc được phần “bạn cần gì” cùng tên thiết bị của bạn, nên đừng ghi gì riêng tư ở đó.</li>
+  <li>Chỉ thiết bị của bạn mới tải được các tệp đã gửi lên, và mỗi tệp bị xóa khỏi máy chủ ngay khi thiết bị đã nhận. Tệp không ai nhận sẽ bị xóa sau 7 ngày.</li>
+  <li>Các giới hạn thông thường vẫn áp dụng: giới hạn dung lượng mỗi lượt tải lên, giới hạn mỗi mạng mỗi giờ, và tối đa 100 lượt tải lên mỗi ngày cho mỗi ô.</li>
+  <li>Bạn có thể xóa liên kết yêu cầu trong cùng cửa sổ đó bất cứ lúc nào và ô sẽ ngừng hoạt động ngay.</li>
+</ul>
+
+<section class="qa">
+<h2>Hỏi và đáp</h2>
+<h3>Có tốn phí không?</h3>
+<p>Không. Ô này miễn phí, không cần tài khoản và không có quảng cáo. Plugin WordPress cũng miễn phí.</p>
+<h3>Tôi có thể dùng trên nhiều trang không?</h3>
+<p>Có. Dán cùng một đoạn mã vào bao nhiêu trang cũng được; mọi tệp tải lên đều đến cùng một thiết bị. Hãy tạo liên kết yêu cầu riêng nếu bạn muốn phân biệt chúng.</p>
+<h3>Vì sao ô ngừng hoạt động sau một thời gian?</h3>
+<p>Mỗi liên kết yêu cầu kết thúc vào thời điểm bạn đã chọn. Với trang web, hãy chọn 1 năm, và tạo liên kết cùng mã mới trước khi hết hạn.</p>
+<h3>Người khác có thể dùng ô của tôi để gửi thư rác không?</h3>
+<p>Bất kỳ ai truy cập trang đều có thể gửi tệp cho bạn, giống như với địa chỉ email. Tệp không bao giờ tự mở, lượt tải lên bị giới hạn theo mạng và theo ngày, và bạn có thể xóa liên kết để tắt ô.</p>
+</section>

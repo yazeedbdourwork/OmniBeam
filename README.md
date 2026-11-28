@@ -12,7 +12,7 @@ A free, open-source **AirDrop alternative for every platform**, and a modern alt
 [![Chrome Web Store](https://img.shields.io/badge/Chrome-extension-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki)
 [![Firefox add-on](https://img.shields.io/badge/Firefox-add--on-FF7139?logo=firefoxbrowser&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/)
 [![Microsoft Store](https://img.shields.io/badge/Windows-Microsoft%20Store-0078D4)](https://apps.microsoft.com/detail/9PLR2PMX3SQZ)
-[![15 languages](https://img.shields.io/badge/languages-15-success)](#languages)
+[![20 languages](https://img.shields.io/badge/languages-20-success)](#languages)
 
 <p align="center">
   <a href="https://omnibeam.site"><img src="docs/demo.gif" alt="OmniBeam sending three photos from a laptop to an iPhone in the browser: tap the device, the iPhone accepts, and the photos arrive in full quality" width="800"></a>
@@ -135,7 +135,7 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 
 ## Languages
 
-15 languages, each with its own address that is sent already translated (so search engines can index it):
+20 languages, each with its own address that is sent already translated (so search engines can index it):
 
 | Code | Language | Address |
 |---|---|---|
@@ -154,6 +154,11 @@ Under the hood, the browsers connect with **WebRTC** (peer to peer). The Node se
 | ko | 한국어 | `/ko/` |
 | it | Italiano | `/it/` |
 | ur | اردو (Urdu, right to left) | `/ur/` |
+| fa | فارسی (Persian, right to left) | `/fa/` |
+| bn | বাংলা (Bengali) | `/bn/` |
+| vi | Tiếng Việt (Vietnamese) | `/vi/` |
+| th | ไทย (Thai) | `/th/` |
+| pl | Polski (Polish) | `/pl/` |
 
 The browser's language is picked automatically on the first visit and can be changed in the footer. Each home page has a one‑minute intro video in its own language.
 
@@ -239,7 +244,7 @@ OmniBeam/
 │   ├── chat.js           Per‑device chat (call.js: voice and video calls; edit.js: the photo editor)
 │   ├── media.js, scan.js, more.js, drop.js, get.js, put.js, request.js, share.js …
 │   ├── style.css, pages.css, stats.css (admin panel)
-│   ├── i18n.js + lang/   Translations (15 languages)
+│   ├── i18n.js + lang/   Translations (20 languages)
 │   ├── pages/<lang>/     Guide pages
 │   ├── media/            Intro videos and posters (videos live ONLY here)
 │   ├── fonts/, store/, parts/, tools/, .well-known/

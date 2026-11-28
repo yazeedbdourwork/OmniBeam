@@ -1,0 +1,54 @@
+<!--
+title: Jak prywatnie udostępniać pliki z szyfrowaniem
+description: Kto może zobaczyć plik, który wysyłasz przez internet? Prosty przewodnik po szyfrowaniu end-to-end, przesyłaniu bezpośrednim i prywatnych linkach.
+short: Jak prywatnie udostępniać pliki
+kind: post
+order: 2
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>Jak prywatnie udostępniać pliki</h1>
+<p class="lead">Zdjęcia, skany dowodu, umowy: wiele z tego, co wysyłamy, to sprawy osobiste. Oto co naprawdę chroni je po drodze, wyjaśnione bez żargonu.</p>
+
+<h2>Trzy miejsca, w których plik może zostać zobaczony</h2>
+<ol>
+  <li><em>W sieci</em>: każdy w tej samej publicznej sieci Wi‑Fi. Chroni przed tym każda strona z https.</li>
+  <li><em>Na serwerach usługi</em>: firma, która przenosi lub przechowuje plik. Chroni przed tym tylko szyfrowanie end-to-end.</li>
+  <li><em>Na urządzeniach</em>: twoim i drugiej osoby. Ta część zależy od ciebie.</li>
+</ol>
+
+<h2>Co oznacza szyfrowanie end-to-end</h2>
+<p>Plik jest zamykany na twoim urządzeniu i otwierany dopiero na drugim. Usługa pośrodku przekazuje dalej zaszyfrowane dane i nigdy nie ma klucza. Gdyby jej serwery zostały zhakowane albo ktoś zażądał od firmy twoich plików, nie byłoby niczego czytelnego do przekazania.</p>
+
+<h2>Jak robi to OmniBeam</h2>
+<ul>
+  <li>Przesyłanie bezpośrednie między urządzeniami korzysta z WebRTC, które zawsze jest szyfrowane end-to-end.</li>
+  <li>Gdy połączenie bezpośrednie nie jest możliwe i plik idzie przez nasz serwer, oba urządzenia najpierw ustalają klucz, więc serwer przekazuje tylko zaszyfrowane dane i niczego nie zapisuje.</li>
+  <li>Udostępniane linki są szyfrowane w twojej przeglądarce przed wysłaniem. Klucz to część linku po #, której przeglądarki nigdy nie wysyłają do serwera. Linki same wygasają.</li>
+  <li>Bez kont. Sparowane urządzenia są zapamiętywane w twojej własnej przeglądarce.</li>
+</ul>
+
+<h2>Pięć pomocnych nawyków</h2>
+<ul>
+  <li>Do wszystkiego, co osobiste, wybieraj przesyłanie bezpośrednie lub usługi z szyfrowaniem end-to-end.</li>
+  <li>Gdy link lub pokój ma hasło, wyślij hasło inną aplikacją niż link.</li>
+  <li>Wybieraj linki, które wygasają, i usuwaj je, gdy druga osoba ma już plik.</li>
+  <li>Sprawdzaj, co udostępniasz: zdjęcia mogą zawierać lokalizację, w której zostały zrobione.</li>
+  <li>Akceptuj pliki tylko z urządzeń, które rozpoznajesz. W OmniBeam oznaczaj jako Zaufane tylko własne urządzenia.</li>
+</ul>
+<p>Więcej szczegółów znajdziesz w naszej <a href="/pl/privacy">polityce prywatności</a>.</p>
+<p>Szybki test dla każdej usługi do udostępniania plików: zapytaj, czy mogłaby odczytać twoje pliki, gdyby chciała. Jeśli pliki są szyfrowane na twoim urządzeniu, zanim je opuszczą, usługa widzi tylko zaszyfrowane dane. OmniBeam szyfruje w ten sposób każde przesyłanie.</p>
+<p>OmniBeam pozwala prywatnie udostępniać pliki, z szyfrowaniem end-to-end, bez konta.</p>
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Czy link do chmury jest prywatny?</h3>
+<p>Zwykły link do chmury jest przechowywany na serwerach dostawcy, który zazwyczaj może odczytać plik. Przy szyfrowaniu end-to-end klucz mają tylko urządzenia na obu końcach, więc nikt pośrodku nie może otworzyć pliku.</p>
+<h3>Jak sprawdzić, czy usługa używa szyfrowania end-to-end?</h3>
+<p>Szukaj jasnej informacji, że pliki są szyfrowane na twoim urządzeniu, zanim je opuszczą, i że klucz nigdy nie jest wysyłany do serwera. OmniBeam wyjaśnia dokładnie to na swojej stronie o prywatności.</p>
+<h3>Co jeszcze zrobić, aby pliki pozostały prywatne?</h3>
+<p>Wysyłaj linki tylko osobom, które ich potrzebują, wybieraj krótki czas ważności i usuwaj link po jego użyciu.</p>
+<h3>Czy wysyłanie mailem jest prywatne?</h3>
+<p>E-mail jest wygodny, ale domyślnie nie jest prywatny: wiadomości i załączniki są zwykle przechowywane na serwerach pocztowych obu stron. Dla prywatnych plików bezpieczniejsze są przesyłania lub linki z szyfrowaniem end-to-end.</p>
+<h3>Czy muszę ufać OmniBeam?</h3>
+<p>Dużo mniej niż zwykłej usłudze w chmurze. Pliki są szyfrowane na twoim urządzeniu, a klucze nigdy nie trafiają na serwery OmniBeam, więc nawet OmniBeam nie może ich otworzyć.</p>
+</section>

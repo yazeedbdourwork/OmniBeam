@@ -1016,8 +1016,8 @@
     "Is OmniBeam working right now? The status page in the footer shows it, with the uptime of the last 30 days.": "هل يعمل OmniBeam الآن؟ تعرض ذلك صفحة الحالة في أسفل الصفحة، مع نسبة التشغيل في آخر 30 يومًا.",
 
     // Eight upgrades (2026-11-06): chat view, Scan to PDF, photo size, supporter perks, six new languages
-    "15 languages": "15 لغة",
-    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian or Urdu.": "استخدمه بالعربية والإنجليزية والفرنسية والإسبانية والتركية والألمانية والبرتغالية والهندية والإندونيسية والروسية واليابانية والصينية والكورية والإيطالية والأردية.",
+    "20 languages": "20 لغة",
+    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian, Urdu, Persian, Bengali, Vietnamese, Thai or Polish.": "استخدمه بالعربية والإنجليزية والفرنسية والإسبانية والتركية والألمانية والبرتغالية والهندية والإندونيسية والروسية واليابانية والصينية والكورية والإيطالية والأردية والفارسية والبنغالية والفيتنامية والتايلاندية والبولندية.",
     "Supporter": "داعم",
     "Did you donate to OmniBeam? Thank you! Type the supporter code you got: it adds a ♥ to this device's card that other devices see, 4 colour themes and extra pictures. OmniBeam stays free for everyone, with no ads.": "هل تبرعت لـ OmniBeam؟ شكرًا لك! اكتب رمز الداعم الذي حصلت عليه: يضيف ♥ إلى بطاقة هذا الجهاز تراها الأجهزة الأخرى، و4 ألوان للواجهة وصورًا إضافية. يبقى OmniBeam مجانيًا للجميع وبلا إعلانات.",
     "Unlock": "تفعيل",
@@ -1063,7 +1063,7 @@
     "Supporter:": "داعم:",
     "If you donated, type your supporter code in Settings for a ♥ on your card, four colour themes and extra pictures.": "إن كنت قد تبرعت، فاكتب رمز الداعم في الإعدادات لتحصل على ♥ على بطاقتك و4 ألوان للواجهة وصور إضافية.",
     "In Request files, choose 1 year and tap Put this on your website to add a box to your website or blog where visitors can send you files, end-to-end encrypted. On WordPress, use the free OmniBeam plugin.": "في طلب الملفات، اختر سنة واحدة واضغط «ضعه على موقعك» لتضيف إلى موقعك أو مدونتك صندوقًا يرسل لك الزوار عبره الملفات مشفّرة من طرف إلى طرف. وعلى ووردبريس استخدم إضافة OmniBeam المجانية.",
-    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano or اردو.": "اختر لغتك أسفل الصفحة: English، العربية، Français، Español، Türkçe، Deutsch، Português، हिन्दी، Bahasa Indonesia، Русский، 日本語، 简体中文، 한국어، Italiano أو اردو.",
+    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو, فارسی, বাংলা, Tiếng Việt, ไทย or Polski.": "اختر لغتك أسفل الصفحة: English، العربية، Français، Español، Türkçe، Deutsch، Português، हिन्दी، Bahasa Indonesia، Русский، 日本語، 简体中文، 한국어، Italiano، اردو، فارسی، বাংলা، Tiếng Việt، ไทย أو Polski.",
     "Scan to PDF makes the PDF on your device, and the chat view only shows the history already on it. If you use a supporter code, the server checks it when you connect and keeps a list of the codes it made.": "المسح إلى PDF يصنع ملف PDF على جهازك، وعرض المحادثة يعرض فقط السجل الموجود عليه أصلًا. وإذا استخدمت رمز داعم، يتحقق منه الخادم عند اتصالك ويحتفظ بقائمة الرموز التي أنشأها.",
     "OmniBeam is free, with no ads. People who donate with the ♥ button can get a supporter code as a thank-you: typed in Settings, it adds a ♥ to their device's card, four colour themes and extra pictures.": "OmniBeam مجاني وبلا إعلانات. ومن يتبرع عبر زر ♥ يمكنه الحصول على رمز داعم كشكر: عند كتابته في الإعدادات يضيف ♥ إلى بطاقة جهازه، و4 ألوان للواجهة وصورًا إضافية.",
     "Could not check the code. Check the internet connection and try again.": "تعذّر التحقق من الرمز. تحقق من اتصال الإنترنت وحاول مجددًا.",

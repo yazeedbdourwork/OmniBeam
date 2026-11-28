@@ -1,0 +1,63 @@
+<!--
+title: Telefon jako kamera lub mikrofon do PC, za darmo, bez aplikacji
+description: Zamień iPhone’a lub telefon z Androidem w kamerę albo mikrofon do komputera z Windows lub Maca, w przeglądarce. Działa z OBS, Zoom, Meet i Teams. Bez aplikacji.
+short: Telefon jako kamera lub mikrofon do komputera
+kind: guide
+order: 10
+updated: 2026-11-14
+-->
+<h1>Używaj telefonu jako kamery lub mikrofonu do komputera</h1>
+<p class="lead">Aparat w telefonie jest prawie zawsze ostrzejszy niż kamera wbudowana w laptopa. Z OmniBeam możesz w minutę używać go jako kamery lub mikrofonu do komputera z Windows lub Maca, prosto z przeglądarki: bez aplikacji na telefonie, bez konta i bez kabla.</p>
+
+<p><a class="download" href="/pl/">Otwórz OmniBeam</a></p>
+
+<h2>Zacznij w trzech krokach</h2>
+<ol>
+  <li>Otwórz <a href="/pl/">omnibeam.site</a> na telefonie i na komputerze. W tej samej sieci Wi‑Fi znajdą się same. W różnych sieciach sparuj je raz kodem QR lub 6-cyfrowym kodem.</li>
+  <li>Na telefonie stuknij kartę komputera, potem <em>Więcej…</em> i <em>Bądź jego kamerą lub mikrofonem</em>. Albo na komputerze otwórz <em>Więcej…</em> na karcie telefonu i wybierz <em>Użyj jako kamery lub mikrofonu</em>; telefon sam otworzy wtedy okno kamery.</li>
+  <li>Wybierz <em>Kamera i mikrofon</em>, <em>Tylko kamera</em> lub <em>Tylko mikrofon</em>, wybierz przedni lub tylny aparat oraz 720p lub 1080p i stuknij <em>Start</em>. Obraz pojawi się na żywo na komputerze.</li>
+</ol>
+<p>Postaw telefon na statywie lub oprzyj go o coś i nie zamykaj na nim OmniBeam, gdy go używasz. Tylny aparat daje najlepszy obraz; przedni pozwala widzieć siebie na telefonie.</p>
+
+<h2>Używanie w OBS</h2>
+<ol>
+  <li>Na komputerze kliknij <em>Wyskakujące okno</em> w oknie kamery. Otworzy się czyste okno o nazwie <em>OmniBeam camera</em>, w którym jest tylko obraz.</li>
+  <li>W OBS dodaj źródło <em>Przechwytywanie okna</em> (na Macu <em>Przechwytywanie ekranu macOS</em> ustawione na okno) i wybierz okno <em>OmniBeam camera</em>. Przytnij je i zmień rozmiar jak każde inne źródło.</li>
+</ol>
+
+<h2>Używanie w Zoom, Google Meet lub Microsoft Teams</h2>
+<p>Strona internetowa nie może sama dodać nowej kamery do Windows ani macOS; potrafi to tylko zainstalowane oprogramowanie. Darmowym sposobem jest wbudowana wirtualna kamera OBS:</p>
+<ol>
+  <li>Skonfiguruj okno <em>OmniBeam camera</em> w OBS jak powyżej.</li>
+  <li>W OBS kliknij <em>Uruchom wirtualną kamerę</em>.</li>
+  <li>W Zoom, Meet lub Teams otwórz ustawienia wideo i wybierz <em>OBS Virtual Camera</em> jako kamerę.</li>
+</ol>
+<p>Dźwięk z mikrofonu telefonu gra na komputerze. Aby używać go jako mikrofonu w aplikacji do spotkań, zainstaluj darmowy wirtualny kabel audio, np. VB-CABLE, wybierz go w <em>Użyj w Zoom, Meet, Teams lub OBS</em> → <em>Dźwięk gra na</em> w oknie kamery OmniBeam i wybierz go jako mikrofon w aplikacji do spotkań. W OBS możesz po prostu przechwytywać dźwięk razem z oknem albo dodać kabel jako wejście audio.</p>
+
+<h2>Prywatność od podstaw</h2>
+<p>Obraz i dźwięk idą prosto z telefonu na komputer szyfrowanym połączeniem WebRTC, tak samo jak twoje pliki. Nic nie jest nagrywane ani przechowywane, ani na telefonie, ani na komputerze, ani na naszym serwerze. Gdy między dwiema sieciami nie ma bezpośredniej drogi, szyfrowany przekaźnik przekazuje strumień dalej, nie mogąc go zobaczyć. Każde z urządzeń może to zatrzymać w dowolnej chwili.</p>
+
+<h2>Wskazówki dla lepszego obrazu</h2>
+<ul>
+  <li>Używaj tej samej sieci Wi‑Fi dla telefonu i komputera: obraz jest płynniejszy niż przez dane komórkowe.</li>
+  <li>Ustaw się twarzą do okna lub lampy. Telefony dają czysty obraz nawet przy słabym świetle, ale światło z przodu zawsze pomaga.</li>
+  <li>Wybierz 1080p do nagrań i transmisji, 720p do długich rozmów wideo lub wolniejszej sieci.</li>
+  <li>Użyj <em>Lustro</em> na komputerze, jeśli tekst za tobą ma być czytelny, albo jeśli wolisz widzieć siebie jak w lustrze.</li>
+  <li>Przy długich rozmowach podłącz telefon do ładowania. OmniBeam nie pozwala wygasnąć ekranowi telefonu, gdy kamera działa na żywo.</li>
+</ul>
+
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Czy muszę instalować aplikację na telefonie?</h3>
+<p>Nie. Działa w przeglądarce telefonu: Safari na iPhonie lub iPadzie, Chrome lub dowolnej nowoczesnej przeglądarce na Androidzie. Komputer też potrzebuje tylko przeglądarki, plus OBS, jeśli chcesz mieć obraz w Zoom, Meet lub Teams.</p>
+<h3>Czy działa z iPhone’em i komputerem z Windows?</h3>
+<p>Tak. Każdy telefon z aparatem działa z każdym komputerem: iPhone z Windows, Android z Makiem, iPad z Chromebookiem i tak dalej.</p>
+<h3>Czy mogę używać tylko mikrofonu?</h3>
+<p>Tak. Wybierz <em>Tylko mikrofon</em> na telefonie. Komputer pokazuje poziom dźwięku, więc widzisz, że działa, a dźwięk może trafić do wirtualnego kabla audio dla aplikacji do spotkań.</p>
+<h3>Czy mogę przełączać się między przednim a tylnym aparatem?</h3>
+<p>Tak, w każdej chwili przyciskiem <em>Przełącz aparat</em>, nawet gdy komputer ogląda obraz. Możesz też wyciszyć mikrofon na telefonie przyciskiem <em>Wycisz mikrofon</em>.</p>
+<h3>Czy jest opóźnienie?</h3>
+<p>W tej samej sieci Wi‑Fi opóźnienie to zwykle ułamek sekundy, co wystarcza do rozmów wideo. Między różnymi sieciami zależy od połączenia.</p>
+<h3>Czy to jest darmowe?</h3>
+<p>Tak. OmniBeam jest darmowy, bez konta i bez znaku wodnego na obrazie.</p>
+</section>

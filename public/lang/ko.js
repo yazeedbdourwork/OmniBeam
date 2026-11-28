@@ -1016,8 +1016,8 @@
     "Is OmniBeam working right now? The status page in the footer shows it, with the uptime of the last 30 days.": "OmniBeam이 지금 작동하나요? 하단의 상태 페이지에서 최근 30일 가동률과 함께 확인할 수 있습니다.",
 
     // Eight upgrades (2026-11-06): chat view, Scan to PDF, photo size, supporter perks, six new languages
-    "15 languages": "15개 언어",
-    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian or Urdu.": "한국어, 영어, 아랍어, 프랑스어, 스페인어, 터키어, 독일어, 포르투갈어, 힌디어, 인도네시아어, 러시아어, 일본어, 중국어, 이탈리아어, 우르두어로 사용할 수 있습니다.",
+    "20 languages": "20개 언어",
+    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian, Urdu, Persian, Bengali, Vietnamese, Thai or Polish.": "한국어, 영어, 아랍어, 프랑스어, 스페인어, 터키어, 독일어, 포르투갈어, 힌디어, 인도네시아어, 러시아어, 일본어, 중국어, 이탈리아어, 우르두어, 페르시아어, 벵골어, 베트남어, 태국어, 폴란드어로 사용할 수 있습니다.",
     "Supporter": "후원자",
     "Did you donate to OmniBeam? Thank you! Type the supporter code you got: it adds a ♥ to this device's card that other devices see, 4 colour themes and extra pictures. OmniBeam stays free for everyone, with no ads.": "OmniBeam에 기부해 주셨나요? 감사합니다! 받은 후원자 코드를 입력하세요. 다른 기기에서 보이는 이 기기 카드에 ♥가 붙고, 4가지 색상 테마와 추가 사진을 쓸 수 있습니다. OmniBeam은 누구에게나 무료이며 광고도 없습니다.",
     "Unlock": "잠금 해제",
@@ -1063,7 +1063,7 @@
     "Supporter:": "후원자:",
     "If you donated, type your supporter code in Settings for a ♥ on your card, four colour themes and extra pictures.": "기부하셨다면 설정에 후원자 코드를 입력하세요. 카드에 ♥가 붙고, 네 가지 색상 테마와 추가 사진을 쓸 수 있습니다.",
     "In Request files, choose 1 year and tap Put this on your website to add a box to your website or blog where visitors can send you files, end-to-end encrypted. On WordPress, use the free OmniBeam plugin.": "파일 요청에서 1년을 고르고 웹사이트에 넣기를 탭하면, 방문자가 종단 간 암호화로 파일을 보낼 수 있는 상자를 웹사이트나 블로그에 추가할 수 있습니다. WordPress에서는 무료 OmniBeam 플러그인을 쓰세요.",
-    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano or اردو.": "페이지 아래에서 언어를 고르세요: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو.",
+    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو, فارسی, বাংলা, Tiếng Việt, ไทย or Polski.": "페이지 아래에서 언어를 고르세요: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو, فارسی, বাংলা, Tiếng Việt, ไทย, Polski.",
     "Scan to PDF makes the PDF on your device, and the chat view only shows the history already on it. If you use a supporter code, the server checks it when you connect and keeps a list of the codes it made.": "PDF로 스캔은 내 기기에서 PDF를 만들고, 채팅 보기는 기기에 이미 있는 기록만 보여 줍니다. 후원자 코드를 쓰면 연결할 때 서버가 코드를 확인하고, 만든 코드 목록을 보관합니다.",
     "OmniBeam is free, with no ads. People who donate with the ♥ button can get a supporter code as a thank-you: typed in Settings, it adds a ♥ to their device's card, four colour themes and extra pictures.": "OmniBeam은 무료이며 광고가 없습니다. ♥ 버튼으로 기부한 분은 감사의 뜻으로 후원자 코드를 받을 수 있습니다. 설정에 입력하면 기기 카드에 ♥가 붙고, 네 가지 색상 테마와 추가 사진을 쓸 수 있습니다.",
     "Could not check the code. Check the internet connection and try again.": "코드를 확인할 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요.",

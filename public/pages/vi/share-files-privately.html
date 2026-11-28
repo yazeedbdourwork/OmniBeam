@@ -1,0 +1,54 @@
+<!--
+title: Cách chia sẻ tệp riêng tư với mã hóa
+description: Ai có thể xem tệp bạn gửi trên mạng? Hướng dẫn dễ hiểu về mã hóa đầu cuối, truyền trực tiếp và liên kết riêng tư. Miễn phí, không cần đăng ký.
+short: Cách chia sẻ tệp riêng tư
+kind: post
+order: 2
+published: 2026-10-26
+updated: 2026-10-26
+-->
+<h1>Cách chia sẻ tệp riêng tư</h1>
+<p class="lead">Ảnh, bản quét giấy tờ tùy thân, hợp đồng: rất nhiều thứ chúng ta gửi là riêng tư. Dưới đây là những gì thực sự bảo vệ chúng trên đường đi, giải thích không dùng thuật ngữ khó.</p>
+
+<h2>Ba nơi tệp có thể bị xem</h2>
+<ol>
+  <li><em>Trên mạng</em>: bất kỳ ai dùng cùng Wi‑Fi công cộng. Mọi trang web có https đều bảo vệ khỏi điều này.</li>
+  <li><em>Trên máy chủ của dịch vụ</em>: công ty chuyển hoặc lưu tệp. Chỉ mã hóa đầu cuối mới bảo vệ khỏi điều này.</li>
+  <li><em>Trên các thiết bị</em>: của bạn và của người kia. Phần này là do bạn.</li>
+</ol>
+
+<h2>Mã hóa đầu cuối nghĩa là gì</h2>
+<p>Tệp được khóa trên thiết bị của bạn và chỉ được mở khóa trên thiết bị kia. Dịch vụ ở giữa chỉ chuyển đi dữ liệu đã bị xáo trộn và không bao giờ có khóa. Nếu máy chủ của họ bị tấn công, hay có ai đó yêu cầu công ty giao tệp của bạn, cũng chẳng có gì đọc được để giao ra.</p>
+
+<h2>OmniBeam xử lý thế nào</h2>
+<ul>
+  <li>Truyền trực tiếp giữa các thiết bị dùng WebRTC, luôn được mã hóa đầu cuối.</li>
+  <li>Khi không thể kết nối trực tiếp và tệp đi qua máy chủ của chúng tôi, hai thiết bị thống nhất một khóa trước, nên máy chủ chỉ chuyển tiếp dữ liệu đã xáo trộn và không lưu gì.</li>
+  <li>Liên kết chia sẻ được mã hóa trong trình duyệt của bạn trước khi tải lên. Khóa là phần liên kết sau dấu #, phần mà trình duyệt không bao giờ gửi đến máy chủ. Liên kết tự hết hạn.</li>
+  <li>Không có tài khoản. Các thiết bị đã ghép nối được ghi nhớ trong chính trình duyệt của bạn.</li>
+</ul>
+
+<h2>Năm thói quen hữu ích</h2>
+<ul>
+  <li>Với những gì riêng tư, hãy ưu tiên truyền trực tiếp hoặc dịch vụ mã hóa đầu cuối.</li>
+  <li>Khi liên kết hoặc phòng có mật khẩu, hãy gửi mật khẩu qua một ứng dụng khác với ứng dụng gửi liên kết.</li>
+  <li>Chọn liên kết có hạn sử dụng, và xóa chúng khi người kia đã nhận được tệp.</li>
+  <li>Kiểm tra những gì bạn chia sẻ: ảnh có thể chứa vị trí nơi chúng được chụp.</li>
+  <li>Chỉ chấp nhận tệp từ những thiết bị bạn nhận ra. Trong OmniBeam, chỉ đánh dấu thiết bị của chính bạn là Tin cậy.</li>
+</ul>
+<p>Thêm chi tiết có trong <a href="/vi/privacy">chính sách quyền riêng tư</a> của chúng tôi.</p>
+<p>Một phép thử nhanh cho mọi dịch vụ chia sẻ tệp: hỏi xem nó có đọc được tệp của bạn nếu muốn không. Nếu tệp được mã hóa trên thiết bị của bạn trước khi rời đi, dịch vụ chỉ bao giờ thấy dữ liệu đã xáo trộn. OmniBeam mã hóa mọi lượt truyền theo cách này.</p>
+<p>OmniBeam cho bạn chia sẻ tệp riêng tư, mã hóa đầu cuối, không cần tài khoản.</p>
+<section class="qa">
+<h2>Hỏi và đáp</h2>
+<h3>Liên kết đám mây có riêng tư không?</h3>
+<p>Một liên kết đám mây thông thường được lưu trên máy chủ của nhà cung cấp, và nhà cung cấp thường có thể đọc tệp. Với mã hóa đầu cuối, chỉ các thiết bị ở hai đầu giữ khóa, nên không ai ở giữa mở được tệp.</p>
+<h3>Làm sao biết một dịch vụ có dùng mã hóa đầu cuối không?</h3>
+<p>Hãy tìm một tuyên bố rõ ràng rằng tệp được mã hóa trên thiết bị của bạn trước khi rời đi, và khóa không bao giờ được gửi đến máy chủ. OmniBeam giải thích chính xác điều này trên trang quyền riêng tư.</p>
+<h3>Tôi nên làm gì thêm để giữ tệp riêng tư?</h3>
+<p>Chỉ gửi liên kết cho những người cần, chọn thời hạn ngắn, và xóa liên kết khi đã được dùng.</p>
+<h3>Gửi qua email có riêng tư không?</h3>
+<p>Email tiện lợi nhưng mặc định không riêng tư: thư và tệp đính kèm thường được lưu trên máy chủ thư của cả hai bên. Với tệp riêng tư, truyền hoặc liên kết được mã hóa đầu cuối an toàn hơn.</p>
+<h3>Tôi có cần tin tưởng OmniBeam không?</h3>
+<p>Ít hơn nhiều so với một dịch vụ đám mây thông thường. Tệp được mã hóa trên thiết bị của bạn, và khóa không bao giờ đến máy chủ của OmniBeam, nên ngay cả OmniBeam cũng không mở được.</p>
+</section>

@@ -240,7 +240,8 @@ const SITE_URL = (process.env.SITE_URL || 'https://omnibeam.site').replace(/\/$/
 const LANGS = require('./public/i18n.js');
 const PAGE_LANGS = Object.keys(LANGS).filter((l) => l !== 'en');
 const OG_LOCALE = { en: 'en_US', ar: 'ar_AR', fr: 'fr_FR', es: 'es_ES', tr: 'tr_TR', de: 'de_DE', pt: 'pt_BR', hi: 'hi_IN', id: 'id_ID',
-  ru: 'ru_RU', ja: 'ja_JP', zh: 'zh_CN', ko: 'ko_KR', it: 'it_IT', ur: 'ur_PK' };
+  ru: 'ru_RU', ja: 'ja_JP', zh: 'zh_CN', ko: 'ko_KR', it: 'it_IT', ur: 'ur_PK',
+  fa: 'fa_IR', bn: 'bn_BD', vi: 'vi_VN', th: 'th_TH', pl: 'pl_PL' };
 // Cache version for the language files, from their content, so browsers load a new one after a deploy
 const LANG_VERSION = crypto.createHash('sha1')
   .update(PAGE_LANGS.map((l) => fs.readFileSync(path.join(PUBLIC_DIR, 'lang', l + '.js'))).join('\n'))
@@ -402,7 +403,7 @@ const APP_FEATURES = ['Send files, photos, videos and text between any devices i
   'Encrypted share links that expire, with password and folder links', 'Request files link', 'Chat, voice messages, group chat and voice or video calls',
   'Clipboard sync, notes and to-do lists', 'Screen sharing, shared whiteboard and phone as a slide remote', 'Phone as a webcam or microphone',
   'Event photo album with one QR code', 'Automatic phone photo backup and folder sync', 'TV mode', 'Merge PDFs, resize photos, scan to PDF',
-  'Safety code to verify a paired device', 'Available in 15 languages'];
+  'Safety code to verify a paired device', 'Available in 20 languages'];
 // JSON-LD for search engines, built from the page itself so the FAQ always matches what visitors see
 function structuredData(html, lang, url) {
   const text = (h) => normText(decodeHtml(h.replace(/<[^>]+>/g, '')));
@@ -876,6 +877,11 @@ const PIXEL_PRIVACY = {
   ko: '같은 배너에서 허용을 누르면, OmniBeam은 Facebook과 Instagram 광고를 통해 온 방문을 측정하기 위해 Meta 픽셀도 불러옵니다. Meta는 이 요청과 함께 IP 주소와 브라우저 정보를 받습니다. 괜찮습니다를 고르면 절대 불러오지 않습니다.',
   it: 'Se premi Consenti nello stesso banner, OmniBeam carica anche il pixel di Meta per misurare le visite che arrivano dai nostri annunci su Facebook e Instagram. Meta riceve il tuo indirizzo IP e i dati del browser con queste richieste. Dopo No, grazie non viene mai caricato.',
   ur: 'اگر آپ اسی بینر پر "اجازت دیں" دبائیں تو OmniBeam ہمارے Facebook اور Instagram اشتہارات سے آنے والے وزٹ ناپنے کے لیے Meta Pixel بھی لوڈ کرتا ہے۔ ان درخواستوں کے ساتھ Meta کو آپ کا IP پتہ اور براؤزر کی معلومات ملتی ہیں۔ "نہیں، شکریہ" کے بعد یہ کبھی لوڈ نہیں ہوتا۔',
+  fa: 'اگر روی همان نوار «اجازه دادن» را بزنید، OmniBeam پیکسل Meta را هم بارگیری می‌کند تا بازدیدهایی را که از تبلیغ‌های ما در Facebook و Instagram می‌آیند اندازه بگیرد. Meta همراه با این درخواست‌ها آدرس IP و مشخصات مرورگر شما را دریافت می‌کند. پس از «نه، ممنون» هرگز بارگیری نمی‌شود.',
+  bn: 'ওই একই ব্যানারে অনুমতি দিন চাপলে OmniBeam Facebook ও Instagram-এ আমাদের বিজ্ঞাপন থেকে আসা ভিজিট মাপতে Meta Pixel-ও লোড করে। এই রিকোয়েস্টগুলোর সাথে Meta আপনার IP ঠিকানা ও ব্রাউজারের তথ্য পায়। না, ধন্যবাদ চাপলে এটি কখনো লোড হয় না।',
+  vi: 'Nếu bạn nhấn Cho phép trên cùng biểu ngữ đó, OmniBeam cũng tải Meta Pixel để đo lượt truy cập đến từ quảng cáo của chúng tôi trên Facebook và Instagram. Meta nhận địa chỉ IP và thông tin trình duyệt của bạn qua các yêu cầu này. Nếu bạn chọn Không, cảm ơn thì nó sẽ không bao giờ được tải.',
+  th: 'ถ้าคุณกด อนุญาต บนแบนเนอร์เดียวกัน OmniBeam จะโหลด Meta Pixel ด้วย เพื่อวัดการเข้าชมที่มาจากโฆษณาของเราบน Facebook และ Instagram Meta จะได้รับที่อยู่ IP และรายละเอียดเบราว์เซอร์ของคุณไปพร้อมคำขอเหล่านี้ ถ้ากด ไม่เป็นไร ขอบคุณ จะไม่โหลดเลย',
+  pl: 'Jeśli na tym samym banerze naciśniesz Zezwól, OmniBeam wczyta też Meta Pixel, aby mierzyć wizyty z naszych reklam na Facebooku i Instagramie. Meta otrzymuje przy tych zapytaniach twój adres IP i dane przeglądarki. Po wybraniu Nie, dziękuję nigdy nie jest wczytywany.',
 };
 function privacyExtra(html, key) {
   const [lang, slug] = key.split('/');
@@ -899,7 +905,7 @@ function llmsTxt() {
 
 > OmniBeam (${SITE_URL}) is a free web app for sending files, photos, videos and text between any devices: iPhone, iPad, Android, Windows, Mac, Linux and Chromebook. It runs in the browser, so there is nothing to install and no account. Transfers are encrypted end to end and go directly between the devices when possible; nothing is stored on a server.
 
-How it works: open ${SITE_URL} on both devices. Devices on the same Wi-Fi appear automatically; devices on different networks pair once with a 6-digit code or a QR code, and paired devices find each other from then on. Tap a device, choose files, and the other device accepts. Files can also be shared by a link that expires. There is no file size limit set by OmniBeam. The site is available in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese (Simplified), Korean, Italian and Urdu (for example ${SITE_URL}/ar/).
+How it works: open ${SITE_URL} on both devices. Devices on the same Wi-Fi appear automatically; devices on different networks pair once with a 6-digit code or a QR code, and paired devices find each other from then on. Tap a device, choose files, and the other device accepts. Files can also be shared by a link that expires. There is no file size limit set by OmniBeam. The site is available in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese (Simplified), Korean, Italian, Urdu, Persian, Bengali, Vietnamese, Thai and Polish (for example ${SITE_URL}/ar/).
 
 Apps: Windows (Microsoft Store): https://apps.microsoft.com/detail/9PLR2PMX3SQZ ; Chrome and Edge extension: https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki ; Firefox add-on: https://addons.mozilla.org/en-US/firefox/addon/omnibeam-send-to-your-devices/ ; command line: \`npx omnibeam send <file>\` (https://www.npmjs.com/package/omnibeam); on phones it can be installed from the browser as an app.
 Open source: GPL-3.0, source code at https://github.com/yazeedbdourwork/OmniBeam
@@ -4819,6 +4825,81 @@ const TG_TEXT = {
     unsupported: 'میں فائلیں، تصاویر، ویڈیوز، وائس نوٹس اور متن پہنچا سکتا ہوں۔',
     status: 'یہ چیٹ {device} سے جڑی ہوئی ہے۔',
     fromOmni: 'OmniBeam سے ({device})',
+  },
+  fa: {
+    welcome: 'سلام! من فایل‌ها را بین Telegram و OmniBeam جابه‌جا می‌کنم.\n\nبرای شروع، omnibeam.site را روی گوشی یا کامپیوترتان باز کنید ← ⋯ ← تنظیمات ← Telegram ← اتصال Telegram، و روی لینکی که نشان می‌دهد بزنید.',
+    linked: '✅ به {device} وصل شد.\n\nبرایم فایل، عکس، ویدیو یا متن بفرستید تا در OmniBeam روی {device} برسند. فایل‌هایی که از OmniBeam به Telegram می‌فرستید اینجا می‌رسند.\n\nمحدودیت‌های Telegram: فایل‌ها تا 20 مگابایت به من، تا 50 مگابایت از OmniBeam. فایل‌هایی که از Telegram عبور می‌کنند رمزنگاری سرتاسری ندارند. /unlink اتصال را قطع می‌کند.',
+    badCode: 'این لینک منقضی شده یا قبلاً استفاده شده است. در OmniBeam یک لینک تازه بسازید: تنظیمات ← Telegram ← اتصال Telegram.',
+    notLinked: 'این گفتگو هنوز به دستگاهی وصل نشده. در OmniBeam: ⋯ ← تنظیمات ← Telegram ← اتصال Telegram.',
+    sent: '✓ به {device} فرستاده شد.',
+    waiting: '✓ برای {device} ذخیره شد: وقتی OmniBeam آنجا باز شود می‌رسد.',
+    tooBig: 'حجم این فایل {size} است. Telegram فقط اجازه می‌دهد ربات‌ها فایل‌های تا 20 مگابایت دریافت کنند. فایل‌های بزرگ‌تر را مستقیم با OmniBeam بفرستید: https://omnibeam.site/fa/',
+    failed: 'متأسفیم، این مورد به OmniBeam نرسید. یک دقیقه دیگر دوباره امتحان کنید.',
+    tooMany: 'یکجا خیلی زیاد است. چند دقیقه صبر کنید و بقیه را بفرستید.',
+    unlinked: 'اتصال قطع شد. دیگر چیزی بین این گفتگو و {device} جابه‌جا نمی‌شود.',
+    unsupported: 'می‌توانم فایل، عکس، ویدیو، پیام صوتی و متن را جابه‌جا کنم.',
+    status: 'این گفتگو به {device} وصل است.',
+    fromOmni: 'از OmniBeam ({device})',
+  },
+  bn: {
+    welcome: 'হ্যালো! আমি Telegram আর OmniBeam-এর মধ্যে ফাইল আদান-প্রদান করি।\n\nশুরু করতে ফোন বা কম্পিউটারে omnibeam.site খুলুন → ⋯ → সেটিংস → Telegram → Telegram লিংক করুন, আর যে লিংকটি দেখায় তাতে ট্যাপ করুন।',
+    linked: '✅ {device}-এর সাথে লিংক হয়েছে।\n\nআমাকে ফাইল, ছবি, ভিডিও বা টেক্সট পাঠান, সেগুলো {device}-এর OmniBeam-এ পৌঁছাবে। OmniBeam থেকে Telegram-এ পাঠানো ফাইল এখানে আসবে।\n\nTelegram-এর সীমা: আমাকে সর্বোচ্চ 20 MB পর্যন্ত ফাইল, OmniBeam থেকে সর্বোচ্চ 50 MB। Telegram দিয়ে যাওয়া ফাইল এন্ড-টু-এন্ড এনক্রিপ্ট করা থাকে না। /unlink দিয়ে এটি বন্ধ করুন।',
+    badCode: 'এই লিংকের মেয়াদ শেষ হয়ে গেছে বা আগেই ব্যবহার হয়েছে। OmniBeam-এ নতুন একটি তৈরি করুন: সেটিংস → Telegram → Telegram লিংক করুন।',
+    notLinked: 'এই চ্যাটটি এখনো কোনো ডিভাইসের সাথে লিংক করা নেই। OmniBeam-এ: ⋯ → সেটিংস → Telegram → Telegram লিংক করুন।',
+    sent: '✓ {device}-এ পাঠানো হয়েছে।',
+    waiting: '✓ {device}-এর জন্য সেভ হয়েছে: সেখানে OmniBeam খুললেই পৌঁছে যাবে।',
+    tooBig: 'এই ফাইলটি {size}। Telegram বটকে শুধু 20 MB পর্যন্ত ফাইল নিতে দেয়। বড় ফাইল সরাসরি OmniBeam দিয়ে পাঠান: https://omnibeam.site/bn/',
+    failed: 'দুঃখিত, এটি OmniBeam-এ পৌঁছে দেওয়া যায়নি। এক মিনিট পরে আবার চেষ্টা করুন।',
+    tooMany: 'একসাথে অনেক বেশি হয়ে গেছে। কয়েক মিনিট অপেক্ষা করে বাকিগুলো পাঠান।',
+    unlinked: 'আনলিংক হয়েছে। এই চ্যাট আর {device}-এর মধ্যে আর কিছু যাবে না।',
+    unsupported: 'আমি ফাইল, ছবি, ভিডিও, ভয়েস নোট ও টেক্সট পৌঁছে দিতে পারি।',
+    status: 'এই চ্যাটটি {device}-এর সাথে লিংক করা আছে।',
+    fromOmni: 'OmniBeam থেকে ({device})',
+  },
+  vi: {
+    welcome: 'Xin chào! Mình chuyển tệp giữa Telegram và OmniBeam.\n\nĐể bắt đầu, hãy mở omnibeam.site trên điện thoại hoặc máy tính → ⋯ → Cài đặt → Telegram → Liên kết Telegram, rồi nhấn vào liên kết hiện ra.',
+    linked: '✅ Đã liên kết với {device}.\n\nHãy gửi cho mình tệp, ảnh, video hoặc văn bản và chúng sẽ đến OmniBeam trên {device}. Tệp bạn gửi từ OmniBeam sang Telegram sẽ đến đây.\n\nGiới hạn của Telegram: tệp tối đa 20 MB gửi cho mình, tối đa 50 MB từ OmniBeam. Tệp đi qua Telegram không được mã hóa đầu cuối. /unlink để dừng.',
+    badCode: 'Liên kết đó đã hết hạn hoặc đã được dùng. Hãy tạo liên kết mới trong OmniBeam: Cài đặt → Telegram → Liên kết Telegram.',
+    notLinked: 'Cuộc trò chuyện này chưa được liên kết với thiết bị nào. Trong OmniBeam: ⋯ → Cài đặt → Telegram → Liên kết Telegram.',
+    sent: '✓ Đã gửi đến {device}.',
+    waiting: '✓ Đã lưu cho {device}: tệp sẽ đến khi OmniBeam được mở ở đó.',
+    tooBig: 'Tệp này có dung lượng {size}. Telegram chỉ cho bot nhận tệp tối đa 20 MB. Hãy gửi tệp lớn hơn trực tiếp bằng OmniBeam: https://omnibeam.site/vi/',
+    failed: 'Xin lỗi, không thể chuyển nội dung này sang OmniBeam. Hãy thử lại sau một phút.',
+    tooMany: 'Nhiều quá một lúc rồi. Hãy đợi vài phút rồi gửi phần còn lại.',
+    unlinked: 'Đã hủy liên kết. Không còn gì được chuyển giữa cuộc trò chuyện này và {device}.',
+    unsupported: 'Mình có thể chuyển tệp, ảnh, video, tin nhắn thoại và văn bản.',
+    status: 'Cuộc trò chuyện này đã liên kết với {device}.',
+    fromOmni: 'Từ OmniBeam ({device})',
+  },
+  th: {
+    welcome: 'สวัสดี! ฉันช่วยส่งไฟล์ระหว่าง Telegram กับ OmniBeam\n\nเริ่มต้นได้โดยเปิด omnibeam.site บนโทรศัพท์หรือคอมพิวเตอร์ → ⋯ → การตั้งค่า → Telegram → เชื่อม Telegram แล้วแตะลิงก์ที่แสดง',
+    linked: '✅ เชื่อมกับ {device} แล้ว\n\nส่งไฟล์ รูป วิดีโอ หรือข้อความมาให้ฉัน แล้วจะไปถึง OmniBeam บน {device} ไฟล์ที่คุณส่งจาก OmniBeam ไปยัง Telegram จะมาถึงที่นี่\n\nข้อจำกัดของ Telegram: ส่งไฟล์มาให้ฉันได้สูงสุด 20 MB และจาก OmniBeam ได้สูงสุด 50 MB ไฟล์ที่ผ่าน Telegram ไม่ได้เข้ารหัสแบบ end-to-end /unlink เพื่อหยุดใช้งาน',
+    badCode: 'ลิงก์นั้นหมดอายุหรือถูกใช้ไปแล้ว สร้างลิงก์ใหม่ใน OmniBeam: การตั้งค่า → Telegram → เชื่อม Telegram',
+    notLinked: 'แชตนี้ยังไม่ได้เชื่อมกับอุปกรณ์ ใน OmniBeam: ⋯ → การตั้งค่า → Telegram → เชื่อม Telegram',
+    sent: '✓ ส่งถึง {device} แล้ว',
+    waiting: '✓ เก็บไว้ให้ {device} แล้ว: จะไปถึงเมื่อเปิด OmniBeam บนเครื่องนั้น',
+    tooBig: 'ไฟล์นี้มีขนาด {size} Telegram ให้บอทรับไฟล์ได้สูงสุดแค่ 20 MB ส่งไฟล์ที่ใหญ่กว่านี้ด้วย OmniBeam โดยตรง: https://omnibeam.site/th/',
+    failed: 'ขออภัย ส่งต่อไปยัง OmniBeam ไม่ได้ ลองใหม่ในอีกสักครู่',
+    tooMany: 'ส่งมาเยอะมากในครั้งเดียว รอสักครู่แล้วค่อยส่งที่เหลือ',
+    unlinked: 'ยกเลิกการเชื่อมแล้ว จะไม่มีอะไรส่งระหว่างแชตนี้กับ {device} อีก',
+    unsupported: 'ฉันส่งต่อไฟล์ รูป วิดีโอ ข้อความเสียง และข้อความได้',
+    status: 'แชตนี้เชื่อมกับ {device} อยู่',
+    fromOmni: 'จาก OmniBeam ({device})',
+  },
+  pl: {
+    welcome: 'Cześć! Przekazuję pliki między Telegramem a OmniBeam.\n\nAby zacząć, otwórz omnibeam.site na telefonie lub komputerze → ⋯ → Ustawienia → Telegram → Połącz Telegram i stuknij link, który się pojawi.',
+    linked: '✅ Połączono z {device}.\n\nWysyłaj mi pliki, zdjęcia, filmy lub tekst, a trafią do OmniBeam na {device}. Pliki wysłane z OmniBeam na Telegram trafią tutaj.\n\nLimity Telegramu: pliki do 20 MB do mnie, do 50 MB z OmniBeam. Pliki przechodzące przez Telegram nie są szyfrowane end-to-end. /unlink kończy połączenie.',
+    badCode: 'Ten link wygasł lub został już użyty. Utwórz nowy w OmniBeam: Ustawienia → Telegram → Połącz Telegram.',
+    notLinked: 'Ten czat nie jest jeszcze połączony z urządzeniem. W OmniBeam: ⋯ → Ustawienia → Telegram → Połącz Telegram.',
+    sent: '✓ Wysłano do {device}.',
+    waiting: '✓ Zapisano dla {device}: dotrze, gdy otworzy się tam OmniBeam.',
+    tooBig: 'Ten plik ma {size}. Telegram pozwala botom odbierać pliki tylko do 20 MB. Większe pliki wysyłaj bezpośrednio przez OmniBeam: https://omnibeam.site/pl/',
+    failed: 'Przepraszam, nie udało się przekazać tego do OmniBeam. Spróbuj ponownie za minutę.',
+    tooMany: 'To dużo naraz. Poczekaj kilka minut i wyślij resztę.',
+    unlinked: 'Odłączono. Między tym czatem a {device} nic już nie będzie przesyłane.',
+    unsupported: 'Mogę przekazywać pliki, zdjęcia, filmy, notatki głosowe i tekst.',
+    status: 'Ten czat jest połączony z {device}.',
+    fromOmni: 'Z OmniBeam ({device})',
   },
 };
 const tgText = (lang, key, vars = {}) => Object.entries(vars).reduce((s, [k, v]) => s.split(`{${k}}`).join(v), (TG_TEXT[lang] && TG_TEXT[lang][key]) || TG_TEXT.en[key]);

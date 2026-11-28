@@ -1,0 +1,52 @@
+<!--
+title: ডান-ক্লিকে Mac বা Linux থেকে ফাইল পাঠান
+description: Mac ও Linux-এর ডান-ক্লিক মেনুতে OmniBeam যোগ করুন, আর আপনার iPhone বা Android ফোনে ফাইল ও টেক্সট পাঠান। ফ্রি, সাইন-আপ নেই।
+short: Mac ও Linux-এর ডান-ক্লিক মেনু থেকে পাঠান
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>ডান-ক্লিকে Mac বা Linux PC থেকে আপনার ফোনে ফাইল পাঠান</h1>
+<p class="lead">OmniBeam হেল্পার Mac-এর Finder ও Linux-এর ফাইল ম্যানেজারের ডান-ক্লিক মেনুতে <em>Send with OmniBeam</em> যোগ করে। ফাইল বেছে নিন, আপনার ফোন বাছুন, আর কম্পিউটারে ব্রাউজার না খুলেই সেগুলো চলে যাবে।</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Mac ও Linux-এর জন্য ডাউনলোড করুন (ZIP)</a></p>
+
+<h2>Mac-এ ইনস্টল</h2>
+<ol>
+  <li><a href="https://nodejs.org" rel="noopener">Node.js</a> ইনস্টল করুন, যা দিয়ে হেল্পার ফাইল পাঠায়।</li>
+  <li>ডাউনলোডটি আনজিপ করে <em>install-mac.command</em>-এ ডাবল-ক্লিক করুন। macOS এটি না খুললে ডান-ক্লিক করে <em>Open</em>, তারপর আবার <em>Open</em> বেছে নিন।</li>
+  <li>জিজ্ঞেস করলে আপনার ফোনের পেয়ারিং কোডটি লিখুন (নিচে দেখুন)।</li>
+</ol>
+<p>এরপর Finder-এ ফাইলে ডান-ক্লিক করে <em>Quick Actions</em> ও <em>Send with OmniBeam</em> বেছে নিন। যেকোনো অ্যাপে বাছাই করা টেক্সটের জন্য ডান-ক্লিক করে <em>Services</em> ও <em>Send text with OmniBeam</em> বেছে নিন। এগুলো না থাকলে System Settings, Keyboard, Keyboard Shortcuts, Services-এ চালু করুন।</p>
+
+<h2>Linux-এ ইনস্টল</h2>
+<ol>
+  <li>Node.js 18 বা নতুন সংস্করণ ইনস্টল করুন, যেমন <code>sudo apt install nodejs</code>, আর ডিভাইস বাছার জন্য <code>zenity</code> (KDE-তে <code>kdialog</code>)।</li>
+  <li>ডাউনলোডটি আনজিপ করে ওই ফোল্ডারে একটি টার্মিনাল খুলুন এবং <code>sh install-linux.sh</code> চালান।</li>
+  <li>জিজ্ঞেস করলে আপনার ফোনের পেয়ারিং কোডটি লিখুন।</li>
+</ol>
+<p>এরপর Files, Nemo বা Caja-তে ফাইলে ডান-ক্লিক করে <em>Scripts</em> ও <em>Send with OmniBeam</em> বেছে নিন, অথবা Dolphin ও Thunar-এ সরাসরি মেনুতে <em>Send with OmniBeam</em>।</p>
+
+<h2>একবার আপনার ফোন পেয়ার করুন</h2>
+<ol>
+  <li>ফোনে <a href="/bn/">omnibeam.site</a> খুলুন, লিংক বাটনে ট্যাপ করে <em>পেয়ারিং কোড তৈরি করুন</em>।</li>
+  <li>কম্পিউটারের ইনস্টলারে সেই কোডটি লিখুন।</li>
+  <li>ফোনে আবার পেয়ার স্ক্রিন খুলে কম্পিউটারের পাশে <em>বিশ্বস্ত</em>-এ টিক দিন, তাহলে এর ফাইল জিজ্ঞেস ছাড়াই আসবে।</li>
+</ol>
+<p>গ্রহণ করতে ফোনে omnibeam.site খোলা থাকতে হবে। ফাইল OmniBeam সার্ভার দিয়ে যায়, এন্ড-টু-এন্ড এনক্রিপ্ট করে, তাই সার্ভার সেগুলো পড়তে পারে না। মেনুর এন্ট্রিগুলো আবার সরাতে <code>node omnibeam-send.js --uninstall</code> চালান।</p>
+<p>Chrome বা Edge ব্যবহার করেন? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">OmniBeam এক্সটেনশন</a> ডান-ক্লিকে পেজ, লিংক, ছবি বা বাছাই করা টেক্সট আপনার ফোনে পাঠায়, Mac, Linux ও Windows-এ।</p>
+<section class="qa">
+<h2>প্রশ্ন ও উত্তর</h2>
+<h3>ডান-ক্লিক মেনু কি প্রতিটি Linux ডেস্কটপে কাজ করে?</h3>
+<p>এটি প্রচলিত ফাইল ম্যানেজারগুলোতে কাজ করে: Files (Nautilus), Nemo, Caja, Dolphin ও Thunar। অন্য ডেস্কটপে তবুও ব্রাউজারে omnibeam.site খুলে ফাইল টেনে আনতে পারেন।</p>
+<h3>পরে কি মেনুর আইটেমগুলো সরানো যায়?</h3>
+<p>হ্যাঁ। হেল্পারের ফোল্ডারে node omnibeam-send.js --uninstall চালান, ডান-ক্লিক মেনু থেকে এন্ট্রিগুলো চলে যাবে।</p>
+<h3>এটি কি iPhone ও Android-এ পাঠায়?</h3>
+<p>হ্যাঁ। কোড দিয়ে যে ফোনটি পেয়ার করেছেন সেটিতে পাঠায়, iPhone হোক বা Android ফোন, একই Wi‑Fi-তে বা মোবাইল ডেটায়, যতক্ষণ ফোনে omnibeam.site খোলা থাকে।</p>
+<h3>হেল্পারের কেন Node.js লাগে?</h3>
+<p>হেল্পারটি একটি ছোট স্ক্রিপ্ট যা Node.js দিয়ে চলে। এটি একবার আপনার ফোনের সাথে পেয়ার হয়, তারপর কম্পিউটারে ব্রাউজার না খুলেই আপনার বাছাই করা ফাইল পাঠায়, তাই ডান-ক্লিকের কাজটা দ্রুত হয়।</p>
+<h3>বাছাই করা টেক্সটও কি পাঠানো যায়?</h3>
+<p>Mac-এ, হ্যাঁ: যেকোনো অ্যাপে টেক্সট বাছাই করে ডান-ক্লিক করুন এবং Services, তারপর Send text with OmniBeam বেছে নিন। এটি কপি করার জন্য প্রস্তুত অবস্থায় ফোনে পৌঁছায়।</p>
+<h3>ফাইলগুলো কি এনক্রিপ্টেড?</h3>
+<p>হ্যাঁ। এগুলো কম্পিউটারেই এন্ড-টু-এন্ড এনক্রিপ্ট হয়, আর সার্ভার পড়তে না পেরে শুধু পার করে দেয়।</p>
+</section>

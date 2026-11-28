@@ -1,0 +1,52 @@
+<!--
+title: Wysyłaj pliki z Maca lub Linuksa prawym przyciskiem
+description: Dodaj OmniBeam do menu kontekstowego na Macu i w Linuksie i wysyłaj pliki oraz tekst na iPhone’a lub telefon z Androidem. Za darmo, bez rejestracji.
+short: Wysyłanie z menu kontekstowego Maca i Linuksa
+kind: guide
+order: 10
+updated: 2026-10-30
+-->
+<h1>Wysyłaj pliki z Maca lub komputera z Linuksem na telefon prawym przyciskiem myszy</h1>
+<p class="lead">Pomocnik OmniBeam dodaje <em>Send with OmniBeam</em> do menu kontekstowego Findera na Macu i menedżera plików w Linuksie. Wybierz pliki, wybierz telefon, a pliki trafią na niego bez otwierania przeglądarki na komputerze.</p>
+
+<p><a class="download" href="/tools/omnibeam-mac-linux.zip" download>Pobierz na Maca i Linuksa (ZIP)</a></p>
+
+<h2>Instalacja na Macu</h2>
+<ol>
+  <li>Zainstaluj <a href="https://nodejs.org" rel="noopener">Node.js</a>, którego pomocnik używa do wysyłania plików.</li>
+  <li>Rozpakuj pobrany plik i kliknij dwukrotnie <em>install-mac.command</em>. Jeśli macOS nie chce go otworzyć, kliknij go prawym przyciskiem, wybierz <em>Otwórz</em>, a potem jeszcze raz <em>Otwórz</em>.</li>
+  <li>Gdy pojawi się prośba, wpisz kod parowania z telefonu (patrz niżej).</li>
+</ol>
+<p>Potem kliknij pliki prawym przyciskiem w Finderze i wybierz <em>Szybkie czynności</em> oraz <em>Send with OmniBeam</em>. Dla zaznaczonego tekstu w dowolnej aplikacji kliknij prawym przyciskiem i wybierz <em>Usługi</em> oraz <em>Send text with OmniBeam</em>. Jeśli ich brakuje, włącz je w Ustawieniach systemowych: Klawiatura, Skróty klawiszowe, Usługi.</p>
+
+<h2>Instalacja w Linuksie</h2>
+<ol>
+  <li>Zainstaluj Node.js w wersji 18 lub nowszej, np. <code>sudo apt install nodejs</code>, oraz <code>zenity</code> (lub <code>kdialog</code> w KDE) do wybierania urządzenia.</li>
+  <li>Rozpakuj pobrany plik, otwórz terminal w tym folderze i uruchom <code>sh install-linux.sh</code>.</li>
+  <li>Gdy pojawi się prośba, wpisz kod parowania z telefonu.</li>
+</ol>
+<p>Potem kliknij pliki prawym przyciskiem i wybierz <em>Skrypty</em> oraz <em>Send with OmniBeam</em> w Plikach, Nemo lub Caja albo <em>Send with OmniBeam</em> bezpośrednio w menu w Dolphinie i Thunarze.</p>
+
+<h2>Sparuj telefon raz</h2>
+<ol>
+  <li>Na telefonie otwórz <a href="/pl/">omnibeam.site</a>, stuknij przycisk linku i <em>Utwórz kod parowania</em>.</li>
+  <li>Wpisz ten kod w instalatorze na komputerze.</li>
+  <li>Na telefonie otwórz ponownie ekran parowania i zaznacz <em>Zaufane</em> obok komputera, aby jego pliki przychodziły bez pytania.</li>
+</ol>
+<p>Aby odbierać, telefon musi mieć otwarte omnibeam.site. Pliki idą przez serwer OmniBeam, zaszyfrowane end-to-end, więc serwer nie może ich odczytać. Aby ponownie usunąć pozycje z menu, uruchom <code>node omnibeam-send.js --uninstall</code>.</p>
+<p>Używasz Chrome lub Edge? <a href="https://chromewebstore.google.com/detail/dgcknmaoidknhocfgdoglmmpophmilki" rel="noopener">Rozszerzenie OmniBeam</a> wysyła na telefon stronę, link, obraz lub zaznaczony tekst prawym przyciskiem myszy, na Macu, w Linuksie i w Windows.</p>
+<section class="qa">
+<h2>Pytania i odpowiedzi</h2>
+<h3>Czy menu kontekstowe działa w każdym środowisku Linuksa?</h3>
+<p>Działa w popularnych menedżerach plików: Pliki (Nautilus), Nemo, Caja, Dolphin i Thunar. W innych środowiskach nadal możesz otworzyć omnibeam.site w przeglądarce i przeciągnąć do niej pliki.</p>
+<h3>Czy mogę później usunąć pozycje z menu?</h3>
+<p>Tak. Uruchom node omnibeam-send.js --uninstall w folderze pomocnika, a pozycje znikną z menu kontekstowego.</p>
+<h3>Czy wysyła na iPhone’a i Androida?</h3>
+<p>Tak. Wysyła na telefon sparowany kodem, niezależnie od tego, czy to iPhone, czy telefon z Androidem, w tej samej sieci Wi‑Fi lub na danych komórkowych, o ile na telefonie jest otwarte omnibeam.site.</p>
+<h3>Dlaczego pomocnik potrzebuje Node.js?</h3>
+<p>Pomocnik to mały skrypt uruchamiany przez Node.js. Paruje się z telefonem raz, a potem wysyła wybrane pliki bez otwierania przeglądarki na komputerze, dzięki czemu akcja pod prawym przyciskiem jest szybka.</p>
+<h3>Czy mogę wysłać też zaznaczony tekst?</h3>
+<p>Na Macu tak: zaznacz tekst w dowolnej aplikacji, kliknij prawym przyciskiem i wybierz Usługi, a potem Send text with OmniBeam. Dotrze na telefon gotowy do skopiowania.</p>
+<h3>Czy pliki są szyfrowane?</h3>
+<p>Tak. Są szyfrowane end-to-end na komputerze, a serwer tylko je przekazuje, nie mogąc ich odczytać.</p>
+</section>

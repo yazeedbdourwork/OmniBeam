@@ -1016,8 +1016,8 @@
     "Is OmniBeam working right now? The status page in the footer shows it, with the uptime of the last 30 days.": "OmniBeamは今動いていますか?フッターのステータスページに、過去30日間の稼働率とともに表示されます。",
 
     // Eight upgrades (2026-11-06): chat view, Scan to PDF, photo size, supporter perks, six new languages
-    "15 languages": "15の言語",
-    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian or Urdu.": "日本語、英語、アラビア語、フランス語、スペイン語、トルコ語、ドイツ語、ポルトガル語、ヒンディー語、インドネシア語、ロシア語、中国語、韓国語、イタリア語、ウルドゥー語で使えます。",
+    "20 languages": "20の言語",
+    "Use it in English, Arabic, French, Spanish, Turkish, German, Portuguese, Hindi, Indonesian, Russian, Japanese, Chinese, Korean, Italian, Urdu, Persian, Bengali, Vietnamese, Thai or Polish.": "日本語、英語、アラビア語、フランス語、スペイン語、トルコ語、ドイツ語、ポルトガル語、ヒンディー語、インドネシア語、ロシア語、中国語、韓国語、イタリア語、ウルドゥー語、ペルシア語、ベンガル語、ベトナム語、タイ語、ポーランド語で使えます。",
     "Supporter": "サポーター",
     "Did you donate to OmniBeam? Thank you! Type the supporter code you got: it adds a ♥ to this device's card that other devices see, 4 colour themes and extra pictures. OmniBeam stays free for everyone, with no ads.": "OmniBeamに寄付していただけましたか?ありがとうございます!受け取ったサポーターコードを入力してください。ほかのデバイスから見えるこのデバイスのカードに ♥ が付き、4つのカラーテーマと追加の画像が使えるようになります。OmniBeamは誰でも無料で、広告もありません。",
     "Unlock": "有効にする",
@@ -1063,7 +1063,7 @@
     "Supporter:": "サポーター:",
     "If you donated, type your supporter code in Settings for a ♥ on your card, four colour themes and extra pictures.": "寄付していただいた方は、設定でサポーターコードを入力すると、カードに ♥ が付き、4つのカラーテーマと追加の画像が使えます。",
     "In Request files, choose 1 year and tap Put this on your website to add a box to your website or blog where visitors can send you files, end-to-end encrypted. On WordPress, use the free OmniBeam plugin.": "「ファイルをリクエスト」で1年を選び、「ウェブサイトに設置」をタップすると、訪問者がエンドツーエンド暗号化でファイルを送れるボックスをウェブサイトやブログに追加できます。WordPressでは無料のOmniBeamプラグインを使えます。",
-    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano or اردو.": "ページの下で言語を選べます:English、العربية、Français、Español、Türkçe、Deutsch、Português、हिन्दी、Bahasa Indonesia、Русский、日本語、简体中文、한국어、Italiano、اردو。",
+    "Choose your language at the bottom of the page: English, العربية, Français, Español, Türkçe, Deutsch, Português, हिन्दी, Bahasa Indonesia, Русский, 日本語, 简体中文, 한국어, Italiano, اردو, فارسی, বাংলা, Tiếng Việt, ไทย or Polski.": "ページの下で言語を選べます:English、العربية、Français、Español、Türkçe、Deutsch、Português、हिन्दी、Bahasa Indonesia、Русский、日本語、简体中文、한국어、Italiano、اردو、فارسی、বাংলা、Tiếng Việt、ไทย、Polski。",
     "Scan to PDF makes the PDF on your device, and the chat view only shows the history already on it. If you use a supporter code, the server checks it when you connect and keeps a list of the codes it made.": "「PDFにスキャン」はPDFをあなたのデバイス上で作り、チャットはデバイスにすでにある履歴だけを表示します。サポーターコードを使う場合、接続時にサーバーがコードを確認し、作成したコードの一覧を保存します。",
     "OmniBeam is free, with no ads. People who donate with the ♥ button can get a supporter code as a thank-you: typed in Settings, it adds a ♥ to their device's card, four colour themes and extra pictures.": "OmniBeamは無料で、広告もありません。♥ボタンから寄付してくださった方には、お礼としてサポーターコードをお送りできます。設定で入力すると、デバイスのカードに ♥ が付き、4つのカラーテーマと追加の画像が使えます。",
     "Could not check the code. Check the internet connection and try again.": "コードを確認できませんでした。インターネット接続を確認してもう一度お試しください。",
